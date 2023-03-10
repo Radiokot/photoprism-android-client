@@ -9,6 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
+import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
 
 val retrofitApiModules: List<Module> = listOf(
@@ -33,6 +34,11 @@ val retrofitApiModules: List<Module> = listOf(
             scoped<PhotoPrismClientConfigService> {
                 get<Retrofit>()
                     .create(PhotoPrismClientConfigService::class.java)
+            }
+
+            scoped<PhotoPrismPhotosService> {
+                get<Retrofit>()
+                    .create(PhotoPrismPhotosService::class.java)
             }
         }
     }
