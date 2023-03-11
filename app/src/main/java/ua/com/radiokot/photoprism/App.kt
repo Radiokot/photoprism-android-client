@@ -4,13 +4,17 @@ import android.app.Application
 import android.os.Build
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.qualifier.named
 import org.slf4j.impl.HandroidLoggerAdapter
+import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import java.io.IOException
 
 class App : Application() {
@@ -24,9 +28,17 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 retrofitApiModules
+                        + galleryFeatureModules
             )
+            androidFileProperties("keystore.properties")
             androidFileProperties("app.properties")
         }
+
+        getKoin().createScope(
+            "session",
+            named<PhotoPrismSession>(),
+            PhotoPrismSession(getKoin().getProperty("sessionId")!!)
+        )
 
         initRxErrorHandler()
         initLogging()
