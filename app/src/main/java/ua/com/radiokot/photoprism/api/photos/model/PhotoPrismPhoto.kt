@@ -13,4 +13,6 @@ data class PhotoPrismPhoto(
     val takenAt: String,
     @JsonProperty("Type")
     val type: String,
+    @JsonProperty("Name")
+    val name: String,
 )

@@ -9,9 +9,11 @@ import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
+    private val thumbnailUrlFactory: MediaThumbnailUrlFactory,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
@@ -38,7 +40,12 @@ class SimpleGalleryMediaRepository(
             .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
                 returnedPageSize = photoPrismPhotos.size
-                photoPrismPhotos.map(GalleryMedia.Companion::fromPhotoPrism)
+                photoPrismPhotos.map {
+                    GalleryMedia.fromPhotoPrism(
+                        source = it,
+                        thumbnailUrlFactory = thumbnailUrlFactory,
+                    )
+                }
             }
             .map { galleryMediaItems ->
                 DataPage(

@@ -37,7 +37,10 @@ class App : Application() {
         getKoin().createScope(
             "session",
             named<PhotoPrismSession>(),
-            PhotoPrismSession(getKoin().getProperty("sessionId")!!)
+            PhotoPrismSession(
+                id = getKoin().getProperty("sessionId")!!,
+                previewToken = "3hjej82k",
+            )
         )
 
         initRxErrorHandler()

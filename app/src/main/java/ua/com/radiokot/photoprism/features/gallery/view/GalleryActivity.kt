@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import org.koin.android.ext.android.getKoin
@@ -37,7 +36,6 @@ class GalleryActivity : AppCompatActivity() {
 
         viewModel.itemsList
             .observe(this) {
-                log.debug { "Heeere" }
                 if (it != null) {
                     galleryItemAdapter.set(it)
                 }
@@ -47,7 +45,10 @@ class GalleryActivity : AppCompatActivity() {
     private fun initList() {
         val fastAdapter = FastAdapter.with(galleryItemAdapter)
         fastAdapter.onClickListener = { _, _, item, _ ->
-            log.debug { "list_item_clicked" }
+            log.debug {
+                "list_item_clicked:" +
+                        "\nsource=${item.source}"
+            }
             false
         }
 

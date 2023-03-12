@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 
@@ -27,7 +26,7 @@ class GalleryViewModel(
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .map { galleryMediaItems ->
-                galleryMediaItems.map { GalleryMediaListItem() }
+                galleryMediaItems.map(::GalleryMediaListItem)
             }
             .subscribe(itemsList::setValue)
             .addTo(compositeDisposable)
