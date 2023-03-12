@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -9,13 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
+import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
 
@@ -31,7 +33,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
     private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
 
-    private val galleryItemAdapter = ItemAdapter<GalleryMediaListItem>()
+    private val galleryItemsAdapter = ItemAdapter<GalleryMediaListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +49,13 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
         view = ActivityGalleryBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        view.galleryRecyclerView.post(::initList)
+        subscribeToViewModel()
 
+        view.galleryRecyclerView.post(::initList)
+        initMediaFileSelection()
+    }
+
+    private fun subscribeToViewModel() {
         viewModel.isLoading
             .observe(this) { isLoading ->
                 view.isLoadingTextView.text = isLoading.toString()
@@ -62,15 +69,35 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
         viewModel.itemsList
             .observe(this) {
                 if (it != null) {
-                    galleryItemAdapter.setNewList(it)
+                    galleryItemsAdapter.setNewList(it)
                 }
             }
+
+        viewModel.events
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { event ->
+                log.debug {
+                    "subscribeToViewModel(): received_new_event:" +
+                            "\nevent=$event"
+                }
+
+                when (event) {
+                    is GalleryViewModel.Event.OpenFileSelectionDialog ->
+                        openMediaFilesDialog(event.files)
+                }
+
+                log.debug {
+                    "subscribeToViewModel(): handled_new_event:" +
+                            "\nevent=$event"
+                }
+            }
+            .disposeOnDestroy(this)
     }
 
     private fun initList() {
         val galleryAdapter = FastAdapter.with(
             listOf(
-                galleryItemAdapter,
+                galleryItemsAdapter,
                 galleryProgressFooterAdapter
             )
         ).apply {
@@ -79,16 +106,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
             onClickListener = { _, _, item, _ ->
                 if (item is GalleryMediaListItem) {
-                    log.debug {
-                        "gallery_item_clicked:" +
-                                "\nsource=${item.source}"
-                    }
-
-                    Toast.makeText(
-                        this@GalleryActivity,
-                        item.source?.files?.size.toString() + " files",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    viewModel.onItemClicked(item)
                 }
                 false
             }
@@ -142,5 +160,29 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
             }
             addOnScrollListener(endlessRecyclerOnScrollListener)
         }
+    }
+
+    private fun initMediaFileSelection() {
+        supportFragmentManager.setFragmentResultListener(
+            MediaFilesDialogFragment.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            val selectedFile = MediaFilesDialogFragment.getResult(bundle)
+
+            log.debug {
+                "onFragmentResult(): got_selected_media_file:" +
+                        "\nfile=$selectedFile"
+            }
+
+            viewModel.onFileSelected(selectedFile)
+        }
+    }
+
+    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+        MediaFilesDialogFragment()
+            .apply {
+                arguments = MediaFilesDialogFragment.getBundle(files)
+            }
+            .show(supportFragmentManager, "media-files")
     }
 }

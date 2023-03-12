@@ -1,5 +1,8 @@
 package ua.com.radiokot.photoprism.features.gallery.data.model
 
+import android.os.Parcelable
+import androidx.versionedparcelable.VersionedParcelize
+import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
 import java.util.*
@@ -25,7 +28,12 @@ class GalleryMedia(
         takenAt = photoPrismDateFormat.parse(source.takenAt)!!,
         name = source.name,
         smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
-        files = source.files.map(::File)
+        files = source.files.map { photoPrismFile ->
+            File(
+                source = photoPrismFile,
+                thumbnailUrlFactory = thumbnailUrlFactory,
+            )
+        }
     )
 
     override fun equals(other: Any?): Boolean {
@@ -95,17 +103,23 @@ class GalleryMedia(
         }
     }
 
+    @Parcelize
     class File(
         val hash: String,
         val name: String,
         val mimeType: String,
         val sizeBytes: Long,
-    ) {
-        constructor(source: PhotoPrismPhoto.File) : this(
+        val thumbnailUrlSmall: String,
+    ) : Parcelable {
+        constructor(
+            source: PhotoPrismPhoto.File,
+            thumbnailUrlFactory: MediaThumbnailUrlFactory,
+        ) : this(
             hash = source.hash,
             name = source.name,
             mimeType = source.mime,
             sizeBytes = source.size,
+            thumbnailUrlSmall = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
         )
     }
 }
