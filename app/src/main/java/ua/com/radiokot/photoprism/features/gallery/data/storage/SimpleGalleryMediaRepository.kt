@@ -41,7 +41,7 @@ class SimpleGalleryMediaRepository(
             .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
                 photoPrismPhotos.mapSuccessful {
-                    GalleryMedia.fromPhotoPrism(
+                    GalleryMedia(
                         source = it,
                         thumbnailUrlFactory = thumbnailUrlFactory,
                     )
