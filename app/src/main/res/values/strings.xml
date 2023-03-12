@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">PhotoPrism client</string>
+
+    <string name="media_type_raw">RAW file</string>
+    <string name="media_type_animated">Animated image</string>
+    <string name="media_type_live">Live photo</string>
+    <string name="media_type_video">Video</string>
+    <string name="media_type_vector">Vector image</string>
+    <string name="media_type_sidecar">Sidecar file</string>
+    <string name="media_type_text">Text file</string>
+    <string name="media_type_other">Other file</string>
+    <string name="media_type_unknown">Unknown file type</string>
 </resources>

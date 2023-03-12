@@ -15,5 +15,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:background="@android:color/darker_gray"
         tools:ignore="ContentDescription" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/media_type_image_view"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:alpha="0.75"
+        android:background="@drawable/media_type_background"
+        app:layout_constraintStart_toStartOf="@id/image_view"
+        app:layout_constraintTop_toTopOf="@id/image_view"
+        app:tint="@android:color/white"
+        tools:src="@drawable/ic_sledding" />
 </androidx.constraintlayout.widget.ConstraintLayout>
