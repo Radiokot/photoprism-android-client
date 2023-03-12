@@ -19,6 +19,8 @@ class GalleryViewModel(
     val itemsList: MutableLiveData<List<GalleryMediaListItem>?> = MutableLiveData(null)
 
     init {
+        log.debug { "init(): initializing" }
+
         subscribeToRepository()
 
         galleryMediaRepository.updateIfNotFresh()
@@ -54,6 +56,7 @@ class GalleryViewModel(
     }
 
     override fun onCleared() {
+        log.debug { "onCleared(): cleaning_up" }
         compositeDisposable.dispose()
         super.onCleared()
     }

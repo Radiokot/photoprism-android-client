@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
-import org.koin.android.ext.android.getKoin
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.createActivityScope
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
@@ -17,19 +19,29 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListIt
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
 
 
-class GalleryActivity : AppCompatActivity() {
-    private val sessionScope: Scope =
-        getKoin().getScope("session")
+class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
+    override val scope: Scope by lazy {
+        createActivityScope().apply {
+            linkTo(getScope("session"))
+        }
+    }
 
     private lateinit var view: ActivityGalleryBinding
-    private val viewModel: GalleryViewModel by sessionScope.inject()
-    private val log = kLogger("GalleryActivity")
+    private val viewModel: GalleryViewModel by viewModel()
+    private val log = kLogger("GGalleryActivity")
 
     private val galleryItemAdapter = ItemAdapter<GalleryMediaListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        log.debug {
+            "onCreate(): creating:" +
+                    "\naction=${intent.action}," +
+                    "\nextras=${intent.extras}," +
+                    "\nsavedInstanceState=$savedInstanceState"
+        }
 
         view = ActivityGalleryBinding.inflate(layoutInflater)
         setContentView(view.root)
@@ -70,6 +82,7 @@ class GalleryActivity : AppCompatActivity() {
                         "gallery_item_clicked:" +
                                 "\nsource=${item.source}"
                     }
+                    finish()
                 }
                 false
             }
