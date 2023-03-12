@@ -3,12 +3,14 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.android.ext.android.getKoin
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
@@ -74,7 +76,17 @@ class GalleryActivity : AppCompatActivity() {
         }
 
         with(view.galleryRecyclerView) {
-            val gridLayoutManager = GridLayoutManager(context, 3)
+            val spanCount = 3
+            val gridLayoutManager = GridLayoutManager(context, spanCount).apply {
+                spanSizeLookup = object : SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int =
+                        if (galleryAdapter.getItemViewType(position) == R.id.list_item_gallery_progress)
+                            spanCount
+                        else
+                            1
+                }
+            }
+
             adapter = galleryAdapter
             layoutManager = gridLayoutManager
 
