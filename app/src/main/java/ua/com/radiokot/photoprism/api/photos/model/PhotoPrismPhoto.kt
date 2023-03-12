@@ -15,4 +15,17 @@ data class PhotoPrismPhoto(
     val type: String,
     @JsonProperty("Name")
     val name: String,
-)
+    @JsonProperty("Files")
+    val files: List<File>,
+) {
+    class File(
+        @JsonProperty("Hash")
+        val hash: String,
+        @JsonProperty("Name")
+        val name: String,
+        @JsonProperty("Mime")
+        val mime: String,
+        @JsonProperty("Size")
+        val size: Long,
+    )
+}

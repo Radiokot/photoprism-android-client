@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -82,7 +83,12 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                         "gallery_item_clicked:" +
                                 "\nsource=${item.source}"
                     }
-                    finish()
+
+                    Toast.makeText(
+                        this@GalleryActivity,
+                        item.source?.files?.size.toString() + " files",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 false
             }

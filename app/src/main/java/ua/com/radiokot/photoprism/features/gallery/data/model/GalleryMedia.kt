@@ -12,6 +12,7 @@ class GalleryMedia(
     val takenAt: Date,
     val name: String,
     val smallThumbnailUrl: String,
+    val files: List<File>,
 ) {
     constructor(
         source: PhotoPrismPhoto,
@@ -24,6 +25,7 @@ class GalleryMedia(
         takenAt = photoPrismDateFormat.parse(source.takenAt)!!,
         name = source.name,
         smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
+        files = source.files.map(::File)
     )
 
     override fun equals(other: Any?): Boolean {
@@ -91,5 +93,19 @@ class GalleryMedia(
                         throw IllegalStateException("Unsupported PhotoPrism media type '$type'")
                 }
         }
+    }
+
+    class File(
+        val hash: String,
+        val name: String,
+        val mimeType: String,
+        val sizeBytes: Long,
+    ) {
+        constructor(source: PhotoPrismPhoto.File) : this(
+            hash = source.hash,
+            name = source.name,
+            mimeType = source.mime,
+            sizeBytes = source.size,
+        )
     }
 }
