@@ -3,8 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.addTo
+import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
@@ -12,7 +11,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListIt
 class GalleryViewModel(
     private val galleryMediaRepository: SimpleGalleryMediaRepository,
 ) : ViewModel() {
-    private val compositeDisposable = CompositeDisposable()
     private val log = kLogger("GalleryVM")
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -33,19 +31,19 @@ class GalleryViewModel(
                 galleryMediaItems.map(::GalleryMediaListItem)
             }
             .subscribe(itemsList::setValue)
-            .addTo(compositeDisposable)
+            .addToCloseables(this)
 
         galleryMediaRepository.loading
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(isLoading::setValue)
-            .addTo(compositeDisposable)
+            .addToCloseables(this)
 
         galleryMediaRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 log.error(it) { "subscribeToRepository(): error_occurred" }
             }
-            .addTo(compositeDisposable)
+            .addToCloseables(this)
     }
 
     fun loadMore() {
@@ -53,11 +51,5 @@ class GalleryViewModel(
             log.debug { "loadMore(): requesting_load_more" }
             galleryMediaRepository.loadMore()
         }
-    }
-
-    override fun onCleared() {
-        log.debug { "onCleared(): cleaning_up" }
-        compositeDisposable.dispose()
-        super.onCleared()
     }
 }
