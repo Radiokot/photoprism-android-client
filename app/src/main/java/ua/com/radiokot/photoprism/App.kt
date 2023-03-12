@@ -30,7 +30,12 @@ class App : Application() {
                 retrofitApiModules
                         + galleryFeatureModules
             )
-            androidFileProperties("keystore.properties")
+            properties(
+                mapOf(
+                    "sessionId" to BuildConfig.SESSION_ID,
+                    "apiUrl" to BuildConfig.API_URL,
+                )
+            )
             androidFileProperties("app.properties")
         }
 

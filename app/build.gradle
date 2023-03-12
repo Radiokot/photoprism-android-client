@@ -3,6 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def keystorePropertiesFile = rootProject.file("app/keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace 'ua.com.radiokot.photoprism'
     compileSdk 33
@@ -17,6 +23,18 @@ android {
         resConfigs "en"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        if (keystoreProperties['sessionId'] != null) {
+            buildConfigField 'String', 'SESSION_ID', "\"" + keystoreProperties['sessionId'] + "\""
+        } else {
+            throw new GradleException("sessionId is required until there is auth in the app")
+        }
+
+        if (keystoreProperties['apiUrl'] != null) {
+            buildConfigField 'String', 'API_URL', "\"" + keystoreProperties['apiUrl'] + "\""
+        } else {
+            throw new GradleException("apiUrl is required until there is an env selector in the app")
+        }
     }
 
     buildTypes {
