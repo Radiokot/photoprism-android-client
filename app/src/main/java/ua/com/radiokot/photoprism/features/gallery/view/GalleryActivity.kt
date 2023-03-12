@@ -34,7 +34,7 @@ class GalleryActivity : AppCompatActivity() {
         view = ActivityGalleryBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        initList()
+        view.galleryRecyclerView.post(::initList)
 
         viewModel.isLoading
             .observe(this) { isLoading ->
@@ -76,7 +76,18 @@ class GalleryActivity : AppCompatActivity() {
         }
 
         with(view.galleryRecyclerView) {
-            val spanCount = 3
+            val minItemWidthPx =
+                resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
+            val rowWidth = measuredWidth
+            val spanCount = (rowWidth / minItemWidthPx).coerceAtLeast(1)
+
+            log.debug {
+                "initList(): calculated_span_count:" +
+                        "\nspanCount=$spanCount," +
+                        "\nrowWidth=$rowWidth," +
+                        "\nminItemWidthPx=$minItemWidthPx"
+            }
+
             val gridLayoutManager = GridLayoutManager(context, spanCount).apply {
                 spanSizeLookup = object : SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int =

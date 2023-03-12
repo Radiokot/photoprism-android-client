@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_item_gallery_media_margin">4dp</dimen>
+    <dimen name="list_item_gallery_media_min_size">20mm</dimen>
+</resources>
