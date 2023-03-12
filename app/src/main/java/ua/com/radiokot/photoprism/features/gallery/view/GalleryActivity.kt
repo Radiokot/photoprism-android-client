@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -9,6 +10,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -18,8 +20,10 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
+import java.io.File
 
 
 class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
@@ -36,6 +40,8 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
     private val galleryItemsAdapter = ItemAdapter<GalleryMediaListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
 
+    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +49,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
             "onCreate(): creating:" +
                     "\naction=${intent.action}," +
                     "\nextras=${intent.extras}," +
+                    "\ntype=${intent.type}" +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
@@ -84,6 +91,12 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                 when (event) {
                     is GalleryViewModel.Event.OpenFileSelectionDialog ->
                         openMediaFilesDialog(event.files)
+                    is GalleryViewModel.Event.ReturnDownloadedFile ->
+                        returnDownloadedFile(
+                            downloadedFile = event.downloadedFile,
+                            mimeType = event.mimeType,
+                            displayName = event.displayName,
+                        )
                 }
 
                 log.debug {
@@ -184,5 +197,26 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                 arguments = MediaFilesDialogFragment.getBundle(files)
             }
             .show(supportFragmentManager, "media-files")
+    }
+
+    private fun returnDownloadedFile(
+        downloadedFile: File,
+        mimeType: String,
+        displayName: String,
+    ) {
+        val resultIntent = fileReturnIntentCreator.createIntent(
+            fileToReturn = downloadedFile,
+            mimeType = mimeType,
+            displayName = displayName,
+        )
+        setResult(Activity.RESULT_OK, resultIntent)
+
+        log.debug {
+            "returnDownloadedFile(): result_set_finishing:" +
+                    "\nintent=$resultIntent," +
+                    "\ndownloadedFile=$downloadedFile"
+        }
+
+        finish()
     }
 }

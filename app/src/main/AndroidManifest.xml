@@ -26,6 +26,7 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
+                <action android:name="android.intent.action.PICK" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
@@ -34,6 +35,12 @@
                 <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".features.gallery.logic.UpdatableFileProvider"
+            android:authorities="${fileProviderAuthority}"
+            android:exported="false"
+            android:grantUriPermissions="true" />
     </application>
 
 </manifest>

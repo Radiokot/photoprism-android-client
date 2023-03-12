@@ -4,16 +4,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
+import java.io.File
 
 class GalleryViewModel(
     private val galleryMediaRepository: SimpleGalleryMediaRepository,
+    private val downloadsDir: File,
+    private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
 
@@ -97,13 +103,56 @@ class GalleryViewModel(
     }
 
     private fun downloadFile(file: GalleryMedia.File) {
+        val destinationFile = File(downloadsDir, "downloaded")
+
         log.debug {
             "downloadFile(): start_downloading:" +
-                    "\nfile=$file"
-        }
+                    "\nfile=$file," +
+                    "\ndestinationFile=$destinationFile"
+        };
+
+        downloadFileUseCaseFactory
+            .get(
+                // TODO: Replace with the file download URL.
+                url = file.thumbnailUrlSmall,
+                destination = destinationFile,
+            )
+            .perform()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { progress ->
+                    log.debug {
+                        "downloadFile(): download_in_progress:" +
+                                "\nprogress=${progress.percent}"
+                    }
+                    // TODO: Report
+                },
+                onError = { error ->
+                    log.error(error) { "downloadFile(): error_occurred" }
+                    // TODO: Report
+                },
+                onComplete = {
+                    log.debug { "downloadFile(): download_complete" }
+
+                    eventsSubject.onNext(
+                        Event.ReturnDownloadedFile(
+                            downloadedFile = destinationFile,
+                            mimeType = file.mimeType,
+                            displayName = File(file.name).name
+                        )
+                    )
+                }
+            )
+            .addToCloseables(this)
     }
 
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+        class ReturnDownloadedFile(
+            val downloadedFile: File,
+            val mimeType: String,
+            val displayName: String,
+        ) : Event
     }
 }

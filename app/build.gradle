@@ -36,6 +36,10 @@ android {
         } else {
             throw new GradleException("apiUrl is required until there is an env selector in the app")
         }
+
+        def fileProviderAuthority = applicationId + ".files"
+        manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
+        buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
     }
 
     buildTypes {
