@@ -82,7 +82,7 @@ abstract class SimplePagedDataRepository<T>(
 
     open fun onNewPage(page: DataPage<T>) {
         isNeverUpdated = false
-        noMoreItems = page.items.size < pageLimit
+        noMoreItems = page.items.isEmpty()
 
         if (pagingOrder == PagingOrder.DESC && isOnFirstPage
             || pagingOrder == PagingOrder.ASC && noMoreItems
