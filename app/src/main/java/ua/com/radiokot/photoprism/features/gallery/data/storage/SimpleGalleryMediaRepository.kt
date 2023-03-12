@@ -7,6 +7,7 @@ import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
+import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
@@ -21,15 +22,15 @@ class SimpleGalleryMediaRepository(
 ) {
     override fun getPage(
         limit: Int,
-        page: String?,
+        cursor: String?,
         order: PagingOrder
     ): Single<DataPage<GalleryMedia>> {
-        var returnedPageSize = 0
+        val offset = cursor?.toInt() ?: 0
 
         return {
             photoPrismPhotosService.getPhotos(
                 count = limit,
-                offset = page?.toInt() ?: 0,
+                offset = cursor?.toInt() ?: 0,
                 order = when (pagingOrder) {
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
                     PagingOrder.ASC -> PhotoPrismOrder.OLDEST
@@ -39,8 +40,7 @@ class SimpleGalleryMediaRepository(
             .toSingle()
             .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
-                returnedPageSize = photoPrismPhotos.size
-                photoPrismPhotos.map {
+                photoPrismPhotos.mapSuccessful {
                     GalleryMedia.fromPhotoPrism(
                         source = it,
                         thumbnailUrlFactory = thumbnailUrlFactory,
@@ -50,7 +50,7 @@ class SimpleGalleryMediaRepository(
             .map { galleryMediaItems ->
                 DataPage(
                     items = galleryMediaItems,
-                    nextCursor = (limit + returnedPageSize).toString()
+                    nextCursor = (limit + offset).toString()
                 )
             }
     }

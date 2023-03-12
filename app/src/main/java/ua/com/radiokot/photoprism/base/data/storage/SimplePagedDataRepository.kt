@@ -36,11 +36,11 @@ abstract class SimplePagedDataRepository<T>(
         protected set
 
     /**
-     * @param page - cursor or number of the page to load
+     * @param cursor - cursor or number of the page to load
      */
     abstract fun getPage(
         limit: Int,
-        page: String?,
+        cursor: String?,
         order: PagingOrder
     ): Single<DataPage<T>>
 

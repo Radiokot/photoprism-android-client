@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
-import java.util.Date
+import java.util.*
 
 sealed class GalleryMedia(
     val hash: String,
@@ -35,6 +35,16 @@ sealed class GalleryMedia(
         override fun toString(): String {
             return "Photo(hash='$hash')"
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Photo || hash != other.hash) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return hash.hashCode()
+        }
     }
 
     class Video(
@@ -59,6 +69,16 @@ sealed class GalleryMedia(
 
         override fun toString(): String {
             return "Video(hash='$hash')"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Video || hash != other.hash) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return hash.hashCode()
         }
     }
 

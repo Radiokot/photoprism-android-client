@@ -16,6 +16,8 @@ interface PhotoPrismPhotosService {
         merged: Boolean = true,
         @Query("order")
         order: PhotoPrismOrder = PhotoPrismOrder.NEWEST,
+        @Query("public")
+        public: Boolean = true,
         @Query("q")
         q: String? = null
     ): List<PhotoPrismPhoto>

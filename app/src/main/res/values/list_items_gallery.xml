@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="list_item_gallery_media" type="id" />
+    <item name="list_item_gallery_progress" type="id" />
 </resources>
