@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PhotoPrism client</string>
+    <string name="app_name">PhotoPrism Gallery</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_raw">RAW file</string>
