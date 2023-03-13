@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "PhotoPrism client"
+rootProject.name = "PhotoPrism Gallery"
 include ':app'
