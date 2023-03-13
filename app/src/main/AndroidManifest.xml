@@ -23,7 +23,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
                 <action android:name="android.intent.action.PICK" />
@@ -35,6 +34,11 @@
                 <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".features.viewer.view.MediaViewerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"

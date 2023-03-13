@@ -125,6 +125,10 @@ class GalleryViewModel(
                 }
             }
 
+            is State.Viewing ->
+                if (item.source != null) {
+                    openViewer(item.source)
+                }
             else -> {
                 //TODO: Implement viewing
             }
@@ -213,6 +217,18 @@ class GalleryViewModel(
         downloadDisposable?.dispose()
     }
 
+    private fun openViewer(media: GalleryMedia) {
+        val index = galleryMediaRepository.itemsList.indexOf(media)
+
+        log.debug {
+            "openViewer(): opening_viewer:" +
+                    "\nmedia=$media," +
+                    "\nindex=$index"
+        }
+
+        eventsSubject.onNext(Event.OpenViewer(index))
+    }
+
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
         class ShowDownloadProgress(val percent: Double) : Event
@@ -223,6 +239,8 @@ class GalleryViewModel(
             val mimeType: String,
             val displayName: String,
         ) : Event
+
+        class OpenViewer(val mediaIndex: Int) : Event
     }
 
     sealed interface State {

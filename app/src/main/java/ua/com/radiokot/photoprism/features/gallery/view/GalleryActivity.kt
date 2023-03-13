@@ -27,6 +27,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import java.io.File
 
 
@@ -116,6 +117,9 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                             mimeType = event.mimeType,
                             displayName = event.displayName,
                         )
+
+                    is GalleryViewModel.Event.OpenViewer ->
+                        openViewer(event.mediaIndex)
                 }
 
                 log.debug {
@@ -296,6 +300,13 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
         }
 
         finish()
+    }
+
+    private fun openViewer(mediaIndex: Int) {
+        startActivity(
+            Intent(this, MediaViewerActivity::class.java)
+                .putExtras(MediaViewerActivity.getBundle(mediaIndex))
+        )
     }
 
     private companion object {
