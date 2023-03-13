@@ -119,7 +119,10 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                         )
 
                     is GalleryViewModel.Event.OpenViewer ->
-                        openViewer(event.mediaIndex)
+                        openViewer(
+                            mediaIndex = event.mediaIndex,
+                            repositoryKey = event.repositoryKey,
+                        )
                 }
 
                 log.debug {
@@ -302,10 +305,18 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
         finish()
     }
 
-    private fun openViewer(mediaIndex: Int) {
+    private fun openViewer(
+        mediaIndex: Int,
+        repositoryKey: String,
+    ) {
         startActivity(
             Intent(this, MediaViewerActivity::class.java)
-                .putExtras(MediaViewerActivity.getBundle(mediaIndex))
+                .putExtras(
+                    MediaViewerActivity.getBundle(
+                        mediaIndex = mediaIndex,
+                        repositoryKey = repositoryKey,
+                    )
+                )
         )
     }
 

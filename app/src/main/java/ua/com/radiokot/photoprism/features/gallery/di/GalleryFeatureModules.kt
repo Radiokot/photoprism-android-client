@@ -3,12 +3,10 @@ package ua.com.radiokot.photoprism.features.gallery.di
 import android.content.Context
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
@@ -37,12 +35,11 @@ val galleryFeatureModules: List<Module> = listOf(
                 )
             }.bind(MediaFileDownloadUrlFactory::class)
 
-            factory { (mediaTypeFilter: GalleryMedia.MediaType?) ->
-                SimpleGalleryMediaRepository(
+            scoped {
+                SimpleGalleryMediaRepository.Factory(
                     photoPrismPhotosService = get(),
                     thumbnailUrlFactory = get(),
                     downloadUrlFactory = get(),
-                    mediaTypeFilter = mediaTypeFilter,
                     pageLimit = 50,
                 )
             }
@@ -53,9 +50,7 @@ val galleryFeatureModules: List<Module> = listOf(
         scope<PhotoPrismSession> {
             viewModel {
                 GalleryViewModel(
-                    galleryMediaRepositoryProvider = { mediaTypeFilter: GalleryMedia.MediaType? ->
-                        get { parametersOf(mediaTypeFilter) }
-                    },
+                    galleryMediaRepositoryFactory = get(),
                     // See file_provider_paths.
                     downloadsDir = File(get<Context>().filesDir.absolutePath + "/downloads")
                         .apply { mkdirs() },

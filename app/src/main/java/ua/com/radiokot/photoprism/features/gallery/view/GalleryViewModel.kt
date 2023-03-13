@@ -18,8 +18,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListIt
 import java.io.File
 
 class GalleryViewModel(
-    private val galleryMediaRepositoryProvider:
-        (mediaTypeFilter: GalleryMedia.MediaType?) -> SimpleGalleryMediaRepository,
+    private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val downloadsDir: File,
     private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
 ) : ViewModel() {
@@ -44,7 +43,7 @@ class GalleryViewModel(
                 null
         }
 
-        galleryMediaRepository = galleryMediaRepositoryProvider(filterMediaType)
+        galleryMediaRepository = galleryMediaRepositoryFactory.get(filterMediaType)
         subscribeToRepository()
 
         log.debug {
@@ -59,7 +58,7 @@ class GalleryViewModel(
     }
 
     fun initViewing() {
-        galleryMediaRepository = galleryMediaRepositoryProvider(null)
+        galleryMediaRepository = galleryMediaRepositoryFactory.get(null)
         subscribeToRepository()
 
         log.debug {
@@ -219,14 +218,24 @@ class GalleryViewModel(
 
     private fun openViewer(media: GalleryMedia) {
         val index = galleryMediaRepository.itemsList.indexOf(media)
+        val repositoryKey = galleryMediaRepositoryFactory.keyOf(galleryMediaRepository)
+            .checkNotNull {
+                "The repository must have a factory key"
+            }
 
         log.debug {
             "openViewer(): opening_viewer:" +
                     "\nmedia=$media," +
-                    "\nindex=$index"
+                    "\nindex=$index," +
+                    "\nrepositoryKey=$repositoryKey"
         }
 
-        eventsSubject.onNext(Event.OpenViewer(index))
+        eventsSubject.onNext(
+            Event.OpenViewer(
+                mediaIndex = index,
+                repositoryKey = repositoryKey,
+            )
+        )
     }
 
     sealed interface Event {
@@ -240,7 +249,10 @@ class GalleryViewModel(
             val displayName: String,
         ) : Event
 
-        class OpenViewer(val mediaIndex: Int) : Event
+        class OpenViewer(
+            val mediaIndex: Int,
+            val repositoryKey: String,
+        ) : Event
     }
 
     sealed interface State {

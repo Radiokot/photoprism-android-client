@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
+import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import java.io.IOException
 
 class App : Application() {
@@ -29,6 +30,7 @@ class App : Application() {
             modules(
                 retrofitApiModules
                         + galleryFeatureModules
+                        + mediaViewerFeatureModules
             )
             properties(
                 mapOf(
