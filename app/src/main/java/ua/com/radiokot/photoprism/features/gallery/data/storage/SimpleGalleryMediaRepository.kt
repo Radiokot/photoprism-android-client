@@ -10,11 +10,13 @@ import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
 import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     private val thumbnailUrlFactory: MediaThumbnailUrlFactory,
+    private val downloadUrlFactory: MediaFileDownloadUrlFactory,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
@@ -44,6 +46,7 @@ class SimpleGalleryMediaRepository(
                     GalleryMedia(
                         source = it,
                         thumbnailUrlFactory = thumbnailUrlFactory,
+                        downloadUrlFactory = downloadUrlFactory,
                     )
                 }
             }

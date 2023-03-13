@@ -1,9 +1,9 @@
 package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
-import androidx.versionedparcelable.VersionedParcelize
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
 import java.util.*
 
@@ -20,6 +20,7 @@ class GalleryMedia(
     constructor(
         source: PhotoPrismPhoto,
         thumbnailUrlFactory: MediaThumbnailUrlFactory,
+        downloadUrlFactory: MediaFileDownloadUrlFactory,
     ) : this(
         media = MediaType.fromPhotoPrism(source.type),
         hash = source.hash,
@@ -32,6 +33,7 @@ class GalleryMedia(
             File(
                 source = photoPrismFile,
                 thumbnailUrlFactory = thumbnailUrlFactory,
+                downloadUrlFactory = downloadUrlFactory,
             )
         }
     )
@@ -110,16 +112,19 @@ class GalleryMedia(
         val mimeType: String,
         val sizeBytes: Long,
         val thumbnailUrlSmall: String,
+        val downloadUrl: String,
     ) : Parcelable {
         constructor(
             source: PhotoPrismPhoto.File,
             thumbnailUrlFactory: MediaThumbnailUrlFactory,
+            downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
             hash = source.hash,
             name = source.name,
             mimeType = source.mime,
             sizeBytes = source.size,
             thumbnailUrlSmall = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
+            downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
         )
     }
 }

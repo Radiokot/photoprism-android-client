@@ -8,10 +8,7 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismThumbnailUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
@@ -30,9 +27,19 @@ val galleryFeatureModules: List<Module> = listOf(
             }.bind(MediaThumbnailUrlFactory::class)
 
             scoped {
+                val session = get<PhotoPrismSession>()
+
+                PhotoPrismMediaFileDownloadUrlFactory(
+                    apiUrl = getProperty("apiUrl"),
+                    downloadToken = session.downloadToken,
+                )
+            }.bind(MediaFileDownloadUrlFactory::class)
+
+            scoped {
                 SimpleGalleryMediaRepository(
                     photoPrismPhotosService = get(),
                     thumbnailUrlFactory = get(),
+                    downloadUrlFactory = get(),
                     pageLimit = 50,
                 )
             }

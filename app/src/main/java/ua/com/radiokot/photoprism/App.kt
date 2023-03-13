@@ -45,6 +45,7 @@ class App : Application() {
             PhotoPrismSession(
                 id = getKoin().getProperty("sessionId")!!,
                 previewToken = "3hjej82k",
+                downloadToken = "bvmk6aml"
             )
         )
 

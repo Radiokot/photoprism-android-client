@@ -108,13 +108,13 @@ class GalleryViewModel(
         log.debug {
             "downloadFile(): start_downloading:" +
                     "\nfile=$file," +
+                    "\nurl=${file.downloadUrl}" +
                     "\ndestinationFile=$destinationFile"
         };
 
         downloadFileUseCaseFactory
             .get(
-                // TODO: Replace with the file download URL.
-                url = file.thumbnailUrlSmall,
+                url = file.downloadUrl,
                 destination = destinationFile,
             )
             .perform()
