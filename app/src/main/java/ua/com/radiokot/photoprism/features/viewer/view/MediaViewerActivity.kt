@@ -16,6 +16,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
+import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
@@ -29,6 +30,7 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
+    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPageItem>()
@@ -37,7 +39,7 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = viewModel,
+            viewModel = downloadViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.viewPager,
             lifecycleOwner = this
@@ -70,7 +72,10 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
-        viewModel.init(repositoryKey)
+        viewModel.init(
+            downloadViewModel = downloadViewModel,
+            repositoryKey = repositoryKey,
+        )
 
         subscribeToData()
         subscribeToEvents()

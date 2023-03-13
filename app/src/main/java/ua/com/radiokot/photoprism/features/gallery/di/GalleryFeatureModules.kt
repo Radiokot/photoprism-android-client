@@ -63,7 +63,6 @@ val galleryFeatureModules: List<Module> = listOf(
             viewModel {
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
-                    downloadMediaFileViewModel = get()
                 )
             }
         }

@@ -11,15 +11,12 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val downloadMediaFileViewModel: DownloadMediaFileViewModel,
-) : ViewModel(), DownloadProgressViewModel by downloadMediaFileViewModel {
+) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
 
@@ -28,12 +25,18 @@ class MediaViewerViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
 
-    fun init(repositoryKey: String) {
+    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
+
+    fun init(
+        downloadViewModel: DownloadMediaFileViewModel,
+        repositoryKey: String,
+    ) {
+        downloadMediaFileViewModel = downloadViewModel
+
         galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryKey)
             .checkNotNull {
                 "The repository must be created beforehand"
             }
-
         subscribeToRepository()
 
         log.debug {

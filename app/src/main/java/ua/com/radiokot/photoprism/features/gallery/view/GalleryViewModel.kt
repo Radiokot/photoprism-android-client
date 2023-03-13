@@ -15,8 +15,7 @@ import java.io.File
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val downloadMediaFileViewModel: DownloadMediaFileViewModel,
-) : ViewModel(), DownloadProgressViewModel by downloadMediaFileViewModel {
+) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
 
@@ -26,7 +25,12 @@ class GalleryViewModel(
     val events: Observable<Event> = eventsSubject
     val state: MutableLiveData<State> = MutableLiveData()
 
-    fun initSelection(requestedMimeType: String?) {
+    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
+
+    fun initSelection(
+        downloadViewModel: DownloadMediaFileViewModel,
+        requestedMimeType: String?,
+    ) {
         val filterMediaType = when {
             requestedMimeType == null ->
                 null
@@ -37,6 +41,8 @@ class GalleryViewModel(
             else ->
                 null
         }
+
+        downloadMediaFileViewModel = downloadViewModel
 
         galleryMediaRepository = galleryMediaRepositoryFactory.get(filterMediaType)
         subscribeToRepository()
@@ -52,7 +58,11 @@ class GalleryViewModel(
         update()
     }
 
-    fun initViewing() {
+    fun initViewing(
+        downloadViewModel: DownloadMediaFileViewModel,
+    ) {
+        downloadMediaFileViewModel = downloadViewModel
+
         galleryMediaRepository = galleryMediaRepositoryFactory.get(null)
         subscribeToRepository()
 

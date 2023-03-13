@@ -38,6 +38,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
+    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
 
     private val galleryItemsAdapter = ItemAdapter<GalleryMediaListItem>()
@@ -47,7 +48,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = viewModel,
+            viewModel = downloadViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.galleryRecyclerView,
             lifecycleOwner = this
@@ -66,9 +67,14 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
         }
 
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
-            viewModel.initSelection(intent.type)
+            viewModel.initSelection(
+                downloadViewModel = downloadViewModel,
+                requestedMimeType = intent.type,
+            )
         } else {
-            viewModel.initViewing()
+            viewModel.initViewing(
+                downloadViewModel = downloadViewModel,
+            )
         }
 
         view = ActivityGalleryBinding.inflate(layoutInflater)
