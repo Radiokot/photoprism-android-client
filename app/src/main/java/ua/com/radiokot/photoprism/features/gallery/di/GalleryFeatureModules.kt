@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
+import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
@@ -49,14 +50,20 @@ val galleryFeatureModules: List<Module> = listOf(
     module {
         scope<PhotoPrismSession> {
             viewModel {
-                GalleryViewModel(
-                    galleryMediaRepositoryFactory = get(),
+                DownloadMediaFileViewModel(
                     // See file_provider_paths.
                     downloadsDir = File(get<Context>().filesDir.absolutePath + "/downloads")
                         .apply { mkdirs() },
                     downloadFileUseCaseFactory = DownloadFileUseCase.Factory(
                         observableDownloader = get()
                     )
+                )
+            }
+
+            viewModel {
+                GalleryViewModel(
+                    galleryMediaRepositoryFactory = get(),
+                    downloadMediaFileViewModel = get()
                 )
             }
         }

@@ -4,24 +4,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 import java.io.File
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val downloadsDir: File,
-    private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
-) : ViewModel() {
+    private val downloadMediaFileViewModel: DownloadMediaFileViewModel,
+) : ViewModel(), DownloadProgressViewModel by downloadMediaFileViewModel {
     private val log = kLogger("GalleryVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
 
@@ -68,8 +63,6 @@ class GalleryViewModel(
         state.value = State.Viewing
 
         update()
-
-        // TODO: Implement view mode
     }
 
     private fun subscribeToRepository() {
@@ -111,7 +104,7 @@ class GalleryViewModel(
                     "\nitem=$item"
         }
 
-        when (state.value) {
+        when (state.value.checkNotNull()) {
             is State.Selecting -> {
                 if (item.source != null) {
                     if (item.source.files.size > 1) {
@@ -128,9 +121,6 @@ class GalleryViewModel(
                 if (item.source != null) {
                     openViewer(item.source)
                 }
-            else -> {
-                //TODO: Implement viewing
-            }
         }
     }
 
@@ -152,68 +142,19 @@ class GalleryViewModel(
         downloadFile(file)
     }
 
-    private var downloadDisposable: Disposable? = null
     private fun downloadFile(file: GalleryMedia.File) {
-        val destinationFile = File(downloadsDir, "downloaded")
-
-        log.debug {
-            "downloadFile(): start_downloading:" +
-                    "\nfile=$file," +
-                    "\nurl=${file.downloadUrl}" +
-                    "\ndestinationFile=$destinationFile"
-        }
-
-        downloadDisposable?.dispose()
-        downloadDisposable = downloadFileUseCaseFactory
-            .get(
-                url = file.downloadUrl,
-                destination = destinationFile,
-            )
-            .perform()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                eventsSubject.onNext(Event.ShowDownloadProgress(-1.0))
-            }
-            .subscribeBy(
-                onNext = { progress ->
-                    val percent = progress.percent
-
-                    log.debug {
-                        "downloadFile(): download_in_progress:" +
-                                "\nprogress=$percent"
-                    }
-
-                    eventsSubject.onNext(Event.ShowDownloadProgress(percent))
-                },
-                onError = { error ->
-                    log.error(error) { "downloadFile(): error_occurred" }
-
-                    eventsSubject.onNext(Event.DismissDownloadProgress)
-                    eventsSubject.onNext(Event.ShowDownloadError)
-                },
-                onComplete = {
-                    log.debug { "downloadFile(): download_complete" }
-
-                    eventsSubject.onNext(Event.DismissDownloadProgress)
-                    eventsSubject.onNext(
-                        Event.ReturnDownloadedFile(
-                            downloadedFile = destinationFile,
-                            mimeType = file.mimeType,
-                            displayName = File(file.name).name
-                        )
+        downloadMediaFileViewModel.downloadFile(
+            file = file,
+            onSuccess = { destinationFile ->
+                eventsSubject.onNext(
+                    Event.ReturnDownloadedFile(
+                        downloadedFile = destinationFile,
+                        mimeType = file.mimeType,
+                        displayName = File(file.name).name
                     )
-                }
-            )
-            .addToCloseables(this)
-    }
-
-    fun onDownloadProgressDialogCancelled() {
-        log.debug {
-            "onDownloadProgressDialogCancelled(): cancelling_download"
-        }
-
-        downloadDisposable?.dispose()
+                )
+            }
+        )
     }
 
     private fun openViewer(media: GalleryMedia) {
@@ -240,9 +181,7 @@ class GalleryViewModel(
 
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
-        class ShowDownloadProgress(val percent: Double) : Event
-        object DismissDownloadProgress : Event
-        object ShowDownloadError : Event
+
         class ReturnDownloadedFile(
             val downloadedFile: File,
             val mimeType: String,

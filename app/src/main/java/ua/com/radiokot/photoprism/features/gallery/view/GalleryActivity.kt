@@ -4,11 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
@@ -47,6 +45,15 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
+    private val downloadProgressView: DownloadProgressView by lazy {
+        DownloadProgressView(
+            viewModel = viewModel,
+            fragmentManager = supportFragmentManager,
+            errorSnackbarView = view.galleryRecyclerView,
+            lifecycleOwner = this
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,6 +80,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
         view.galleryRecyclerView.post(::initList)
         initMediaFileSelection()
+        downloadProgressView.init()
     }
 
     private fun subscribeToData() {
@@ -105,12 +113,6 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                 when (event) {
                     is GalleryViewModel.Event.OpenFileSelectionDialog ->
                         openMediaFilesDialog(event.files)
-                    is GalleryViewModel.Event.ShowDownloadProgress ->
-                        showDownloadProgress(event.percent)
-                    is GalleryViewModel.Event.DismissDownloadProgress ->
-                        dismissDownloadProgress()
-                    is GalleryViewModel.Event.ShowDownloadError ->
-                        showDownloadError()
                     is GalleryViewModel.Event.ReturnDownloadedFile ->
                         returnDownloadedFile(
                             downloadedFile = event.downloadedFile,
@@ -254,36 +256,6 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
             .show(supportFragmentManager, "media-files")
     }
 
-    private fun showDownloadProgress(percent: Double) {
-        val fragment =
-            (supportFragmentManager.findFragmentByTag(DOWNLOAD_PROGRESS_DIALOG_TAG) as? DownloadProgressDialogFragment)
-                ?: DownloadProgressDialogFragment().apply {
-                    cancellationEvent.observe(this@GalleryActivity) {
-                        viewModel.onDownloadProgressDialogCancelled()
-                    }
-                }
-
-        if (!fragment.isAdded || !fragment.showsDialog) {
-            fragment.showNow(supportFragmentManager, DOWNLOAD_PROGRESS_DIALOG_TAG)
-        }
-
-        fragment.setProgress(percent)
-    }
-
-    private fun dismissDownloadProgress() {
-        (supportFragmentManager.findFragmentByTag(DOWNLOAD_PROGRESS_DIALOG_TAG) as? DialogFragment)
-            ?.dismiss()
-    }
-
-    private fun showDownloadError() {
-        Snackbar.make(
-            view.galleryRecyclerView,
-            R.string.failed_to_download_file,
-            Snackbar.LENGTH_SHORT
-        )
-            .show()
-    }
-
     private fun returnDownloadedFile(
         downloadedFile: File,
         mimeType: String,
@@ -318,9 +290,5 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                     )
                 )
         )
-    }
-
-    private companion object {
-        private const val DOWNLOAD_PROGRESS_DIALOG_TAG = "download-progress"
     }
 }

@@ -66,4 +66,8 @@ class MediaViewerViewModel(
             galleryMediaRepository.loadMore()
         }
     }
+
+    private fun onShareClicked() {
+
+    }
 }
