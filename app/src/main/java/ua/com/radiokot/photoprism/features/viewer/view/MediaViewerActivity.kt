@@ -15,9 +15,12 @@ import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
+import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
 
@@ -37,6 +40,12 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
+    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
+        MediaFileSelectionView(
+            fragmentManager = supportFragmentManager,
+            lifecycleOwner = this
+        )
+    }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
             viewModel = downloadViewModel,
@@ -84,6 +93,7 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
             initPager(mediaIndex)
         }
         initButtons()
+        initMediaFileSelection()
         downloadProgressView.init()
     }
 
@@ -138,6 +148,11 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
             }
 
             when (event) {
+                is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
+                    openMediaFilesDialog(
+                        files = event.files,
+                    )
+
                 is MediaViewerViewModel.Event.ShareDownloadedFile ->
                     shareDownloadedFile(
                         downloadedFile = event.downloadedFile,
@@ -151,6 +166,25 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
                         "\nevent=$event"
             }
         }.disposeOnDestroy(this)
+    }
+
+    private fun initMediaFileSelection() {
+        mediaFileSelectionView.init { fileItem ->
+            if (fileItem.source != null) {
+                viewModel.onFileSelected(fileItem.source)
+            }
+        }
+    }
+
+    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+        mediaFileSelectionView.openMediaFileSelectionDialog(
+            fileItems = files.map {
+                MediaFileListItem(
+                    source = it,
+                    context = this
+                )
+            }
+        )
     }
 
     private fun shareDownloadedFile(

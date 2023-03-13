@@ -11,7 +11,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogMediaFilesBinding
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 
 
@@ -20,7 +19,7 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
 
     private lateinit var viewBinding: DialogMediaFilesBinding
 
-    private val files: List<GalleryMedia.File> by lazy {
+    private val fileItems: List<MediaFileListItem> by lazy {
         @Suppress("DEPRECATION")
         requireArguments().getParcelableArrayList(FILES_KEY)!!
     }
@@ -35,7 +34,7 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
         log.debug {
             "onViewCreated(): created:" +
                     "\nsavedInstanceState=$savedInstanceState," +
-                    "\nfiles=$files"
+                    "\nfileItems=$fileItems"
         }
 
         initList()
@@ -50,11 +49,9 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
             onClickListener = { _, _, item, _ ->
                 log.debug {
                     "file_item_clicked:" +
-                            "\nsource=${item.source}"
+                            "\nitem=$item"
 
-                    if (item.source != null) {
-                        onFileSelected(item.source)
-                    }
+                    onFileSelected(item)
                 }
 
                 false
@@ -66,22 +63,17 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
             layoutManager = LinearLayoutManager(context)
         }
 
-        filesAdapter.setNewList(files.map {
-            MediaFileListItem(
-                source = it,
-                context = requireContext()
-            )
-        })
+        filesAdapter.setNewList(fileItems)
     }
 
-    private fun onFileSelected(file: GalleryMedia.File) {
+    private fun onFileSelected(fileItem: MediaFileListItem) {
         log.debug {
             "onFileSelected(): set_result:" +
-                    "\nfile=$file"
+                    "\nfileItem=$fileItem"
         }
 
         setFragmentResult(REQUEST_KEY, Bundle().apply {
-            putParcelable(REQUEST_KEY, file)
+            putParcelable(REQUEST_KEY, fileItem)
         })
 
         dismiss()
@@ -91,12 +83,12 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
         private const val FILES_KEY = "files"
         const val REQUEST_KEY = "file-selection"
 
-        fun getBundle(files: List<GalleryMedia.File>): Bundle = Bundle().apply {
-            putParcelableArrayList(FILES_KEY, ArrayList(files))
+        fun getBundle(fileItems: List<MediaFileListItem>): Bundle = Bundle().apply {
+            putParcelableArrayList(FILES_KEY, ArrayList(fileItems))
         }
 
         @Suppress("DEPRECATION")
-        fun getResult(bundle: Bundle): GalleryMedia.File =
+        fun getResult(bundle: Bundle): MediaFileListItem =
             bundle.getParcelable(REQUEST_KEY)!!
     }
 }

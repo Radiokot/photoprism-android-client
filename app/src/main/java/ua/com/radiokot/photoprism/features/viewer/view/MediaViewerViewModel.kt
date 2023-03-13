@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
 
@@ -84,12 +85,30 @@ class MediaViewerViewModel(
         val item = galleryMediaRepository.itemsList[position]
 
         if (item.files.size > 1) {
-            // TODO: File selection dialog.
+            openFileSelectionDialog(item.files)
         } else {
             downloadAndShareFile(item.files.firstOrNull().checkNotNull {
                 "There must be at least one file in the gallery media object"
             })
         }
+    }
+
+    private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
+        log.debug {
+            "openFileSelectionDialog(): posting_open_event:" +
+                    "\nfiles=$files"
+        }
+
+        eventsSubject.onNext(Event.OpenFileSelectionDialog(files))
+    }
+
+    fun onFileSelected(file: GalleryMedia.File) {
+        log.debug {
+            "onFileSelected(): file_selected:" +
+                    "\nfile=$file"
+        }
+
+        downloadAndShareFile(file)
     }
 
     private fun downloadAndShareFile(file: GalleryMedia.File) {
@@ -108,6 +127,8 @@ class MediaViewerViewModel(
     }
 
     sealed interface Event {
+        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+
         class ShareDownloadedFile(
             val downloadedFile: File,
             val mimeType: String,

@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import java.io.File
 
@@ -46,6 +47,12 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
+    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
+        MediaFileSelectionView(
+            fragmentManager = supportFragmentManager,
+            lifecycleOwner = this
+        )
+    }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
             viewModel = downloadViewModel,
@@ -118,7 +125,9 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
 
                 when (event) {
                     is GalleryViewModel.Event.OpenFileSelectionDialog ->
-                        openMediaFilesDialog(event.files)
+                        openMediaFilesDialog(
+                            files = event.files,
+                        )
                     is GalleryViewModel.Event.ReturnDownloadedFile ->
                         returnDownloadedFile(
                             downloadedFile = event.downloadedFile,
@@ -239,27 +248,22 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
     }
 
     private fun initMediaFileSelection() {
-        supportFragmentManager.setFragmentResultListener(
-            MediaFilesDialogFragment.REQUEST_KEY,
-            this
-        ) { _, bundle ->
-            val selectedFile = MediaFilesDialogFragment.getResult(bundle)
-
-            log.debug {
-                "onFragmentResult(): got_selected_media_file:" +
-                        "\nfile=$selectedFile"
+        mediaFileSelectionView.init { fileItem ->
+            if (fileItem.source != null) {
+                viewModel.onFileSelected(fileItem.source)
             }
-
-            viewModel.onFileSelected(selectedFile)
         }
     }
 
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
-        MediaFilesDialogFragment()
-            .apply {
-                arguments = MediaFilesDialogFragment.getBundle(files)
+        mediaFileSelectionView.openMediaFileSelectionDialog(
+            fileItems = files.map {
+                MediaFileListItem(
+                    source = it,
+                    context = this
+                )
             }
-            .show(supportFragmentManager, "media-files")
+        )
     }
 
     private fun returnDownloadedFile(

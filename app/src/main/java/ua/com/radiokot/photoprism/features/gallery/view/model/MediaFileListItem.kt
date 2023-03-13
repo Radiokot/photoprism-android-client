@@ -3,22 +3,25 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Parcelable
 import android.text.format.Formatter
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
+import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemMediaFileBinding
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
+@Parcelize
 class MediaFileListItem(
     val name: String,
     val thumbnailUrl: String,
     val size: String,
     val mimeType: String,
     val source: GalleryMedia.File?,
-) : AbstractItem<MediaFileListItem.ViewHolder>() {
+) : AbstractItem<MediaFileListItem.ViewHolder>(), Parcelable {
 
     constructor(
         source: GalleryMedia.File,
