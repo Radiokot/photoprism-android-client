@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pager_item_media_viewer_unsupported"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp">
+
+    <ImageView
+        android:id="@+id/thumbnail_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintWidth_default="spread"
+        app:layout_constraintWidth_max="200dp"
+        tools:background="@color/md_theme_light_primary" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/media_type_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:drawableTint="?android:textColorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/thumbnail_image_view"
+        tools:text="Video" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/preview_is_not_available"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/media_type_text_view" />
+</androidx.constraintlayout.widget.ConstraintLayout>

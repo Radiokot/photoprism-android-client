@@ -38,7 +38,7 @@ class MediaViewerViewModel(
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .map { galleryMediaItems ->
-                galleryMediaItems.map(::MediaViewerPageItem)
+                galleryMediaItems.map(MediaViewerPageItem.Companion::fromGalleryMedia)
             }
             .subscribe(itemsList::setValue)
             .addToCloseables(this)
