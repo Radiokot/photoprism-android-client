@@ -74,17 +74,17 @@ class GalleryMedia(
     Other    Type = "other"
     )
      */
-    sealed interface MediaType {
-        object Unknown : MediaType
-        object Image : MediaType
-        object Raw : MediaType
-        object Animated : MediaType
-        object Live : MediaType
-        object Video : MediaType
-        object Vector : MediaType
-        object Sidecar : MediaType
-        object Text : MediaType
-        object Other : MediaType
+    sealed class MediaType(val value: String) {
+        object Unknown : MediaType("")
+        object Image : MediaType("image")
+        object Raw : MediaType("video")
+        object Animated : MediaType("animated")
+        object Live : MediaType("live")
+        object Video : MediaType("video")
+        object Vector : MediaType("vector")
+        object Sidecar : MediaType("sidecar")
+        object Text : MediaType("text")
+        object Other : MediaType("other")
 
         companion object {
             fun fromPhotoPrism(type: String): MediaType =

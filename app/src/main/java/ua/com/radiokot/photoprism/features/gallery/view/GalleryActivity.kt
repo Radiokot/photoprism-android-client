@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -24,6 +25,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
 import java.io.File
 
@@ -55,19 +57,26 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
+            viewModel.initSelection(intent.type)
+        } else {
+            viewModel.initViewing()
+        }
+
         view = ActivityGalleryBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        subscribeToViewModel()
+        subscribeToData()
+        subscribeToEvents()
+        subscribeToState()
 
         view.galleryRecyclerView.post(::initList)
         initMediaFileSelection()
     }
 
-    private fun subscribeToViewModel() {
+    private fun subscribeToData() {
         viewModel.isLoading
             .observe(this) { isLoading ->
-                view.isLoadingTextView.text = isLoading.toString()
                 if (!isLoading) {
                     galleryProgressFooterAdapter.clear()
                 } else if (galleryProgressFooterAdapter.adapterItemCount == 0) {
@@ -81,12 +90,14 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                     galleryItemsAdapter.setNewList(it)
                 }
             }
+    }
 
+    private fun subscribeToEvents() {
         viewModel.events
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { event ->
                 log.debug {
-                    "subscribeToViewModel(): received_new_event:" +
+                    "subscribeToEvents(): received_new_event:" +
                             "\nevent=$event"
                 }
 
@@ -108,11 +119,40 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                 }
 
                 log.debug {
-                    "subscribeToViewModel(): handled_new_event:" +
+                    "subscribeToEvents(): handled_new_event:" +
                             "\nevent=$event"
                 }
             }
             .disposeOnDestroy(this)
+    }
+
+    private fun subscribeToState() {
+        viewModel.state
+            .observe(this) { state ->
+                log.debug {
+                    "subscribeToState(): received_new_state:" +
+                            "\nstate=$state"
+                }
+
+                title = when (state) {
+                    is GalleryViewModel.State.Selecting ->
+                        if (state.filter != null)
+                            getString(
+                                R.string.template_select_media_type,
+                                getString(GalleryMediaTypeResources.getName(state.filter))
+                            )
+                        else
+                            getString(R.string.select_content)
+
+                    GalleryViewModel.State.Viewing ->
+                        getString(R.string.library)
+                }
+
+                log.debug {
+                    "subscribeToState(): handled_new_state:" +
+                            "\nstate=$state"
+                }
+            }
     }
 
     private fun initList() {

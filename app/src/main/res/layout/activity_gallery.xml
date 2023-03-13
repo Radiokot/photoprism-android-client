@@ -6,21 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".features.gallery.view.GalleryActivity">
 
-    <TextView
-        android:id="@+id/is_loading_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gallery_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
+        android:paddingTop="@dimen/list_item_gallery_media_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/is_loading_text_view" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

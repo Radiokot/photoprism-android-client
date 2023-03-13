@@ -18,23 +18,59 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListIt
 import java.io.File
 
 class GalleryViewModel(
-    private val galleryMediaRepository: SimpleGalleryMediaRepository,
+    private val galleryMediaRepositoryProvider:
+        (mediaTypeFilter: GalleryMedia.MediaType?) -> SimpleGalleryMediaRepository,
     private val downloadsDir: File,
     private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
+    private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryMediaListItem>?> = MutableLiveData(null)
     private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
     val events: Observable<Event> = eventsSubject
+    val state: MutableLiveData<State> = MutableLiveData()
 
-    init {
-        log.debug { "init(): initializing" }
+    fun initSelection(requestedMimeType: String?) {
+        val filterMediaType = when {
+            requestedMimeType == null ->
+                null
+            requestedMimeType.startsWith("image/") ->
+                GalleryMedia.MediaType.Image
+            requestedMimeType.startsWith("video/") ->
+                GalleryMedia.MediaType.Video
+            else ->
+                null
+        }
 
+        galleryMediaRepository = galleryMediaRepositoryProvider(filterMediaType)
         subscribeToRepository()
 
-        galleryMediaRepository.updateIfNotFresh()
+        log.debug {
+            "initSelection(): initialized_selection:" +
+                    "\nrequestedMimeType=$requestedMimeType," +
+                    "\nmatchedFilterMediaType=$filterMediaType"
+        }
+
+        state.value = State.Selecting(filter = filterMediaType)
+
+        update()
+    }
+
+    fun initViewing() {
+        galleryMediaRepository = galleryMediaRepositoryProvider(null)
+        subscribeToRepository()
+
+        log.debug {
+            "initViewing(): initialized_viewing"
+        }
+
+        state.value = State.Viewing
+
+        update()
+
+        // TODO: Implement view mode
     }
 
     private fun subscribeToRepository() {
@@ -59,6 +95,10 @@ class GalleryViewModel(
             .addToCloseables(this)
     }
 
+    private fun update() {
+        galleryMediaRepository.updateIfNotFresh()
+    }
+
     fun loadMore() {
         if (!galleryMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
@@ -72,15 +112,21 @@ class GalleryViewModel(
                     "\nitem=$item"
         }
 
-        // TODO: Different behavior for different modes.
+        when (state.value) {
+            is State.Selecting -> {
+                if (item.source != null) {
+                    if (item.source.files.size > 1) {
+                        openFileSelectionDialog(item.source.files)
+                    } else {
+                        downloadFile(item.source.files.firstOrNull().checkNotNull {
+                            "There must be at least one file in the gallery media object"
+                        })
+                    }
+                }
+            }
 
-        if (item.source != null) {
-            if (item.source.files.size > 1) {
-                openFileSelectionDialog(item.source.files)
-            } else {
-                downloadFile(item.source.files.firstOrNull().checkNotNull {
-                    "There must be at least one file in the gallery media object"
-                })
+            else -> {
+                //TODO: Implement viewing
             }
         }
     }
@@ -177,5 +223,10 @@ class GalleryViewModel(
             val mimeType: String,
             val displayName: String,
         ) : Event
+    }
+
+    sealed interface State {
+        object Viewing : State
+        class Selecting(val filter: GalleryMedia.MediaType?) : State
     }
 }

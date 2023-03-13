@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PhotoPrism client</string>
 
+    <string name="media_type_image">Image</string>
     <string name="media_type_raw">RAW file</string>
     <string name="media_type_animated">Animated image</string>
     <string name="media_type_live">Live photo</string>
@@ -15,4 +16,7 @@
     <string name="downloading_progress">Downloading…</string>
     <string name="cancel">Cancel</string>
     <string name="failed_to_download_file">Failed to download the file</string>
+    <string name="template_select_media_type">Select %1$s</string>
+    <string name="select_content">Select content</string>
+    <string name="library">Library</string>
 </resources>

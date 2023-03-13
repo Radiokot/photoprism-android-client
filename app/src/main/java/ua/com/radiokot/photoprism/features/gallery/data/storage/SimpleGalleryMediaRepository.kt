@@ -17,11 +17,25 @@ class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     private val thumbnailUrlFactory: MediaThumbnailUrlFactory,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
+    mediaTypeFilter: GalleryMedia.MediaType?,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
     pageLimit = pageLimit,
 ) {
+    private val query: String?
+
+    init {
+        val queryBuilder = StringBuilder()
+
+        if (mediaTypeFilter != null) {
+            queryBuilder.append(" type:${mediaTypeFilter.value}")
+        }
+
+        query = queryBuilder.toString()
+            .takeUnless(String::isNullOrBlank)
+    }
+
     override fun getPage(
         limit: Int,
         cursor: String?,
@@ -30,9 +44,12 @@ class SimpleGalleryMediaRepository(
         val offset = cursor?.toInt() ?: 0
 
         return {
+
+
             photoPrismPhotosService.getPhotos(
                 count = limit,
                 offset = cursor?.toInt() ?: 0,
+                q = query,
                 order = when (pagingOrder) {
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
                     PagingOrder.ASC -> PhotoPrismOrder.OLDEST
