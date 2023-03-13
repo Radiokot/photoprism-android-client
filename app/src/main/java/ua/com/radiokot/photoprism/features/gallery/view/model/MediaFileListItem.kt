@@ -54,6 +54,8 @@ class MediaFileListItem(
 
         override fun bindView(item: MediaFileListItem, payloads: List<Any>) {
             view.nameTextView.text = item.name
+            view.nameTextView.isSelected = true
+
             view.sizeTextView.text = item.size
             view.typeTextView.text = item.mimeType
 
