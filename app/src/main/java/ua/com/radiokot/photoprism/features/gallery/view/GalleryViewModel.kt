@@ -110,7 +110,7 @@ class GalleryViewModel(
                     if (item.source.files.size > 1) {
                         openFileSelectionDialog(item.source.files)
                     } else {
-                        downloadFile(item.source.files.firstOrNull().checkNotNull {
+                        downloadAndReturnFile(item.source.files.firstOrNull().checkNotNull {
                             "There must be at least one file in the gallery media object"
                         })
                     }
@@ -139,10 +139,10 @@ class GalleryViewModel(
                     "\nfile=$file"
         }
 
-        downloadFile(file)
+        downloadAndReturnFile(file)
     }
 
-    private fun downloadFile(file: GalleryMedia.File) {
+    private fun downloadAndReturnFile(file: GalleryMedia.File) {
         downloadMediaFileViewModel.downloadFile(
             file = file,
             onSuccess = { destinationFile ->

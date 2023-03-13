@@ -15,6 +15,7 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             viewModel {
                 MediaViewerViewModel(
                     galleryMediaRepositoryFactory = get(),
+                    downloadMediaFileViewModel = get(),
                 )
             }
         }
