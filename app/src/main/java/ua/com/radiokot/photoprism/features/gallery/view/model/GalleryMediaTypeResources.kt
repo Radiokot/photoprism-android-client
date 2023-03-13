@@ -7,50 +7,50 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 object GalleryMediaTypeResources {
     @DrawableRes
-    fun getIcon(type: GalleryMedia.MediaType): Int? = when (type) {
-        GalleryMedia.MediaType.Image ->
+    fun getIcon(typeName: GalleryMedia.TypeName): Int? = when (typeName) {
+        GalleryMedia.TypeName.IMAGE ->
             null
-        GalleryMedia.MediaType.Animated ->
+        GalleryMedia.TypeName.ANIMATED ->
             R.drawable.ic_animation
-        GalleryMedia.MediaType.Live ->
+        GalleryMedia.TypeName.LIVE ->
             R.drawable.ic_live_photo
-        GalleryMedia.MediaType.Other ->
+        GalleryMedia.TypeName.OTHER ->
             R.drawable.ic_sledding
-        GalleryMedia.MediaType.Raw ->
+        GalleryMedia.TypeName.RAW ->
             R.drawable.ic_raw
-        GalleryMedia.MediaType.Sidecar ->
+        GalleryMedia.TypeName.SIDECAR ->
             R.drawable.ic_attachment
-        GalleryMedia.MediaType.Text ->
+        GalleryMedia.TypeName.TEXT ->
             R.drawable.ic_text
-        GalleryMedia.MediaType.Unknown ->
+        GalleryMedia.TypeName.UNKNOWN ->
             R.drawable.ic_unknown
-        GalleryMedia.MediaType.Vector ->
+        GalleryMedia.TypeName.VECTOR ->
             R.drawable.ic_curve
-        GalleryMedia.MediaType.Video ->
+        GalleryMedia.TypeName.VIDEO ->
             R.drawable.ic_video
     }
 
     @StringRes
-    fun getName(type: GalleryMedia.MediaType): Int = when (type) {
-        GalleryMedia.MediaType.Image ->
+    fun getName(typeName: GalleryMedia.TypeName): Int = when (typeName) {
+        GalleryMedia.TypeName.IMAGE ->
             R.string.media_type_image
-        GalleryMedia.MediaType.Animated ->
+        GalleryMedia.TypeName.ANIMATED ->
             R.string.media_type_animated
-        GalleryMedia.MediaType.Live ->
+        GalleryMedia.TypeName.LIVE ->
             R.string.media_type_live
-        GalleryMedia.MediaType.Other ->
+        GalleryMedia.TypeName.OTHER ->
             R.string.media_type_other
-        GalleryMedia.MediaType.Raw ->
+        GalleryMedia.TypeName.RAW ->
             R.string.media_type_raw
-        GalleryMedia.MediaType.Sidecar ->
+        GalleryMedia.TypeName.SIDECAR ->
             R.string.media_type_sidecar
-        GalleryMedia.MediaType.Text ->
+        GalleryMedia.TypeName.TEXT ->
             R.string.media_type_text
-        GalleryMedia.MediaType.Unknown ->
+        GalleryMedia.TypeName.UNKNOWN ->
             R.string.media_type_unknown
-        GalleryMedia.MediaType.Vector ->
+        GalleryMedia.TypeName.VECTOR ->
             R.string.media_type_vector
-        GalleryMedia.MediaType.Video ->
+        GalleryMedia.TypeName.VIDEO ->
             R.string.media_type_video
     }
 }

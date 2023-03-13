@@ -36,9 +36,9 @@ class GalleryViewModel(
             requestedMimeType == null ->
                 null
             requestedMimeType.startsWith("image/") ->
-                GalleryMedia.MediaType.Image
+                GalleryMedia.TypeName.IMAGE
             requestedMimeType.startsWith("video/") ->
-                GalleryMedia.MediaType.Video
+                GalleryMedia.TypeName.VIDEO
             else ->
                 null
         }
@@ -257,6 +257,6 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        class Selecting(val filter: GalleryMedia.MediaType?) : State
+        class Selecting(val filter: GalleryMedia.TypeName?) : State
     }
 }

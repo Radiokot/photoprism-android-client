@@ -4,11 +4,11 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.*
 
 class GalleryMedia(
-    val media: MediaType,
+    val media: TypeData,
     val hash: String,
     val width: Int,
     val height: Int,
@@ -19,20 +19,23 @@ class GalleryMedia(
 ) {
     constructor(
         source: PhotoPrismPhoto,
-        thumbnailUrlFactory: MediaThumbnailUrlFactory,
+        previewUrlFactory: MediaPreviewUrlFactory,
         downloadUrlFactory: MediaFileDownloadUrlFactory,
     ) : this(
-        media = MediaType.fromPhotoPrism(source.type),
+        media = TypeData.fromPhotoPrism(
+            source = source,
+            previewUrlFactory = previewUrlFactory
+        ),
         hash = source.hash,
         width = source.width,
         height = source.height,
         takenAt = photoPrismDateFormat.parse(source.takenAt)!!,
         name = source.name,
-        smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
+        smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         files = source.files.map { photoPrismFile ->
             File(
                 source = photoPrismFile,
-                thumbnailUrlFactory = thumbnailUrlFactory,
+                thumbnailUrlFactory = previewUrlFactory,
                 downloadUrlFactory = downloadUrlFactory,
             )
         }
@@ -74,31 +77,54 @@ class GalleryMedia(
     Other    Type = "other"
     )
      */
-    sealed class MediaType(val value: String) {
-        object Unknown : MediaType("")
-        object Image : MediaType("image")
-        object Raw : MediaType("video")
-        object Animated : MediaType("animated")
-        object Live : MediaType("live")
-        object Video : MediaType("video")
-        object Vector : MediaType("vector")
-        object Sidecar : MediaType("sidecar")
-        object Text : MediaType("text")
-        object Other : MediaType("other")
+    enum class TypeName(val value: String) {
+        UNKNOWN(""),
+        IMAGE("image"),
+        RAW("raw"),
+        ANIMATED("animated"),
+        LIVE("live"),
+        VIDEO("video"),
+        VECTOR("vector"),
+        SIDECAR("sidecar"),
+        TEXT("text"),
+        OTHER("other"),
+        ;
+    }
+
+    sealed class TypeData(val typeName: TypeName) {
+        object Unknown : TypeData(TypeName.UNKNOWN)
+
+        class Image(
+            val hdPreviewUrl: String,
+        ) : TypeData(TypeName.IMAGE)
+
+        object Raw : TypeData(TypeName.RAW)
+        object Animated : TypeData(TypeName.ANIMATED)
+        object Live : TypeData(TypeName.LIVE)
+        object Video : TypeData(TypeName.VIDEO)
+        object Vector : TypeData(TypeName.VECTOR)
+        object Sidecar : TypeData(TypeName.SIDECAR)
+        object Text : TypeData(TypeName.TEXT)
+        object Other : TypeData(TypeName.OTHER)
 
         companion object {
-            fun fromPhotoPrism(type: String): MediaType =
-                when (type) {
-                    "" -> Unknown
-                    "image" -> Image
-                    "raw" -> Raw
-                    "animated" -> Animated
-                    "live" -> Live
-                    "video" -> Video
-                    "vector" -> Vector
-                    "sidecar" -> Sidecar
-                    "text" -> Text
-                    "other" -> Other
+            fun fromPhotoPrism(
+                source: PhotoPrismPhoto,
+                previewUrlFactory: MediaPreviewUrlFactory,
+            ): TypeData =
+                when (val type = source.type) {
+                    TypeName.UNKNOWN.value -> Unknown
+                    TypeName.IMAGE.value -> Image(
+                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                    )
+                    TypeName.RAW.value -> Raw
+                    TypeName.ANIMATED.value -> Animated
+                    TypeName.LIVE.value -> Live
+                    TypeName.VIDEO.value -> Video
+                    TypeName.VECTOR.value -> Vector
+                    TypeName.SIDECAR.value -> Sidecar
+                    TypeName.TEXT.value -> Text
+                    TypeName.OTHER.value -> Other
                     else ->
                         throw IllegalStateException("Unsupported PhotoPrism media type '$type'")
                 }
@@ -116,7 +142,7 @@ class GalleryMedia(
     ) : Parcelable {
         constructor(
             source: PhotoPrismPhoto.File,
-            thumbnailUrlFactory: MediaThumbnailUrlFactory,
+            thumbnailUrlFactory: MediaPreviewUrlFactory,
             downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
             hash = source.hash,

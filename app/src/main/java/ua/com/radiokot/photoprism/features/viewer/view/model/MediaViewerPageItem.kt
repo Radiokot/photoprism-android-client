@@ -13,7 +13,11 @@ class MediaViewerPageItem(
 ) : AbstractItem<MediaViewerPageItem.ViewHolder>() {
 
     constructor(source: GalleryMedia) : this(
-        imageUrl = source.smallThumbnailUrl,
+        imageUrl =
+        if (source.media is GalleryMedia.TypeData.Image)
+            source.media.hdPreviewUrl
+        else
+            source.smallThumbnailUrl,
     )
 
     override val type: Int

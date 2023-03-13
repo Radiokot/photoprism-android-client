@@ -20,16 +20,16 @@ val galleryFeatureModules: List<Module> = listOf(
             scoped {
                 val session = get<PhotoPrismSession>()
 
-                PhotoPrismThumbnailUrlFactory(
+                PhotoPrismPreviewUrlFactory(
                     apiUrl = getProperty("apiUrl"),
                     previewToken = session.previewToken,
                 )
-            }.bind(MediaThumbnailUrlFactory::class)
+            }.bind(MediaPreviewUrlFactory::class)
 
             scoped {
                 val session = get<PhotoPrismSession>()
 
-                PhotoPrismMediaFileDownloadUrlFactory(
+                PhotoPrismMediaDownloadUrlFactory(
                     apiUrl = getProperty("apiUrl"),
                     downloadToken = session.downloadToken,
                 )

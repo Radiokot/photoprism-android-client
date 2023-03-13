@@ -1,6 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.logic
 
-class PhotoPrismMediaFileDownloadUrlFactory(
+class PhotoPrismMediaDownloadUrlFactory(
     apiUrl: String,
     private val downloadToken: String,
 ) : MediaFileDownloadUrlFactory {

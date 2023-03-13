@@ -26,13 +26,13 @@ class GalleryMediaListItem(
         thumbnailUrl = source.smallThumbnailUrl,
         name = source.name,
         mediaTypeIcon =
-        if (source.media !is GalleryMedia.MediaType.Image)
-            GalleryMediaTypeResources.getIcon(source.media)
+        if (source.media !is GalleryMedia.TypeData.Image)
+            GalleryMediaTypeResources.getIcon(source.media.typeName)
         else
             null,
         mediaTypeName =
-        if (source.media !is GalleryMedia.MediaType.Image)
-            GalleryMediaTypeResources.getName(source.media)
+        if (source.media !is GalleryMedia.TypeData.Image)
+            GalleryMediaTypeResources.getName(source.media.typeName)
         else
             null,
         source = source,

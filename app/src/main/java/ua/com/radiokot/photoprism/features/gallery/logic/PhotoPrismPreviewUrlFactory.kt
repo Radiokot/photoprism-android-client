@@ -1,9 +1,9 @@
 package ua.com.radiokot.photoprism.features.gallery.logic
 
-class PhotoPrismThumbnailUrlFactory(
+class PhotoPrismPreviewUrlFactory(
     apiUrl: String,
     private val previewToken: String,
-) : MediaThumbnailUrlFactory {
+) : MediaPreviewUrlFactory {
     private val previewUrlBase = apiUrl.trimEnd('/') + "/v1/t"
 
     override fun getSmallThumbnailUrl(hash: String): String =
@@ -11,4 +11,7 @@ class PhotoPrismThumbnailUrlFactory(
 
     override fun getMediumThumbnailUrl(hash: String): String =
         "$previewUrlBase/$hash/$previewToken/tile_500"
+
+    override fun getHdPreviewUrl(hash: String): String =
+        "$previewUrlBase/$hash/$previewToken/fit_1280"
 }

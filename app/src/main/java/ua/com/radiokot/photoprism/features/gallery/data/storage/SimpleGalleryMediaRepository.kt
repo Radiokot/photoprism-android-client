@@ -12,11 +12,11 @@ import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaThumbnailUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
-    private val thumbnailUrlFactory: MediaThumbnailUrlFactory,
+    private val thumbnailUrlFactory: MediaPreviewUrlFactory,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
     private val searchQuery: String?,
     pageLimit: Int,
@@ -50,7 +50,7 @@ class SimpleGalleryMediaRepository(
                 photoPrismPhotos.mapSuccessful {
                     GalleryMedia(
                         source = it,
-                        thumbnailUrlFactory = thumbnailUrlFactory,
+                        previewUrlFactory = thumbnailUrlFactory,
                         downloadUrlFactory = downloadUrlFactory,
                     )
                 }
@@ -65,14 +65,14 @@ class SimpleGalleryMediaRepository(
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
-        private val thumbnailUrlFactory: MediaThumbnailUrlFactory,
+        private val thumbnailUrlFactory: MediaPreviewUrlFactory,
         private val downloadUrlFactory: MediaFileDownloadUrlFactory,
         private val pageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
         private val keysMap = mutableMapOf<SimpleGalleryMediaRepository, String>()
 
-        fun get(mediaTypeFilter: GalleryMedia.MediaType?): SimpleGalleryMediaRepository {
+        fun get(mediaTypeFilter: GalleryMedia.TypeName?): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
 
             if (mediaTypeFilter != null) {

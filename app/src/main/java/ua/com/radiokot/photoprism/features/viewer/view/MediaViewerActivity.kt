@@ -12,7 +12,6 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 
 class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
@@ -71,6 +70,8 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
             }
 
             adapter = fastAdapter
+
+            // TODO: Endless scrolling
 
             post {
                 setCurrentItem(startIndex, false)
