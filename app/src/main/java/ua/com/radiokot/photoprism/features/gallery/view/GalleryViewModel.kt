@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -102,6 +103,7 @@ class GalleryViewModel(
         downloadFile(file)
     }
 
+    private var downloadDisposable: Disposable? = null
     private fun downloadFile(file: GalleryMedia.File) {
         val destinationFile = File(downloadsDir, "downloaded")
 
@@ -110,9 +112,10 @@ class GalleryViewModel(
                     "\nfile=$file," +
                     "\nurl=${file.downloadUrl}" +
                     "\ndestinationFile=$destinationFile"
-        };
+        }
 
-        downloadFileUseCaseFactory
+        downloadDisposable?.dispose()
+        downloadDisposable = downloadFileUseCaseFactory
             .get(
                 url = file.downloadUrl,
                 destination = destinationFile,
@@ -120,21 +123,30 @@ class GalleryViewModel(
             .perform()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                eventsSubject.onNext(Event.ShowDownloadProgress(-1.0))
+            }
             .subscribeBy(
                 onNext = { progress ->
+                    val percent = progress.percent
+
                     log.debug {
                         "downloadFile(): download_in_progress:" +
-                                "\nprogress=${progress.percent}"
+                                "\nprogress=$percent"
                     }
-                    // TODO: Report
+
+                    eventsSubject.onNext(Event.ShowDownloadProgress(percent))
                 },
                 onError = { error ->
                     log.error(error) { "downloadFile(): error_occurred" }
-                    // TODO: Report
+
+                    eventsSubject.onNext(Event.DismissDownloadProgress)
+                    eventsSubject.onNext(Event.ShowDownloadError)
                 },
                 onComplete = {
                     log.debug { "downloadFile(): download_complete" }
 
+                    eventsSubject.onNext(Event.DismissDownloadProgress)
                     eventsSubject.onNext(
                         Event.ReturnDownloadedFile(
                             downloadedFile = destinationFile,
@@ -147,8 +159,19 @@ class GalleryViewModel(
             .addToCloseables(this)
     }
 
+    fun onDownloadProgressDialogCancelled() {
+        log.debug {
+            "onDownloadProgressDialogCancelled(): cancelling_download"
+        }
+
+        downloadDisposable?.dispose()
+    }
+
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+        class ShowDownloadProgress(val percent: Double) : Event
+        object DismissDownloadProgress : Event
+        object ShowDownloadError : Event
         class ReturnDownloadedFile(
             val downloadedFile: File,
             val mimeType: String,

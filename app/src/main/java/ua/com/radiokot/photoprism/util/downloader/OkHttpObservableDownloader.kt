@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.util.downloader
 
-import android.util.ArrayMap
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import okhttp3.OkHttpClient

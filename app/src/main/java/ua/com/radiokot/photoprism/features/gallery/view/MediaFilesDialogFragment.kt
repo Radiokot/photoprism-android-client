@@ -1,24 +1,21 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogMediaFilesBinding
-import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 
 
-class MediaFilesDialogFragment : DialogFragment(R.layout.dialog_media_files) {
+class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_media_files) {
     private val log = kLogger("MMediaFilesDialog")
 
     private lateinit var viewBinding: DialogMediaFilesBinding
@@ -28,20 +25,8 @@ class MediaFilesDialogFragment : DialogFragment(R.layout.dialog_media_files) {
         requireArguments().getParcelableArrayList(FILES_KEY)!!
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = onCreateView(layoutInflater, null, savedInstanceState)
-            .checkNotNull()
-
-        viewBinding = DialogMediaFilesBinding.bind(view)
-
-        val builder = MaterialAlertDialogBuilder(requireActivity())
-        builder.setView(view)
-
-        log.debug {
-            "onCreateDialog(): material_builder_initialized"
-        }
-
-        return builder.create()
+    override fun onDialogViewCreated(dialogView: View, savedInstanceState: Bundle?) {
+        viewBinding = DialogMediaFilesBinding.bind(dialogView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
