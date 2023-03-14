@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import org.koin.android.ext.android.inject
@@ -83,31 +84,42 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
             repositoryQuery = repositoryQuery,
         )
 
+        // Init before the subscription.
+        initPager(mediaIndex, savedInstanceState)
+
         subscribeToData()
         subscribeToEvents()
 
-        view.viewPager.post {
-            initPager(mediaIndex)
-        }
         initButtons()
         initMediaFileSelection()
         downloadProgressView.init()
     }
 
-    private fun initPager(startIndex: Int) {
+    private fun initPager(
+        startIndex: Int,
+        savedInstanceState: Bundle?,
+    ) {
         with(view.viewPager) {
             val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
                 stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+                // Set the required index once, after the data is set.
+                if (savedInstanceState == null) {
+                    registerAdapterDataObserver(object : AdapterDataObserver() {
+                        override fun onChanged() {
+                            post {
+                                setCurrentItem(startIndex, false)
+                            }
+                            unregisterAdapterDataObserver(this)
+                        }
+                    })
+                }
             }
 
             adapter = fastAdapter
 
             // TODO: Endless scrolling
-
-            post {
-                setCurrentItem(startIndex, false)
-            }
         }
     }
 
