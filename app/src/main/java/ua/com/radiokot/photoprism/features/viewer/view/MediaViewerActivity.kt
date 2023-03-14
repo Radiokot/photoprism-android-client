@@ -122,10 +122,15 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
     private fun subscribeToData() {
         viewModel.isLoading
             .observe(this) { isLoading ->
-                // TODO: Show loading
                 log.debug {
                     "subscribeToData(): loading_changed:" +
                             "\nis_loading=$isLoading"
+                }
+
+                if (isLoading) {
+                    view.progressIndicator.show()
+                } else {
+                    view.progressIndicator.hide()
                 }
             }
 

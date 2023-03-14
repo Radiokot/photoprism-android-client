@@ -21,4 +21,6 @@
     <string name="library">Library</string>
     <string name="preview_is_not_available">Preview is not available</string>
     <string name="share">Share</string>
+    <string name="failed_to_load_the_preview">Failed to load the preview</string>
+    <string name="failed_to_load_the_thumbnail">Failed to load the thumbnail</string>
 </resources>

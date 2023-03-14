@@ -11,7 +11,7 @@
         android:id="@+id/thumbnail_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:importantForAccessibility="no"
+        android:contentDescription="@string/file_thumbnail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="H,1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,7 +20,32 @@
         app:layout_constraintVertical_bias="0.4"
         app:layout_constraintWidth_default="spread"
         app:layout_constraintWidth_max="200dp"
-        tools:background="@color/md_theme_light_primary" />
+        tools:background="@color/md_theme_dark_error" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator"
+        style="@style/Widget.Material3.CircularProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="@id/thumbnail_image_view"
+        app:layout_constraintEnd_toEndOf="@id/thumbnail_image_view"
+        app:layout_constraintStart_toStartOf="@id/thumbnail_image_view"
+        app:layout_constraintTop_toTopOf="@id/thumbnail_image_view" />
+
+    <TextView
+        android:id="@+id/error_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/failed_to_load_the_thumbnail"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:layout_constraintBottom_toBottomOf="@id/thumbnail_image_view"
+        app:layout_constraintEnd_toEndOf="@id/thumbnail_image_view"
+        app:layout_constraintStart_toStartOf="@id/thumbnail_image_view"
+        app:layout_constraintTop_toTopOf="@id/thumbnail_image_view" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/media_type_text_view"

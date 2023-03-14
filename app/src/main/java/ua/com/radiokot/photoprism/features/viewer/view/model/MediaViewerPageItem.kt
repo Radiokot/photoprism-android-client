@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -7,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
@@ -34,10 +37,24 @@ sealed class MediaViewerPageItem(
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Image>(itemView) {
             private val view = PagerItemMediaViewerImageBinding.bind(itemView)
 
+            private val imageLoadingCallback = object : Callback {
+                override fun onSuccess() {
+                    view.progressIndicator.hide()
+                }
+
+                override fun onError(e: Exception?) {
+                    view.progressIndicator.hide()
+                    view.errorTextView.visibility = View.VISIBLE
+                }
+            }
+
             override fun bindView(item: Image, payloads: List<Any>) {
+                view.progressIndicator.show()
+                view.errorTextView.visibility = View.GONE
+
                 Picasso.get()
                     .load(item.previewUrl)
-                    .into(view.photoView)
+                    .into(view.photoView, imageLoadingCallback)
             }
 
             override fun unbindView(item: Image) {
@@ -65,7 +82,21 @@ sealed class MediaViewerPageItem(
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Unsupported>(itemView) {
             private val view = PagerItemMediaViewerUnsupportedBinding.bind(itemView)
 
+            private val imageLoadingCallback = object : Callback {
+                override fun onSuccess() {
+                    view.progressIndicator.hide()
+                }
+
+                override fun onError(e: Exception?) {
+                    view.progressIndicator.hide()
+                    view.errorTextView.visibility = View.VISIBLE
+                }
+            }
+
             override fun bindView(item: Unsupported, payloads: List<Any>) {
+                view.progressIndicator.show()
+                view.errorTextView.visibility = View.GONE
+
                 with(view.mediaTypeTextView) {
                     setText(item.mediaTypeName)
                     setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -78,8 +109,9 @@ sealed class MediaViewerPageItem(
 
                 Picasso.get()
                     .load(item.thumbnailUrl)
+                    .placeholder(ColorDrawable(Color.LTGRAY))
                     .fit()
-                    .into(view.thumbnailImageView)
+                    .into(view.thumbnailImageView, imageLoadingCallback)
             }
 
             override fun unbindView(item: Unsupported) {
