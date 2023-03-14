@@ -44,7 +44,7 @@ class GalleryViewModel(
 
         downloadMediaFileViewModel = downloadViewModel
 
-        galleryMediaRepository = galleryMediaRepositoryFactory.get(filterMediaType)
+        galleryMediaRepository = galleryMediaRepositoryFactory.getFiltered(filterMediaType)
         subscribeToRepository()
 
         log.debug {
@@ -63,7 +63,7 @@ class GalleryViewModel(
     ) {
         downloadMediaFileViewModel = downloadViewModel
 
-        galleryMediaRepository = galleryMediaRepositoryFactory.get(null)
+        galleryMediaRepository = galleryMediaRepositoryFactory.getFiltered(null)
         subscribeToRepository()
 
         log.debug {
@@ -169,22 +169,19 @@ class GalleryViewModel(
 
     private fun openViewer(media: GalleryMedia) {
         val index = galleryMediaRepository.itemsList.indexOf(media)
-        val repositoryKey = galleryMediaRepositoryFactory.keyOf(galleryMediaRepository)
-            .checkNotNull {
-                "The repository must have a factory key"
-            }
+        val repositoryQuery = galleryMediaRepository.query
 
         log.debug {
             "openViewer(): opening_viewer:" +
                     "\nmedia=$media," +
                     "\nindex=$index," +
-                    "\nrepositoryKey=$repositoryKey"
+                    "\nrepositoryQuery=$repositoryQuery"
         }
 
         eventsSubject.onNext(
             Event.OpenViewer(
                 mediaIndex = index,
-                repositoryKey = repositoryKey,
+                repositoryQuery = repositoryQuery,
             )
         )
     }
@@ -200,7 +197,7 @@ class GalleryViewModel(
 
         class OpenViewer(
             val mediaIndex: Int,
-            val repositoryKey: String,
+            val repositoryQuery: String?,
         ) : Event
     }
 

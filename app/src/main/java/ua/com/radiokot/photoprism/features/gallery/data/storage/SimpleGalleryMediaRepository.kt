@@ -18,7 +18,7 @@ class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     private val thumbnailUrlFactory: MediaPreviewUrlFactory,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
-    private val searchQuery: String?,
+    val query: String?,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
@@ -37,7 +37,7 @@ class SimpleGalleryMediaRepository(
             photoPrismPhotosService.getPhotos(
                 count = limit,
                 offset = cursor?.toInt() ?: 0,
-                q = searchQuery,
+                q = query,
                 order = when (pagingOrder) {
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
                     PagingOrder.ASC -> PhotoPrismOrder.OLDEST
@@ -70,9 +70,8 @@ class SimpleGalleryMediaRepository(
         private val pageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
-        private val keysMap = mutableMapOf<SimpleGalleryMediaRepository, String>()
 
-        fun get(mediaTypeFilter: GalleryMedia.TypeName?): SimpleGalleryMediaRepository {
+        fun getFiltered(mediaTypeFilter: GalleryMedia.TypeName?): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
 
             if (mediaTypeFilter != null) {
@@ -82,6 +81,10 @@ class SimpleGalleryMediaRepository(
             val query = queryBuilder.toString()
                 .takeUnless(String::isNullOrBlank)
 
+            return get(query)
+        }
+
+        fun get(query: String?): SimpleGalleryMediaRepository {
             val key = "q:$query"
 
             return cache[key]
@@ -89,18 +92,11 @@ class SimpleGalleryMediaRepository(
                     photoPrismPhotosService = photoPrismPhotosService,
                     thumbnailUrlFactory = thumbnailUrlFactory,
                     downloadUrlFactory = downloadUrlFactory,
-                    searchQuery = query,
+                    query = query,
                     pageLimit = pageLimit,
                 ).also {
                     cache.put(key, it)
-                    keysMap[it] = key
                 }
         }
-
-        fun keyOf(repository: SimpleGalleryMediaRepository): String? =
-            keysMap[repository]
-
-        fun get(key: String): SimpleGalleryMediaRepository? =
-            cache[key]
     }
 }

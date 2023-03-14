@@ -69,21 +69,18 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
                 "Missing media index"
             }
 
-        val repositoryKey = intent.getStringExtra(REPO_KEY_KEY)
-            .checkNotNull {
-                "Missing repository key"
-            }
+        val repositoryQuery = intent.getStringExtra(REPO_QUERY_KEY)
 
         log.debug {
             "onCreate(): creating:" +
                     "\nmediaIndex=$mediaIndex," +
-                    "\nrepositoryKey=$repositoryKey," +
+                    "\nrepositoryQuery=$repositoryQuery," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
         viewModel.init(
             downloadViewModel = downloadViewModel,
-            repositoryKey = repositoryKey,
+            repositoryQuery = repositoryQuery,
         )
 
         subscribeToData()
@@ -211,14 +208,14 @@ class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
 
     companion object {
         private const val MEDIA_INDEX_KEY = "media-index"
-        private const val REPO_KEY_KEY = "repo-key"
+        private const val REPO_QUERY_KEY = "repo-query"
 
         fun getBundle(
             mediaIndex: Int,
-            repositoryKey: String,
+            repositoryQuery: String?,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
-            putString(REPO_KEY_KEY, repositoryKey)
+            putString(REPO_QUERY_KEY, repositoryQuery)
         }
     }
 }

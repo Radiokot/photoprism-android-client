@@ -11,7 +11,6 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
 
@@ -30,11 +29,11 @@ class MediaViewerViewModel(
 
     fun init(
         downloadViewModel: DownloadMediaFileViewModel,
-        repositoryKey: String,
+        repositoryQuery: String?,
     ) {
         downloadMediaFileViewModel = downloadViewModel
 
-        galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryKey)
+        galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryQuery)
             .checkNotNull {
                 "The repository must be created beforehand"
             }
@@ -42,7 +41,7 @@ class MediaViewerViewModel(
 
         log.debug {
             "init(): initialized:" +
-                    "\nrepositoryKey=$repositoryKey"
+                    "\nrepositoryQuery=$repositoryQuery"
         }
 
         update()
