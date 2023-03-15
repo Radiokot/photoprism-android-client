@@ -21,12 +21,10 @@ class DownloadMediaFileViewModel(
     private val log = kLogger("DownloadMediaFileVM")
 
     private val downloadStateSubject = BehaviorSubject.create<DownloadProgressViewModel.State>()
-    override val downloadState: Observable<DownloadProgressViewModel.State> =
-        downloadStateSubject.observeOn(AndroidSchedulers.mainThread())
+    override val downloadState: Observable<DownloadProgressViewModel.State> = downloadStateSubject
 
     private val downloadEventsSubject = PublishSubject.create<DownloadProgressViewModel.Event>()
-    override val downloadEvents: Observable<DownloadProgressViewModel.Event> =
-        downloadEventsSubject.observeOn(AndroidSchedulers.mainThread())
+    override val downloadEvents: Observable<DownloadProgressViewModel.Event> = downloadEventsSubject
 
     private var downloadDisposable: Disposable? = null
     fun downloadFile(
@@ -50,6 +48,7 @@ class DownloadMediaFileViewModel(
             )
             .perform()
             .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 downloadStateSubject.onNext(DownloadProgressViewModel.State.Running(-1.0))
             }

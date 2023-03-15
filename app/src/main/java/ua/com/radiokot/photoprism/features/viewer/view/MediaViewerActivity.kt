@@ -129,6 +129,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 position = view.viewPager.currentItem,
             )
         }
+
+        view.openInButton.setOnClickListener {
+            viewModel.onOpenInClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
     }
 
     private fun subscribeToData() {
@@ -169,6 +175,13 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
                 is MediaViewerViewModel.Event.ShareDownloadedFile ->
                     shareDownloadedFile(
+                        downloadedFile = event.downloadedFile,
+                        mimeType = event.mimeType,
+                        displayName = event.displayName,
+                    )
+
+                is MediaViewerViewModel.Event.OpenDownloadedFile ->
+                    openDownloadedFile(
                         downloadedFile = event.downloadedFile,
                         mimeType = event.mimeType,
                         displayName = event.displayName,
@@ -216,6 +229,28 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
         log.debug {
             "shareDownloadedFile(): starting_intent:" +
+                    "\nintent=$resultIntent" +
+                    "\ndownloadedFile=$downloadedFile"
+        }
+
+        startActivity(resultIntent)
+    }
+
+    private fun openDownloadedFile(
+        downloadedFile: File,
+        mimeType: String,
+        displayName: String,
+    ) {
+        val resultIntent = fileReturnIntentCreator.createIntent(
+            fileToReturn = downloadedFile,
+            mimeType = mimeType,
+            displayName = displayName,
+        )
+
+        resultIntent.action = Intent.ACTION_VIEW
+
+        log.debug {
+            "openDownloadedFile(): starting_intent:" +
                     "\nintent=$resultIntent" +
                     "\ndownloadedFile=$downloadedFile"
         }

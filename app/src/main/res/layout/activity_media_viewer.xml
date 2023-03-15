@@ -18,17 +18,44 @@
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/share_button"
-        style="?materialIconButtonFilledTonalStyle"
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="24dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="24dp"
-        android:text="@string/share"
-        app:icon="@drawable/ic_share"
-        app:iconGravity="textStart"
-        app:iconPadding="8dp" />
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/download_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/download"
+            app:icon="@drawable/ic_download"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/share_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:contentDescription="@string/share"
+            app:icon="@drawable/ic_share"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/open_in_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/open_in"
+            app:icon="@drawable/ic_open_in"
+            app:iconGravity="textStart" />
+
+    </LinearLayout>
 </FrameLayout>
