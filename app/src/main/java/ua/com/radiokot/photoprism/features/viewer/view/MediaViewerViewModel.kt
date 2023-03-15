@@ -24,7 +24,7 @@ class MediaViewerViewModel(
     val itemsList: MutableLiveData<List<MediaViewerPageItem>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
-    val state: MutableLiveData<MediaViewerViewModel.State> = MutableLiveData(State.Idle)
+    val state: MutableLiveData<State> = MutableLiveData(State.Idle)
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
 
