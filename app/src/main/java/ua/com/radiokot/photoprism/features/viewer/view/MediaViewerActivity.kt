@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.mikepenz.fastadapter.FastAdapter
@@ -12,6 +11,7 @@ import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
@@ -25,7 +25,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import java.io.File
 
-class MediaViewerActivity : AppCompatActivity(), AndroidScopeComponent {
+class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
         createActivityScope().apply {
             linkTo(getScope("session"))

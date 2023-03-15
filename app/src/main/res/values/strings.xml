@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">PhotoPrism Gallery</string>
+    <string name="language_code">en</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_raw">RAW file</string>
@@ -23,4 +24,5 @@
     <string name="share">Share</string>
     <string name="failed_to_load_the_preview">Failed to load the preview</string>
     <string name="failed_to_load_the_thumbnail">Failed to load the thumbnail</string>
+    <string name="today">Today</string>
 </resources>

@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.content.Context
+import android.text.format.DateFormat
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -14,6 +15,8 @@ import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
@@ -61,8 +64,18 @@ val galleryFeatureModules: List<Module> = listOf(
             }
 
             viewModel {
+                val locale = Locale.getDefault()
+
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
+                    dateHeaderDayYearDateFormat = SimpleDateFormat(
+                        DateFormat.getBestDateTimePattern(locale, "EEMMMMdYYYY"),
+                        locale
+                    ),
+                    dateHeaderDayDateFormat = SimpleDateFormat(
+                        DateFormat.getBestDateTimePattern(locale, "EEMMMMd"),
+                        locale
+                    ),
                 )
             }
         }

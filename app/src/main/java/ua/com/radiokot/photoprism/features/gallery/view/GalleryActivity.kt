@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -17,12 +16,13 @@ import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
@@ -30,7 +30,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import java.io.File
 
 
-class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
+class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
         createActivityScope().apply {
             linkTo(getScope("session"))
@@ -42,7 +42,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
 
-    private val galleryItemsAdapter = ItemAdapter<GalleryMediaListItem>()
+    private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
@@ -190,7 +190,7 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             onClickListener = { _, _, item, _ ->
-                if (item is GalleryMediaListItem) {
+                if (item is GalleryListItem) {
                     viewModel.onItemClicked(item)
                 }
                 false
@@ -210,13 +210,18 @@ class GalleryActivity : AppCompatActivity(), AndroidScopeComponent {
                         "\nminItemWidthPx=$minItemWidthPx"
             }
 
+            // Make items of particular types fill the grid row.
             val gridLayoutManager = GridLayoutManager(context, spanCount).apply {
                 spanSizeLookup = object : SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int =
-                        if (galleryAdapter.getItemViewType(position) == R.id.list_item_gallery_progress)
-                            spanCount
-                        else
-                            1
+                        when (galleryAdapter.getItemViewType(position)) {
+                            R.id.list_item_gallery_progress,
+                            R.id.list_item_gallery_header ->
+                                spanCount
+
+                            else ->
+                                1
+                        }
                 }
             }
 

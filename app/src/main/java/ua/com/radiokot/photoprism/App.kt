@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism
 
 import android.app.Application
+import android.content.Context
 import android.os.Build
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
@@ -16,13 +17,17 @@ import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
+import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.IOException
+import java.util.*
 
 class App : Application() {
     private val log = kLogger("App")
 
     override fun onCreate() {
         super.onCreate()
+
+        Locale.setDefault(Locale.ENGLISH)
 
         startKoin {
             androidLogger()
@@ -90,5 +95,12 @@ class App : Application() {
         HandroidLoggerAdapter.APP_NAME = ""
         HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
         HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocalizationHelper.getLocalizedConfigurationContext(
+            context = newBase,
+            locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
+        ))
     }
 }
