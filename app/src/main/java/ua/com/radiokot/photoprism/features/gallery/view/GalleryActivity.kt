@@ -206,7 +206,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         with(view.galleryRecyclerView) {
             setPadding(
                 paddingLeft,
-                paddingTop + resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_margin),
+                view.searchBar.bottom,
                 paddingRight,
                 paddingBottom
             )
