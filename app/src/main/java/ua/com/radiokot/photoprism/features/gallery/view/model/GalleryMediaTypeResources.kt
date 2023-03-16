@@ -17,7 +17,7 @@ object GalleryMediaTypeResources {
         GalleryMedia.TypeName.OTHER ->
             R.drawable.ic_sledding
         GalleryMedia.TypeName.RAW ->
-            R.drawable.ic_raw
+            R.drawable.ic_camera_viewfinder
         GalleryMedia.TypeName.SIDECAR ->
             R.drawable.ic_attachment
         GalleryMedia.TypeName.TEXT ->
@@ -25,7 +25,7 @@ object GalleryMediaTypeResources {
         GalleryMedia.TypeName.UNKNOWN ->
             R.drawable.ic_unknown
         GalleryMedia.TypeName.VECTOR ->
-            R.drawable.ic_curve
+            R.drawable.ic_vector
         GalleryMedia.TypeName.VIDEO ->
             R.drawable.ic_video
     }

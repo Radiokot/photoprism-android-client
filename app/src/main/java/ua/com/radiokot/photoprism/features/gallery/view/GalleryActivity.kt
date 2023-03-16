@@ -3,9 +3,13 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.chip.Chip
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
@@ -40,6 +44,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
+    private val searchViewModel: GallerySearchViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
@@ -90,6 +95,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         subscribeToData()
         subscribeToEvents()
         subscribeToState()
+        subscribeToSearch()
 
         view.galleryRecyclerView.post(::initList)
         initMediaFileSelection()
@@ -177,6 +183,56 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                             "\nstate=$state"
                 }
             }
+    }
+
+    private fun subscribeToSearch() {
+        val searchChipSpacing =
+            resources.getDimensionPixelSize(R.dimen.gallery_search_media_type_chip_spacing)
+        val searchChipContext = ContextThemeWrapper(
+            this,
+            R.style.MediaTypeChip
+        )
+        val searchChipLayoutParams = FlexboxLayout.LayoutParams(
+            FlexboxLayout.LayoutParams.WRAP_CONTENT,
+            FlexboxLayout.LayoutParams.WRAP_CONTENT,
+        ).apply {
+            setMargins(0, 0, searchChipSpacing, searchChipSpacing)
+        }
+
+        with(view.searchContent.mediaTypeChipsLayout) {
+            searchViewModel.availableMediaTypes.observe(this@GalleryActivity) { availableTypes ->
+                availableTypes.forEach { mediaTypeName ->
+                    addView(
+                        Chip(searchChipContext).apply {
+                            tag = mediaTypeName
+                            setText(GalleryMediaTypeResources.getName(mediaTypeName))
+                            setChipIconResource(GalleryMediaTypeResources.getIcon(mediaTypeName))
+                            setEnsureMinTouchTargetSize(false)
+                            isCheckable = true
+
+                            setOnClickListener {
+                                searchViewModel.onAvailableMediaTypeClicked(mediaTypeName)
+                            }
+                        },
+                        searchChipLayoutParams,
+                    )
+                }
+            }
+
+            searchViewModel.selectedMediaTypes.observe(this@GalleryActivity) { selectedTypes ->
+                forEach { chip ->
+                    with(chip as Chip) {
+                        if (selectedTypes.contains(tag)) {
+                            isChecked = true
+                            isCheckedIconVisible = true
+                        } else {
+                            isChecked = false
+                            isCheckedIconVisible = false
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun initList() {

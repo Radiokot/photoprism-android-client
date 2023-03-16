@@ -7,7 +7,7 @@
     <string name="media_type_animated">Animation</string>
     <string name="media_type_live">Live photo</string>
     <string name="media_type_video">Video</string>
-    <string name="media_type_vector">Vector image</string>
+    <string name="media_type_vector">Vector</string>
     <string name="media_type_sidecar">Sidecar file</string>
     <string name="media_type_text">Text</string>
     <string name="media_type_other">Other file</string>

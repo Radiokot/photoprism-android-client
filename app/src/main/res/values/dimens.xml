@@ -2,4 +2,5 @@
 <resources>
     <dimen name="list_item_gallery_media_margin">4dp</dimen>
     <dimen name="list_item_gallery_media_min_size">20mm</dimen>
+    <dimen name="gallery_search_media_type_chip_spacing">8dp</dimen>
 </resources>

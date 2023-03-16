@@ -34,42 +34,9 @@
         android:hint="@string/search_the_library"
         app:layout_anchor="@id/search_bar">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/media_type"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/media_type_image"
-                    app:chipIcon="@drawable/ic_image"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:text="@string/media_type_video"
-                    app:chipIcon="@drawable/ic_video"
-                    app:chipIconVisible="true" />
-            </LinearLayout>
-        </LinearLayout>
+        <include
+            android:id="@+id/search_content"
+            layout="@layout/view_gallery_search_content" />
     </com.google.android.material.search.SearchView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
