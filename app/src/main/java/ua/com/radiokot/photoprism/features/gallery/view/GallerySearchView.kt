@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.text.style.ImageSpan
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -30,6 +31,8 @@ import kotlin.math.roundToInt
 
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
+    @MenuRes
+    private val menuRes: Int?,
     lifecycleOwner: LifecycleOwner,
 ) : LifecycleOwner by lifecycleOwner {
     private val log = kLogger("GallerySearchView")
@@ -116,6 +119,15 @@ class GallerySearchView(
         }
 
         searchBar.textView.ellipsize = TextUtils.TruncateAt.END
+
+        if (menuRes != null) {
+            searchBar.inflateMenu(R.menu.gallery)
+            searchBar.menu.findItem(R.id.reset_search)
+                .setOnMenuItemClickListener {
+                    viewModel.onResetClicked()
+                    true
+                }
+        }
     }
 
     private fun subscribeToData() {
@@ -207,22 +219,26 @@ class GallerySearchView(
                         GallerySearchViewModel.State.NoSearch ->
                             null
                     }
+            }
 
-                when (state) {
-                    is GallerySearchViewModel.State.AppliedSearch ->
-                        closeConfigurationView()
+            searchBar.menu.findItem(R.id.reset_search)?.apply {
+                isVisible = state is GallerySearchViewModel.State.AppliedSearch
+            }
 
-                    is GallerySearchViewModel.State.ConfiguringSearch ->
-                        openConfigurationView()
+            when (state) {
+                is GallerySearchViewModel.State.AppliedSearch ->
+                    closeConfigurationView()
 
-                    GallerySearchViewModel.State.NoSearch ->
-                        closeConfigurationView()
-                }
+                is GallerySearchViewModel.State.ConfiguringSearch ->
+                    openConfigurationView()
 
-                log.debug {
-                    "subscribeToState(): handled_new_state:" +
-                            "\nstate=$state"
-                }
+                GallerySearchViewModel.State.NoSearch ->
+                    closeConfigurationView()
+            }
+
+            log.debug {
+                "subscribeToState(): handled_new_state:" +
+                        "\nstate=$state"
             }
         }.disposeOnDestroy(this)
     }
