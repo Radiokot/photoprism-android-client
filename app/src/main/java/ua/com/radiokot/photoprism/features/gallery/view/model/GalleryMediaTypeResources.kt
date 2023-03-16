@@ -7,9 +7,9 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 object GalleryMediaTypeResources {
     @DrawableRes
-    fun getIcon(typeName: GalleryMedia.TypeName): Int? = when (typeName) {
+    fun getIcon(typeName: GalleryMedia.TypeName): Int = when (typeName) {
         GalleryMedia.TypeName.IMAGE ->
-            null
+            R.drawable.ic_image
         GalleryMedia.TypeName.ANIMATED ->
             R.drawable.ic_animation
         GalleryMedia.TypeName.LIVE ->

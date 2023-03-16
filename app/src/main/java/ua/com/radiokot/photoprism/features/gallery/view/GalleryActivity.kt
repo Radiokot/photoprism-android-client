@@ -198,6 +198,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         with(view.galleryRecyclerView) {
+            setPadding(
+                paddingLeft,
+                paddingTop + resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_margin),
+                paddingRight,
+                paddingBottom
+            )
+
             val minItemWidthPx =
                 resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
             val rowWidth = measuredWidth
