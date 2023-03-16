@@ -104,7 +104,8 @@ class GallerySearchViewModel : ViewModel() {
         }
 
         when (val state = stateSubject.value!!) {
-            is State.AppliedSearch -> {
+            is State.AppliedSearch,
+            is State.NoSearch -> {
                 // Expected.
             }
             is State.ConfiguringSearch -> {
@@ -114,8 +115,6 @@ class GallerySearchViewModel : ViewModel() {
                     stateSubject.onNext(State.NoSearch)
                 }
             }
-            State.NoSearch ->
-                throw IllegalStateException()
         }
     }
 
@@ -146,6 +145,14 @@ class GallerySearchViewModel : ViewModel() {
         }
 
         stateSubject.onNext(State.AppliedSearch(search))
+    }
+
+    fun onResetClicked() {
+        log.debug {
+            "onResetClicked(): reset_clicked"
+        }
+
+        stateSubject.onNext(State.NoSearch)
     }
 
     sealed interface State {

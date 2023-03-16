@@ -29,4 +29,5 @@
     <string name="search_the_library">Search the library</string>
     <string name="media_type">Type</string>
     <string name="apply_search">Apply</string>
+    <string name="reset_search">Reset</string>
 </resources>

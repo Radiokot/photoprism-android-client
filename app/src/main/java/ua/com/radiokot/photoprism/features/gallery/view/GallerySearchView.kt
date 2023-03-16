@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.media.Image
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -110,6 +109,10 @@ class GallerySearchView(
 
         configurationView.searchButton.setOnClickListener {
             viewModel.onSearchClicked()
+        }
+
+        configurationView.resetButton.setOnClickListener {
+            viewModel.onResetClicked()
         }
 
         searchBar.textView.ellipsize = TextUtils.TruncateAt.END

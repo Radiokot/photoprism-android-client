@@ -32,4 +32,14 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:text="@string/apply_search" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reset_button"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="@string/reset_search" />
 </LinearLayout>
