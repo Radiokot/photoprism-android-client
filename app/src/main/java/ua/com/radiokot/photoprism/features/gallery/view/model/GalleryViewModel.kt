@@ -151,6 +151,8 @@ class GalleryViewModel(
             .addTo(disposable)
 
         disposable.addToCloseables(this)
+
+        eventsSubject.onNext(Event.ResetScroll)
     }
 
     private fun onNewRepositoryItems(galleryMediaItems: List<GalleryMedia>) {
@@ -327,6 +329,8 @@ class GalleryViewModel(
             val mediaIndex: Int,
             val repositoryQuery: String?,
         ) : Event
+
+        object ResetScroll : Event
     }
 
     sealed interface State {

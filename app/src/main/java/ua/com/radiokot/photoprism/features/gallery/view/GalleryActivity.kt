@@ -42,6 +42,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
+    private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
@@ -147,6 +148,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                             mediaIndex = event.mediaIndex,
                             repositoryQuery = event.repositoryQuery,
                         )
+
+                    is GalleryViewModel.Event.ResetScroll -> {
+                        resetScroll()
+                    }
                 }
 
                 log.debug {
@@ -236,12 +241,17 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             adapter = galleryAdapter
             layoutManager = gridLayoutManager
 
-            val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener(
+            endlessScrollListener = object : EndlessRecyclerOnScrollListener(
                 footerAdapter = galleryProgressFooterAdapter,
                 layoutManager = gridLayoutManager,
                 visibleThreshold = gridLayoutManager.spanCount * 5
             ) {
                 override fun onLoadMore(currentPage: Int) {
+                    if (currentPage == 0) {
+                        // Filter out false-triggering.
+                        return
+                    }
+
                     log.debug {
                         "onLoadMore(): load_more:" +
                                 "\npage=$currentPage"
@@ -251,12 +261,12 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             }
             viewModel.isLoading.observe(this@GalleryActivity) { isLoading ->
                 if (isLoading) {
-                    endlessRecyclerOnScrollListener.disable()
+                    endlessScrollListener.disable()
                 } else {
-                    endlessRecyclerOnScrollListener.enable()
+                    endlessScrollListener.enable()
                 }
             }
-            addOnScrollListener(endlessRecyclerOnScrollListener)
+            addOnScrollListener(endlessScrollListener)
         }
     }
 
@@ -322,5 +332,16 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     )
                 )
         )
+    }
+
+    private fun resetScroll() {
+        log.debug {
+            "resetScroll(): resetting_scroll"
+        }
+
+        with(view.galleryRecyclerView) {
+            scrollToPosition(0)
+            endlessScrollListener.resetPageCount(0)
+        }
     }
 }

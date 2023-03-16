@@ -8,6 +8,8 @@ import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -24,19 +26,30 @@ class SimpleGalleryMediaRepository(
     pagingOrder = PagingOrder.DESC,
     pageLimit = pageLimit,
 ) {
+    private val log = kLogger("SimpleGalleryMediaRepo")
+
     override fun getPage(
         limit: Int,
         cursor: String?,
         order: PagingOrder
     ): Single<DataPage<GalleryMedia>> {
-        val offset = cursor?.toInt() ?: 0
+        val galleryMediaItems = mutableListOf<GalleryMedia>()
+        var nextCursor = cursor
+        var offset = 0
+        var pageIsLast = false
 
-        return {
+        val loadPage = {
+            offset = nextCursor?.toInt() ?: 0
 
+            log.debug {
+                "getPage(): loading_page:" +
+                        "\noffset=$offset," +
+                        "\blimit=$pageLimit"
+            }
 
             photoPrismPhotosService.getPhotos(
-                count = limit,
-                offset = cursor?.toInt() ?: 0,
+                count = pageLimit,
+                offset = offset,
                 q = query,
                 order = when (pagingOrder) {
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
@@ -47,6 +60,15 @@ class SimpleGalleryMediaRepository(
             .toSingle()
             .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
+                val filesCount = photoPrismPhotos.sumOf { it.files.size }
+                pageIsLast = filesCount < limit
+
+                log.debug {
+                    "getPage(): raw_page_loaded:" +
+                            "\nfilesCount=${photoPrismPhotos.sumOf { it.files.size }}," +
+                            "\npageIsLast=$pageIsLast"
+                }
+
                 photoPrismPhotos.mapSuccessful {
                     GalleryMedia(
                         source = it,
@@ -55,10 +77,35 @@ class SimpleGalleryMediaRepository(
                     )
                 }
             }
-            .map { galleryMediaItems ->
+            .doOnSuccess { successfullyLoadedItems ->
+                galleryMediaItems.addAll(successfullyLoadedItems)
+
+                // Load extra data to fulfill the requested page limit.
+                nextCursor = (limit + offset).toString()
+
+                log.debug {
+                    "getPage(): page_loaded:" +
+                            "\nsuccessfullyLoadedItemsCount=${successfullyLoadedItems.size}," +
+                            "\nexpectedCount=$pageLimit"
+                }
+            }
+
+        return loadPage
+            .repeatUntil { pageIsLast || galleryMediaItems.size >= pageLimit }
+            .ignoreElements()
+            .toSingle {
+                log.debug {
+                    "getPage(): loaded_enough_data:" +
+                            "\nitemsCount=${galleryMediaItems.size}," +
+                            "\nlimit=$limit"
+                }
+
                 DataPage(
                     items = galleryMediaItems,
-                    nextCursor = (limit + offset).toString()
+                    nextCursor = nextCursor.checkNotNull {
+                        "The cursor must be defined at this moment"
+                    },
+                    isLast = pageIsLast,
                 )
             }
     }
@@ -94,6 +141,7 @@ class SimpleGalleryMediaRepository(
             }
 
             val query = queryBuilder.toString()
+                .trim()
                 .takeUnless(String::isNullOrBlank)
 
             return get(query)
@@ -114,6 +162,4 @@ class SimpleGalleryMediaRepository(
                 }
         }
     }
-
-
 }
