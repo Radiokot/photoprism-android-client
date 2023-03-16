@@ -110,6 +110,8 @@ class GalleryViewModel(
                     update()
                 }
                 GallerySearchViewModel.State.NoSearch -> {
+                    // TODO: initial repository saved here but removed from factory cache ->
+                    //  photo viewer is opened with a fresh repository.
                     currentMediaRepository = initialMediaRepository
                     subscribeToRepository()
                     update()
