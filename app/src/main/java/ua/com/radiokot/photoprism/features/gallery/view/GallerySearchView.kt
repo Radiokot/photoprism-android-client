@@ -1,8 +1,17 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.media.Image
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.TextUtils
+import android.text.style.ImageSpan
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.text.toSpannable
 import androidx.core.view.forEach
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
@@ -14,8 +23,11 @@ import ua.com.radiokot.photoprism.databinding.ViewGallerySearchContentBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
+import kotlin.math.roundToInt
+
 
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
@@ -99,17 +111,19 @@ class GallerySearchView(
         configurationView.searchButton.setOnClickListener {
             viewModel.onSearchClicked()
         }
+
+        searchBar.textView.ellipsize = TextUtils.TruncateAt.END
     }
 
     private fun subscribeToData() {
+        val context = configurationView.mediaTypeChipsLayout.context
         viewModel.isApplyButtonEnabled
             .observe(this, configurationView.searchButton::setEnabled)
 
         val searchChipSpacing =
-            configurationView.mediaTypeChipsLayout.context.resources
-                .getDimensionPixelSize(R.dimen.gallery_search_media_type_chip_spacing)
+            context.resources.getDimensionPixelSize(R.dimen.gallery_search_media_type_chip_spacing)
         val searchChipContext = ContextThemeWrapper(
-            configurationView.mediaTypeChipsLayout.context,
+            context,
             R.style.MediaTypeChip
         )
         val searchChipLayoutParams = FlexboxLayout.LayoutParams(
@@ -170,20 +184,42 @@ class GallerySearchView(
                         "\nstate=$state"
             }
 
-            when (state) {
-                is GallerySearchViewModel.State.AppliedSearch ->
-                    closeConfigurationView()
+            // Override logic of the SearchBar text.
+            searchBar.post {
+                searchBar.text =
+                    when (state) {
+                        is GallerySearchViewModel.State.AppliedSearch ->
+                            getSearchBarText(
+                                search = state.search,
+                                textView = searchBar.textView,
+                            )
+                        is GallerySearchViewModel.State.ConfiguringSearch ->
+                            if (state.alreadyAppliedSearch != null)
+                                getSearchBarText(
+                                    search = state.alreadyAppliedSearch,
+                                    textView = searchBar.textView,
+                                )
+                            else
+                                null
+                        GallerySearchViewModel.State.NoSearch ->
+                            null
+                    }
 
-                is GallerySearchViewModel.State.ConfiguringSearch ->
-                    openConfigurationView()
+                when (state) {
+                    is GallerySearchViewModel.State.AppliedSearch ->
+                        closeConfigurationView()
 
-                GallerySearchViewModel.State.NoSearch ->
-                    closeConfigurationView()
-            }
+                    is GallerySearchViewModel.State.ConfiguringSearch ->
+                        openConfigurationView()
 
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
+                    GallerySearchViewModel.State.NoSearch ->
+                        closeConfigurationView()
+                }
+
+                log.debug {
+                    "subscribeToState(): handled_new_state:" +
+                            "\nstate=$state"
+                }
             }
         }.disposeOnDestroy(this)
     }
@@ -194,5 +230,46 @@ class GallerySearchView(
 
     private fun openConfigurationView() {
         searchView.show()
+    }
+
+    private fun getSearchBarText(
+        search: AppliedGallerySearch,
+        textView: TextView
+    ): CharSequence {
+        val iconPlaceholder = "* "
+        val spannableString = SpannableStringBuilder()
+            .apply {
+                repeat(search.mediaTypes.size) {
+                    append(iconPlaceholder)
+                }
+
+                if (search.mediaTypes.isNotEmpty()) {
+                    append("  ")
+                }
+            }
+            .append(search.userQuery)
+            .toSpannable()
+
+        val iconSize = (textView.lineHeight * 0.7).roundToInt()
+        val textColors = textView.textColors
+
+        search.mediaTypes.forEachIndexed { i, mediaType ->
+            val drawable = ContextCompat.getDrawable(
+                textView.context,
+                GalleryMediaTypeResources.getIcon(mediaType)
+            )!!.apply {
+                setBounds(0, 0, iconSize, iconSize)
+            }
+            DrawableCompat.setTintList(drawable, textColors)
+
+            spannableString.setSpan(
+                ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
+                i * iconPlaceholder.length,
+                (i * iconPlaceholder.length) + 1,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        return spannableString
     }
 }

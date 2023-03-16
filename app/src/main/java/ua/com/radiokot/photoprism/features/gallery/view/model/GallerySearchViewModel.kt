@@ -132,7 +132,7 @@ class GallerySearchViewModel : ViewModel() {
 
     private fun applyConfiguredSearch() {
         check(stateSubject.value is State.ConfiguringSearch) {
-            "The search can only "
+            "The search can only be applied while configuring"
         }
 
         val search = AppliedGallerySearch(
