@@ -63,6 +63,10 @@ class SimpleGalleryMediaRepository(
             }
     }
 
+    override fun toString(): String {
+        return "SimpleGalleryMediaRepository(query=$query)"
+    }
+
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
         private val thumbnailUrlFactory: MediaPreviewUrlFactory,
@@ -71,11 +75,22 @@ class SimpleGalleryMediaRepository(
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
 
-        fun getFiltered(mediaTypeFilter: GalleryMedia.TypeName?): SimpleGalleryMediaRepository {
+        fun getFiltered(
+            mediaTypes: Set<GalleryMedia.TypeName> = emptySet(),
+            userQuery: String? = null
+        ): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
 
-            if (mediaTypeFilter != null) {
-                queryBuilder.append(" type:${mediaTypeFilter.value}")
+            if (mediaTypes.isNotEmpty()) {
+                queryBuilder.append(
+                    " type:${
+                        mediaTypes.joinToString("|") { it.value }
+                    }"
+                )
+            }
+
+            if (userQuery != null) {
+                queryBuilder.append(" $userQuery")
             }
 
             val query = queryBuilder.toString()
@@ -99,4 +114,6 @@ class SimpleGalleryMediaRepository(
                 }
         }
     }
+
+
 }

@@ -11,7 +11,7 @@ class GallerySearchViewModel : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
     val availableMediaTypes = MutableLiveData(
-        listOf(
+        setOf(
             GalleryMedia.TypeName.IMAGE,
             GalleryMedia.TypeName.VIDEO,
             GalleryMedia.TypeName.ANIMATED,

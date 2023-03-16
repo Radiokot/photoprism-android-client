@@ -80,11 +80,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
             viewModel.initSelection(
                 downloadViewModel = downloadViewModel,
+                searchViewModel = searchViewModel,
                 requestedMimeType = intent.type,
             )
         } else {
             viewModel.initViewing(
                 downloadViewModel = downloadViewModel,
+                searchViewModel = searchViewModel,
             )
         }
 
@@ -165,13 +167,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
                 title = when (state) {
                     is GalleryViewModel.State.Selecting ->
-                        if (state.filter != null)
-                            getString(
-                                R.string.template_select_media_type,
-                                getString(GalleryMediaTypeResources.getName(state.filter))
-                            )
-                        else
-                            getString(R.string.select_content)
+                        getString(R.string.select_content)
 
                     GalleryViewModel.State.Viewing ->
                         getString(R.string.library)
