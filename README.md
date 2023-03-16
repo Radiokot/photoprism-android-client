@@ -3,7 +3,7 @@
 A native Android gallery for your [PhotoPrism library](https://www.photoprism.app/). 
 
 <p float="left">
-<img src="https://user-images.githubusercontent.com/5675681/225748349-abdded2d-e2d7-4c25-921d-0f7a8c482c2e.png" width=200 />
+<img src="https://user-images.githubusercontent.com/5675681/225753079-3c4448ea-a156-4abf-b0ee-ef23041bf139.png" width=200 />
 <img src="https://user-images.githubusercontent.com/5675681/225748600-a47eb602-eaf5-42a5-9f82-24a22d40a916.png" width=200 />
 <img src="https://user-images.githubusercontent.com/5675681/225748714-679f77db-4d75-4d74-b1ca-26d8b3d4c558.png" width=200 />
 <img src="https://user-images.githubusercontent.com/5675681/225750857-e7ede4a2-e478-4eb7-a5bb-b4a98a84a1fe.png" width=200 />
