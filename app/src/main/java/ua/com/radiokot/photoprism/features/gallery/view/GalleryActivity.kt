@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.GridLayoutManager
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
+import com.google.android.material.search.SearchView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
@@ -100,6 +102,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         view.galleryRecyclerView.post(::initList)
         initMediaFileSelection()
         downloadProgressView.init()
+        initSearch()
     }
 
     private fun subscribeToData() {
@@ -320,6 +323,25 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             if (fileItem.source != null) {
                 viewModel.onFileSelected(fileItem.source)
             }
+        }
+    }
+
+    private fun initSearch() {
+        val searchBackPressedCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                view.searchView.hide()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, searchBackPressedCallback)
+
+        view.searchView.addTransitionListener { _, previousState, newState ->
+            log.debug {
+                "initSearch(): search_view_transitioning:" +
+                        "\nprevState=$previousState," +
+                        "\nnewState=$newState"
+            }
+
+            searchBackPressedCallback.isEnabled = newState == SearchView.TransitionState.SHOWN
         }
     }
 

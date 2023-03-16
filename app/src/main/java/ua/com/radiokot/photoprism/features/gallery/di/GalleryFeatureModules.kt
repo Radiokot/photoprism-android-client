@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
@@ -61,6 +62,10 @@ val galleryFeatureModules: List<Module> = listOf(
                         observableDownloader = get()
                     )
                 )
+            }
+
+            viewModel {
+                GallerySearchViewModel()
             }
 
             viewModel {
