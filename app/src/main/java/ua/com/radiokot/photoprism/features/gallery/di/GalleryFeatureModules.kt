@@ -10,9 +10,9 @@ import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
-import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.io.File

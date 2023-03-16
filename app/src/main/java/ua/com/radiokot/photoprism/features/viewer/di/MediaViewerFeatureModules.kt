@@ -5,7 +5,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
-import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 
 val mediaViewerFeatureModules: List<Module> = listOf(
     module {

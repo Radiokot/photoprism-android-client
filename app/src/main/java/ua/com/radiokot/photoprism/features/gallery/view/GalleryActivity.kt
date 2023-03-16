@@ -22,10 +22,7 @@ import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryProgressListItem
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import java.io.File
 

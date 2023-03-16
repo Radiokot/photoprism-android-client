@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import io.reactivex.rxjava3.core.Observable
 

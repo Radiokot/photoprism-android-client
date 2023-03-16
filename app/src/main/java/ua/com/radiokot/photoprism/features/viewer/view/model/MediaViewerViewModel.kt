@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.viewer.view
+package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,8 +10,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import java.io.File
 
 class MediaViewerViewModel(

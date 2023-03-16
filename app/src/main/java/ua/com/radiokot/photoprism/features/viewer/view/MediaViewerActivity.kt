@@ -18,11 +18,12 @@ import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import java.io.File
 
 class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {

@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
 
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,

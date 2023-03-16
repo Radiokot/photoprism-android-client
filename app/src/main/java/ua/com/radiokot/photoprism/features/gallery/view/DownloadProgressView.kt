@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadProgressViewModel
 
 class DownloadProgressView(
     private val viewModel: DownloadProgressViewModel,
