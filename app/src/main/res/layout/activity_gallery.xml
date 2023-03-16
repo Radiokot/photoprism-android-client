@@ -24,7 +24,6 @@
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/search_the_library"
             android:hint="@string/search_the_library" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,9 +34,14 @@
         android:hint="@string/search_the_library"
         app:layout_anchor="@id/search_bar">
 
-        <include
-            android:id="@+id/search_content"
-            layout="@layout/view_gallery_search_content" />
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/search_content"
+                layout="@layout/view_gallery_search_content" />
+        </androidx.core.widget.NestedScrollView>
     </com.google.android.material.search.SearchView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -24,4 +24,12 @@
         <!--Filled programmatically -->
     </com.google.android.flexbox.FlexboxLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/search_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:text="@string/apply_search" />
 </LinearLayout>
