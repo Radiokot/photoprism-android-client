@@ -83,41 +83,42 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
-        // TODO: do not reinit VM if savedInstanceState != null
-        if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_finishing"
+        if (savedInstanceState == null) {
+            if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
+                if (tryOrNull { scope } == null) {
+                    log.warn {
+                        "onCreate(): no_scope_finishing"
+                    }
+
+                    Toast.makeText(
+                        this,
+                        R.string.error_you_have_to_connect_to_library,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    finish()
+                    return
                 }
 
-                Toast.makeText(
-                    this,
-                    R.string.error_you_have_to_connect_to_library,
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                finish()
-                return
-            }
-
-            viewModel.initSelection(
-                downloadViewModel = downloadViewModel,
-                searchViewModel = searchViewModel,
-                requestedMimeType = intent.type,
-            )
-        } else {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_going_to_env_connection"
+                viewModel.initSelection(
+                    downloadViewModel = downloadViewModel,
+                    searchViewModel = searchViewModel,
+                    requestedMimeType = intent.type,
+                )
+            } else {
+                if (tryOrNull { scope } == null) {
+                    log.warn {
+                        "onCreate(): no_scope_going_to_env_connection"
+                    }
+                    goToEnvConnection()
+                    return
                 }
-                goToEnvConnection()
-                return
-            }
 
-            viewModel.initViewing(
-                downloadViewModel = downloadViewModel,
-                searchViewModel = searchViewModel,
-            )
+                viewModel.initViewing(
+                    downloadViewModel = downloadViewModel,
+                    searchViewModel = searchViewModel,
+                )
+            }
         }
 
         view = ActivityGalleryBinding.inflate(layoutInflater)
