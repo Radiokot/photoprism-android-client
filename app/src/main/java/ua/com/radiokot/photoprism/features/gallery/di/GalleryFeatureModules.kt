@@ -7,7 +7,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
-import ua.com.radiokot.photoprism.api.PhotoPrismSession
+import ua.com.radiokot.photoprism.features.env.data.model.PhotoPrismSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -73,6 +73,7 @@ val galleryFeatureModules: List<Module> = listOf(
 
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
+                    // TODO: Fix 'Y' for SDK 22, try 'yyyy'
                     dateHeaderDayYearDateFormat = SimpleDateFormat(
                         DateFormat.getBestDateTimePattern(locale, "EEMMMMdYYYY"),
                         locale

@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:targetApi="31">
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".features.gallery.view.GalleryActivity"
@@ -38,6 +34,13 @@
         <activity
             android:name=".features.viewer.view.MediaViewerActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".features.env.view.EnvConnectionActivity"
+            android:exported="false"
+            android:label="@string/connect_to_a_library"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
