@@ -30,4 +30,16 @@
     <string name="media_type">Type</string>
     <string name="apply_search">Apply</string>
     <string name="reset_search">Reset</string>
+    <string name="error_you_have_to_connect_to_library">You have to connect to a library first</string>
+    <string name="library_root_url">Library root URL</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="connect_to_a_library">Connect to a library</string>
+    <string name="connect">Connect</string>
+    <string name="auth_public">Public</string>
+    <string name="auth_private">Private</string>
+    <string name="error_inaccessible_library_url">Library is not accessible</string>
+    <string name="template_error_inaccessible_library_url_code">Library is not accessible (code %1$d)</string>
+    <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
+    <string name="error_invalid_password">Invalid password</string>
 </resources>

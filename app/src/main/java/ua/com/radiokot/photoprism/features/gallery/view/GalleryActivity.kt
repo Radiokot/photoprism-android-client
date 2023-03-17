@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +19,11 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.tryOrNull
+import ua.com.radiokot.photoprism.features.env.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
@@ -30,7 +34,7 @@ import java.io.File
 class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
         createActivityScope().apply {
-            linkTo(getScope("session"))
+            linkTo(getScope(DI_SCOPE_SESSION))
         }
     }
 
@@ -79,13 +83,37 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        // TODO: do not reinit VM if savedInstanceState != null
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
+            if (tryOrNull { scope } == null) {
+                log.warn {
+                    "onCreate(): no_scope_finishing"
+                }
+
+                Toast.makeText(
+                    this,
+                    R.string.error_you_have_to_connect_to_library,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+                return
+            }
+
             viewModel.initSelection(
                 downloadViewModel = downloadViewModel,
                 searchViewModel = searchViewModel,
                 requestedMimeType = intent.type,
             )
         } else {
+            if (tryOrNull { scope } == null) {
+                log.warn {
+                    "onCreate(): no_scope_going_to_env_connection"
+                }
+                goToEnvConnection()
+                return
+            }
+
             viewModel.initViewing(
                 downloadViewModel = downloadViewModel,
                 searchViewModel = searchViewModel,
@@ -344,5 +372,14 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             scrollToPosition(0)
             endlessScrollListener.resetPageCount(0)
         }
+    }
+
+    private fun goToEnvConnection() {
+        log.debug {
+            "goToEnvConnection(): going_to_env_connection"
+        }
+
+        startActivity(Intent(this, EnvConnectionActivity::class.java))
+        finish()
     }
 }

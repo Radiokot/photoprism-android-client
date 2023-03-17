@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.api.util
 
+import okio.IOException
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
@@ -13,11 +14,12 @@ class SyncCallAdapter<T : Any>(
     override fun responseType(): Type =
         returnType
 
+    @kotlin.jvm.Throws(IOException::class)
     override fun adapt(call: Call<T>): T {
         val response = call.execute()
 
         if (response.code() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-            throw HttpException(response)
+            throw retrofit2.HttpException(response)
         }
 
         return if (returnType == Unit::class.java) {

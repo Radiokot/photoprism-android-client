@@ -5,29 +5,29 @@ import android.content.Context
 import android.os.Build
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
-import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.core.qualifier.named
+import org.koin.core.qualifier.qualifier
 import org.slf4j.impl.HandroidLoggerAdapter
-import ua.com.radiokot.photoprism.api.PhotoPrismSession
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
+import ua.com.radiokot.photoprism.features.env.di.envFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.IOException
-import java.util.*
 
 class App : Application() {
     private val log = kLogger("App")
 
     override fun onCreate() {
         super.onCreate()
-
-        Locale.setDefault(Locale.ENGLISH)
 
         startKoin {
             androidLogger()
@@ -36,25 +36,12 @@ class App : Application() {
                 retrofitApiModules
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
-            )
-            properties(
-                mapOf(
-                    "sessionId" to BuildConfig.SESSION_ID,
-                    "apiUrl" to BuildConfig.API_URL,
-                )
+                        + envFeatureModules
             )
             androidFileProperties("app.properties")
         }
 
-        getKoin().createScope(
-            "session",
-            named<PhotoPrismSession>(),
-            PhotoPrismSession(
-                id = getKoin().getProperty("sessionId")!!,
-                previewToken = "3hjej82k",
-                downloadToken = "bvmk6aml"
-            )
-        )
+        loadSessionIfPresent()
 
         initRxErrorHandler()
         initLogging()
@@ -98,9 +85,21 @@ class App : Application() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocalizationHelper.getLocalizedConfigurationContext(
-            context = newBase,
-            locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
-        ))
+        super.attachBaseContext(
+            LocalizationHelper.getLocalizedConfigurationContext(
+                context = newBase,
+                locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
+            )
+        )
+    }
+
+    private fun loadSessionIfPresent() {
+        val sessionPersistence =
+            get<ObjectPersistence<EnvSession>>(qualifier<EnvSession>())
+        val sessionHolder = get<EnvSessionHolder>()
+
+        sessionPersistence
+            .loadItem()
+            ?.let(sessionHolder::set)
     }
 }

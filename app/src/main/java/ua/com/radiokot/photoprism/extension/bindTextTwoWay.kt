@@ -13,6 +13,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
  * The view must be attached to a lifecycle owner.
  */
 fun EditText.bindTextTwoWay(
+    // TODO: Go to strings.
     liveData: MutableLiveData<CharSequence?>
 ) {
     val lifecycleOwner = findViewTreeLifecycleOwner()

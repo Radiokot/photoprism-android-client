@@ -68,8 +68,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1'
+    // Must be 2.13 for minSdk 21
+    implementation ('com.fasterxml.jackson.core:jackson-databind:2.13.0')
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0'
 
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_android_version"
@@ -92,6 +93,8 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.8'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+    implementation "androidx.security:security-crypto:1.1.0-alpha05"
 
     testImplementation 'junit:junit:4.13.2'
 

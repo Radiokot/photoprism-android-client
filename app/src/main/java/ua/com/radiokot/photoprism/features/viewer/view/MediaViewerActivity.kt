@@ -13,14 +13,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
@@ -29,7 +30,7 @@ import java.io.File
 class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
         createActivityScope().apply {
-            linkTo(getScope("session"))
+            linkTo(getScope(DI_SCOPE_SESSION))
         }
     }
 
@@ -80,6 +81,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        // TODO: Do not reinit
         viewModel.init(
             downloadViewModel = downloadViewModel,
             repositoryQuery = repositoryQuery,

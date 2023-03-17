@@ -9,4 +9,6 @@ data class PhotoPrismClientConfig(
     val previewToken: String,
     @JsonProperty("years")
     val years: List<Int>,
+    @JsonProperty("siteUrl")
+    val siteUrl: String,
 )
