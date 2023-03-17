@@ -38,4 +38,8 @@
     <string name="connect">Connect</string>
     <string name="auth_public">Public</string>
     <string name="auth_private">Private</string>
+    <string name="error_inaccessible_library_url">Library is not accessible</string>
+    <string name="template_error_inaccessible_library_url_code">Library is not accessible (code %1$d)</string>
+    <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
+    <string name="error_invalid_password">Invalid password</string>
 </resources>

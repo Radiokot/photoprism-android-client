@@ -374,10 +374,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun goToEnvConnection() {
-        startActivity(
-            Intent(this, EnvConnectionActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        )
+        startActivity(Intent(this, EnvConnectionActivity::class.java))
         finish()
     }
 }

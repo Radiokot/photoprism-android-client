@@ -113,11 +113,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autofillHints="password"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionGo"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="24dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/connect_button"
@@ -125,8 +129,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="24dp"
                 android:text="@string/connect" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminate="true" />
 
             <Space
                 android:layout_width="0dp"

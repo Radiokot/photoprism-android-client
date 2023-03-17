@@ -2,10 +2,18 @@ package ua.com.radiokot.photoprism.features.env.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
+import java.util.concurrent.TimeUnit
 
 class EnvConnectionViewModel(
 
 ) : ViewModel() {
+    private val log = kLogger("EnvConnectionVM")
+
     val rootUrl = MutableLiveData<CharSequence?>()
     val rootUrlError = MutableLiveData<RootUrlError?>(null)
     val isPublic = MutableLiveData(false)
@@ -37,6 +45,7 @@ class EnvConnectionViewModel(
 
         rootUrl.observeForever(updateConnectionButtonEnabled)
         rootUrlError.observeForever(updateConnectionButtonEnabled)
+        isPublic.observeForever(updateConnectionButtonEnabled)
         username.observeForever(updateConnectionButtonEnabled)
         password.observeForever(updateConnectionButtonEnabled)
         passwordError.observeForever(updateConnectionButtonEnabled)
@@ -44,7 +53,11 @@ class EnvConnectionViewModel(
 
         isPublic.observeForever { areCredentialsVisible.value = !it }
 
-        rootUrl.observeForever { rootUrlError.value = null }
+        rootUrl.observeForever {
+            rootUrlError.value = null
+            passwordError.value = null
+        }
+        username.observeForever { passwordError.value = null }
         password.observeForever { passwordError.value = null }
     }
 
@@ -65,6 +78,40 @@ class EnvConnectionViewModel(
 
     private fun connect() {
         state.value = State.Connecting
+
+        val connection: EnvConnection = try {
+            EnvConnection.fromRootUrl(
+                rootUrl = rootUrl.value!!.toString().trim(),
+                auth =
+                if (isPublic.value == true)
+                    EnvConnection.Auth.Public
+                else
+                    EnvConnection.Auth.Credentials(
+                        username = username.value!!.toString().trim(),
+                        password = password.value!!.toString()
+                    )
+            )
+        } catch (e: Exception) {
+            log.warn(e) { "connect(): connection_creation_failed" }
+
+            state.value = State.Idle
+            rootUrlError.value = RootUrlError.InvalidFormat
+
+            return
+        }
+
+        log.debug {
+            "connect(): connecting:" +
+                    "\nconnection=$connection"
+        }
+
+        Observable.timer(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                state.value = State.Idle
+                rootUrlError.value = RootUrlError.Inaccessible(123)
+            }
+            .addToCloseables(this)
     }
 
     sealed interface RootUrlError {

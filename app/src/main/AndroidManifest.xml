@@ -42,7 +42,6 @@
             android:name=".features.env.view.EnvConnectionActivity"
             android:exported="false"
             android:label="@string/connect_to_a_library"
-            android:noHistory="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
 
         <provider
