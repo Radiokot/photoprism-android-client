@@ -91,8 +91,8 @@ class EnvConnectionViewModel(
         state.value = State.Connecting
 
         val connection: EnvConnection = try {
-            EnvConnection.fromRootUrl(
-                rootUrl = rootUrl.value!!.toString().trim(),
+            EnvConnection(
+                apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.toString().trim()),
                 auth =
                 if (isPublic.value == true)
                     EnvConnection.Auth.Public

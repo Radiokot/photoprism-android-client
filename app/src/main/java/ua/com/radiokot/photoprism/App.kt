@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism
 import android.app.Application
 import android.content.Context
 import android.os.Build
-import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import org.koin.android.ext.android.get
@@ -46,8 +45,6 @@ class App : Application() {
 
         initRxErrorHandler()
         initLogging()
-
-        Picasso.get().isLoggingEnabled=true
     }
 
     private fun initRxErrorHandler() {

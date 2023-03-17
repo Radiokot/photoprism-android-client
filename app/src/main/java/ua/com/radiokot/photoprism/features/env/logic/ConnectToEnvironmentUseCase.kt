@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.env.logic
 
 import io.reactivex.rxjava3.core.Single
 import retrofit2.HttpException
+import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.api.session.model.PhotoPrismSessionCredentials
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
@@ -32,23 +33,19 @@ class ConnectToEnvironmentUseCase(
     private val envSessionPersistence: ObjectPersistence<EnvSession>?,
 ) {
     private lateinit var sessionId: String
-    private lateinit var previewToken: String
-    private lateinit var downloadToken: String
+    private lateinit var config: Config
 
     fun perform(): Single<EnvSession> {
         return getSessionId()
             .doOnSuccess { sessionId = it }
-            .flatMap { getTokens() }
-            .doOnSuccess { tokens ->
-                previewToken = tokens.first
-                downloadToken = tokens.second
-            }
+            .flatMap { getConfig() }
+            .doOnSuccess { config = it }
             .map {
                 EnvSession(
-                    apiUrl = connection.apiUrl,
+                    apiUrl = EnvConnection.rootUrlToApiUrl(config.rootUrl),
                     id = sessionId,
-                    previewToken = previewToken,
-                    downloadToken = downloadToken,
+                    previewToken = config.previewToken,
+                    downloadToken = config.downloadToken,
                 )
             }
             .doOnSuccess { session ->
@@ -80,11 +77,23 @@ class ConnectToEnvironmentUseCase(
                 Single.error(error)
         }
 
-    private fun getTokens(): Single<Pair<String, String>> = {
+    private fun getConfig(): Single<Config> = {
         configServiceFactory(connection.apiUrl, sessionId)
             .getClientConfig()
-            .let { it.previewToken to it.downloadToken }
+            .let(::Config)
     }.toSingle()
 
     class InvalidPasswordException : RuntimeException()
+
+    private data class Config(
+        val previewToken: String,
+        val downloadToken: String,
+        val rootUrl: String,
+    ) {
+        constructor(source: PhotoPrismClientConfig) : this(
+            previewToken = source.previewToken,
+            downloadToken = source.downloadToken,
+            rootUrl = source.siteUrl,
+        )
+    }
 }

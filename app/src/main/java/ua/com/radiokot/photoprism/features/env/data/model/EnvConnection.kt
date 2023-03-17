@@ -16,18 +16,13 @@ data class EnvConnection(
     }
 
     companion object {
-        fun fromRootUrl(
-            rootUrl: String,
-            auth: Auth,
-        ) = EnvConnection(
-            apiUrl = rootUrl
+        fun rootUrlToApiUrl(rootUrl: String): String =
+            rootUrl
                 .toHttpUrl()
                 .newBuilder()
                 .addPathSegment("api")
                 .addPathSegment("") // Force trailing slash.
                 .build()
-                .toString(),
-            auth = auth
-        )
+                .toString()
     }
 }
