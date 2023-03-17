@@ -72,7 +72,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textWebEmailAddress|textNoSuggestions"
+                    android:inputType="textUri|textNoSuggestions"
                     android:maxLines="1"
                     tools:ignore="SpeakableTextPresentCheck">
 
