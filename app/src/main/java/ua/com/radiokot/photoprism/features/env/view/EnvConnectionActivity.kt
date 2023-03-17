@@ -8,7 +8,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
-import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -27,8 +26,6 @@ class EnvConnectionActivity : BaseActivity() {
 
         view = ActivityEnvConnectionBinding.inflate(layoutInflater)
         setContentView(view.root)
-
-        viewModel.init()
 
         initFields()
         initButtons()

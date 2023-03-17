@@ -81,6 +81,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        // TODO: Do not reinit
         viewModel.init(
             downloadViewModel = downloadViewModel,
             repositoryQuery = repositoryQuery,

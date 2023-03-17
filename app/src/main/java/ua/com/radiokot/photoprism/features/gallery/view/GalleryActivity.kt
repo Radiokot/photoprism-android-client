@@ -83,6 +83,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        // TODO: do not reinit VM if savedInstanceState != null
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
             if (tryOrNull { scope } == null) {
                 log.warn {

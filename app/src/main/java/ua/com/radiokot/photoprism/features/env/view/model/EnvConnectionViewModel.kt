@@ -46,9 +46,9 @@ class EnvConnectionViewModel(
                         && passwordError.value == null
                 )
 
-    fun init() {
+    init {
         val updateConnectionButtonEnabled = { _: Any? ->
-            isConnectButtonEnabled.value = canConnect
+            isConnectButtonEnabled.postValue(canConnect)
         }
 
         rootUrl.observeForever(updateConnectionButtonEnabled)
