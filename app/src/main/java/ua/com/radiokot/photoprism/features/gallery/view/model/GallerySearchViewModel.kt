@@ -21,7 +21,7 @@ class GallerySearchViewModel : ViewModel() {
         )
     )
     val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
-    val userQuery = MutableLiveData<CharSequence?>()
+    val userQuery = MutableLiveData<String>()
     val isApplyButtonEnabled = MutableLiveData(false)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
     val state: Observable<State> = stateSubject
@@ -75,7 +75,7 @@ class GallerySearchViewModel : ViewModel() {
 
             State.NoSearch -> {
                 selectedMediaTypes.value = emptySet()
-                userQuery.value = null
+                userQuery.value = ""
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -136,7 +136,7 @@ class GallerySearchViewModel : ViewModel() {
 
         val search = AppliedGallerySearch(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
-            userQuery = userQuery.value?.toString()?.trim()
+            userQuery = userQuery.value!!.trim()
         )
 
         log.debug {

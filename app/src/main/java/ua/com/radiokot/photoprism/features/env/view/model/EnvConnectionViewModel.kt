@@ -20,11 +20,11 @@ class EnvConnectionViewModel(
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
-    val rootUrl = MutableLiveData<CharSequence?>()
+    val rootUrl = MutableLiveData<String>()
     val rootUrlError = MutableLiveData<RootUrlError?>(null)
     val isPublic = MutableLiveData(false)
-    val username = MutableLiveData<CharSequence?>()
-    val password = MutableLiveData<CharSequence?>()
+    val username = MutableLiveData<String>()
+    val password = MutableLiveData<String>()
     val passwordError = MutableLiveData<PasswordError?>(null)
 
     val state = MutableLiveData<State>(State.Idle)
@@ -92,14 +92,14 @@ class EnvConnectionViewModel(
 
         val connection: EnvConnection = try {
             EnvConnection(
-                apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.toString().trim()),
+                apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.trim()),
                 auth =
                 if (isPublic.value == true)
                     EnvConnection.Auth.Public
                 else
                     EnvConnection.Auth.Credentials(
-                        username = username.value!!.toString().trim(),
-                        password = password.value!!.toString()
+                        username = username.value!!.trim(),
+                        password = password.value!!
                     )
             )
         } catch (e: Exception) {
