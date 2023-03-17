@@ -7,7 +7,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
-import ua.com.radiokot.photoprism.features.env.data.model.PhotoPrismSession
+import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -21,9 +21,9 @@ import java.util.*
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
-        scope<PhotoPrismSession> {
+        scope<EnvSession> {
             scoped {
-                val session = get<PhotoPrismSession>()
+                val session = get<EnvSession>()
 
                 PhotoPrismPreviewUrlFactory(
                     apiUrl = getProperty("apiUrl"),
@@ -32,7 +32,7 @@ val galleryFeatureModules: List<Module> = listOf(
             }.bind(MediaPreviewUrlFactory::class)
 
             scoped {
-                val session = get<PhotoPrismSession>()
+                val session = get<EnvSession>()
 
                 PhotoPrismMediaDownloadUrlFactory(
                     apiUrl = getProperty("apiUrl"),
@@ -52,7 +52,7 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
-        scope<PhotoPrismSession> {
+        scope<EnvSession> {
             viewModel {
                 DownloadMediaFileViewModel(
                     // See file_provider_paths.

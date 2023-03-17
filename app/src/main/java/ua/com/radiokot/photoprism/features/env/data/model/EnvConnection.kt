@@ -1,6 +1,6 @@
 package ua.com.radiokot.photoprism.features.env.data.model
 
-data class PhotoPrismEnvConnection(
+data class EnvConnection(
     val apiUrl: String,
     val auth: Auth
 ) {
@@ -8,7 +8,7 @@ data class PhotoPrismEnvConnection(
         object Public : Auth
 
         class Credentials(
-            val login: String,
+            val username: String,
             val password: String,
         ) : Auth
     }

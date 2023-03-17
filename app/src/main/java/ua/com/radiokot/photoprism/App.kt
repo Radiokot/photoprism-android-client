@@ -6,19 +6,17 @@ import android.os.Build
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.core.qualifier.named
 import org.koin.core.qualifier.qualifier
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.env.data.model.PhotoPrismSession
+import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.features.env.di.envFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
@@ -102,22 +100,11 @@ class App : Application() {
 
     private fun loadSessionIfPresent() {
         val sessionPersistence =
-            get<ObjectPersistence<PhotoPrismSession>>(qualifier<PhotoPrismSession>())
-        sessionPersistence.saveItem(
-            PhotoPrismSession(
-                apiUrl = BuildConfig.API_URL,
-                id = BuildConfig.SESSION_ID,
-                downloadToken = "bvmk6aml",
-                previewToken = "3hjej82k",
-            )
-        )
-        val session = sessionPersistence.loadItem()
-//        if (session != null) {
-//            getKoin().createScope(
-//                DI_SCOPE_SESSION,
-//                named<PhotoPrismSession>(),
-//                session,
-//            )
-//        }
+            get<ObjectPersistence<EnvSession>>(qualifier<EnvSession>())
+        val sessionHolder = get<EnvSessionHolder>()
+
+        sessionPersistence
+            .loadItem()
+            ?.let(sessionHolder::set)
     }
 }

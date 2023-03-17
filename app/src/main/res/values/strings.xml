@@ -36,4 +36,6 @@
     <string name="password">Password</string>
     <string name="connect_to_a_library">Connect to a library</string>
     <string name="connect">Connect</string>
+    <string name="auth_public">Public</string>
+    <string name="auth_private">Private</string>
 </resources>

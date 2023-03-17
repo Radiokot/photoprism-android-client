@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.util.SessionIdInterceptor
 import java.util.concurrent.TimeUnit
@@ -49,12 +50,12 @@ val httpModules: List<Module> = listOf(
                 .addInterceptor(SessionIdInterceptor(sessionId))
                 .addInterceptor(getLoggingInterceptor())
                 .build()
-        }
+        }.bind(OkHttpClient::class)
 
         single {
             getDefaultBuilder()
                 .addInterceptor(getLoggingInterceptor())
                 .build()
-        }
+        }.bind(OkHttpClient::class)
     },
 )
