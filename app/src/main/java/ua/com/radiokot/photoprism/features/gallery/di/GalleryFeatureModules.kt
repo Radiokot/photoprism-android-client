@@ -73,9 +73,8 @@ val galleryFeatureModules: List<Module> = listOf(
 
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
-                    // TODO: Fix 'Y' for SDK 22, try 'yyyy'
                     dateHeaderDayYearDateFormat = SimpleDateFormat(
-                        DateFormat.getBestDateTimePattern(locale, "EEMMMMdYYYY"),
+                        DateFormat.getBestDateTimePattern(locale, "EEMMMMdyyyy"),
                         locale
                     ),
                     dateHeaderDayDateFormat = SimpleDateFormat(
