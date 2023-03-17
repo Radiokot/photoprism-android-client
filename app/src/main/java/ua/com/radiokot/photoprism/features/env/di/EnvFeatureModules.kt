@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionSc
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -39,7 +40,7 @@ val envFeatureModules: List<Module> = listOf(
 
         single {
             KoinScopeEnvSessionHolder(
-                koin = getKoin()
+                koin = getKoin(),
             )
         }.bind(EnvSessionHolder::class)
 
@@ -52,12 +53,17 @@ val envFeatureModules: List<Module> = listOf(
                 configServiceFactory = { apiUrl, sessionId ->
                     get { parametersOf(apiUrl, sessionId) }
                 },
-                envSessionHolder = get()
+                envSessionHolder = get(),
+                envSessionPersistence = get(named<EnvSession>()),
             )
         }
 
         viewModel {
-            EnvConnectionViewModel()
+            EnvConnectionViewModel(
+                connectUseCaseProvider = { connection ->
+                    get { parametersOf(connection) }
+                },
+            )
         }
     },
 )

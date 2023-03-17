@@ -5,8 +5,4 @@ data class EnvSession(
     val id: String,
     val previewToken: String,
     val downloadToken: String,
-) {
-    companion object {
-        const val PUBLIC_TOKEN = "public"
-    }
-}
+)

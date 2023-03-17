@@ -32,25 +32,6 @@
                 android:text="@string/connect_to_a_library"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/root_url_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="@string/library_root_url"
-                app:startIconDrawable="@drawable/ic_server">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textUri"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck">
-
-                    <requestFocus />
-                </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/auth_button_group"
@@ -80,6 +61,26 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/root_url_text_input"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:hint="@string/library_root_url"
+                app:startIconDrawable="@drawable/ic_server">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textWebEmailAddress|textNoSuggestions"
+                    android:maxLines="1"
+                    tools:ignore="SpeakableTextPresentCheck">
+
+                    <requestFocus />
+                </com.google.android.material.textfield.TextInputEditText>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/username_text_input"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -94,6 +95,7 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="username"
                     android:imeOptions="actionNext"
+                    android:inputType="text"
                     android:maxLines="1"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>

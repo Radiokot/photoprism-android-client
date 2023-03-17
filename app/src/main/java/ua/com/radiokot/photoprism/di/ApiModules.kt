@@ -28,7 +28,7 @@ val retrofitApiModules: List<Module> = listOf(
                 .addConverterFactory(JacksonConverterFactory.create(get()))
                 .addCallAdapterFactory(SyncCallAdapter.Factory)
                 .client(
-                    if (sessionId != null)
+                    if (sessionId == null)
                         get()
                     else
                         get(named(InjectedHttpClient.WITH_SESSION)) { parametersOf(sessionId) }

@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.env.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -7,9 +8,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
+import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
+import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.env.view.model.EnvConnectionViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
+import ua.com.radiokot.photoprism.util.SoftInputUtil
 
 class EnvConnectionActivity : BaseActivity() {
     private val log = kLogger("EEnvConnectionActivity")
@@ -29,6 +34,7 @@ class EnvConnectionActivity : BaseActivity() {
         initButtons()
 
         subscribeToState()
+        subscribeToEvents()
     }
 
     private fun initFields() {
@@ -41,6 +47,10 @@ class EnvConnectionActivity : BaseActivity() {
 
             view.passwordTextInput.visibility = visibility
             view.usernameTextInput.visibility = visibility
+
+            if (areCredentialsVisible == false && !view.rootUrlTextInput.isFocused) {
+                view.rootUrlTextInput.requestFocus()
+            }
         }
 
         with(view.rootUrlTextInput) {
@@ -152,10 +162,9 @@ class EnvConnectionActivity : BaseActivity() {
 
             when (state) {
                 EnvConnectionViewModel.State.Connecting -> {
-
+                    SoftInputUtil.hideSoftInput(window)
                 }
                 EnvConnectionViewModel.State.Idle -> {
-
                 }
             }
 
@@ -164,5 +173,33 @@ class EnvConnectionActivity : BaseActivity() {
                         "\nstate=$state"
             }
         }
+    }
+
+    private fun subscribeToEvents() {
+        viewModel.events.subscribe() { event ->
+            log.debug {
+                "subscribeToEvents(): received_new_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                EnvConnectionViewModel.Event.GoToGallery ->
+                    goToGallery()
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_new_event:" +
+                        "\nevent=$event"
+            }
+        }.disposeOnDestroy(this)
+    }
+
+    private fun goToGallery() {
+        log.debug {
+            "goToGallery(): going_to_gallery"
+        }
+
+        startActivity(Intent(this, GalleryActivity::class.java))
+        finishAffinity()
     }
 }

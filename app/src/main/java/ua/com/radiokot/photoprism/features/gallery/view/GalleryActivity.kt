@@ -374,6 +374,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun goToEnvConnection() {
+        log.debug {
+            "goToEnvConnection(): going_to_env_connection"
+        }
+
         startActivity(Intent(this, EnvConnectionActivity::class.java))
         finish()
     }
