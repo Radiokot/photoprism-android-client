@@ -13,9 +13,9 @@ import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvironmentUseCase
+import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
-typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvironmentUseCase
+typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvUseCase
 
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,

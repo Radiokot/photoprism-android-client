@@ -8,10 +8,12 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
 import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
+import ua.com.radiokot.photoprism.extension.checkNotNull
 
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
@@ -21,7 +23,7 @@ class EnvHttpClientParams(
         val renewal: Renewal?,
     ) {
         class Renewal(
-            val credentialsProvider: () -> EnvAuth.Credentials,
+            val authProvider: () -> EnvAuth,
             val sessionCreator: SessionCreator,
             val onSessionRenewed: ((newId: String) -> Unit)?,
         )
@@ -45,7 +47,7 @@ val envModules = listOf(
 
                     builder.addInterceptor(
                         SessionRenewalInterceptor(
-                            credentialsProvider = renewal.credentialsProvider,
+                            authProvider = renewal.authProvider,
                             onSessionRenewed = renewal.onSessionRenewed,
                             sessionCreator = renewal.sessionCreator,
                         )
@@ -74,26 +76,32 @@ val envModules = listOf(
         scope<EnvSession> {
             scoped {
                 val session = get<EnvSession>()
+                val authPersistence = getOrNull<ObjectPersistence<EnvAuth>>(_q<EnvAuth>())
+                val sessionPersistence = getOrNull<ObjectPersistence<EnvSession>>(_q<EnvSession>())
+
+                val renewal: EnvHttpClientParams.SessionAwareness.Renewal? =
+                    if (authPersistence != null && authPersistence.hasItem())
+                        EnvHttpClientParams.SessionAwareness.Renewal(
+                            authProvider = {
+                                authPersistence.loadItem().checkNotNull {
+                                    "There must be an auth data in order to renew the session"
+                                }
+                            },
+                            sessionCreator = get { parametersOf(session.apiUrl) },
+                            onSessionRenewed = {
+                                session.id = it
+                                sessionPersistence?.saveItem(session)
+                            }
+                        )
+                    else
+                        null
 
                 get<HttpClient>(_q<EnvHttpClientParams>()) {
                     parametersOf(
                         EnvHttpClientParams(
                             sessionAwareness = EnvHttpClientParams.SessionAwareness(
-                                sessionIdProvider = { session.id },
-                                renewal = EnvHttpClientParams.SessionAwareness.Renewal(
-                                    credentialsProvider = {
-                                        // TODO: Get from persistence
-                                        EnvAuth.Credentials(
-                                            username = "username",
-                                            password = "password",
-                                        )
-                                    },
-                                    sessionCreator = get { parametersOf(session.apiUrl) },
-                                    onSessionRenewed = {
-                                        // TODO: Save to persistence
-                                        session.id = it
-                                    }
-                                ),
+                                sessionIdProvider = session::id,
+                                renewal = renewal,
                             )
                         )
                     )

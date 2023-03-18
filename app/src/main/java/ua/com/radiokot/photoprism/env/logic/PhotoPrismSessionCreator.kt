@@ -12,17 +12,23 @@ class PhotoPrismSessionCreator(
 ) : SessionCreator {
 
     override fun createSession(
-        credentials: EnvAuth.Credentials
+        auth: EnvAuth
     ): String {
         return try {
-            sessionService
-                .createSession(
-                    PhotoPrismSessionCredentials(
-                        username = credentials.username,
-                        password = credentials.password,
-                    )
-                )
-                .id
+            when (auth) {
+                is EnvAuth.Credentials ->
+                    sessionService
+                        .createSession(
+                            PhotoPrismSessionCredentials(
+                                username = auth.username,
+                                password = auth.password,
+                            )
+                        )
+                        .id
+
+                EnvAuth.Public ->
+                    ""
+            }
         } catch (e: HttpException) {
             if (e.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                 throw InvalidCredentialsException()

@@ -7,6 +7,6 @@ interface SessionCreator {
      * @return created session ID
      */
     fun createSession(
-        credentials: EnvAuth.Credentials,
+        auth: EnvAuth,
     ): String
 }

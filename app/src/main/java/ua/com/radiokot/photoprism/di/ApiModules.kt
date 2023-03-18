@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.di
 
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -47,7 +48,7 @@ val retrofitApiModules: List<Module> = listOf(
                 parametersOf(
                     EnvRetrofitParams(
                         apiUrl = apiUrl,
-                        httpClient = get {
+                        httpClient = get(_q<EnvHttpClientParams>()) {
                             parametersOf(
                                 EnvHttpClientParams(
                                     sessionAwareness = EnvHttpClientParams.SessionAwareness(
@@ -66,7 +67,7 @@ val retrofitApiModules: List<Module> = listOf(
         scope<EnvSession> {
             scoped<Retrofit> {
                 val session = get<EnvSession>()
-                get(named<EnvRetrofitParams>()) {
+                get(_q<EnvRetrofitParams>()) {
                     parametersOf(
                         EnvRetrofitParams(
                             apiUrl = session.apiUrl,
