@@ -4,8 +4,10 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
+import java.io.IOException
 
 interface PhotoPrismPhotosService {
+    @kotlin.jvm.Throws(IOException::class)
     @GET("v1/photos")
     fun getPhotos(
         @Query("count")

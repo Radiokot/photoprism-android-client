@@ -18,6 +18,8 @@ import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.features.env.data.storage.KoinScopeEnvSessionHolder
 import ua.com.radiokot.photoprism.features.env.logic.ConnectToEnvironmentUseCase
+import ua.com.radiokot.photoprism.features.env.logic.PhotoPrismSessionCreator
+import ua.com.radiokot.photoprism.features.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.features.env.view.model.EnvConnectionViewModel
 
 val envFeatureModules: List<Module> = listOf(
@@ -44,12 +46,18 @@ val envFeatureModules: List<Module> = listOf(
             )
         }.bind(EnvSessionHolder::class)
 
-        factory { (connection: EnvConnection) ->
-            ConnectToEnvironmentUseCase(
-                connection = connection,
+        single {
+            PhotoPrismSessionCreator(
                 sessionServiceFactory = { apiUrl ->
                     get { parametersOf(apiUrl) }
                 },
+            )
+        }.bind(SessionCreator::class)
+
+        factory { (connection: EnvConnection) ->
+            ConnectToEnvironmentUseCase(
+                connection = connection,
+                sessionCreator = get(),
                 configServiceFactory = { apiUrl, sessionId ->
                     get { parametersOf(apiUrl, sessionId) }
                 },

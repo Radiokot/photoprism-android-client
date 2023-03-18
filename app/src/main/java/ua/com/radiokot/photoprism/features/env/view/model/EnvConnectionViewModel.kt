@@ -11,6 +11,7 @@ import retrofit2.HttpException
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
+import ua.com.radiokot.photoprism.features.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.features.env.logic.ConnectToEnvironmentUseCase
 
 typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvironmentUseCase
@@ -141,7 +142,7 @@ class EnvConnectionViewModel(
                     }
 
                     when (error) {
-                        is ConnectToEnvironmentUseCase.InvalidPasswordException ->
+                        is InvalidCredentialsException ->
                             passwordError.value = PasswordError.Invalid
                         is HttpException ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.code())

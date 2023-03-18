@@ -7,15 +7,29 @@ import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.api.util.SessionIdInterceptor
+import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
+import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
+import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
+import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
 import java.util.concurrent.TimeUnit
 
-enum class InjectedHttpClient {
-    WITH_SESSION,
-    ;
+class InjectedHttpClientParams(
+    val sessionAwareness: SessionAwareness?,
+) {
+    class SessionAwareness(
+        val sessionIdProvider: () -> String,
+        val renewal: Renewal?,
+    ) {
+        class Renewal(
+            val credentialsProvider: () -> EnvConnection.Auth.Credentials,
+            val sessionService: PhotoPrismSessionService,
+            val onSessionRenewed: ((newId: String) -> Unit)?,
+        )
+    }
 }
 
 val httpModules: List<Module> = listOf(
@@ -45,17 +59,41 @@ val httpModules: List<Module> = listOf(
                 .connectTimeout(30, TimeUnit.SECONDS)
         }
 
-        factory(named(InjectedHttpClient.WITH_SESSION)) { (sessionId: String) ->
-            getDefaultBuilder()
-                .addInterceptor(SessionIdInterceptor(sessionId))
+        factory(named<InjectedHttpClientParams>()) { (params: InjectedHttpClientParams) ->
+            val builder = getDefaultBuilder()
+
+            if (params.sessionAwareness != null) {
+                if (params.sessionAwareness.renewal != null) {
+                    builder.addInterceptor(
+                        SessionRenewalInterceptor(
+                            credentialsProvider = params.sessionAwareness.renewal.credentialsProvider,
+                            onSessionRenewed = params.sessionAwareness.renewal.onSessionRenewed,
+                            sessionService = params.sessionAwareness.renewal.sessionService,
+                        )
+                    )
+                }
+
+                builder.addInterceptor(
+                    SessionAwarenessInterceptor(
+                        sessionIdProvider = params.sessionAwareness.sessionIdProvider,
+                        sessionIdHeaderName = "X-Session-ID"
+                    )
+                )
+            }
+
+            builder
                 .addInterceptor(getLoggingInterceptor())
                 .build()
         }.bind(OkHttpClient::class)
 
         single {
-            getDefaultBuilder()
-                .addInterceptor(getLoggingInterceptor())
-                .build()
+            get<OkHttpClient>(named<InjectedHttpClientParams>()) {
+                parametersOf(
+                    InjectedHttpClientParams(
+                        sessionAwareness = null,
+                    )
+                )
+            }
         }.bind(OkHttpClient::class)
     },
 )

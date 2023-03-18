@@ -1,10 +1,10 @@
 package ua.com.radiokot.photoprism.api.util
 
-import okio.IOException
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import ua.com.radiokot.photoprism.extension.checkNotNull
+import java.io.IOException
 import java.lang.reflect.Type
 import java.net.HttpURLConnection
 

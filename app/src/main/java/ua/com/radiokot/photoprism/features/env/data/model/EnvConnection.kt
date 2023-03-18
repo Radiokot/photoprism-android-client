@@ -9,6 +9,8 @@ data class EnvConnection(
     sealed interface Auth {
         object Public : Auth
 
+        // Do not make this class 'data', otherwise
+        // the credentials will end up in the logs.
         class Credentials(
             val username: String,
             val password: String,
