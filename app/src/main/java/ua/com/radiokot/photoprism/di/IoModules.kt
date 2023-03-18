@@ -7,16 +7,11 @@ import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
-import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
-import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
-import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
 import java.util.concurrent.TimeUnit
 
+/*
 class InjectedHttpClientParams(
     val sessionAwareness: SessionAwareness?,
 ) {
@@ -31,34 +26,45 @@ class InjectedHttpClientParams(
         )
     }
 }
+*/
 
-val httpModules: List<Module> = listOf(
+typealias HttpClient = OkHttpClient
+typealias JsonObjectMapper = ObjectMapper
+
+val ioModules: List<Module> = listOf(
     // JSON
     module {
         single<ObjectMapper> {
             jacksonObjectMapper()
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        }
+        }.bind(JsonObjectMapper::class)
     },
 
     // HTTP
     module {
-        fun getLoggingInterceptor(): HttpLoggingInterceptor {
+        single {
             val logger = KotlinLogging.logger("HTTP")
-            return HttpLoggingInterceptor(logger::info).apply {
+            HttpLoggingInterceptor(logger::info).apply {
                 level =
                     if (logger.isDebugEnabled)
                         HttpLoggingInterceptor.Level.BODY
                     else
                         HttpLoggingInterceptor.Level.BASIC
             }
-        }
+        }.bind(HttpLoggingInterceptor::class)
 
-        fun getDefaultBuilder(): OkHttpClient.Builder {
-            return OkHttpClient.Builder()
+        single {
+            OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
-        }
 
+        }.bind(OkHttpClient.Builder::class)
+
+        single {
+            get<OkHttpClient.Builder>()
+                .addInterceptor(get<HttpLoggingInterceptor>())
+                .build()
+        }.bind(HttpClient::class)
+/*
         factory(named<InjectedHttpClientParams>()) { (params: InjectedHttpClientParams) ->
             val builder = getDefaultBuilder()
 
@@ -85,8 +91,9 @@ val httpModules: List<Module> = listOf(
                 .addInterceptor(getLoggingInterceptor())
                 .build()
         }.bind(OkHttpClient::class)
+*/
 
-        single {
+        /*single {
             get<OkHttpClient>(named<InjectedHttpClientParams>()) {
                 parametersOf(
                     InjectedHttpClientParams(
@@ -94,6 +101,6 @@ val httpModules: List<Module> = listOf(
                     )
                 )
             }
-        }.bind(OkHttpClient::class)
+        }.bind(OkHttpClient::class)*/
     },
 )

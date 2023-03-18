@@ -2,14 +2,14 @@ package ua.com.radiokot.photoprism.util.downloader
 
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.Sink
+import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import java.util.concurrent.atomic.AtomicInteger
 
 class OkHttpObservableDownloader(
-    httpClient: OkHttpClient,
+    httpClient: HttpClient,
 ) : ObservableDownloader {
     private val requestCounter = AtomicInteger(0)
     private val emittersMap: MutableMap<Int, ObservableEmitter<ObservableDownloader.Progress>> =

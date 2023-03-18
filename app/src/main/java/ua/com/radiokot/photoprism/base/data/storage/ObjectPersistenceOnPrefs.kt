@@ -1,12 +1,12 @@
 package ua.com.radiokot.photoprism.base.data.storage
 
 import android.content.SharedPreferences
-import com.fasterxml.jackson.databind.ObjectMapper
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs.Companion.forType
+import ua.com.radiokot.photoprism.di.JsonObjectMapper
 
 /**
  * Implements persistence for an object of type [T]
- * based on [SharedPreferences] with [ObjectMapper] serialization
+ * based on [SharedPreferences] with JSON serialization
  *
  * @see forType
  */
@@ -14,7 +14,7 @@ open class ObjectPersistenceOnPrefs<T : Any>(
     protected open val key: String,
     protected open val itemClass: Class<T>,
     protected open val preferences: SharedPreferences,
-    protected open val jsonObjectMapper: ObjectMapper,
+    protected open val jsonObjectMapper: JsonObjectMapper,
 ) : ObjectPersistence<T> {
     protected open var loadedItem: T? = null
 
@@ -61,7 +61,7 @@ open class ObjectPersistenceOnPrefs<T : Any>(
         inline fun <reified T : Any> forType(
             key: String,
             preferences: SharedPreferences,
-            jsonObjectMapper: ObjectMapper,
+            jsonObjectMapper: JsonObjectMapper,
         ) =
             ObjectPersistenceOnPrefs(key, T::class.java, preferences, jsonObjectMapper)
     }

@@ -7,19 +7,15 @@ import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
 import ua.com.radiokot.photoprism.features.env.data.model.InvalidCredentialsException
 import java.net.HttpURLConnection
 
-typealias PhotoPrismSessionServiceFactory =
-            (apiUrl: String) -> PhotoPrismSessionService
-
 class PhotoPrismSessionCreator(
-    private val sessionServiceFactory: PhotoPrismSessionServiceFactory,
+    private val sessionService: PhotoPrismSessionService,
 ) : SessionCreator {
 
     override fun createSession(
-        apiUrl: String,
         credentials: EnvConnection.Auth.Credentials
     ): String {
         return try {
-            sessionServiceFactory(apiUrl)
+            sessionService
                 .createSession(
                     PhotoPrismSessionCredentials(
                         username = credentials.username,

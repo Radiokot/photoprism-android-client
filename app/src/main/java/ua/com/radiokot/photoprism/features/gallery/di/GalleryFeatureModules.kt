@@ -7,6 +7,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
@@ -21,6 +22,8 @@ import java.util.*
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
+        includes(envModules)
+
         scope<EnvSession> {
             scoped {
                 val session = get<EnvSession>()
@@ -47,12 +50,8 @@ val galleryFeatureModules: List<Module> = listOf(
                     downloadUrlFactory = get(),
                     pageLimit = 50,
                 )
-            }
-        }
-    },
+            }.bind(SimpleGalleryMediaRepository.Factory::class)
 
-    module {
-        scope<EnvSession> {
             viewModel {
                 DownloadMediaFileViewModel(
                     // See file_provider_paths.
@@ -98,6 +97,6 @@ val galleryFeatureModules: List<Module> = listOf(
                 fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
                 context = get(),
             )
-        }
+        }.bind(FileReturnIntentCreator::class)
     }
 )

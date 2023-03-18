@@ -17,7 +17,7 @@ import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
-import ua.com.radiokot.photoprism.features.env.di.envFeatureModules
+import ua.com.radiokot.photoprism.features.env.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
@@ -36,7 +36,7 @@ class App : Application() {
                 retrofitApiModules
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
-                        + envFeatureModules
+                        + envConnectionFeatureModules
             )
             androidFileProperties("app.properties")
         }

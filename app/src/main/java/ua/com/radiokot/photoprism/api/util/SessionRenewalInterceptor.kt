@@ -2,14 +2,13 @@ package ua.com.radiokot.photoprism.api.util
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ua.com.radiokot.photoprism.api.session.model.PhotoPrismSessionCredentials
-import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
 import ua.com.radiokot.photoprism.features.env.data.model.SessionExpiredException
+import ua.com.radiokot.photoprism.features.env.logic.SessionCreator
 
 class SessionRenewalInterceptor(
-    private val sessionService: PhotoPrismSessionService,
+    private val sessionCreator: SessionCreator,
     private val credentialsProvider: () -> EnvConnection.Auth.Credentials,
     private val onSessionRenewed: ((newSessionId: String) -> Unit)?,
 ) : Interceptor {
@@ -30,18 +29,12 @@ class SessionRenewalInterceptor(
                 log.debug { "intercept(): creating_new_session" }
 
                 val credentials = credentialsProvider()
-                val newSessionId = sessionService
-                    .createSession(
-                        PhotoPrismSessionCredentials(
-                            username = credentials.username,
-                            password = credentials.password,
-                        )
-                    )
-                    .id
+                val newSessionId = sessionCreator
+                    .createSession(credentials)
 
                 log.debug {
                     "intercept(): new_session_created:" +
-                            "\nid=${newSessionId.substring(0..(newSessionId.length.coerceAtMost(5)))}..."
+                            "\nid=$newSessionId"
                 }
 
                 onSessionRenewed?.invoke(newSessionId)

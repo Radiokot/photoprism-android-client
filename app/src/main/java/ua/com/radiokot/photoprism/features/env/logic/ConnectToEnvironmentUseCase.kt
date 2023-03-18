@@ -55,7 +55,6 @@ class ConnectToEnvironmentUseCase(
             is EnvConnection.Auth.Credentials ->
                 sessionCreator
                     .createSession(
-                        apiUrl = connection.apiUrl,
                         credentials = connection.auth
                     )
         }

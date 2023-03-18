@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.di
 
-import okhttp3.OkHttpClient
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -11,22 +10,18 @@ import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigServi
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
 import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
 
-private class InjectedRetrofitParams(
+private class EnvRetrofitParams(
     val apiUrl: String,
-    val httpClient: OkHttpClient,
+    val httpClient: HttpClient,
 )
-
-private const val SESSION_UNAWARE_RETROFIT = "session-unaware-retrofit"
-private const val SESSION_UNAWARE_HTTP_CLIENT = "session-unaware-http-client"
 
 val retrofitApiModules: List<Module> = listOf(
     module {
-        includes(httpModules)
+        includes(envModules)
 
-        factory<Retrofit>(named<InjectedRetrofitParams>()) { (params: InjectedRetrofitParams) ->
+        factory<Retrofit>(named<EnvRetrofitParams>()) { (params: EnvRetrofitParams) ->
             Retrofit.Builder()
                 .baseUrl(params.apiUrl)
                 .addConverterFactory(JacksonConverterFactory.create(get()))
@@ -36,9 +31,9 @@ val retrofitApiModules: List<Module> = listOf(
         }
 
         factory<PhotoPrismSessionService> { (apiUrl: String) ->
-            get<Retrofit>(named<InjectedRetrofitParams>()) {
+            get<Retrofit>(named<EnvRetrofitParams>()) {
                 parametersOf(
-                    InjectedRetrofitParams(
+                    EnvRetrofitParams(
                         apiUrl = apiUrl,
                         httpClient = get()
                     )
@@ -48,14 +43,14 @@ val retrofitApiModules: List<Module> = listOf(
         }
 
         factory<PhotoPrismClientConfigService> { (apiUrl: String, sessionId: String) ->
-            get<Retrofit>(named<InjectedRetrofitParams>()) {
+            get<Retrofit>(named<EnvRetrofitParams>()) {
                 parametersOf(
-                    InjectedRetrofitParams(
+                    EnvRetrofitParams(
                         apiUrl = apiUrl,
-                        httpClient = get(named<InjectedHttpClientParams>()) {
+                        httpClient = get {
                             parametersOf(
-                                InjectedHttpClientParams(
-                                    sessionAwareness = InjectedHttpClientParams.SessionAwareness(
+                                EnvHttpClientParams(
+                                    sessionAwareness = EnvHttpClientParams.SessionAwareness(
                                         sessionIdProvider = { sessionId },
                                         renewal = null,
                                     )
@@ -69,48 +64,11 @@ val retrofitApiModules: List<Module> = listOf(
         }
 
         scope<EnvSession> {
-            scoped<OkHttpClient> {
-                val session = get<EnvSession>()
-                get(named<InjectedHttpClientParams>()) {
-                    parametersOf(
-                        InjectedHttpClientParams(
-                            sessionAwareness = InjectedHttpClientParams.SessionAwareness(
-                                sessionIdProvider = { session.id },
-                                renewal = InjectedHttpClientParams.SessionAwareness.Renewal(
-                                    credentialsProvider = {
-                                        // TODO: Get from persistence
-                                        EnvConnection.Auth.Credentials(
-                                            username = "username",
-                                            password = "password",
-                                        )
-                                    },
-                                    sessionService = get { parametersOf(session.apiUrl) },
-                                    onSessionRenewed = {
-                                        // TODO: Save to persistence
-                                        session.id = it
-                                    }
-                                ),
-                            )
-                        )
-                    )
-                }
-            }
-
-            scoped<OkHttpClient>(named(SESSION_UNAWARE_HTTP_CLIENT)) {
-                get(named<InjectedHttpClientParams>()) {
-                    parametersOf(
-                        InjectedHttpClientParams(
-                            sessionAwareness = null,
-                        )
-                    )
-                }
-            }
-
             scoped<Retrofit> {
                 val session = get<EnvSession>()
-                get(named<InjectedRetrofitParams>()) {
+                get(named<EnvRetrofitParams>()) {
                     parametersOf(
-                        InjectedRetrofitParams(
+                        EnvRetrofitParams(
                             apiUrl = session.apiUrl,
                             httpClient = get()
                         )
