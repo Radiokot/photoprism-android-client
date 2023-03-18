@@ -19,7 +19,7 @@ This app does not (and probably will not) support all the web-client features, b
 - [x] Search by media types and custom queries
 - [ ] Saved searches
 - [ ] Chronological fast scroll
-- [ ] Endless session (no need to re-enter password)
+- [x] Endless session (no need to re-enter password)
 
 ## Content sync
 The gallery is not intended to sync content with the library. I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
