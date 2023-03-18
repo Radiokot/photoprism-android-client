@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.env.view.model
+package ua.com.radiokot.photoprism.features.envconnection.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,12 +8,14 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import retrofit2.HttpException
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.logic.ConnectToEnvironmentUseCase
+import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
-typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvironmentUseCase
+typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvUseCase
 
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,
@@ -95,9 +97,9 @@ class EnvConnectionViewModel(
                 apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.trim()),
                 auth =
                 if (isPublic.value == true)
-                    EnvConnection.Auth.Public
+                    EnvAuth.Public
                 else
-                    EnvConnection.Auth.Credentials(
+                    EnvAuth.Credentials(
                         username = username.value!!.trim(),
                         password = password.value!!
                     )
@@ -141,7 +143,7 @@ class EnvConnectionViewModel(
                     }
 
                     when (error) {
-                        is ConnectToEnvironmentUseCase.InvalidPasswordException ->
+                        is InvalidCredentialsException ->
                             passwordError.value = PasswordError.Invalid
                         is HttpException ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.code())

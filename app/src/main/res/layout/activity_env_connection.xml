@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.env.view.EnvConnectionActivity">
+    tools:context=".features.envconnection.view.EnvConnectionActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

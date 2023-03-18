@@ -10,14 +10,15 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.qualifier._q
 import org.koin.core.qualifier.qualifier
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.retrofitApiModules
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
-import ua.com.radiokot.photoprism.features.env.di.envFeatureModules
+import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
@@ -36,7 +37,7 @@ class App : Application() {
                 retrofitApiModules
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
-                        + envFeatureModules
+                        + envConnectionFeatureModules
             )
             androidFileProperties("app.properties")
         }
@@ -95,7 +96,7 @@ class App : Application() {
 
     private fun loadSessionIfPresent() {
         val sessionPersistence =
-            get<ObjectPersistence<EnvSession>>(qualifier<EnvSession>())
+            get<ObjectPersistence<EnvSession>>(_q<EnvSession>())
         val sessionHolder = get<EnvSessionHolder>()
 
         sessionPersistence

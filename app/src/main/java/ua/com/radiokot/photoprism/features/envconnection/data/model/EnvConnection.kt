@@ -1,20 +1,12 @@
-package ua.com.radiokot.photoprism.features.env.data.model
+package ua.com.radiokot.photoprism.features.envconnection.data.model
 
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 
 data class EnvConnection(
     val apiUrl: String,
-    val auth: Auth
+    val auth: EnvAuth
 ) {
-    sealed interface Auth {
-        object Public : Auth
-
-        class Credentials(
-            val username: String,
-            val password: String,
-        ) : Auth
-    }
-
     companion object {
         fun rootUrlToApiUrl(rootUrl: String): String =
             rootUrl

@@ -1,8 +1,8 @@
 package ua.com.radiokot.photoprism.di
 
-import okhttp3.OkHttpClient
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -11,53 +11,68 @@ import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigServi
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
 
-private enum class InjectedRetrofit {
-    WITH_PARAMS,
-    ;
-}
+private class EnvRetrofitParams(
+    val apiUrl: String,
+    val httpClient: HttpClient,
+)
 
 val retrofitApiModules: List<Module> = listOf(
     module {
-        includes(httpModules)
+        includes(envModules)
 
-        factory<Retrofit>(named(InjectedRetrofit.WITH_PARAMS)) { (apiUrl: String, sessionId: String?) ->
+        factory<Retrofit>(named<EnvRetrofitParams>()) { (params: EnvRetrofitParams) ->
             Retrofit.Builder()
-                .baseUrl(apiUrl)
+                .baseUrl(params.apiUrl)
                 .addConverterFactory(JacksonConverterFactory.create(get()))
                 .addCallAdapterFactory(SyncCallAdapter.Factory)
-                .client(
-                    if (sessionId == null)
-                        get()
-                    else
-                        get(named(InjectedHttpClient.WITH_SESSION)) { parametersOf(sessionId) }
-                )
+                .client(params.httpClient)
                 .build()
         }
 
         factory<PhotoPrismSessionService> { (apiUrl: String) ->
-            get<Retrofit>(named(InjectedRetrofit.WITH_PARAMS)) { parametersOf(apiUrl, null) }
+            get<Retrofit>(named<EnvRetrofitParams>()) {
+                parametersOf(
+                    EnvRetrofitParams(
+                        apiUrl = apiUrl,
+                        httpClient = get()
+                    )
+                )
+            }
                 .create(PhotoPrismSessionService::class.java)
         }
 
         factory<PhotoPrismClientConfigService> { (apiUrl: String, sessionId: String) ->
-            get<Retrofit>(named(InjectedRetrofit.WITH_PARAMS)) { parametersOf(apiUrl, sessionId) }
+            get<Retrofit>(named<EnvRetrofitParams>()) {
+                parametersOf(
+                    EnvRetrofitParams(
+                        apiUrl = apiUrl,
+                        httpClient = get(_q<EnvHttpClientParams>()) {
+                            parametersOf(
+                                EnvHttpClientParams(
+                                    sessionAwareness = EnvHttpClientParams.SessionAwareness(
+                                        sessionIdProvider = { sessionId },
+                                        renewal = null,
+                                    )
+                                )
+                            )
+                        }
+                    )
+                )
+            }
                 .create(PhotoPrismClientConfigService::class.java)
         }
 
         scope<EnvSession> {
-            scoped<OkHttpClient> {
-                val session = get<EnvSession>()
-                get(named(InjectedHttpClient.WITH_SESSION)) { parametersOf(session.id) }
-            }
-
             scoped<Retrofit> {
                 val session = get<EnvSession>()
-                get(named(InjectedRetrofit.WITH_PARAMS)) {
+                get(_q<EnvRetrofitParams>()) {
                     parametersOf(
-                        session.apiUrl,
-                        session.id
+                        EnvRetrofitParams(
+                            apiUrl = session.apiUrl,
+                            httpClient = get()
+                        )
                     )
                 }
             }

@@ -1,9 +1,9 @@
-package ua.com.radiokot.photoprism.features.env.data.storage
+package ua.com.radiokot.photoprism.env.data.storage
 
 import org.koin.core.Koin
 import org.koin.core.qualifier.named
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
 
 class KoinScopeEnvSessionHolder(
     private val koin: Koin,
