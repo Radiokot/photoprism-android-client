@@ -2,14 +2,14 @@ package ua.com.radiokot.photoprism.api.util
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.data.model.SessionExpiredException
-import ua.com.radiokot.photoprism.features.env.logic.SessionCreator
+import ua.com.radiokot.photoprism.env.data.model.SessionExpiredException
+import ua.com.radiokot.photoprism.env.logic.SessionCreator
 
 class SessionRenewalInterceptor(
     private val sessionCreator: SessionCreator,
-    private val credentialsProvider: () -> EnvConnection.Auth.Credentials,
+    private val credentialsProvider: () -> EnvAuth.Credentials,
     private val onSessionRenewed: ((newSessionId: String) -> Unit)?,
 ) : Interceptor {
     private val log = kLogger("SessionRenewalInterceptor")

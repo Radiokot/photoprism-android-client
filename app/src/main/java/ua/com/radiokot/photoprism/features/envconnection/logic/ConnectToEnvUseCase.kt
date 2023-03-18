@@ -1,14 +1,16 @@
-package ua.com.radiokot.photoprism.features.env.logic
+package ua.com.radiokot.photoprism.features.envconnection.logic
 
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
+import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.logic.SessionCreator
+import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 
 typealias PhotoPrismConfigServiceFactory =
             (apiUrl: String, sessionId: String) -> PhotoPrismClientConfigService
@@ -50,9 +52,9 @@ class ConnectToEnvironmentUseCase(
 
     private fun getSessionId(): Single<String> = {
         when (connection.auth) {
-            is EnvConnection.Auth.Public ->
+            is EnvAuth.Public ->
                 "public"
-            is EnvConnection.Auth.Credentials ->
+            is EnvAuth.Credentials ->
                 sessionCreator
                     .createSession(
                         credentials = connection.auth

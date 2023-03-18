@@ -10,7 +10,7 @@ import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigServi
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
 
 private class EnvRetrofitParams(
     val apiUrl: String,

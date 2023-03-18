@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.api.util
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ua.com.radiokot.photoprism.features.env.data.model.SessionExpiredException
+import ua.com.radiokot.photoprism.env.data.model.SessionExpiredException
 import java.io.IOException
 import java.net.HttpURLConnection
 

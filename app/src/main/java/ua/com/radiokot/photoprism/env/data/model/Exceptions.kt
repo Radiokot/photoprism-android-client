@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.env.data.model
+package ua.com.radiokot.photoprism.env.data.model
 
 import java.io.IOException
 

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.env.di
+package ua.com.radiokot.photoprism.features.envconnection.di
 
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
@@ -12,12 +12,12 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.envModules
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.env.data.storage.EnvSessionHolder
-import ua.com.radiokot.photoprism.features.env.data.storage.KoinScopeEnvSessionHolder
-import ua.com.radiokot.photoprism.features.env.logic.ConnectToEnvironmentUseCase
-import ua.com.radiokot.photoprism.features.env.view.model.EnvConnectionViewModel
+import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
+import ua.com.radiokot.photoprism.env.data.storage.KoinScopeEnvSessionHolder
+import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvironmentUseCase
+import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 
 val envConnectionFeatureModules: List<Module> = listOf(
     module {

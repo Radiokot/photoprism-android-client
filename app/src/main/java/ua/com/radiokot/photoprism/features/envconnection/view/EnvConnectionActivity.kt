@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.env.view
+package ua.com.radiokot.photoprism.features.envconnection.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,7 +11,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.env.view.model.EnvConnectionViewModel
+import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
 import ua.com.radiokot.photoprism.util.SoftInputUtil
 

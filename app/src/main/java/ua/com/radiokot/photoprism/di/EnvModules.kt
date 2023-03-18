@@ -8,10 +8,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
 import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.env.logic.PhotoPrismSessionCreator
-import ua.com.radiokot.photoprism.features.env.logic.SessionCreator
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
+import ua.com.radiokot.photoprism.env.logic.SessionCreator
 
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
@@ -21,7 +21,7 @@ class EnvHttpClientParams(
         val renewal: Renewal?,
     ) {
         class Renewal(
-            val credentialsProvider: () -> EnvConnection.Auth.Credentials,
+            val credentialsProvider: () -> EnvAuth.Credentials,
             val sessionCreator: SessionCreator,
             val onSessionRenewed: ((newId: String) -> Unit)?,
         )
@@ -83,7 +83,7 @@ val envModules = listOf(
                                 renewal = EnvHttpClientParams.SessionAwareness.Renewal(
                                     credentialsProvider = {
                                         // TODO: Get from persistence
-                                        EnvConnection.Auth.Credentials(
+                                        EnvAuth.Credentials(
                                             username = "username",
                                             password = "password",
                                         )

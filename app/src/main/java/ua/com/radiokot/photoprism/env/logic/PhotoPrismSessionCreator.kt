@@ -1,10 +1,10 @@
-package ua.com.radiokot.photoprism.features.env.logic
+package ua.com.radiokot.photoprism.env.logic
 
 import retrofit2.HttpException
 import ua.com.radiokot.photoprism.api.session.model.PhotoPrismSessionCredentials
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
-import ua.com.radiokot.photoprism.features.env.data.model.EnvConnection
-import ua.com.radiokot.photoprism.features.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import java.net.HttpURLConnection
 
 class PhotoPrismSessionCreator(
@@ -12,7 +12,7 @@ class PhotoPrismSessionCreator(
 ) : SessionCreator {
 
     override fun createSession(
-        credentials: EnvConnection.Auth.Credentials
+        credentials: EnvAuth.Credentials
     ): String {
         return try {
             sessionService
