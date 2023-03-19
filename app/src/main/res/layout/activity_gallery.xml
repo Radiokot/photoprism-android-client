@@ -16,6 +16,11 @@
         app:layout_behavior="@string/searchbar_scrolling_view_behavior"
         tools:ignore="PrivateResource" />
 
+    <ua.com.radiokot.photoprism.view.ErrorView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

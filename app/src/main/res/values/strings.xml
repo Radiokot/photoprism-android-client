@@ -42,4 +42,7 @@
     <string name="template_error_inaccessible_library_url_code">Library is not accessible (code %1$d)</string>
     <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
     <string name="error_invalid_password">Invalid password</string>
+    <string name="error_failed_to_load_content_try_again">Failed to load the content. Try again</string>
+    <string name="error_library_not_accessible_try_again">Library is not accessible. Check the connection and try again</string>
+    <string name="try_again">Try again</string>
 </resources>

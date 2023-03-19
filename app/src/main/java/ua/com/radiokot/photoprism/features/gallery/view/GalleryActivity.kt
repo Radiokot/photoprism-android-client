@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
@@ -28,6 +29,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.view.ErrorView
 import java.io.File
 
 
@@ -130,24 +132,38 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         initMediaFileSelection()
         downloadProgressView.init()
         initSearch()
+        initErrorView()
     }
 
     private fun subscribeToData() {
-        viewModel.isLoading
-            .observe(this) { isLoading ->
-                if (!isLoading) {
-                    galleryProgressFooterAdapter.clear()
-                } else if (galleryProgressFooterAdapter.adapterItemCount == 0) {
-                    galleryProgressFooterAdapter.add(GalleryProgressListItem())
-                }
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (!isLoading) {
+                galleryProgressFooterAdapter.clear()
+            } else if (galleryProgressFooterAdapter.adapterItemCount == 0) {
+                galleryProgressFooterAdapter.add(GalleryProgressListItem())
+            }
+        }
+
+        viewModel.itemsList.observe(this) {
+            if (it != null) {
+                galleryItemsAdapter.setNewList(it)
+            }
+        }
+
+        viewModel.mainError.observe(this) { error ->
+            if (error == null) {
+                view.errorView.hide()
+                return@observe
             }
 
-        viewModel.itemsList
-            .observe(this) {
-                if (it != null) {
-                    galleryItemsAdapter.setNewList(it)
-                }
-            }
+            view.errorView.showError(
+                ErrorView.Error.General(
+                    message = error.localizedMessage,
+                    retryButtonText = getString(R.string.try_again),
+                    retryButtonClickListener = viewModel::onMainErrorRetryClicked
+                )
+            )
+        }
     }
 
     private fun subscribeToEvents() {
@@ -179,6 +195,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
                     is GalleryViewModel.Event.ResetScroll -> {
                         resetScroll()
+                    }
+
+                    is GalleryViewModel.Event.ShowFloatingError -> {
+                        showFloatingError(event.error)
                     }
                 }
 
@@ -315,6 +335,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         onBackPressedDispatcher.addCallback(this, searchView.backPressedCallback)
     }
 
+    private fun initErrorView() {
+        view.errorView.replaces(view.galleryRecyclerView)
+    }
+
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
         mediaFileSelectionView.openMediaFileSelectionDialog(
             fileItems = files.map {
@@ -381,4 +405,18 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         startActivity(Intent(this, EnvConnectionActivity::class.java))
         finish()
     }
+
+    private fun showFloatingError(error: GalleryViewModel.Error) {
+        Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
+            .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
+            .show()
+    }
+
+    private val GalleryViewModel.Error.localizedMessage: String
+        get() = when (this) {
+            GalleryViewModel.Error.LibraryNotAccessible ->
+                getString(R.string.error_library_not_accessible_try_again)
+            GalleryViewModel.Error.LoadingFailed ->
+                getString(R.string.error_failed_to_load_content_try_again)
+        }
 }

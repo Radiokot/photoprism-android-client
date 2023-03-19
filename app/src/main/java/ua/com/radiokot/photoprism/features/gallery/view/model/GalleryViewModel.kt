@@ -14,6 +14,9 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.io.File
+import java.net.NoRouteToHostException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.text.DateFormat
 import java.util.*
 
@@ -32,6 +35,7 @@ class GalleryViewModel(
     private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
     val events: Observable<Event> = eventsSubject
     val state: MutableLiveData<State> = MutableLiveData()
+    val mainError = MutableLiveData<Error?>(null)
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
     private lateinit var searchViewModel: GallerySearchViewModel
@@ -163,13 +167,35 @@ class GalleryViewModel(
 
         currentMediaRepository.loading
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(isLoading::setValue)
+            .subscribe { isLoading ->
+                this.isLoading.value = isLoading
+
+                // Dismiss the main error when something is loading.
+                if (isLoading) {
+                    mainError.value = null
+                }
+            }
             .addTo(disposable)
 
         currentMediaRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                log.error(it) { "subscribeToRepository(): error_occurred" }
+            .subscribe { error ->
+                log.error(error) { "subscribeToRepository(): error_occurred" }
+
+                val viewError = when (error) {
+                    is UnknownHostException,
+                    is NoRouteToHostException,
+                    is SocketTimeoutException ->
+                        Error.LibraryNotAccessible
+                    else ->
+                        Error.LoadingFailed
+                }
+
+                if (itemsList.value.isNullOrEmpty()) {
+                    mainError.value = viewError
+                } else {
+                    eventsSubject.onNext(Event.ShowFloatingError(viewError))
+                }
             }
             .addTo(disposable)
 
@@ -179,6 +205,9 @@ class GalleryViewModel(
     }
 
     private fun onNewRepositoryItems(galleryMediaItems: List<GalleryMedia>) {
+        // Dismiss the main error when there are items.
+        mainError.value = null
+
         val newListItems = mutableListOf<GalleryListItem>()
 
         // Add date headers.
@@ -246,8 +275,12 @@ class GalleryViewModel(
         return thisYear == otherYear
     }
 
-    private fun update() {
-        currentMediaRepository.updateIfNotFresh()
+    private fun update(force: Boolean = false) {
+        if (!force) {
+            currentMediaRepository.updateIfNotFresh()
+        } else {
+            currentMediaRepository.update()
+        }
     }
 
     fun loadMore() {
@@ -339,6 +372,14 @@ class GalleryViewModel(
         )
     }
 
+    fun onMainErrorRetryClicked() {
+        update()
+    }
+
+    fun onFloatingErrorRetryClicked() {
+        loadMore()
+    }
+
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
@@ -354,10 +395,17 @@ class GalleryViewModel(
         ) : Event
 
         object ResetScroll : Event
+
+        class ShowFloatingError(val error: Error) : Event
     }
 
     sealed interface State {
         object Viewing : State
         object Selecting : State
+    }
+
+    sealed interface Error {
+        object LibraryNotAccessible : Error
+        object LoadingFailed : Error
     }
 }
