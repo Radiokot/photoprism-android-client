@@ -25,6 +25,7 @@ class GalleryViewModel(
     private val log = kLogger("GalleryVM")
     private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
     private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
+    private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
@@ -35,11 +36,19 @@ class GalleryViewModel(
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
     private lateinit var searchViewModel: GallerySearchViewModel
 
-    fun initSelection(
+    fun initSelectionOnce(
         downloadViewModel: DownloadMediaFileViewModel,
         searchViewModel: GallerySearchViewModel,
         requestedMimeType: String?,
     ) {
+        if (isInitialized) {
+            log.debug {
+                "initSelection(): already_initialized"
+            }
+
+            return
+        }
+
         val filterMediaTypes: Set<GalleryMedia.TypeName> = when {
             requestedMimeType == null ->
                 emptySet()
@@ -77,12 +86,22 @@ class GalleryViewModel(
         state.value = State.Selecting
 
         subscribeToSearch()
+
+        isInitialized = true
     }
 
-    fun initViewing(
+    fun initViewingOnce(
         downloadViewModel: DownloadMediaFileViewModel,
         searchViewModel: GallerySearchViewModel,
     ) {
+        if (isInitialized) {
+            log.debug {
+                "initViewing(): already_initialized"
+            }
+
+            return
+        }
+
         downloadMediaFileViewModel = downloadViewModel
         this.searchViewModel = searchViewModel
 
@@ -96,6 +115,8 @@ class GalleryViewModel(
         state.value = State.Viewing
 
         subscribeToSearch()
+
+        isInitialized = true
     }
 
     private fun subscribeToSearch() {

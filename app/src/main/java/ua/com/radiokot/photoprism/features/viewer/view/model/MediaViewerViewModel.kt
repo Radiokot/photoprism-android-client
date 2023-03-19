@@ -18,6 +18,7 @@ class MediaViewerViewModel(
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
+    private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<MediaViewerPageItem>?> = MutableLiveData(null)
@@ -27,10 +28,18 @@ class MediaViewerViewModel(
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
 
-    fun init(
+    fun initOnce(
         downloadViewModel: DownloadMediaFileViewModel,
         repositoryQuery: String?,
     ) {
+        if (isInitialized) {
+            log.debug {
+                "init(): already_initialized"
+            }
+
+            return
+        }
+
         downloadMediaFileViewModel = downloadViewModel
 
         galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryQuery)

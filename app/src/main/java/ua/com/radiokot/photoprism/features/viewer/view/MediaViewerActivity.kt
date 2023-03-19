@@ -81,12 +81,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
-        if (savedInstanceState == null) {
-            viewModel.init(
-                downloadViewModel = downloadViewModel,
-                repositoryQuery = repositoryQuery,
-            )
-        }
+        viewModel.initOnce(
+            downloadViewModel = downloadViewModel,
+            repositoryQuery = repositoryQuery,
+        )
 
         // Init before the subscription.
         initPager(mediaIndex, savedInstanceState)
