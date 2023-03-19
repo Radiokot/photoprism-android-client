@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import androidx.core.os.ConfigurationCompat
 import ua.com.radiokot.photoprism.R
@@ -18,7 +19,7 @@ object LocalizationHelper {
     }
 
     fun getLocalizedConfigurationContext(context: Context, locale: Locale): Context =
-        context.createConfigurationContext(context.resources.configuration.apply {
+        context.createConfigurationContext(Configuration().apply {
             setLocale(locale)
         })
 }
