@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -16,6 +17,7 @@ import androidx.core.view.forEach
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import ua.com.radiokot.photoprism.R
@@ -139,7 +141,7 @@ class GallerySearchView(
             context.resources.getDimensionPixelSize(R.dimen.gallery_search_media_type_chip_spacing)
         val searchChipContext = ContextThemeWrapper(
             context,
-            R.style.MediaTypeChip
+            com.google.android.material.R.style.Widget_Material3_Chip_Filter
         )
         val searchChipLayoutParams = FlexboxLayout.LayoutParams(
             FlexboxLayout.LayoutParams.WRAP_CONTENT,
@@ -147,6 +149,12 @@ class GallerySearchView(
         ).apply {
             setMargins(0, 0, searchChipSpacing, searchChipSpacing)
         }
+        val searchChipIconTint = ColorStateList.valueOf(
+            MaterialColors.getColor(
+                configurationView.mediaTypeChipsLayout,
+                com.google.android.material.R.attr.colorOnSurfaceVariant
+            )
+        )
 
         with(configurationView.mediaTypeChipsLayout) {
             viewModel.availableMediaTypes.observe(this@GallerySearchView) { availableTypes ->
@@ -164,6 +172,8 @@ class GallerySearchView(
                                     mediaTypeName
                                 )
                             )
+                            chipIconTint = searchChipIconTint
+
                             setEnsureMinTouchTargetSize(false)
                             isCheckable = true
 
@@ -179,13 +189,9 @@ class GallerySearchView(
             viewModel.selectedMediaTypes.observe(this@GallerySearchView) { selectedTypes ->
                 forEach { chip ->
                     with(chip as Chip) {
-                        if (selectedTypes.contains(tag)) {
-                            isChecked = true
-                            isCheckedIconVisible = true
-                        } else {
-                            isChecked = false
-                            isCheckedIconVisible = false
-                        }
+                        isChecked = selectedTypes.contains(tag)
+                        isCheckedIconVisible = isChecked
+                        isChipIconVisible = !isChecked
                     }
                 }
             }

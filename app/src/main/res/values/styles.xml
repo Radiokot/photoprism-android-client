@@ -1,6 +1,0 @@
-<resources>
-
-    <style name="MediaTypeChip" parent="Widget.Material3.Chip.Filter">
-        <item name="chipIconVisible">true</item>
-    </style>
-</resources>
