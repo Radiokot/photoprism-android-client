@@ -1,9 +1,13 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import org.koin.android.ext.android.inject
@@ -11,6 +15,7 @@ import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -57,6 +62,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             lifecycleOwner = this
         )
     }
+    private val storagePermissionsLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            this::onStoragePermissionResult
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,6 +148,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 position = view.viewPager.currentItem,
             )
         }
+
+        view.downloadButton.setOnClickListener {
+            viewModel.onDownloadClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
     }
 
     private fun subscribeToData() {
@@ -188,6 +205,17 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                         mimeType = event.mimeType,
                         displayName = event.displayName,
                     )
+
+                is MediaViewerViewModel.Event.CheckStoragePermission ->
+                    checkStoragePermission()
+
+                is MediaViewerViewModel.Event.ShowSuccessfulDownloadMessage ->
+                    showSuccessfulDownloadMessage(
+                        fileName = event.fileName,
+                    )
+
+                is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showMissingStoragePermissionMessage()
             }
 
             log.debug {
@@ -258,6 +286,33 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         startActivity(resultIntent)
+    }
+
+    private fun checkStoragePermission() {
+        storagePermissionsLauncher.launch(Unit)
+    }
+
+    private fun onStoragePermissionResult(isGranted: Boolean) {
+        viewModel.onStoragePermissionResult(isGranted)
+    }
+
+    private fun showSuccessfulDownloadMessage(fileName: String) {
+        Snackbar.make(
+            view.viewPager,
+            getString(
+                R.string.template_successfully_downloaded_file,
+                fileName
+            ),
+            Snackbar.LENGTH_LONG,
+        ).show()
+    }
+
+    private fun showMissingStoragePermissionMessage() {
+        Snackbar.make(
+            view.viewPager,
+            getString(R.string.error_storage_permission_is_required),
+            Snackbar.LENGTH_SHORT,
+        ).show()
     }
 
     companion object {

@@ -15,7 +15,6 @@ import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import java.io.File
 
 class DownloadMediaFileViewModel(
-    private val downloadsDir: File,
     private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
 ) : ViewModel(), DownloadProgressViewModel {
     private val log = kLogger("DownloadMediaFileVM")
@@ -31,13 +30,16 @@ class DownloadMediaFileViewModel(
     private var downloadDisposable: Disposable? = null
     fun downloadFile(
         file: GalleryMedia.File,
-        onSuccess: (File) -> Unit,
+        destination: File,
+        onSuccess: (destinationFile: File) -> Unit,
     ) {
-        val destinationFile = File(downloadsDir, "downloaded")
         val downloadUrl = file.downloadUrl
 
         val alreadyDownloadedFile = this.lastDownloadedFile
-        if (alreadyDownloadedFile?.url == downloadUrl && alreadyDownloadedFile.destination.exists()) {
+        if (alreadyDownloadedFile?.url == downloadUrl
+            && destination == alreadyDownloadedFile.destination
+            && alreadyDownloadedFile.destination.exists()
+        ) {
             log.debug {
                 "downloadFile(): return_already_downloaded_file:" +
                         "\nurl=$downloadUrl" +
@@ -52,14 +54,14 @@ class DownloadMediaFileViewModel(
             "downloadFile(): start_downloading:" +
                     "\nfile=$file," +
                     "\nurl=$downloadUrl" +
-                    "\ndestinationFile=$destinationFile"
+                    "\ndestination=$destination"
         }
 
         downloadDisposable?.dispose()
         downloadDisposable = downloadFileUseCaseFactory
             .get(
                 url = file.downloadUrl,
-                destination = destinationFile,
+                destination = destination,
             )
             .perform()
             .subscribeOn(Schedulers.io())
@@ -96,11 +98,11 @@ class DownloadMediaFileViewModel(
 
                     this.lastDownloadedFile = DownloadedFile(
                         url = downloadUrl,
-                        destination = destinationFile,
+                        destination = destination,
                     )
                     downloadStateSubject.onNext(DownloadProgressViewModel.State.Idle)
 
-                    onSuccess(destinationFile)
+                    onSuccess(destination)
                 }
             )
             .addToCloseables(this)

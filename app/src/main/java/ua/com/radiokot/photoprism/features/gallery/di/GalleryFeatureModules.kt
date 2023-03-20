@@ -1,9 +1,11 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.content.Context
+import android.os.Environment
 import android.text.format.DateFormat
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
@@ -20,9 +22,17 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
+
 val galleryFeatureModules: List<Module> = listOf(
     module {
         includes(envModules)
+
+        single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
+            // See file_provider_paths.
+            File(get<Context>().filesDir.absolutePath + "/downloads")
+                .apply { mkdirs() }
+        } bind File::class
 
         scope<EnvSession> {
             scoped {
@@ -54,9 +64,6 @@ val galleryFeatureModules: List<Module> = listOf(
 
             viewModel {
                 DownloadMediaFileViewModel(
-                    // See file_provider_paths.
-                    downloadsDir = File(get<Context>().filesDir.absolutePath + "/downloads")
-                        .apply { mkdirs() },
                     downloadFileUseCaseFactory = DownloadFileUseCase.Factory(
                         observableDownloader = get()
                     )
@@ -80,6 +87,7 @@ val galleryFeatureModules: List<Module> = listOf(
                         DateFormat.getBestDateTimePattern(locale, "EEMMMMd"),
                         locale
                     ),
+                    internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 )
             }
         }

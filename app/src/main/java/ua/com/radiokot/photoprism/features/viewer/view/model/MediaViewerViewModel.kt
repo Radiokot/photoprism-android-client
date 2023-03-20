@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -11,10 +12,14 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
+    private val internalDownloadsDir: File,
+    private val externalDownloadsDir: File,
+    private val mediaScannerConnection: WrappedMediaScannerConnection?,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -127,6 +132,64 @@ class MediaViewerViewModel(
         }
     }
 
+    fun onDownloadClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onDownloadClicked(): start_downloading_to_external_storage:" +
+                    "\nitem=$item"
+        }
+
+        startDownloadToExternalStorage(item)
+    }
+
+    private fun startDownloadToExternalStorage(media: GalleryMedia) {
+        state.value = State.DownloadingToExternalStorage(media)
+
+        if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)) {
+            log.debug {
+                "startDownloadToExternalStorage(): must_check_storage_permission"
+            }
+
+            eventsSubject.onNext(Event.CheckStoragePermission)
+        } else {
+            log.debug {
+                "startDownloadToExternalStorage(): no_need_to_check_storage_permission"
+            }
+
+            downloadToExternalStorage(media)
+        }
+    }
+
+    private fun downloadToExternalStorage(media: GalleryMedia) {
+        if (media.files.size > 1) {
+            openFileSelectionDialog(media.files)
+        } else {
+            downloadFileToExternalStorage(media.files.firstOrNull().checkNotNull {
+                "There must be at least one file in the gallery media object"
+            })
+        }
+    }
+
+    fun onStoragePermissionResult(isGranted: Boolean) {
+        log.debug {
+            "onStoragePermissionResult(): received_result:" +
+                    "\nisGranted=$isGranted"
+        }
+
+        when (val state = state.value!!) {
+            is State.DownloadingToExternalStorage ->
+                if (isGranted) {
+                    downloadToExternalStorage(state.media)
+                } else {
+                    this.state.value = State.Idle
+                    eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
+                }
+            else ->
+                error("Can't handle storage permission in $state state")
+        }
+    }
+
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
         log.debug {
             "openFileSelectionDialog(): posting_open_event:" +
@@ -147,8 +210,10 @@ class MediaViewerViewModel(
                 downloadAndShareFile(file)
             State.OpeningIn ->
                 downloadAndOpenFile(file)
+            is State.DownloadingToExternalStorage ->
+                downloadFileToExternalStorage(file)
             else ->
-                throw IllegalStateException("Can't select files in ${state.value} state")
+                error("Can't select files in ${state.value} state")
         }
     }
 
@@ -160,6 +225,7 @@ class MediaViewerViewModel(
 
         downloadMediaFileViewModel.downloadFile(
             file = file,
+            destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
             onSuccess = { destinationFile ->
                 state.value = State.Idle
                 eventsSubject.onNext(
@@ -181,6 +247,7 @@ class MediaViewerViewModel(
 
         downloadMediaFileViewModel.downloadFile(
             file = file,
+            destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
             onSuccess = { destinationFile ->
                 state.value = State.Idle
                 eventsSubject.onNext(
@@ -190,6 +257,33 @@ class MediaViewerViewModel(
                         displayName = File(file.name).name,
                     )
                 )
+            }
+        )
+    }
+
+    private fun downloadFileToExternalStorage(file: GalleryMedia.File) {
+        log.debug {
+            "downloadFileToExternalStorage(): start_downloading:" +
+                    "\nfile=$file"
+        }
+
+        downloadMediaFileViewModel.downloadFile(
+            file = file,
+            destination = File(externalDownloadsDir, File(file.name).name),
+            onSuccess = { destinationFile ->
+                state.value = State.Idle
+                eventsSubject.onNext(
+                    Event.ShowSuccessfulDownloadMessage(
+                        fileName = destinationFile.name,
+                    )
+                )
+
+                mediaScannerConnection?.scanFile(
+                    destinationFile.path,
+                    file.mimeType,
+                )?.also {
+                    log.debug { "downloadFileToExternalStorage(): notified_media_scanner" }
+                }
             }
         )
     }
@@ -208,11 +302,20 @@ class MediaViewerViewModel(
             val mimeType: String,
             val displayName: String,
         ) : Event
+
+        object CheckStoragePermission : Event
+        object ShowMissingStoragePermissionMessage : Event
+        class ShowSuccessfulDownloadMessage(val fileName: String) : Event
     }
 
     sealed interface State {
         object Idle : State
         object Sharing : State
         object OpeningIn : State
+        class DownloadingToExternalStorage(val media: GalleryMedia) : State
+    }
+
+    private companion object {
+        private const val INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME = "downloaded"
     }
 }

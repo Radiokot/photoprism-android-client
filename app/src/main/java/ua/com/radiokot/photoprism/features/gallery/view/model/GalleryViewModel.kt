@@ -24,6 +24,7 @@ class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val dateHeaderDayYearDateFormat: DateFormat,
     private val dateHeaderDayDateFormat: DateFormat,
+    private val internalDownloadsDir: File,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
@@ -344,6 +345,7 @@ class GalleryViewModel(
     private fun downloadAndReturnFile(file: GalleryMedia.File) {
         downloadMediaFileViewModel.downloadFile(
             file = file,
+            destination = File(internalDownloadsDir, "downloaded"),
             onSuccess = { destinationFile ->
                 eventsSubject.onNext(
                     Event.ReturnDownloadedFile(
