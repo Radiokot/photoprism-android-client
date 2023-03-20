@@ -36,6 +36,8 @@ class GalleryViewModel(
     val events: Observable<Event> = eventsSubject
     val state: MutableLiveData<State> = MutableLiveData()
     val mainError = MutableLiveData<Error?>(null)
+    var canLoadMore = true
+        private set
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
     private lateinit var searchViewModel: GallerySearchViewModel
@@ -168,6 +170,7 @@ class GalleryViewModel(
         currentMediaRepository.loading
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { isLoading ->
+                canLoadMore = !currentMediaRepository.noMoreItems
                 this.isLoading.value = isLoading
 
                 // Dismiss the main error when something is loading.
@@ -377,6 +380,10 @@ class GalleryViewModel(
     }
 
     fun onFloatingErrorRetryClicked() {
+        loadMore()
+    }
+
+    fun onLoadingFooterLoadMoreClicked() {
         loadMore()
     }
 

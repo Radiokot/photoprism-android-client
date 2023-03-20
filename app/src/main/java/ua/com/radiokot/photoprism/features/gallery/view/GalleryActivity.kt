@@ -7,9 +7,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import org.koin.android.ext.android.inject
@@ -47,7 +49,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private val log = kLogger("GGalleryActivity")
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
-    private val galleryProgressFooterAdapter = ItemAdapter<GalleryProgressListItem>()
+    private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
@@ -137,10 +139,15 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun subscribeToData() {
         viewModel.isLoading.observe(this) { isLoading ->
-            if (!isLoading) {
-                galleryProgressFooterAdapter.clear()
-            } else if (galleryProgressFooterAdapter.adapterItemCount == 0) {
-                galleryProgressFooterAdapter.add(GalleryProgressListItem())
+            val footer = GalleryLoadingFooterListItem(
+                isLoading = isLoading,
+                canLoadMore = viewModel.canLoadMore
+            )
+
+            if (galleryProgressFooterAdapter.adapterItemCount == 0) {
+                galleryProgressFooterAdapter.set(listOf(footer))
+            } else {
+                galleryProgressFooterAdapter[0] = footer
             }
         }
 
@@ -243,12 +250,24 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item, _ ->
-                if (item is GalleryListItem) {
-                    viewModel.onItemClicked(item)
+            addClickListener(
+                resolveView = { viewHolder: ViewHolder ->
+                    when (viewHolder) {
+                        is GalleryLoadingFooterListItem.ViewHolder ->
+                            viewHolder.view.loadMoreButton
+                        else ->
+                            viewHolder.itemView
+                    }
+                },
+                onClick = { _, _, _, item ->
+                    when (item) {
+                        is GalleryListItem ->
+                            viewModel.onItemClicked(item)
+                        is GalleryLoadingFooterListItem ->
+                            viewModel.onLoadingFooterLoadMoreClicked()
+                    }
                 }
-                false
-            }
+            )
         }
 
         with(view.galleryRecyclerView) {
@@ -276,7 +295,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 spanSizeLookup = object : SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int =
                         when (galleryAdapter.getItemViewType(position)) {
-                            R.id.list_item_gallery_progress,
+                            R.id.list_item_gallery_loading_footer,
                             R.id.list_item_gallery_header ->
                                 spanCount
 
