@@ -1,4 +1,4 @@
-# PhotoPrism Gallery
+# <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> PhotoPrism Gallery
 
 A native Android gallery for your [PhotoPrism library](https://www.photoprism.app/). 
 
