@@ -1,8 +1,11 @@
 package ua.com.radiokot.photoprism.api.photos.model
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class PhotoPrismPhoto(
+data class PhotoPrismPhoto
+@JsonCreator
+constructor(
     @JsonProperty("Hash")
     val hash: String,
     @JsonProperty("Width")
