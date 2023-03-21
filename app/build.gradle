@@ -25,18 +25,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        if (keystoreProperties['sessionId'] != null) {
-            buildConfigField 'String', 'SESSION_ID', "\"" + keystoreProperties['sessionId'] + "\""
-        } else {
-            throw new GradleException("sessionId is required until there is auth in the app")
-        }
-
-        if (keystoreProperties['apiUrl'] != null) {
-            buildConfigField 'String', 'API_URL', "\"" + keystoreProperties['apiUrl'] + "\""
-        } else {
-            throw new GradleException("apiUrl is required until there is an env selector in the app")
-        }
-
         def fileProviderAuthority = applicationId + ".files"
         manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
         buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
@@ -47,6 +35,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
