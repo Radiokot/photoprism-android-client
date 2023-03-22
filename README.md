@@ -26,4 +26,4 @@ The gallery is not intended to sync content with the library. I recommend using 
 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from [November 18, 2022](https://github.com/photoprism/photoprism/releases/tag/221118-e58fee0fb) down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). It may work with older ones though, I just haven't tested it.
-The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), which is serving only the original frontend needs and doesn't guarantee backward compatibility. When a new version of PhotoPrism comes out, the app may break.
+The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), which serves only the original frontend needs and doesn't guarantee backward compatibility. When a new version of PhotoPrism comes out, the app may break.
