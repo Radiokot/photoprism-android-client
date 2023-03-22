@@ -27,3 +27,16 @@ The gallery is not intended to sync content with the library. I recommend using 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from [November 18, 2022](https://github.com/photoprism/photoprism/releases/tag/221118-e58fee0fb) down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). It may work with older ones though, I just haven't tested it.
 The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), which serves only the original frontend needs and doesn't guarantee backward compatibility. When a new version of PhotoPrism comes out, the app may break.
+
+## Download
+- [APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases)
+- ⏳ [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
+- ⏳ [Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
+
+## Tech stack
+- Kotlin
+- RxJava
+- Koin dependency injection
+- OkHTTP + Retrofit
+- ViewModel
+- kotlin-logging with slf4j-handroid
