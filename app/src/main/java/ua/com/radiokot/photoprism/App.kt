@@ -97,9 +97,14 @@ class App : Application() {
         val sessionPersistence =
             get<ObjectPersistence<EnvSession>>(_q<EnvSession>())
         val sessionHolder = get<EnvSessionHolder>()
-
-        sessionPersistence
+        val loadedSession = sessionPersistence
             .loadItem()
-            ?.let(sessionHolder::set)
+
+        if (loadedSession != null) {
+            sessionHolder.set(loadedSession)
+            log.debug { "loadSessionIfPresent(): loaded_session_from_persistence" }
+        } else {
+            log.debug { "loadSessionIfPresent(): no_session_found_in_persistence" }
+        }
     }
 }

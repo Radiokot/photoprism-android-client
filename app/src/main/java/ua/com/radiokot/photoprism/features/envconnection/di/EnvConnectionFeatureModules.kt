@@ -13,14 +13,14 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.env.data.storage.EnvAuthPersistenceOnPrefs
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.data.storage.KoinScopeEnvSessionHolder
 import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
+import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvAuthPersistenceOnPrefs
+import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvSessionPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 
@@ -43,7 +43,7 @@ val envConnectionFeatureModules: List<Module> = listOf(
         } bind SharedPreferences::class
 
         single<ObjectPersistence<EnvSession>>(_q<EnvSession>()) {
-            ObjectPersistenceOnPrefs.forType(
+            EnvSessionPersistenceOnPrefs(
                 key = "session",
                 preferences = get(named(AUTH_PREFERENCES)),
                 jsonObjectMapper = get(),
