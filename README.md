@@ -31,7 +31,7 @@ The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-
 ## Download
 - [APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases)
 - ⏳ [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
-- ⏳ [Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
+- [Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Tech stack
 - Kotlin
