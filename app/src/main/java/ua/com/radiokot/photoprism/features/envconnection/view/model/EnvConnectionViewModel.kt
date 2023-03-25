@@ -7,12 +7,12 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import retrofit2.HttpException
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
-import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
 typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvUseCase
@@ -145,10 +145,8 @@ class EnvConnectionViewModel(
                     when (error) {
                         is InvalidCredentialsException ->
                             passwordError.value = PasswordError.Invalid
-                        is HttpException ->
-                            rootUrlError.value = RootUrlError.Inaccessible(error.code())
                         else ->
-                            rootUrlError.value = RootUrlError.Inaccessible(null)
+                            rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
                     }
                 }
             )
@@ -156,7 +154,7 @@ class EnvConnectionViewModel(
     }
 
     sealed interface RootUrlError {
-        class Inaccessible(val code: Int?) : RootUrlError
+        class Inaccessible(val shortSummary: String) : RootUrlError
         object InvalidFormat : RootUrlError
     }
 

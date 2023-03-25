@@ -57,14 +57,10 @@ class EnvConnectionActivity : BaseActivity() {
                 when (rootUrlError) {
                     is EnvConnectionViewModel.RootUrlError.Inaccessible -> {
                         isErrorEnabled = true
-                        error =
-                            if (rootUrlError.code != null)
-                                getString(
-                                    R.string.template_error_inaccessible_library_url_code,
-                                    rootUrlError.code
-                                )
-                            else
-                                getString(R.string.error_inaccessible_library_url)
+                        error = getString(
+                            R.string.template_error_inaccessible_library_url,
+                            rootUrlError.shortSummary,
+                        )
                     }
                     EnvConnectionViewModel.RootUrlError.InvalidFormat -> {
                         isErrorEnabled = true

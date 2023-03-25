@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.io.File
@@ -192,7 +193,7 @@ class GalleryViewModel(
                     is SocketTimeoutException ->
                         Error.LibraryNotAccessible
                     else ->
-                        Error.LoadingFailed
+                        Error.LoadingFailed(error.shortSummary)
                 }
 
                 if (itemsList.value.isNullOrEmpty()) {
@@ -415,6 +416,6 @@ class GalleryViewModel(
 
     sealed interface Error {
         object LibraryNotAccessible : Error
-        object LoadingFailed : Error
+        class LoadingFailed(val shortSummary: String) : Error
     }
 }

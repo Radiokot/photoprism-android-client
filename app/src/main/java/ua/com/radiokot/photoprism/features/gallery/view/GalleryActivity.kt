@@ -435,7 +435,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         get() = when (this) {
             GalleryViewModel.Error.LibraryNotAccessible ->
                 getString(R.string.error_library_not_accessible_try_again)
-            GalleryViewModel.Error.LoadingFailed ->
-                getString(R.string.error_failed_to_load_content_try_again)
+            is GalleryViewModel.Error.LoadingFailed ->
+                getString(
+                    R.string.template_error_failed_to_load_content,
+                    shortSummary,
+                )
         }
 }
