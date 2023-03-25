@@ -125,8 +125,7 @@ class GalleryMedia(
                     TypeName.SIDECAR.value -> Sidecar
                     TypeName.TEXT.value -> Text
                     TypeName.OTHER.value -> Other
-                    else ->
-                        throw IllegalStateException("Unsupported PhotoPrism media type '$type'")
+                    else -> error("Unsupported PhotoPrism media type '$type'")
                 }
         }
     }

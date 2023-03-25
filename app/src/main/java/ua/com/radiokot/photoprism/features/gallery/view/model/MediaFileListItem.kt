@@ -42,9 +42,7 @@ class MediaFileListItem(
 
     override var identifier: Long
         get() = source?.hashCode()?.toLong() ?: hashCode().toLong()
-        set(_) {
-            throw IllegalStateException("Do not overwrite my value!")
-        }
+        set(_) = error("Do not overwrite my value!")
 
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)
