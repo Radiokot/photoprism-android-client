@@ -47,4 +47,9 @@
     <string name="load_more">Load more</string>
     <string name="template_successfully_downloaded_file">File has been saved to the Downloads: %1$s</string>
     <string name="error_storage_permission_is_required">Storage access permission is required</string>
+    <string name="add_search_bookmark">Add a bookmark</string>
+    <string name="edit_search_bookmark">Edit the bookmark</string>
+    <string name="search_bookmark_name">Name</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
 </resources>

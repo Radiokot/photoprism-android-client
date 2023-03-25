@@ -2,10 +2,17 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import java.util.concurrent.TimeUnit
 
 class GallerySearchViewModel : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
@@ -25,6 +32,8 @@ class GallerySearchViewModel : ViewModel() {
     val isApplyButtonEnabled = MutableLiveData(false)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
     val state: Observable<State> = stateSubject
+    private val eventsSubject = PublishSubject.create<Event>()
+    val events: Observable<Event> = eventsSubject
 
     init {
         selectedMediaTypes.observeForever {
@@ -33,6 +42,12 @@ class GallerySearchViewModel : ViewModel() {
         userQuery.observeForever {
             isApplyButtonEnabled.value = canApplyConfiguredSearch
         }
+
+        Observable.timer(1, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark = SearchBookmark("Oleg"))) }
+            .addToCloseables(this)
     }
 
     private val canApplyConfiguredSearch: Boolean
@@ -136,7 +151,8 @@ class GallerySearchViewModel : ViewModel() {
 
         val search = AppliedGallerySearch(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
-            userQuery = userQuery.value!!.trim()
+            userQuery = userQuery.value!!.trim(),
+            bookmark = null
         )
 
         log.debug {
@@ -155,9 +171,25 @@ class GallerySearchViewModel : ViewModel() {
         stateSubject.onNext(State.NoSearch)
     }
 
+    fun onAddBookmarkClicked() {
+        log.debug {
+            "onAddBookmarkClicked(): add_bookmark_clicked"
+        }
+    }
+
+    fun onEditBookmarkClicked() {
+        log.debug {
+            "onEditBookmarkClicked(): edit_bookmark_clicked"
+        }
+    }
+
     sealed interface State {
         object NoSearch : State
         class ConfiguringSearch(val alreadyAppliedSearch: AppliedGallerySearch?) : State
         class AppliedSearch(val search: AppliedGallerySearch) : State
+    }
+
+    sealed interface Event {
+        class OpenBookmarkDialog(val bookmark: SearchBookmark?) : Event
     }
 }

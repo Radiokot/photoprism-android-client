@@ -9,7 +9,6 @@
     android:paddingEnd="16dp"
     android:paddingBottom="24dp">
 
-    <!-- TODO: Make running line -->
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="0dp"

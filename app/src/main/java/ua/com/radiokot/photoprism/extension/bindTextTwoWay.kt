@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.extension
 
 import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.findViewTreeLifecycleOwner
 
@@ -13,13 +14,12 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
  * The view must be attached to a lifecycle owner.
  */
 fun EditText.bindTextTwoWay(
-    liveData: MutableLiveData<String>
-) {
-    val lifecycleOwner = findViewTreeLifecycleOwner()
+    liveData: MutableLiveData<String>,
+    lifecycleOwner: LifecycleOwner = findViewTreeLifecycleOwner()
         .checkNotNull {
             "The view must be attached to a lifecycle owner"
         }
-
+) {
     this.doOnTextChanged { text, _, _, _ ->
         val textString = text?.toString() ?: ""
         if (liveData.value != textString) {

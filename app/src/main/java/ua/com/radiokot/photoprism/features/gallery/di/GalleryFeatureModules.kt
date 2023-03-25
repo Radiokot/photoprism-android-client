@@ -16,6 +16,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.io.File
@@ -27,12 +28,6 @@ const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
 val galleryFeatureModules: List<Module> = listOf(
     module {
         includes(envModules)
-
-        single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
-            // See file_provider_paths.
-            File(get<Context>().filesDir.absolutePath + "/downloads")
-                .apply { mkdirs() }
-        } bind File::class
 
         scope<EnvSession> {
             scoped {
@@ -94,6 +89,12 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
+        single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
+            // See file_provider_paths.
+            File(get<Context>().filesDir.absolutePath + "/downloads")
+                .apply { mkdirs() }
+        } bind File::class
+
         single {
             OkHttpObservableDownloader(
                 httpClient = get()
@@ -106,5 +107,11 @@ val galleryFeatureModules: List<Module> = listOf(
                 context = get(),
             )
         }.bind(FileReturnIntentCreator::class)
+    },
+
+    module {
+        viewModel {
+            SearchBookmarkDialogViewModel()
+        }
     }
 )

@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
 import androidx.core.view.forEach
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
@@ -25,6 +26,7 @@ import ua.com.radiokot.photoprism.databinding.ViewGallerySearchContentBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
@@ -33,6 +35,7 @@ import kotlin.math.roundToInt
 
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
+    private val fragmentManager: FragmentManager,
     @MenuRes
     private val menuRes: Int?,
     lifecycleOwner: LifecycleOwner,
@@ -62,6 +65,7 @@ class GallerySearchView(
 
         subscribeToData()
         subscribeToState()
+        subscribeToEvents()
     }
 
     private fun initView() {
@@ -124,11 +128,20 @@ class GallerySearchView(
 
         if (menuRes != null) {
             searchBar.inflateMenu(R.menu.gallery)
-            searchBar.menu.findItem(R.id.reset_search)
-                .setOnMenuItemClickListener {
+            with(searchBar.menu) {
+                findItem(R.id.reset_search)?.setOnMenuItemClickListener {
                     viewModel.onResetClicked()
                     true
                 }
+                findItem(R.id.add_search_bookmark)?.setOnMenuItemClickListener {
+                    viewModel.onAddBookmarkClicked()
+                    true
+                }
+                findItem(R.id.edit_search_bookmark)?.setOnMenuItemClickListener {
+                    viewModel.onEditBookmarkClicked()
+                    true
+                }
+            }
         }
     }
 
@@ -227,8 +240,20 @@ class GallerySearchView(
                     }
             }
 
-            searchBar.menu.findItem(R.id.reset_search)?.apply {
-                isVisible = state is GallerySearchViewModel.State.AppliedSearch
+            with(searchBar.menu) {
+                findItem(R.id.reset_search)?.apply {
+                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                }
+
+                findItem(R.id.add_search_bookmark)?.apply {
+                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                            && state.search.bookmark == null
+                }
+
+                findItem(R.id.edit_search_bookmark)?.apply {
+                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                            && state.search.bookmark != null
+                }
             }
 
             when (state) {
@@ -245,6 +270,25 @@ class GallerySearchView(
             log.debug {
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
+            }
+        }.disposeOnDestroy(this)
+    }
+
+    private fun subscribeToEvents() {
+        viewModel.events.subscribe { event ->
+            log.debug {
+                "subscribeToEvents(): received_new_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is GallerySearchViewModel.Event.OpenBookmarkDialog ->
+                    openBookmarkDialog(event.bookmark)
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_new_event:" +
+                        "\nevent=$event"
             }
         }.disposeOnDestroy(this)
     }
@@ -296,5 +340,21 @@ class GallerySearchView(
         }
 
         return spannableString
+    }
+
+    private fun openBookmarkDialog(bookmark: SearchBookmark?) {
+        val fragment =
+            (fragmentManager.findFragmentByTag(BOOKMARK_DIALOG_TAG) as? SearchBookmarkDialogFragment)
+                ?: SearchBookmarkDialogFragment().apply {
+                    arguments = SearchBookmarkDialogFragment.getBundle(bookmark)
+                }
+
+        if (!fragment.isAdded || !fragment.showsDialog) {
+            fragment.showNow(fragmentManager, BOOKMARK_DIALOG_TAG)
+        }
+    }
+
+    private companion object {
+        private const val BOOKMARK_DIALOG_TAG = "bookmark"
     }
 }
