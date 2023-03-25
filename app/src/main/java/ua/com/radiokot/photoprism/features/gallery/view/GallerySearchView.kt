@@ -6,6 +6,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.ImageSpan
+import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
@@ -30,6 +31,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkItem
 import kotlin.math.roundToInt
 
 
@@ -150,19 +152,19 @@ class GallerySearchView(
         viewModel.isApplyButtonEnabled
             .observe(this, configurationView.searchButton::setEnabled)
 
-        val searchChipSpacing =
-            context.resources.getDimensionPixelSize(R.dimen.gallery_search_media_type_chip_spacing)
-        val searchChipContext = ContextThemeWrapper(
+        val chipSpacing =
+            context.resources.getDimensionPixelSize(R.dimen.gallery_search_chip_spacing)
+        val chipContext = ContextThemeWrapper(
             context,
             com.google.android.material.R.style.Widget_Material3_Chip_Filter
         )
-        val searchChipLayoutParams = FlexboxLayout.LayoutParams(
+        val chipLayoutParams = FlexboxLayout.LayoutParams(
             FlexboxLayout.LayoutParams.WRAP_CONTENT,
-            FlexboxLayout.LayoutParams.WRAP_CONTENT,
+            context.resources.getDimensionPixelSize(R.dimen.gallery_search_chip_height),
         ).apply {
-            setMargins(0, 0, searchChipSpacing, searchChipSpacing)
+            setMargins(0, 0, chipSpacing, chipSpacing)
         }
-        val searchChipIconTint = ColorStateList.valueOf(
+        val chipIconTint = ColorStateList.valueOf(
             MaterialColors.getColor(
                 configurationView.mediaTypeChipsLayout,
                 com.google.android.material.R.attr.colorOnSurfaceVariant
@@ -173,7 +175,7 @@ class GallerySearchView(
             viewModel.availableMediaTypes.observe(this@GallerySearchView) { availableTypes ->
                 availableTypes.forEach { mediaTypeName ->
                     addView(
-                        Chip(searchChipContext).apply {
+                        Chip(chipContext).apply {
                             tag = mediaTypeName
                             setText(
                                 GalleryMediaTypeResources.getName(
@@ -185,7 +187,7 @@ class GallerySearchView(
                                     mediaTypeName
                                 )
                             )
-                            chipIconTint = searchChipIconTint
+                            setChipIconTint(chipIconTint)
 
                             setEnsureMinTouchTargetSize(false)
                             isCheckable = true
@@ -194,7 +196,7 @@ class GallerySearchView(
                                 viewModel.onAvailableMediaTypeClicked(mediaTypeName)
                             }
                         },
-                        searchChipLayoutParams,
+                        chipLayoutParams,
                     )
                 }
             }
@@ -205,6 +207,43 @@ class GallerySearchView(
                         isChecked = selectedTypes.contains(tag)
                         isCheckedIconVisible = isChecked
                         isChipIconVisible = !isChecked
+                    }
+                }
+            }
+        }
+
+        val bookmarkChipClickListener = View.OnClickListener { chip ->
+            viewModel.onBookmarkChipClicked(chip.tag as SearchBookmarkItem)
+        }
+        val bookmarkChipEditClickListener = View.OnClickListener { chip ->
+            viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
+        }
+
+        with(configurationView.searchBookmarksChipsLayout) {
+            viewModel.bookmarks.observe(this@GallerySearchView) { bookmarks ->
+                removeAllViews()
+                bookmarks.forEach { bookmark ->
+                    addView(Chip(chipContext).apply {
+                        tag = bookmark
+                        text = bookmark.name
+                        setEnsureMinTouchTargetSize(false)
+                        setOnClickListener(bookmarkChipClickListener)
+
+                        isCheckable = true
+                        isCheckedIconVisible = false
+                        isChecked = viewModel.selectedBookmark.value == bookmark
+
+                        setCloseIconResource(R.drawable.ic_pencil)
+                        isCloseIconVisible = true
+                        setOnCloseIconClickListener(bookmarkChipEditClickListener)
+                    }, chipLayoutParams)
+                }
+            }
+
+            viewModel.selectedBookmark.observe(this@GallerySearchView) { selectedBookmark ->
+                forEach { chip ->
+                    with(chip as Chip) {
+                        isChecked = tag == selectedBookmark
                     }
                 }
             }

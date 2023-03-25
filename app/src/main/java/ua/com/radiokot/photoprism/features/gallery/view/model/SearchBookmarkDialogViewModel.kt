@@ -18,7 +18,6 @@ class SearchBookmarkDialogViewModel : ViewModel() {
         get() = !name.value.isNullOrBlank()
                 && (name.value?.length ?: 0) <= nameMaxLength
 
-
     fun initOnce(bookmark: SearchBookmark?) {
         if (isInitialized) {
             return

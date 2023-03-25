@@ -34,6 +34,8 @@ class GallerySearchViewModel : ViewModel() {
     val state: Observable<State> = stateSubject
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject
+    val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
+    val selectedBookmark = MutableLiveData<SearchBookmarkItem?>(null)
 
     init {
         selectedMediaTypes.observeForever {
@@ -43,11 +45,19 @@ class GallerySearchViewModel : ViewModel() {
             isApplyButtonEnabled.value = canApplyConfiguredSearch
         }
 
+        // TODO: Remove
         Observable.timer(1, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark = SearchBookmark("Oleg"))) }
             .addToCloseables(this)
+        bookmarks.value = listOf(
+            SearchBookmarkItem(name = "My Screenshots", source = null),
+            SearchBookmarkItem(name = "Yasya Camera", source = null),
+            SearchBookmarkItem(name = "My camera", source = null),
+            SearchBookmarkItem(name = "TikToks", source = null),
+        ).shuffled()
+        selectedBookmark.value = SearchBookmarkItem(name = "My camera", source = null)
     }
 
     private val canApplyConfiguredSearch: Boolean
@@ -172,15 +182,49 @@ class GallerySearchViewModel : ViewModel() {
     }
 
     fun onAddBookmarkClicked() {
+        check(stateSubject.value is State.AppliedSearch) {
+            "Add bookmark button is only clickable in the applied search state"
+        }
+
         log.debug {
             "onAddBookmarkClicked(): add_bookmark_clicked"
         }
     }
 
     fun onEditBookmarkClicked() {
+        check(stateSubject.value is State.AppliedSearch) {
+            "Edit bookmark button is only clickable in the applied search state"
+        }
+
         log.debug {
             "onEditBookmarkClicked(): edit_bookmark_clicked"
         }
+    }
+
+    fun onBookmarkChipClicked(item: SearchBookmarkItem) {
+        check(stateSubject.value is State.ConfiguringSearch) {
+            "Bookmark chips are clickable only in the search configuration state"
+        }
+
+        log.debug {
+            "onBookmarkChipClicked(): chip_clicked:" +
+                    "\nitem=$item"
+        }
+
+        selectedBookmark.value = item
+    }
+
+    fun onBookmarkChipEditClicked(item: SearchBookmarkItem) {
+        check(stateSubject.value is State.ConfiguringSearch) {
+            "Bookmark chip edit buttons are clickable only in the search configuration state"
+        }
+
+        log.debug {
+            "onBookmarkChipEditClicked(): chip_edit_clicked:" +
+                    "\nitem=$item"
+        }
+
+        eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark = item.source))
     }
 
     sealed interface State {

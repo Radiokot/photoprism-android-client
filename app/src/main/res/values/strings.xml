@@ -52,4 +52,5 @@
     <string name="search_bookmark_name">Name</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="search_bookmarks">Bookmarks</string>
 </resources>
