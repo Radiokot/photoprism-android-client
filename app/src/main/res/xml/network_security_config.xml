@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <!-- Cleartext traffic is allowed, as PhotoPrism may be running in the secure local network -->
+    <base-config
+        cleartextTrafficPermitted="true"
+        tools:ignore="InsecureBaseConfiguration">
+        <trust-anchors>
+
+            <!-- Trust user CA is important, as PhotoPrism is primarily self-hosted -->
+            <certificates
+                src="user"
+                tools:ignore="AcceptsUserCertificates" />
+
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
