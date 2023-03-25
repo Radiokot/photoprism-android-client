@@ -10,8 +10,4 @@ constructor(
     val downloadToken: String,
     @JsonProperty("previewToken")
     val previewToken: String,
-    @JsonProperty("years")
-    val years: List<Int>,
-    @JsonProperty("siteUrl")
-    val siteUrl: String,
 )

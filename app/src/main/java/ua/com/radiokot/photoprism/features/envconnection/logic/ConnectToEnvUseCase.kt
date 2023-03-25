@@ -57,7 +57,7 @@ class ConnectToEnvUseCase(
             }
             .map {
                 EnvSession(
-                    apiUrl = EnvConnection.rootUrlToApiUrl(config.rootUrl),
+                    apiUrl = connection.apiUrl,
                     id = sessionId,
                     previewToken = config.previewToken,
                     downloadToken = config.downloadToken,
@@ -112,12 +112,10 @@ class ConnectToEnvUseCase(
     private data class Config(
         val previewToken: String,
         val downloadToken: String,
-        val rootUrl: String,
     ) {
         constructor(source: PhotoPrismClientConfig) : this(
             previewToken = source.previewToken,
             downloadToken = source.downloadToken,
-            rootUrl = source.siteUrl,
         )
     }
 }
