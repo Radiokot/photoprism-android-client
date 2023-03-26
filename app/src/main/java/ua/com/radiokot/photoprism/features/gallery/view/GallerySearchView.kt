@@ -288,12 +288,12 @@ class GallerySearchView(
 
                 findItem(R.id.add_search_bookmark)?.apply {
                     isVisible = state is GallerySearchViewModel.State.AppliedSearch
-                            && state.search.bookmark == null
+                            && state.search !is AppliedGallerySearch.Bookmarked
                 }
 
                 findItem(R.id.edit_search_bookmark)?.apply {
                     isVisible = state is GallerySearchViewModel.State.AppliedSearch
-                            && state.search.bookmark != null
+                            && state.search is AppliedGallerySearch.Bookmarked
                 }
             }
 

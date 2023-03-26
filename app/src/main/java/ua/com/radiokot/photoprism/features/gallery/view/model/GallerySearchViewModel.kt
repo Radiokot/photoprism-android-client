@@ -116,17 +116,8 @@ class GallerySearchViewModel(
                 )
             }
 
-            // TODO: Useless, remove
             is State.ConfiguringSearch -> {
-                selectedMediaTypes.value =
-                    state.alreadyAppliedSearch?.config?.mediaTypes ?: emptySet()
-                userQuery.value = state.alreadyAppliedSearch?.config?.userQuery ?: ""
-
-                stateSubject.onNext(
-                    State.ConfiguringSearch(
-                        alreadyAppliedSearch = state.alreadyAppliedSearch
-                    )
-                )
+                // Nothing to change.
             }
         }
 
@@ -172,10 +163,12 @@ class GallerySearchViewModel(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
             userQuery = userQuery.value?.trim(),
         )
-        val appliedSearch = AppliedGallerySearch(
-            config = config,
-            bookmark = bookmarksRepository.findByConfig(config)
-        )
+        val bookmark = bookmarksRepository.findByConfig(config)
+        val appliedSearch =
+            if (bookmark != null)
+                AppliedGallerySearch.Bookmarked(bookmark)
+            else
+                AppliedGallerySearch.Custom(config)
 
         log.debug {
             "applySearch(): applying_search:" +
@@ -207,9 +200,11 @@ class GallerySearchViewModel(
         val appliedSearchState = (stateSubject.value as? State.AppliedSearch).checkNotNull {
             "Edit bookmark button is only clickable in the applied search state"
         }
-        val bookmark = appliedSearchState.search.bookmark.checkNotNull {
-            "Edit bookmark button is only clickable when a bookmarked search is applied"
-        }
+        val bookmark = (appliedSearchState.search as? AppliedGallerySearch.Bookmarked)
+            ?.bookmark
+            .checkNotNull {
+                "Edit bookmark button is only clickable when a bookmarked search is applied"
+            }
 
         log.debug {
             "onEditBookmarkClicked(): edit_bookmark_clicked:" +
