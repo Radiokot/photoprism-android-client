@@ -268,6 +268,9 @@ class GallerySearchViewModel(
 
     private fun configureAndApplySearchFromBookmark(bookmark: SearchBookmark) {
         selectedMediaTypes.value = bookmark.searchConfig.mediaTypes
+            // A bookmark may have more media types than allowed now
+            // (due to the intent filter).
+            .intersect(availableMediaTypes.value!!)
         userQuery.value = bookmark.searchConfig.userQuery ?: ""
 
         log.debug {
