@@ -1,5 +1,11 @@
 package ua.com.radiokot.photoprism.extension
 
 val Throwable.shortSummary: String
-    get() = this.message
-        ?: javaClass.simpleName
+    get() {
+        val simpleName = javaClass.simpleName
+        val message = message
+        return if (message != null)
+            "$simpleName: $message"
+        else
+            simpleName
+    }

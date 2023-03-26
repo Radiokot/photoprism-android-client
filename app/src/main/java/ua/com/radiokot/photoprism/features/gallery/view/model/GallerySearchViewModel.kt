@@ -225,13 +225,23 @@ class GallerySearchViewModel(
     }
 
     fun onAddBookmarkClicked() {
-        check(stateSubject.value is State.AppliedSearch) {
+        val appliedSearchState = (stateSubject.value as? State.AppliedSearch).checkNotNull {
             "Add bookmark button is only clickable in the applied search state"
+        }
+        check(appliedSearchState.search !is AppliedGallerySearch.Bookmarked) {
+            "Add bookmark button can't be clicked in the applied bookmarked search state"
         }
 
         log.debug {
             "onAddBookmarkClicked(): add_bookmark_clicked"
         }
+
+        eventsSubject.onNext(
+            Event.OpenBookmarkDialog(
+                searchConfig = appliedSearchState.search.config,
+                existingBookmark = null,
+            )
+        )
     }
 
     fun onEditBookmarkClicked() {
@@ -249,7 +259,12 @@ class GallerySearchViewModel(
                     "\nbookmark=$bookmark"
         }
 
-        eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark))
+        eventsSubject.onNext(
+            Event.OpenBookmarkDialog(
+                searchConfig = bookmark.searchConfig,
+                existingBookmark = bookmark,
+            )
+        )
     }
 
     fun onBookmarkChipClicked(item: SearchBookmarkItem) {
@@ -289,7 +304,14 @@ class GallerySearchViewModel(
                     "\nitem=$item"
         }
 
-        eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark = item.source))
+        if (item.source != null) {
+            eventsSubject.onNext(
+                Event.OpenBookmarkDialog(
+                    searchConfig = item.source.searchConfig,
+                    existingBookmark = item.source,
+                )
+            )
+        }
     }
 
     sealed interface State {
@@ -299,6 +321,9 @@ class GallerySearchViewModel(
     }
 
     sealed interface Event {
-        class OpenBookmarkDialog(val bookmark: SearchBookmark?) : Event
+        class OpenBookmarkDialog(
+            val searchConfig: SearchConfig,
+            val existingBookmark: SearchBookmark?,
+        ) : Event
     }
 }

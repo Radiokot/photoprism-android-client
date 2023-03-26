@@ -53,15 +53,19 @@ class SearchBookmarksRepository : SimpleCollectionRepository<SearchBookmark>() {
         broadcast()
     }.toCompletable().subscribeOn(Schedulers.io())
 
-//    fun create(name: String): Single<SearchBookmark> = {
-//        SearchBookmark(
-//            id = System.currentTimeMillis(),
-//            name = name,
-//        ).also { mutableItemsList.add(0, it) }
-//    }
-//        .toSingle()
-//        .subscribeOn(Schedulers.io())
-//        .doOnSuccess { broadcast() }
+    fun create(
+        name: String,
+        searchConfig: SearchConfig,
+    ): Single<SearchBookmark> = {
+        SearchBookmark(
+            id = System.currentTimeMillis(),
+            name = name,
+            searchConfig = searchConfig,
+        ).also { mutableItemsList.add(0, it) }
+    }
+        .toSingle()
+        .subscribeOn(Schedulers.io())
+        .doOnSuccess { broadcast() }
 
     fun findByConfig(config: SearchConfig): SearchBookmark? =
         itemsList.find { it.searchConfig == config }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.core.view.isVisible
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -15,6 +16,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
 
 class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_search_bookmark) {
@@ -37,12 +39,17 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bookmark: SearchBookmark? = requireArguments().getParcelable(BOOKMARK_EXTRA)
+        val existingBookmark: SearchBookmark? = requireArguments().getParcelable(BOOKMARK_EXTRA)
+        val searchConfig: SearchConfig =
+            requireNotNull(requireArguments().getParcelable(SEARCH_CONFIG_EXTRA)) {
+                "No search config specified"
+            }
 
         log.debug {
             "onViewCreated(): created:" +
                     "\nsavedInstanceState=$savedInstanceState," +
-                    "\nbookmark=$bookmark"
+                    "\nexistingBookmark=$existingBookmark," +
+                    "\nsearchConfig=$searchConfig"
         }
 
         initFields()
@@ -51,7 +58,10 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
         subscribeToState()
         subscribeToEvents()
 
-        viewModel.initOnce(bookmark)
+        viewModel.initOnce(
+            searchConfig = searchConfig,
+            existingBookmark = existingBookmark,
+        )
     }
 
     private fun initFields() {
@@ -103,7 +113,7 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
                 state is SearchBookmarkDialogViewModel.State.Editing
 
             viewBinding.titleTextView.text = when (state) {
-                SearchBookmarkDialogViewModel.State.Creating ->
+                is SearchBookmarkDialogViewModel.State.Creating ->
                     getString(R.string.add_search_bookmark)
                 is SearchBookmarkDialogViewModel.State.Editing ->
                     getString(R.string.edit_search_bookmark)
@@ -126,21 +136,42 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
             when (event) {
                 SearchBookmarkDialogViewModel.Event.Dismiss ->
                     dismiss()
+
+                is SearchBookmarkDialogViewModel.Event.ShowFloatingError ->
+                    Toast.makeText(
+                        requireContext(),
+                        getString(
+                            when (event.error) {
+                                is SearchBookmarkDialogViewModel.Error.FailedToCreate ->
+                                    R.string.template_error_failed_to_add_bookmark
+                                is SearchBookmarkDialogViewModel.Error.FailedToDelete ->
+                                    R.string.template_error_failed_to_delete_bookmark
+                                is SearchBookmarkDialogViewModel.Error.FailedToUpdate ->
+                                    R.string.template_error_failed_to_edit_bookmark
+                            },
+                            event.error.shortSummary,
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
             }
 
             log.debug {
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.disposeOnDestroy(this)
-
+        }.disposeOnDestroy(viewLifecycleOwner)
     }
 
     companion object {
         private const val BOOKMARK_EXTRA = "bookmark"
+        private const val SEARCH_CONFIG_EXTRA = "search-config"
 
-        fun getBundle(bookmark: SearchBookmark?) = Bundle().apply {
-            putParcelable(BOOKMARK_EXTRA, bookmark)
+        fun getBundle(
+            searchConfig: SearchConfig,
+            existingBookmark: SearchBookmark?,
+        ) = Bundle().apply {
+            putParcelable(BOOKMARK_EXTRA, existingBookmark)
+            putParcelable(SEARCH_CONFIG_EXTRA, searchConfig)
         }
     }
 }

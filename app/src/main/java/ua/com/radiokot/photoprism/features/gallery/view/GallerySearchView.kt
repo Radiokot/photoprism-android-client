@@ -31,6 +31,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
@@ -324,7 +325,10 @@ class GallerySearchView(
 
             when (event) {
                 is GallerySearchViewModel.Event.OpenBookmarkDialog ->
-                    openBookmarkDialog(event.bookmark)
+                    openBookmarkDialog(
+                        searchConfig = event.searchConfig,
+                        existingBookmark = event.existingBookmark,
+                    )
             }
 
             log.debug {
@@ -383,11 +387,17 @@ class GallerySearchView(
         return spannableString
     }
 
-    private fun openBookmarkDialog(bookmark: SearchBookmark?) {
+    private fun openBookmarkDialog(
+        searchConfig: SearchConfig,
+        existingBookmark: SearchBookmark?
+    ) {
         val fragment =
             (fragmentManager.findFragmentByTag(BOOKMARK_DIALOG_TAG) as? SearchBookmarkDialogFragment)
                 ?: SearchBookmarkDialogFragment().apply {
-                    arguments = SearchBookmarkDialogFragment.getBundle(bookmark)
+                    arguments = SearchBookmarkDialogFragment.getBundle(
+                        searchConfig = searchConfig,
+                        existingBookmark = existingBookmark,
+                    )
                 }
 
         if (!fragment.isAdded || !fragment.showsDialog) {
