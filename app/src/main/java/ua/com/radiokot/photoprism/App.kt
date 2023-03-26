@@ -79,7 +79,7 @@ class App : Application() {
     }
 
     private fun initLogging() {
-        HandroidLoggerAdapter.APP_NAME = ""
+        HandroidLoggerAdapter.APP_NAME = "PPG"
         HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
         HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
     }
