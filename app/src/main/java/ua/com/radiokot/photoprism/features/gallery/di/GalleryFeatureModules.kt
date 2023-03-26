@@ -117,7 +117,9 @@ val galleryFeatureModules: List<Module> = listOf(
         }.bind(SearchBookmarksRepository::class)
 
         viewModel {
-            SearchBookmarkDialogViewModel()
+            SearchBookmarkDialogViewModel(
+                bookmarksRepository = get(),
+            )
         }
     }
 )

@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class SearchBookmark(
+data class SearchBookmark(
     val id: Long,
     val name: String,
 ) : Parcelable {

@@ -15,14 +15,15 @@ import io.reactivex.rxjava3.subjects.CompletableSubject
  */
 abstract class SimpleCollectionRepository<T> : Repository() {
     protected val itemsSubject = BehaviorSubject.createDefault(listOf<T>())
+    protected open val mutableItemsList = mutableListOf<T>()
 
     /**
      * Emits all the collection items.
      */
     val items: Observable<List<T>> = itemsSubject
 
-    open var itemsList: List<T> = emptyList()
-        protected set
+    open val itemsList: List<T>
+        get() = itemsSubject.value ?: listOf()
 
     protected abstract fun getCollection(): Single<List<T>>
 
@@ -30,13 +31,14 @@ abstract class SimpleCollectionRepository<T> : Repository() {
         isNeverUpdated = false
         isFresh = true
 
-        itemsList = newItems
+        mutableItemsList.clear()
+        mutableItemsList.addAll(newItems)
 
         broadcast()
     }
 
     protected open fun broadcast() {
-        itemsSubject.onNext(itemsList)
+        itemsSubject.onNext(mutableItemsList.toList())
     }
 
     private var updateResultSubject: CompletableSubject? = null

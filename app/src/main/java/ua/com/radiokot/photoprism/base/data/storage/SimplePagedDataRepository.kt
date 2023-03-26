@@ -23,7 +23,7 @@ abstract class SimplePagedDataRepository<T>(
     private var nextPage: String? = null
 
     protected val itemsSubject = BehaviorSubject.createDefault(listOf<T>())
-    protected open var mutableItemsList = mutableListOf<T>()
+    protected open val mutableItemsList = mutableListOf<T>()
 
     /**
      * Emits all the currently loaded items.
