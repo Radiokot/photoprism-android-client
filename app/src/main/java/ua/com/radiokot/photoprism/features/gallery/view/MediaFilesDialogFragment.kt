@@ -50,9 +50,9 @@ class MediaFilesDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_medi
                 log.debug {
                     "file_item_clicked:" +
                             "\nitem=$item"
-
-                    onFileSelected(item)
                 }
+
+                onFileSelected(item)
 
                 false
             }

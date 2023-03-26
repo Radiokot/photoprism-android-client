@@ -1,0 +1,3 @@
+Fixed:
+- Non-clickable files in the file selection dialog
+- Search bar menu animation bug, when all the actions are visible during the animation

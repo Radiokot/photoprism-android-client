@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.Spannable
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
@@ -128,8 +130,12 @@ class GallerySearchView(
 
         searchBar.textView.ellipsize = TextUtils.TruncateAt.END
 
+        @SuppressLint("RestrictedApi")
         if (menuRes != null) {
-            searchBar.inflateMenu(R.menu.gallery)
+            // Important. The external inflater is used to avoid setting SearchBar.menuResId
+            // Otherwise, this ding dong tries to animate the menu which makes
+            // all the items visible during the animation 🤦🏻‍
+            SupportMenuInflater(searchBar.context).inflate(menuRes, searchBar.menu)
             with(searchBar.menu) {
                 findItem(R.id.reset_search)?.setOnMenuItemClickListener {
                     viewModel.onResetClicked()
