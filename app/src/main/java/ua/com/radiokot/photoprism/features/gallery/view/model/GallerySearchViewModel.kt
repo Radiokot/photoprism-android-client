@@ -39,7 +39,6 @@ class GallerySearchViewModel(
     val events: Observable<Event> = eventsSubject
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
-    val selectedBookmark = MutableLiveData<SearchBookmarkItem?>(null)
 
     init {
         selectedMediaTypes.observeForever {
@@ -98,8 +97,6 @@ class GallerySearchViewModel(
             is State.AppliedSearch -> {
                 selectedMediaTypes.value = state.search.config.mediaTypes
                 userQuery.value = state.search.config.userQuery ?: ""
-                selectedBookmark.value = state.search.bookmark
-                    ?.let(::SearchBookmarkItem)
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -119,12 +116,11 @@ class GallerySearchViewModel(
                 )
             }
 
+            // TODO: Useless, remove
             is State.ConfiguringSearch -> {
                 selectedMediaTypes.value =
                     state.alreadyAppliedSearch?.config?.mediaTypes ?: emptySet()
                 userQuery.value = state.alreadyAppliedSearch?.config?.userQuery ?: ""
-                selectedBookmark.value = state.alreadyAppliedSearch?.bookmark
-                    ?.let(::SearchBookmarkItem)
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -172,20 +168,21 @@ class GallerySearchViewModel(
             "The search can only be applied while configuring"
         }
 
-        val search = AppliedGallerySearch(
-            config = SearchConfig(
-                mediaTypes = selectedMediaTypes.value ?: emptySet(),
-                userQuery = userQuery.value?.trim(),
-            ),
-            bookmark = selectedBookmark.value?.source
+        val config = SearchConfig(
+            mediaTypes = selectedMediaTypes.value ?: emptySet(),
+            userQuery = userQuery.value?.trim(),
+        )
+        val appliedSearch = AppliedGallerySearch(
+            config = config,
+            bookmark = bookmarksRepository.findByConfig(config)
         )
 
         log.debug {
             "applySearch(): applying_search:" +
-                    "\nsearch=$search"
+                    "\nsearch=$appliedSearch"
         }
 
-        stateSubject.onNext(State.AppliedSearch(search))
+        stateSubject.onNext(State.AppliedSearch(appliedSearch))
     }
 
     fun onResetClicked() {
@@ -232,13 +229,12 @@ class GallerySearchViewModel(
                     "\nitem=$item"
         }
 
-        selectedBookmark.value = item
         if (item.source != null) {
-            applySearchFromBookmark(item.source)
+            configureAndApplySearchFromBookmark(item.source)
         }
     }
 
-    private fun applySearchFromBookmark(bookmark: SearchBookmark) {
+    private fun configureAndApplySearchFromBookmark(bookmark: SearchBookmark) {
         selectedMediaTypes.value = bookmark.searchConfig.mediaTypes
         userQuery.value = bookmark.searchConfig.userQuery ?: ""
 

@@ -62,4 +62,7 @@ class SearchBookmarksRepository : SimpleCollectionRepository<SearchBookmark>() {
 //        .toSingle()
 //        .subscribeOn(Schedulers.io())
 //        .doOnSuccess { broadcast() }
+
+    fun findByConfig(config: SearchConfig): SearchBookmark? =
+        itemsList.find { it.searchConfig == config }
 }

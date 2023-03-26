@@ -236,22 +236,12 @@ class GallerySearchView(
                         setEnsureMinTouchTargetSize(false)
                         setOnClickListener(bookmarkChipClickListener)
 
-                        isCheckable = true
-                        isCheckedIconVisible = false
-                        isChecked = viewModel.selectedBookmark.value == bookmark
+                        isCheckable = false
 
                         setCloseIconResource(R.drawable.ic_pencil)
                         isCloseIconVisible = true
                         setOnCloseIconClickListener(bookmarkChipEditClickListener)
                     }, chipLayoutParams)
-                }
-            }
-
-            viewModel.selectedBookmark.observe(this@GallerySearchView) { selectedBookmark ->
-                forEach { chip ->
-                    with(chip as Chip) {
-                        isChecked = tag == selectedBookmark
-                    }
                 }
             }
         }
