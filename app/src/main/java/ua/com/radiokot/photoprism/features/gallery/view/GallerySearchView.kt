@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
+import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.view.View
 import android.widget.TextView
@@ -350,6 +351,25 @@ class GallerySearchView(
         search: AppliedGallerySearch,
         textView: TextView
     ): CharSequence {
+        if (search is AppliedGallerySearch.Bookmarked) {
+            val spannableString = SpannableStringBuilder().apply {
+                append(search.bookmark.name)
+                setSpan(
+                    ForegroundColorSpan(
+                        MaterialColors.getColor(
+                            textView,
+                            com.google.android.material.R.attr.colorPrimary
+                        )
+                    ),
+                    0,
+                    length,
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            return spannableString
+        }
+
         val iconPlaceholder = "* "
         val spannableString = SpannableStringBuilder()
             .apply {
