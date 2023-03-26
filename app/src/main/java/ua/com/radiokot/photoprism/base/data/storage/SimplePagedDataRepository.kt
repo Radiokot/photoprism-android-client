@@ -24,6 +24,10 @@ abstract class SimplePagedDataRepository<T>(
 
     protected val itemsSubject = BehaviorSubject.createDefault(listOf<T>())
     protected open var mutableItemsList = mutableListOf<T>()
+
+    /**
+     * Emits all the currently loaded items.
+     */
     val items: Observable<List<T>> = itemsSubject
 
     open val itemsList: List<T>
@@ -38,7 +42,7 @@ abstract class SimplePagedDataRepository<T>(
     /**
      * @param cursor - cursor or number of the page to load
      */
-    abstract fun getPage(
+    protected abstract fun getPage(
         limit: Int,
         cursor: String?,
         order: PagingOrder

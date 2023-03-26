@@ -8,17 +8,18 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/search_bookmarks_title"
+        android:id="@+id/bookmarks_title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/search_bookmarks"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/search_bookmarks_chips_layout"
+        android:id="@+id/bookmarks_chips_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         app:flexWrap="wrap"
         tools:background="@android:color/system_neutral1_50"
         tools:layout_height="30dp">
@@ -28,7 +29,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="@string/media_type"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 

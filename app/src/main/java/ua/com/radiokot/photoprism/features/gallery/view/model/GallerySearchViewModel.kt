@@ -5,16 +5,17 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
-import java.util.concurrent.TimeUnit
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 
-class GallerySearchViewModel : ViewModel() {
+class GallerySearchViewModel(
+    private val bookmarksRepository: SearchBookmarksRepository,
+) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
     val availableMediaTypes = MutableLiveData(
@@ -34,6 +35,7 @@ class GallerySearchViewModel : ViewModel() {
     val state: Observable<State> = stateSubject
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject
+    val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
     val selectedBookmark = MutableLiveData<SearchBookmarkItem?>(null)
 
@@ -45,24 +47,28 @@ class GallerySearchViewModel : ViewModel() {
             isApplyButtonEnabled.value = canApplyConfiguredSearch
         }
 
-        // TODO: Remove
-        Observable.timer(1, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark = SearchBookmark("Oleg"))) }
-            .addToCloseables(this)
-        bookmarks.value = listOf(
-            SearchBookmarkItem(name = "My Screenshots", source = null),
-            SearchBookmarkItem(name = "Yasya Camera", source = null),
-            SearchBookmarkItem(name = "My camera", source = null),
-            SearchBookmarkItem(name = "TikToks", source = null),
-        ).shuffled()
-        selectedBookmark.value = SearchBookmarkItem(name = "My camera", source = null)
+        subscribeToBookmarks()
+
+        bookmarksRepository.updateIfNotFresh()
     }
 
     private val canApplyConfiguredSearch: Boolean
         get() = !selectedMediaTypes.value.isNullOrEmpty()
                 || !userQuery.value.isNullOrBlank()
+
+    private fun subscribeToBookmarks() {
+        bookmarksRepository.items
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { bookmarks ->
+                log.debug {
+                    "subscribeToBookmarks(): received_new_bookmarks:" +
+                            "\ncount=${bookmarks.size}"
+                }
+                this.bookmarks.value = bookmarks.map(::SearchBookmarkItem)
+                isBookmarksSectionVisible.value = bookmarks.isNotEmpty()
+            }
+            .addToCloseables(this)
+    }
 
     fun onAvailableMediaTypeClicked(typeName: GalleryMedia.TypeName) {
         val currentlySelected = selectedMediaTypes.value ?: emptySet()

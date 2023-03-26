@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
@@ -58,7 +57,6 @@ class SimpleGalleryMediaRepository(
             )
         }
             .toSingle()
-            .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
                 val filesCount = photoPrismPhotos.sumOf { it.files.size }
                 pageIsLast = filesCount < limit

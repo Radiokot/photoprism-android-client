@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
 import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
@@ -225,7 +226,7 @@ class GallerySearchView(
             viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
         }
 
-        with(configurationView.searchBookmarksChipsLayout) {
+        with(configurationView.bookmarksChipsLayout) {
             viewModel.bookmarks.observe(this@GallerySearchView) { bookmarks ->
                 removeAllViews()
                 bookmarks.forEach { bookmark ->
@@ -253,6 +254,11 @@ class GallerySearchView(
                     }
                 }
             }
+        }
+
+        viewModel.isBookmarksSectionVisible.observe(this) { isBookmarksSectionVisible ->
+            configurationView.bookmarksChipsLayout.isVisible = isBookmarksSectionVisible
+            configurationView.bookmarksTitleTextView.isVisible = isBookmarksSectionVisible
         }
     }
 

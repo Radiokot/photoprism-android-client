@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.content.Context
-import android.os.Environment
 import android.text.format.DateFormat
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -11,6 +10,7 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -66,7 +66,9 @@ val galleryFeatureModules: List<Module> = listOf(
             }
 
             viewModel {
-                GallerySearchViewModel()
+                GallerySearchViewModel(
+                    bookmarksRepository = get(),
+                )
             }
 
             viewModel {
@@ -110,6 +112,10 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
+        single {
+            SearchBookmarksRepository()
+        }.bind(SearchBookmarksRepository::class)
+
         viewModel {
             SearchBookmarkDialogViewModel()
         }
