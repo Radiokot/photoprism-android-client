@@ -137,10 +137,14 @@ class GalleryViewModel(
         searchViewModel.state.subscribe { state ->
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
-                    currentMediaRepository = galleryMediaRepositoryFactory
+                    val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(state.search.config)
-                    subscribeToRepository()
-                    update()
+
+                    if (searchMediaRepository != currentMediaRepository) {
+                        currentMediaRepository = searchMediaRepository
+                        subscribeToRepository()
+                        update()
+                    }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
                     // TODO: initial repository saved here but removed from factory cache ->
@@ -150,6 +154,7 @@ class GalleryViewModel(
                     update()
                 }
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
+                    // Nothing to change.
                 }
             }
         }

@@ -65,10 +65,48 @@ class GallerySearchViewModel(
                     "subscribeToBookmarks(): received_new_bookmarks:" +
                             "\ncount=${bookmarks.size}"
                 }
-                this.bookmarks.value = bookmarks.map(::SearchBookmarkItem)
-                isBookmarksSectionVisible.value = bookmarks.isNotEmpty()
+
+                onBookmarksUpdated(bookmarks)
             }
             .addToCloseables(this)
+    }
+
+    private fun onBookmarksUpdated(bookmarks: List<SearchBookmark>) {
+        this.bookmarks.value = bookmarks.map(::SearchBookmarkItem)
+        isBookmarksSectionVisible.value = bookmarks.isNotEmpty()
+
+        val state = stateSubject.value!!
+        if (state is State.AppliedSearch) {
+            // If the current bookmark has been removed,
+            // switch to an equivalent custom search.
+            if (state.search is AppliedGallerySearch.Bookmarked
+                && !bookmarks.contains(state.search.bookmark)
+            ) {
+                log.debug {
+                    "onBookmarksUpdated(): switch_to_custom_search"
+                }
+
+                stateSubject.onNext(State.AppliedSearch(AppliedGallerySearch.Custom(state.search.config)))
+            }
+            // If a bookmark has been created for the current search,
+            // switch to an equivalent bookmarked search.
+            else if (state.search is AppliedGallerySearch.Custom) {
+                val matchedBookmark = bookmarksRepository.findByConfig(state.search.config)
+                if (matchedBookmark != null) {
+                    log.debug {
+                        "onBookmarksUpdated(): switch_to_bookmarked_search"
+                    }
+
+                    stateSubject.onNext(
+                        State.AppliedSearch(
+                            AppliedGallerySearch.Bookmarked(
+                                matchedBookmark
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 
     fun onAvailableMediaTypeClicked(typeName: GalleryMedia.TypeName) {
@@ -256,8 +294,8 @@ class GallerySearchViewModel(
 
     sealed interface State {
         object NoSearch : State
-        class ConfiguringSearch(val alreadyAppliedSearch: AppliedGallerySearch?) : State
-        class AppliedSearch(val search: AppliedGallerySearch) : State
+        data class ConfiguringSearch(val alreadyAppliedSearch: AppliedGallerySearch?) : State
+        data class AppliedSearch(val search: AppliedGallerySearch) : State
     }
 
     sealed interface Event {
