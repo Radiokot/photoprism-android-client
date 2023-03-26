@@ -4,10 +4,12 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 
 class SearchBookmarkItem(
     val name: String,
+    val dragAndDropContent: String,
     val source: SearchBookmark?,
 ) {
     constructor(source: SearchBookmark) : this(
         name = source.name,
+        dragAndDropContent = source.searchConfig.userQuery ?: "",
         source = source,
     )
 

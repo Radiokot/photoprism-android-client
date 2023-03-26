@@ -1,14 +1,19 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.animation.LayoutTransition
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
+import android.view.DragEvent
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
@@ -18,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
 import androidx.core.view.forEach
+import androidx.core.view.forEachIndexed
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
@@ -154,6 +160,119 @@ class GallerySearchView(
                 }
             }
         }
+
+        initBookmarksDrag()
+    }
+
+    private fun initBookmarksDrag() {
+        val relativeRectIndices = mutableListOf<Pair<Rect, Int>>()
+
+        with(configurationView.bookmarksChipsLayout) {
+            setOnDragListener { _, event ->
+                if (event.localState !is Chip) {
+                    return@setOnDragListener false
+                }
+
+                when (event.action) {
+                    DragEvent.ACTION_DRAG_STARTED -> {
+                        relativeRectIndices.clear()
+                        val layoutLocation = IntArray(2)
+                            .also { getLocationOnScreen(it) }
+                        configurationView.bookmarksChipsLayout.forEachIndexed { i, view ->
+                            val viewRelativeLocation = IntArray(2)
+                                .also { location ->
+                                    view.getLocationOnScreen(location)
+                                    location[0] -= layoutLocation[0]
+                                    location[1] -= layoutLocation[1]
+                                }
+
+                            val marginLayoutParams = view.layoutParams as MarginLayoutParams
+                            val viewRelativeRect = Rect(
+                                viewRelativeLocation[0],
+                                viewRelativeLocation[1],
+                                viewRelativeLocation[0] + view.width
+                                        + marginLayoutParams.rightMargin
+                                        + marginLayoutParams.leftMargin,
+                                viewRelativeLocation[1] + view.height
+                                        + marginLayoutParams.topMargin
+                                        + marginLayoutParams.bottomMargin
+                            )
+
+                            val atIndexRect = Rect(
+                                viewRelativeRect.left,
+                                viewRelativeRect.top,
+                                viewRelativeRect.left + viewRelativeRect.width() / 2,
+                                viewRelativeRect.top + viewRelativeRect.height() / 2
+                            )
+                            val nextToIndexRect =
+                                Rect(
+                                    atIndexRect.right,
+                                    atIndexRect.top,
+                                    viewRelativeRect.right,
+                                    viewRelativeRect.bottom
+                                )
+                            if (i == childCount - 1) {
+                                nextToIndexRect.right = width
+                            }
+
+                            relativeRectIndices.add(atIndexRect to i)
+                            relativeRectIndices.add(nextToIndexRect to i + 1)
+                        }
+
+                        log.debug {
+                            "initBookmarksDrag(): marked_indexed_regions:" +
+                                    "\nsize=${relativeRectIndices.size}"
+                        }
+
+                        return@setOnDragListener true
+                    }
+                    DragEvent.ACTION_DROP -> {
+                        val matchingRect: Pair<Rect, Int>? = relativeRectIndices.find { (rect, _) ->
+                            rect.contains(event.x.toInt(), event.y.toInt())
+                        }
+
+                        if (matchingRect != null) {
+                            val matchingRectIndex = matchingRect.second
+                            val draggedView = event.localState as View
+                            val draggedViewIndex = indexOfChild(draggedView)
+                            val newIndex =
+                                if (matchingRectIndex > draggedViewIndex)
+                                    matchingRectIndex - 1
+                                else
+                                    matchingRectIndex
+
+                            log.debug {
+                                "initBookmarksDrag(): dropped_and_matched:" +
+                                        "\nnewIndex=$newIndex," +
+                                        "\ncurrentIndex=$draggedViewIndex"
+                            }
+
+                            if (newIndex != draggedViewIndex) {
+                                post {
+                                    layoutTransition = LayoutTransition()
+                                    removeView(draggedView)
+                                    addView(draggedView, newIndex)
+                                    layoutTransition = null
+                                }
+
+                                log.debug {
+                                    "initBookmarksDrag(): posted_reorder"
+                                }
+                            }
+
+                            return@setOnDragListener true
+                        } else {
+                            log.debug {
+                                "initBookmarksDrag(): dropped_but_unmatched"
+                            }
+
+                            return@setOnDragListener false
+                        }
+                    }
+                }
+                return@setOnDragListener false
+            }
+        }
     }
 
     private fun subscribeToData() {
@@ -227,6 +346,19 @@ class GallerySearchView(
         val bookmarkChipEditClickListener = View.OnClickListener { chip ->
             viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
         }
+        val bookmarkChipLongClickListener = View.OnLongClickListener { chip ->
+            val dragShadow = View.DragShadowBuilder(chip)
+            @Suppress("DEPRECATION")
+            chip.startDrag(
+                // Setting the clip data allows dropping the bookmark to the query field!
+                // Do not set null
+                ClipData.newPlainText("", (chip.tag as SearchBookmarkItem).dragAndDropContent),
+                dragShadow,
+                chip,
+                0,
+            )
+            true
+        }
 
         with(configurationView.bookmarksChipsLayout) {
             viewModel.bookmarks.observe(this@GallerySearchView) { bookmarks ->
@@ -243,6 +375,8 @@ class GallerySearchView(
                         setCloseIconResource(R.drawable.ic_pencil)
                         isCloseIconVisible = true
                         setOnCloseIconClickListener(bookmarkChipEditClickListener)
+
+                        setOnLongClickListener(bookmarkChipLongClickListener)
                     }, chipLayoutParams)
                 }
             }
