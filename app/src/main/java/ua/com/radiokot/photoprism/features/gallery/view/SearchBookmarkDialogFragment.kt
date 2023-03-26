@@ -102,6 +102,13 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
             viewBinding.deleteButton.isVisible =
                 state is SearchBookmarkDialogViewModel.State.Editing
 
+            viewBinding.titleTextView.text = when (state) {
+                SearchBookmarkDialogViewModel.State.Creating ->
+                    getString(R.string.add_search_bookmark)
+                is SearchBookmarkDialogViewModel.State.Editing ->
+                    getString(R.string.edit_search_bookmark)
+            }
+
             log.debug {
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
