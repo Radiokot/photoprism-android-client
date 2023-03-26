@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class SearchBookmark(
     val id: Long,
     val name: String,
+    val searchConfig: SearchConfig,
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

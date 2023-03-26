@@ -7,15 +7,36 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 
 class SearchBookmarksRepository : SimpleCollectionRepository<SearchBookmark>() {
     override fun getCollection(): Single<List<SearchBookmark>> = {
         var i = 0L
         listOf(
-            SearchBookmark(name = "My Screenshots", id = ++i),
-            SearchBookmark(name = "Yasya Camera", id = ++i),
-            SearchBookmark(name = "My camera", id = ++i),
-            SearchBookmark(name = "TikToks", id = ++i)
+            SearchBookmark(
+                name = "My Screenshots",
+                id = ++i,
+                searchConfig = SearchConfig(
+                    userQuery = "oleg&screen",
+                    mediaTypes = emptySet(),
+                )
+            ),
+            SearchBookmark(
+                name = "Yasya Camera",
+                id = ++i,
+                searchConfig = SearchConfig(
+                    userQuery = "yasya name:\"IMG_*\"|\"VID_*\"",
+                    mediaTypes = emptySet(),
+                )
+            ),
+            SearchBookmark(
+                name = "My Camera",
+                id = ++i,
+                searchConfig = SearchConfig(
+                    userQuery = "oleg&camera|cam",
+                    mediaTypes = emptySet(),
+                )
+            ),
         )
     }.toSingle()
 
@@ -32,13 +53,13 @@ class SearchBookmarksRepository : SimpleCollectionRepository<SearchBookmark>() {
         broadcast()
     }.toCompletable().subscribeOn(Schedulers.io())
 
-    fun create(name: String): Single<SearchBookmark> = {
-        SearchBookmark(
-            id = System.currentTimeMillis(),
-            name = name,
-        ).also { mutableItemsList.add(0, it) }
-    }
-        .toSingle()
-        .subscribeOn(Schedulers.io())
-        .doOnSuccess { broadcast() }
+//    fun create(name: String): Single<SearchBookmark> = {
+//        SearchBookmark(
+//            id = System.currentTimeMillis(),
+//            name = name,
+//        ).also { mutableItemsList.add(0, it) }
+//    }
+//        .toSingle()
+//        .subscribeOn(Schedulers.io())
+//        .doOnSuccess { broadcast() }
 }

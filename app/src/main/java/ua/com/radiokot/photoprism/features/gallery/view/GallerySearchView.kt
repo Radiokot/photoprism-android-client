@@ -359,21 +359,21 @@ class GallerySearchView(
         val iconPlaceholder = "* "
         val spannableString = SpannableStringBuilder()
             .apply {
-                repeat(search.mediaTypes.size) {
+                repeat(search.config.mediaTypes.size) {
                     append(iconPlaceholder)
                 }
 
-                if (search.mediaTypes.isNotEmpty()) {
+                if (search.config.mediaTypes.isNotEmpty()) {
                     append("  ")
                 }
             }
-            .append(search.userQuery)
+            .append(search.config.userQuery)
             .toSpannable()
 
         val iconSize = (textView.lineHeight * 0.7).roundToInt()
         val textColors = textView.textColors
 
-        search.mediaTypes.forEachIndexed { i, mediaType ->
+        search.config.mediaTypes.forEachIndexed { i, mediaType ->
             val drawable = ContextCompat.getDrawable(
                 textView.context,
                 GalleryMediaTypeResources.getIcon(mediaType)

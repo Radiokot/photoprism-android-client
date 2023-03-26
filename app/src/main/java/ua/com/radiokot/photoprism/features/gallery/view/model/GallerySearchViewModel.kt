@@ -8,9 +8,11 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 
 class GallerySearchViewModel(
@@ -94,8 +96,10 @@ class GallerySearchViewModel(
 
         when (val state = stateSubject.value!!) {
             is State.AppliedSearch -> {
-                selectedMediaTypes.value = state.search.mediaTypes
-                userQuery.value = state.search.userQuery
+                selectedMediaTypes.value = state.search.config.mediaTypes
+                userQuery.value = state.search.config.userQuery ?: ""
+                selectedBookmark.value = state.search.bookmark
+                    ?.let(::SearchBookmarkItem)
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -116,8 +120,11 @@ class GallerySearchViewModel(
             }
 
             is State.ConfiguringSearch -> {
-                selectedMediaTypes.value = state.alreadyAppliedSearch?.mediaTypes ?: emptySet()
-                userQuery.value = state.alreadyAppliedSearch?.userQuery
+                selectedMediaTypes.value =
+                    state.alreadyAppliedSearch?.config?.mediaTypes ?: emptySet()
+                userQuery.value = state.alreadyAppliedSearch?.config?.userQuery ?: ""
+                selectedBookmark.value = state.alreadyAppliedSearch?.bookmark
+                    ?.let(::SearchBookmarkItem)
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -166,9 +173,11 @@ class GallerySearchViewModel(
         }
 
         val search = AppliedGallerySearch(
-            mediaTypes = selectedMediaTypes.value ?: emptySet(),
-            userQuery = userQuery.value!!.trim(),
-            bookmark = null
+            config = SearchConfig(
+                mediaTypes = selectedMediaTypes.value ?: emptySet(),
+                userQuery = userQuery.value?.trim(),
+            ),
+            bookmark = selectedBookmark.value?.source
         )
 
         log.debug {
@@ -198,13 +207,19 @@ class GallerySearchViewModel(
     }
 
     fun onEditBookmarkClicked() {
-        check(stateSubject.value is State.AppliedSearch) {
+        val appliedSearchState = (stateSubject.value as? State.AppliedSearch).checkNotNull {
             "Edit bookmark button is only clickable in the applied search state"
+        }
+        val bookmark = appliedSearchState.search.bookmark.checkNotNull {
+            "Edit bookmark button is only clickable when a bookmarked search is applied"
         }
 
         log.debug {
-            "onEditBookmarkClicked(): edit_bookmark_clicked"
+            "onEditBookmarkClicked(): edit_bookmark_clicked:" +
+                    "\nbookmark=$bookmark"
         }
+
+        eventsSubject.onNext(Event.OpenBookmarkDialog(bookmark))
     }
 
     fun onBookmarkChipClicked(item: SearchBookmarkItem) {
@@ -218,6 +233,21 @@ class GallerySearchViewModel(
         }
 
         selectedBookmark.value = item
+        if (item.source != null) {
+            applySearchFromBookmark(item.source)
+        }
+    }
+
+    private fun applySearchFromBookmark(bookmark: SearchBookmark) {
+        selectedMediaTypes.value = bookmark.searchConfig.mediaTypes
+        userQuery.value = bookmark.searchConfig.userQuery ?: ""
+
+        log.debug {
+            "applySearchFromBookmark(): configured_search_from_bookmark:" +
+                    "\nbookmark=$bookmark"
+        }
+
+        applyConfiguredSearch()
     }
 
     fun onBookmarkChipEditClicked(item: SearchBookmarkItem) {
