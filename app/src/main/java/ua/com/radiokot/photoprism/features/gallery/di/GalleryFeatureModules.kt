@@ -8,6 +8,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -112,9 +114,13 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
+        includes(dbModules)
+
         single {
-            SearchBookmarksRepository()
-        }.bind(SearchBookmarksRepository::class)
+            SearchBookmarksRepository(
+                bookmarksDbDao = get<AppDatabase>().bookmarks(),
+            )
+        } bind SearchBookmarksRepository::class
 
         viewModel {
             SearchBookmarkDialogViewModel(

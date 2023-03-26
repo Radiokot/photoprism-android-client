@@ -9,6 +9,24 @@ data class SearchBookmark(
     val name: String,
     val searchConfig: SearchConfig,
 ) : Parcelable {
+    constructor(dbEntity: SearchBookmarksDbEntity) : this(
+        id = dbEntity.id,
+        name = dbEntity.name,
+        searchConfig = SearchConfig(
+            mediaTypes = dbEntity.mediaTypes
+                .map { GalleryMedia.TypeName.valueOf(it) }
+                .toSet(),
+            userQuery = dbEntity.userQuery,
+        )
+    )
+
+    fun toDbEntity() = SearchBookmarksDbEntity(
+        id = id,
+        name = name,
+        userQuery = searchConfig.userQuery,
+        mediaTypes = searchConfig.mediaTypes.map(GalleryMedia.TypeName::toString)
+    )
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

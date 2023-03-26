@@ -9,63 +9,57 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 
-class SearchBookmarksRepository : SimpleCollectionRepository<SearchBookmark>() {
+class SearchBookmarksRepository(
+    private val bookmarksDbDao: SearchBookmarksDbDao,
+) : SimpleCollectionRepository<SearchBookmark>() {
+
     override fun getCollection(): Single<List<SearchBookmark>> = {
-        var i = 0L
-        listOf(
-            SearchBookmark(
-                name = "My Screenshots",
-                id = ++i,
-                searchConfig = SearchConfig(
-                    userQuery = "oleg&screen",
-                    mediaTypes = emptySet(),
-                )
-            ),
-            SearchBookmark(
-                name = "Yasya Camera",
-                id = ++i,
-                searchConfig = SearchConfig(
-                    userQuery = "yasya name:\"IMG_*\"|\"VID_*\"",
-                    mediaTypes = emptySet(),
-                )
-            ),
-            SearchBookmark(
-                name = "My Camera",
-                id = ++i,
-                searchConfig = SearchConfig(
-                    userQuery = "oleg&camera|cam",
-                    mediaTypes = emptySet(),
-                )
-            ),
-        )
+        bookmarksDbDao.getAll()
+            .map(::SearchBookmark)
     }.toSingle()
 
     fun delete(bookmark: SearchBookmark): Completable = {
-        mutableItemsList.remove(bookmark)
-        broadcast()
-    }.toCompletable().subscribeOn(Schedulers.io())
+        bookmarksDbDao.delete(bookmark.id)
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            mutableItemsList.remove(bookmark)
+            broadcast()
+        }
 
     fun update(bookmark: SearchBookmark): Completable = {
-        val index = mutableItemsList.indexOf(bookmark)
-        check(index >= 0)
-        mutableItemsList.removeAt(index)
-        mutableItemsList.add(index, bookmark)
-        broadcast()
-    }.toCompletable().subscribeOn(Schedulers.io())
+        bookmarksDbDao.update(bookmark.toDbEntity())
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            val index = mutableItemsList.indexOf(bookmark)
+            if (index != -1) {
+                mutableItemsList.removeAt(index)
+                mutableItemsList.add(index, bookmark)
+                broadcast()
+            }
+        }
 
     fun create(
         name: String,
         searchConfig: SearchConfig,
     ): Single<SearchBookmark> = {
-        SearchBookmark(
+        val bookmark = SearchBookmark(
             id = System.currentTimeMillis(),
             name = name,
             searchConfig = searchConfig,
-        ).also { mutableItemsList.add(0, it) }
+        )
+        bookmarksDbDao.insert(bookmark.toDbEntity())
+        bookmark
     }
         .toSingle()
         .subscribeOn(Schedulers.io())
-        .doOnSuccess { broadcast() }
+        .doOnSuccess { newBookmark ->
+            mutableItemsList.add(0, newBookmark)
+            broadcast()
+        }
 
     fun findByConfig(config: SearchConfig): SearchBookmark? =
         itemsList.find { it.searchConfig == config }

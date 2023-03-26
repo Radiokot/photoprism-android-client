@@ -1,6 +1,7 @@
 buildscript {
     ext.koin_version = "3.2.2"
     ext.koin_android_version = "3.3.0"
+    ext.room_version = "2.5.1"
 }
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.

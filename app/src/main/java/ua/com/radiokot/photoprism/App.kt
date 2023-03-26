@@ -13,6 +13,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.qualifier._q
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
+import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
@@ -34,6 +35,7 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 retrofitApiModules
+                        + dbModules
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
                         + envConnectionFeatureModules
