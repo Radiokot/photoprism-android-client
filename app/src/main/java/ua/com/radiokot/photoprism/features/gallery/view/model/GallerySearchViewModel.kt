@@ -71,41 +71,25 @@ class GallerySearchViewModel(
             .addToCloseables(this)
     }
 
-    private fun onBookmarksUpdated(bookmarks: List<SearchBookmark>) {
-        this.bookmarks.value = bookmarks.map(::SearchBookmarkItem)
-        isBookmarksSectionVisible.value = bookmarks.isNotEmpty()
+    private fun onBookmarksUpdated(newBookmarks: List<SearchBookmark>) {
+        this.bookmarks.value = newBookmarks.map(::SearchBookmarkItem)
+        isBookmarksSectionVisible.value = newBookmarks.isNotEmpty()
 
-        val state = stateSubject.value!!
-        if (state is State.AppliedSearch) {
-            // If the current bookmark has been removed,
-            // switch to an equivalent custom search.
-            if (state.search is AppliedGallerySearch.Bookmarked
-                && !bookmarks.contains(state.search.bookmark)
-            ) {
-                log.debug {
-                    "onBookmarksUpdated(): switch_to_custom_search"
-                }
-
-                stateSubject.onNext(State.AppliedSearch(AppliedGallerySearch.Custom(state.search.config)))
-            }
-            // If a bookmark has been created for the current search,
-            // switch to an equivalent bookmarked search.
-            else if (state.search is AppliedGallerySearch.Custom) {
-                val matchedBookmark = bookmarksRepository.findByConfig(state.search.config)
-                if (matchedBookmark != null) {
-                    log.debug {
-                        "onBookmarksUpdated(): switch_to_bookmarked_search"
-                    }
-
-                    stateSubject.onNext(
-                        State.AppliedSearch(
-                            AppliedGallerySearch.Bookmarked(
-                                matchedBookmark
-                            )
-                        )
-                    )
-                }
-            }
+        val currentState = stateSubject.value!!
+        if (currentState is State.AppliedSearch) {
+            val matchedBookmark = bookmarksRepository.findByConfig(currentState.search.config)
+            stateSubject.onNext(
+                State.AppliedSearch(
+                    // If a bookmark has been created or updated for the current search,
+                    // switch to an equivalent bookmarked search.
+                    if (matchedBookmark != null)
+                        AppliedGallerySearch.Bookmarked(matchedBookmark)
+                    // If the current bookmark has been removed,
+                    // switch to an equivalent custom search.
+                    else
+                        AppliedGallerySearch.Custom(currentState.search.config)
+                )
+            )
         }
     }
 
