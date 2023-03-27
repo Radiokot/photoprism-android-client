@@ -11,6 +11,8 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def fileProviderAuthority = ""
+
 android {
     namespace 'ua.com.radiokot.photoprism'
     compileSdk 33
@@ -26,18 +28,26 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        def fileProviderAuthority = applicationId + ".files"
-        manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
-        buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
+        fileProviderAuthority = applicationId + ".files"
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+
+            manifestPlaceholders.fileProviderAuthority = fileProviderAuthority + ".debug"
+            buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + ".debug" + "\""
+        }
         release {
             minifyEnabled false
             shrinkResources false
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
+
+            manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
+            buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
         }
     }
     compileOptions {
