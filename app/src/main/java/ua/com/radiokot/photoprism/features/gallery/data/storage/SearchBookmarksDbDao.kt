@@ -27,12 +27,14 @@ interface SearchBookmarksDbDao {
     fun getMinPosition(): Double?
 
     /**
-     * @return next (higher) position after the bookmark with a given [id],
-     * or null if the bookmark is the last one or not found.
+     * @return current and next (higher) position after the bookmark with a given [id].
+     * If the bookmark is last, only its position is returned.
+     * If the bookmark is not found, nothing is returned.
+     *
      */
     @Query(
-        "SELECT min(position) FROM bookmarks WHERE position > " +
-                "(SELECT position FROM bookmarks WHERE id=:id) LIMIT 1"
+        "SELECT position FROM bookmarks WHERE position >= " +
+                "(SELECT position FROM bookmarks WHERE id=:id) ORDER BY position LIMIT 2"
     )
-    fun getNextPosition(id: Long): Double?
+    fun getIdPositionAndNext(id: Long): List<Double>
 }

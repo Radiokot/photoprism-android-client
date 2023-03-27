@@ -57,6 +57,13 @@ class GallerySearchViewModel(
         get() = !selectedMediaTypes.value.isNullOrEmpty()
                 || !userQuery.value.isNullOrBlank()
 
+    private val areBookmarksCurrentlyMoving = MutableLiveData(false)
+
+    val canMoveBookmarks: Boolean
+        get() = stateSubject.value is State.ConfiguringSearch
+                && !bookmarksRepository.isLoading
+                && areBookmarksCurrentlyMoving.value == false
+
     private fun subscribeToBookmarks() {
         bookmarksRepository.items
             .observeOn(AndroidSchedulers.mainThread())
@@ -298,6 +305,33 @@ class GallerySearchViewModel(
                     existingBookmark = item.source,
                 )
             )
+        }
+    }
+
+    /**
+     * @param placedAfter Item after which the chip is placed, or null if placed at the start
+     */
+    fun onBookmarkChipMoved(item: SearchBookmarkItem, placedAfter: SearchBookmarkItem?) {
+        check(stateSubject.value is State.ConfiguringSearch) {
+            "Bookmark chips are movable only in the search configuration state"
+        }
+
+        log.debug {
+            "onBookmarkChipMoved(): chip_moved:" +
+                    "\nitem=$item" +
+                    "\nplacedAfter=$placedAfter"
+        }
+
+        if (item.source != null && (placedAfter == null || placedAfter.source != null)) {
+            bookmarksRepository.placeAfter(
+                id = placedAfter?.source?.id,
+                bookmark = item.source,
+            )
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { areBookmarksCurrentlyMoving.value = true }
+                .doOnTerminate { areBookmarksCurrentlyMoving.value = false }
+                .subscribe()
+                .addToCloseables(this)
         }
     }
 

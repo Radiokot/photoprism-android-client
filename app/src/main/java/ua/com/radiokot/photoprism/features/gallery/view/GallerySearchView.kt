@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.res.ColorStateList
@@ -165,7 +164,7 @@ class GallerySearchView(
     }
 
     private fun initBookmarksDrag() {
-        val relativeRectIndices = mutableListOf<Pair<Rect, Int>>()
+        val rectsWithPrecedingViews = mutableListOf<Pair<Rect, View?>>()
 
         with(configurationView.bookmarksChipsLayout) {
             setOnDragListener { _, event ->
@@ -175,7 +174,7 @@ class GallerySearchView(
 
                 when (event.action) {
                     DragEvent.ACTION_DRAG_STARTED -> {
-                        relativeRectIndices.clear()
+                        rectsWithPrecedingViews.clear()
                         val layoutLocation = IntArray(2)
                             .also { getLocationOnScreen(it) }
                         configurationView.bookmarksChipsLayout.forEachIndexed { i, view ->
@@ -215,49 +214,46 @@ class GallerySearchView(
                                 nextToIndexRect.right = width
                             }
 
-                            relativeRectIndices.add(atIndexRect to i)
-                            relativeRectIndices.add(nextToIndexRect to i + 1)
+                            rectsWithPrecedingViews.add(atIndexRect to getChildAt(i - 1))
+                            rectsWithPrecedingViews.add(nextToIndexRect to view)
                         }
 
                         log.debug {
                             "initBookmarksDrag(): marked_indexed_regions:" +
-                                    "\nsize=${relativeRectIndices.size}"
+                                    "\nsize=${rectsWithPrecedingViews.size}"
                         }
 
                         return@setOnDragListener true
                     }
                     DragEvent.ACTION_DROP -> {
-                        val matchingRect: Pair<Rect, Int>? = relativeRectIndices.find { (rect, _) ->
-                            rect.contains(event.x.toInt(), event.y.toInt())
+                        if (!viewModel.canMoveBookmarks) {
+                            return@setOnDragListener false
                         }
 
-                        if (matchingRect != null) {
-                            val matchingRectIndex = matchingRect.second
-                            val draggedView = event.localState as View
-                            val draggedViewIndex = indexOfChild(draggedView)
-                            val newIndex =
-                                if (matchingRectIndex > draggedViewIndex)
-                                    matchingRectIndex - 1
-                                else
-                                    matchingRectIndex
-
-                            log.debug {
-                                "initBookmarksDrag(): dropped_and_matched:" +
-                                        "\nnewIndex=$newIndex," +
-                                        "\ncurrentIndex=$draggedViewIndex"
+                        val matchingRectWithPrecedingView: Pair<Rect, View?>? =
+                            rectsWithPrecedingViews.find { (rect, _) ->
+                                rect.contains(event.x.toInt(), event.y.toInt())
                             }
 
-                            if (newIndex != draggedViewIndex) {
-                                post {
-                                    layoutTransition = LayoutTransition()
-                                    removeView(draggedView)
-                                    addView(draggedView, newIndex)
-                                    layoutTransition = null
+                        if (matchingRectWithPrecedingView != null) {
+                            val precedingView = matchingRectWithPrecedingView.second
+                            val precedingViewIndex = indexOfChild(precedingView)
+                            val movedView = event.localState as View
+
+                            // Only initiate movement if dropped to a new position.
+                            if (precedingView != movedView
+                                && precedingViewIndex != indexOfChild(movedView) - 1
+                            ) {
+                                log.debug {
+                                    "initBookmarksDrag(): dropped_to_new_position:" +
+                                            "\nprecedingViewIndex=$precedingViewIndex"
                                 }
 
-                                log.debug {
-                                    "initBookmarksDrag(): posted_reorder"
-                                }
+                                viewModel.onBookmarkChipMoved(
+                                    item = movedView.tag as SearchBookmarkItem,
+                                    placedAfter = precedingView
+                                        ?.tag as? SearchBookmarkItem
+                                )
                             }
 
                             return@setOnDragListener true
@@ -347,16 +343,18 @@ class GallerySearchView(
             viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
         }
         val bookmarkChipLongClickListener = View.OnLongClickListener { chip ->
-            val dragShadow = View.DragShadowBuilder(chip)
-            @Suppress("DEPRECATION")
-            chip.startDrag(
-                // Setting the clip data allows dropping the bookmark to the query field!
-                // Do not set null
-                ClipData.newPlainText("", (chip.tag as SearchBookmarkItem).dragAndDropContent),
-                dragShadow,
-                chip,
-                0,
-            )
+            if (viewModel.canMoveBookmarks) {
+                val dragShadow = View.DragShadowBuilder(chip)
+                @Suppress("DEPRECATION")
+                chip.startDrag(
+                    // Setting the clip data allows dropping the bookmark to the query field!
+                    // Do not set null
+                    ClipData.newPlainText("", (chip.tag as SearchBookmarkItem).dragAndDropContent),
+                    dragShadow,
+                    chip,
+                    0,
+                )
+            }
             true
         }
 

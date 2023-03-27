@@ -9,7 +9,7 @@ data class SearchBookmark(
     val position: Double,
     val name: String,
     val searchConfig: SearchConfig,
-) : Parcelable {
+) : Parcelable, Comparable<SearchBookmark> {
     constructor(dbEntity: SearchBookmarksDbEntity) : this(
         id = dbEntity.id,
         name = dbEntity.name,
@@ -29,6 +29,8 @@ data class SearchBookmark(
         userQuery = searchConfig.userQuery,
         mediaTypes = searchConfig.mediaTypes.map(GalleryMedia.TypeName::toString)
     )
+
+    override fun compareTo(other: SearchBookmark): Int = position.compareTo(other.position)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -4,8 +4,10 @@ package ua.com.radiokot.photoprism.util
  * A binary search for Stern–Brocot tree.
  * Right direction is for bigger numbers, left – for smaller.
  *
- * @see goTo
- * @see <a href="https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree">Stern–Brocot tree</a>
+ * @see goBetween
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree">Wikipedia</a>
+ * @see <a href="https://begriffs.com/posts/2018-03-20-user-defined-order.html">Use case</a>
  */
 class SternBrocotTreeSearch {
     /**
@@ -68,19 +70,12 @@ class SternBrocotTreeSearch {
         depth++
     }
 
-
     /**
-     * Goes to the target rational, so the [numerator] and [denominator] will be set at the end.
+     * Goes to the fraction laying within the given bounds (exclusively).
      */
-    fun goTo(targetN: Int, targetD: Int): SternBrocotTreeSearch =
-        goTo(targetN.toDouble() / targetD)
-
-    /**
-     * Goes to the [target], so the [value] will set at the end.
-     */
-    fun goTo(target: Double) = apply {
-        while (value != target) {
-            if (target > value) {
+    fun goBetween(lowerBound: Double, upperBound: Double) = apply {
+        while (!(value > lowerBound && value < upperBound)) {
+            if (value <= lowerBound && value <= upperBound) {
                 goRight()
             } else {
                 goLeft()
