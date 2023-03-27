@@ -72,8 +72,18 @@ class SternBrocotTreeSearch {
 
     /**
      * Goes to the fraction laying within the given bounds (exclusively).
+     * Minimal lower bound is 0.0
+     * Maximal upper bound is [Double.POSITIVE_INFINITY]
      */
     fun goBetween(lowerBound: Double, upperBound: Double) = apply {
+        require(lowerBound < upperBound) {
+            "Lower bound must be smaller than the upper one"
+        }
+
+        require(lowerBound >= 0.0) {
+            "Lower bound can't be smaller than 0"
+        }
+
         while (!(value > lowerBound && value < upperBound)) {
             if (value <= lowerBound && value <= upperBound) {
                 goRight()
