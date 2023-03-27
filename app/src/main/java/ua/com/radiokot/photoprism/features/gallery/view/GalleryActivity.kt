@@ -71,6 +71,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private val searchView: GallerySearchView by lazy {
         GallerySearchView(
             viewModel = searchViewModel,
+            fragmentManager = supportFragmentManager,
             menuRes = R.menu.gallery,
             lifecycleOwner = this
         )

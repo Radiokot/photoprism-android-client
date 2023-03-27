@@ -2,6 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/add_search_bookmark"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/add_search_bookmark"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/edit_search_bookmark"
+        android:icon="@drawable/ic_bookmark_filled"
+        android:title="@string/edit_search_bookmark"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/reset_search"
         android:icon="@drawable/ic_close"
         android:title="@string/reset_search"

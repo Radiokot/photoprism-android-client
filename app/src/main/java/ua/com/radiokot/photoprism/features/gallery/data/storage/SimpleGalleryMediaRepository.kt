@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
@@ -13,6 +12,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
@@ -58,7 +58,6 @@ class SimpleGalleryMediaRepository(
             )
         }
             .toSingle()
-            .subscribeOn(Schedulers.io())
             .map { photoPrismPhotos ->
                 val filesCount = photoPrismPhotos.sumOf { it.files.size }
                 pageIsLast = filesCount < limit
@@ -122,22 +121,19 @@ class SimpleGalleryMediaRepository(
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
 
-        fun getFiltered(
-            mediaTypes: Set<GalleryMedia.TypeName> = emptySet(),
-            userQuery: String? = null
-        ): SimpleGalleryMediaRepository {
+        fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
 
-            if (mediaTypes.isNotEmpty()) {
+            if (config.mediaTypes.isNotEmpty()) {
                 queryBuilder.append(
                     " type:${
-                        mediaTypes.joinToString("|") { it.value }
+                        config.mediaTypes.joinToString("|") { it.value }
                     }"
                 )
             }
 
-            if (userQuery != null) {
-                queryBuilder.append(" $userQuery")
+            if (config.userQuery != null) {
+                queryBuilder.append(" ${config.userQuery}")
             }
 
             val query = queryBuilder.toString()

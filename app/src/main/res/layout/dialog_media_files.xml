@@ -6,7 +6,6 @@
     android:background="?colorSurface"
     android:padding="24dp">
 
-    <!-- TODO: Make running line -->
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="match_parent"

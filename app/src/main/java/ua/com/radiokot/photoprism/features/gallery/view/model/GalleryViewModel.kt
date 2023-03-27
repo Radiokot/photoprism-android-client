@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.io.File
 import java.net.NoRouteToHostException
@@ -82,7 +83,12 @@ class GalleryViewModel(
             searchViewModel.availableMediaTypes.value = filterMediaTypes
         }
 
-        initialMediaRepository = galleryMediaRepositoryFactory.getFiltered(filterMediaTypes)
+        initialMediaRepository = galleryMediaRepositoryFactory.getForSearch(
+            SearchConfig(
+                mediaTypes = filterMediaTypes,
+                userQuery = null,
+            )
+        )
         currentMediaRepository = initialMediaRepository
 
         log.debug {
@@ -113,7 +119,7 @@ class GalleryViewModel(
         downloadMediaFileViewModel = downloadViewModel
         this.searchViewModel = searchViewModel
 
-        initialMediaRepository = galleryMediaRepositoryFactory.getFiltered()
+        initialMediaRepository = galleryMediaRepositoryFactory.get(null)
         currentMediaRepository = initialMediaRepository
 
         log.debug {
@@ -131,12 +137,14 @@ class GalleryViewModel(
         searchViewModel.state.subscribe { state ->
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
-                    currentMediaRepository = galleryMediaRepositoryFactory.getFiltered(
-                        mediaTypes = state.search.mediaTypes,
-                        userQuery = state.search.userQuery,
-                    )
-                    subscribeToRepository()
-                    update()
+                    val searchMediaRepository = galleryMediaRepositoryFactory
+                        .getForSearch(state.search.config)
+
+                    if (searchMediaRepository != currentMediaRepository) {
+                        currentMediaRepository = searchMediaRepository
+                        subscribeToRepository()
+                        update()
+                    }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
                     // TODO: initial repository saved here but removed from factory cache ->
@@ -146,6 +154,7 @@ class GalleryViewModel(
                     update()
                 }
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
+                    // Nothing to change.
                 }
             }
         }

@@ -1,8 +1,14 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 
-data class AppliedGallerySearch(
-    val mediaTypes: Set<GalleryMedia.TypeName>,
-    val userQuery: String,
-)
+sealed class AppliedGallerySearch {
+    abstract val config: SearchConfig
+
+    data class Custom(override val config: SearchConfig) : AppliedGallerySearch()
+
+    data class Bookmarked(val bookmark: SearchBookmark) : AppliedGallerySearch() {
+        override val config: SearchConfig = bookmark.searchConfig
+    }
+}
