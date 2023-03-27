@@ -8,6 +8,7 @@ import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.util.SternBrocotTreeSearch
 
 class SearchBookmarksRepository(
     private val bookmarksDbDao: SearchBookmarksDbDao,
@@ -46,13 +47,23 @@ class SearchBookmarksRepository(
         name: String,
         searchConfig: SearchConfig,
     ): Single<SearchBookmark> = {
-        val bookmark = SearchBookmark(
+        // Insert new bookmarks to the top.
+        val minPosition = bookmarksDbDao.getMinPosition()
+        val position =
+            if (minPosition == null)
+                1.0
+            else
+                SternBrocotTreeSearch()
+                    .goTo(minPosition)
+                    .goLeft()
+                    .value
+
+        SearchBookmark(
             id = System.currentTimeMillis(),
+            position = position,
             name = name,
             searchConfig = searchConfig,
-        )
-        bookmarksDbDao.insert(bookmark.toDbEntity())
-        bookmark
+        ).also { bookmarksDbDao.insert(it.toDbEntity()) }
     }
         .toSingle()
         .subscribeOn(Schedulers.io())

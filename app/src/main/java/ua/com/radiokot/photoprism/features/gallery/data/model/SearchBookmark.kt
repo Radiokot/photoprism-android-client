@@ -6,12 +6,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SearchBookmark(
     val id: Long,
+    val position: Double,
     val name: String,
     val searchConfig: SearchConfig,
 ) : Parcelable {
     constructor(dbEntity: SearchBookmarksDbEntity) : this(
         id = dbEntity.id,
         name = dbEntity.name,
+        position = dbEntity.position,
         searchConfig = SearchConfig(
             mediaTypes = dbEntity.mediaTypes
                 .map { GalleryMedia.TypeName.valueOf(it) }
@@ -23,6 +25,7 @@ data class SearchBookmark(
     fun toDbEntity() = SearchBookmarksDbEntity(
         id = id,
         name = name,
+        position = position,
         userQuery = searchConfig.userQuery,
         mediaTypes = searchConfig.mediaTypes.map(GalleryMedia.TypeName::toString)
     )
