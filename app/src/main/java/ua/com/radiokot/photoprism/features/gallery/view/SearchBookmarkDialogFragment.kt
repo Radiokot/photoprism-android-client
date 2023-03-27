@@ -109,8 +109,18 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
                         "\nstate=$state"
             }
 
-            viewBinding.deleteButton.isVisible =
-                state is SearchBookmarkDialogViewModel.State.Editing
+            with(viewBinding.deleteButton) {
+                val wasVisible = isVisible
+                isVisible = state is SearchBookmarkDialogViewModel.State.Editing
+
+                // Do not enable "Delete" immediately to avoid missclick.
+                if (!wasVisible && isVisible) {
+                    isEnabled = false
+                    postDelayed({
+                        isEnabled = true
+                    }, 1000)
+                }
+            }
 
             viewBinding.titleTextView.text = when (state) {
                 is SearchBookmarkDialogViewModel.State.Creating ->
