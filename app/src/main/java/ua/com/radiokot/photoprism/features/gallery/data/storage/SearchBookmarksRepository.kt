@@ -137,6 +137,13 @@ class SearchBookmarksRepository(
             update(bookmark.copy(position = newPosition))
         }
 
+    fun swapPositions(
+        first: SearchBookmark,
+        second: SearchBookmark,
+    ): Completable =
+        update(first.copy(position = second.position))
+            .andThen(update(second.copy(position = first.position)))
+
     fun findByConfig(config: SearchConfig): SearchBookmark? =
         itemsList.find { it.searchConfig == config }
 }

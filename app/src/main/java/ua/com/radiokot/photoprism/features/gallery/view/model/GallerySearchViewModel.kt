@@ -330,6 +330,43 @@ class GallerySearchViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { areBookmarksCurrentlyMoving.value = true }
                 .doOnTerminate { areBookmarksCurrentlyMoving.value = false }
+                .doOnComplete {
+                    log.debug {
+                        "onBookmarkChipMoved(): movement_applied"
+                    }
+                }
+                .subscribe()
+                .addToCloseables(this)
+        }
+    }
+
+    fun onBookmarkChipsSwapped(
+        first: SearchBookmarkItem,
+        second: SearchBookmarkItem,
+    ) {
+        check(stateSubject.value is State.ConfiguringSearch) {
+            "Bookmark chips are movable only in the search configuration state"
+        }
+
+        log.debug {
+            "onBookmarkChipsSwapped(): chips_swapped:" +
+                    "\nfirst=$first" +
+                    "\nsecond=$second"
+        }
+
+        if (first.source != null && second.source != null) {
+            bookmarksRepository.swapPositions(
+                first = first.source,
+                second = second.source,
+            )
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { areBookmarksCurrentlyMoving.value = true }
+                .doOnTerminate { areBookmarksCurrentlyMoving.value = false }
+                .doOnComplete {
+                    log.debug {
+                        "onBookmarkChipsSwapped(): movement_applied"
+                    }
+                }
                 .subscribe()
                 .addToCloseables(this)
         }

@@ -239,21 +239,37 @@ class GallerySearchView(
                             val precedingView = matchingRectWithPrecedingView.second
                             val precedingViewIndex = indexOfChild(precedingView)
                             val movedView = event.localState as View
+                            val movedViewIndex = indexOfChild(movedView)
 
                             // Only initiate movement if dropped to a new position.
                             if (precedingView != movedView
-                                && precedingViewIndex != indexOfChild(movedView) - 1
+                                && precedingViewIndex != movedViewIndex - 1
                             ) {
                                 log.debug {
                                     "initBookmarksDrag(): dropped_to_new_position:" +
-                                            "\nprecedingViewIndex=$precedingViewIndex"
+                                            "\nprecedingViewIndex=$precedingViewIndex," +
+                                            "\nmovedViewIndex=$movedViewIndex"
                                 }
 
-                                viewModel.onBookmarkChipMoved(
-                                    item = movedView.tag as SearchBookmarkItem,
-                                    placedAfter = precedingView
-                                        ?.tag as? SearchBookmarkItem
-                                )
+                                if (precedingViewIndex == movedViewIndex + 1
+                                    || precedingViewIndex == movedViewIndex - 2
+                                ) {
+                                    // Special handling for swap.
+                                    viewModel.onBookmarkChipsSwapped(
+                                        first = movedView.tag as SearchBookmarkItem,
+                                        second =
+                                        if (precedingViewIndex < movedViewIndex)
+                                            getChildAt(movedViewIndex - 1).tag as SearchBookmarkItem
+                                        else
+                                            getChildAt(movedViewIndex + 1).tag as SearchBookmarkItem
+                                    )
+                                } else {
+                                    viewModel.onBookmarkChipMoved(
+                                        item = movedView.tag as SearchBookmarkItem,
+                                        placedAfter = precedingView
+                                            ?.tag as? SearchBookmarkItem
+                                    )
+                                }
                             }
 
                             return@setOnDragListener true
@@ -349,7 +365,10 @@ class GallerySearchView(
                 chip.startDrag(
                     // Setting the clip data allows dropping the bookmark to the query field!
                     // Do not set null
-                    ClipData.newPlainText("", (chip.tag as SearchBookmarkItem).dragAndDropContent),
+                    ClipData.newPlainText(
+                        "",
+                        (chip.tag as SearchBookmarkItem).dragAndDropContent
+                    ),
                     dragShadow,
                     chip,
                     0,
