@@ -1,10 +1,8 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.net.Uri
 import android.text.Editable
 import android.text.Spannable
@@ -12,9 +10,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
-import android.view.DragEvent
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
@@ -25,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
 import androidx.core.view.forEach
-import androidx.core.view.forEachIndexed
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
@@ -79,19 +74,21 @@ class GallerySearchView(
         this.searchView = searchView
         this.configurationView = configurationView
 
-        initView()
+        initSearchBarAndView()
+        initBookmarksDrag()
         initCustomTabs()
+        initMenus()
 
         subscribeToData()
         subscribeToState()
         subscribeToEvents()
     }
 
-    private fun initView() {
+    private fun initSearchBarAndView() {
         var searchTextStash: Editable?
         searchView.addTransitionListener { _, previousState, newState ->
             log.debug {
-                "initView(): search_view_transitioning:" +
+                "initSearchBarAndView(): search_view_transitioning:" +
                         "\nprevState=$previousState," +
                         "\nnewState=$newState"
             }
@@ -123,7 +120,7 @@ class GallerySearchView(
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
                     log.debug {
-                        "initView(): edit_text_search_key_pressed"
+                        "initSearchBarAndView(): edit_text_search_key_pressed"
                     }
 
                     viewModel.onSearchClicked()
@@ -144,7 +141,14 @@ class GallerySearchView(
         }
 
         searchBar.textView.ellipsize = TextUtils.TruncateAt.END
+    }
 
+    private fun initCustomTabs() {
+        CustomTabsHelper.safelyConnectAndInitialize(context)
+    }
+
+    private fun initMenus() {
+        // Search bar menu.
         @SuppressLint("RestrictedApi")
         if (menuRes != null) {
             // Important. The external inflater is used to avoid setting SearchBar.menuResId
@@ -167,6 +171,7 @@ class GallerySearchView(
             }
         }
 
+        // Search view (configuration) menu.
         with(searchView) {
             inflateMenu(R.menu.search)
             setOnMenuItemClickListener { item ->
@@ -177,136 +182,12 @@ class GallerySearchView(
                 false
             }
         }
-
-        initBookmarksDrag()
-    }
-
-    private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(context)
     }
 
     private fun initBookmarksDrag() {
-        val rectsWithPrecedingViews = mutableListOf<Pair<Rect, View?>>()
-
-        with(configurationView.bookmarksChipsLayout) {
-            setOnDragListener { _, event ->
-                if (event.localState !is Chip) {
-                    return@setOnDragListener false
-                }
-
-                when (event.action) {
-                    DragEvent.ACTION_DRAG_STARTED -> {
-                        rectsWithPrecedingViews.clear()
-                        val layoutLocation = IntArray(2)
-                            .also { getLocationOnScreen(it) }
-                        configurationView.bookmarksChipsLayout.forEachIndexed { i, view ->
-                            val viewRelativeLocation = IntArray(2)
-                                .also { location ->
-                                    view.getLocationOnScreen(location)
-                                    location[0] -= layoutLocation[0]
-                                    location[1] -= layoutLocation[1]
-                                }
-
-                            val marginLayoutParams = view.layoutParams as MarginLayoutParams
-                            val viewRelativeRect = Rect(
-                                viewRelativeLocation[0],
-                                viewRelativeLocation[1],
-                                viewRelativeLocation[0] + view.width
-                                        + marginLayoutParams.rightMargin
-                                        + marginLayoutParams.leftMargin,
-                                viewRelativeLocation[1] + view.height
-                                        + marginLayoutParams.topMargin
-                                        + marginLayoutParams.bottomMargin
-                            )
-
-                            val atIndexRect = Rect(
-                                viewRelativeRect.left,
-                                viewRelativeRect.top,
-                                viewRelativeRect.left + viewRelativeRect.width() / 2,
-                                viewRelativeRect.top + viewRelativeRect.height() / 2
-                            )
-                            val nextToIndexRect =
-                                Rect(
-                                    atIndexRect.right,
-                                    atIndexRect.top,
-                                    viewRelativeRect.right,
-                                    viewRelativeRect.bottom
-                                )
-                            if (i == childCount - 1) {
-                                nextToIndexRect.right = width
-                            }
-
-                            rectsWithPrecedingViews.add(atIndexRect to getChildAt(i - 1))
-                            rectsWithPrecedingViews.add(nextToIndexRect to view)
-                        }
-
-                        log.debug {
-                            "initBookmarksDrag(): marked_indexed_regions:" +
-                                    "\nsize=${rectsWithPrecedingViews.size}"
-                        }
-
-                        return@setOnDragListener true
-                    }
-                    DragEvent.ACTION_DROP -> {
-                        if (!viewModel.canMoveBookmarks) {
-                            return@setOnDragListener false
-                        }
-
-                        val matchingRectWithPrecedingView: Pair<Rect, View?>? =
-                            rectsWithPrecedingViews.find { (rect, _) ->
-                                rect.contains(event.x.toInt(), event.y.toInt())
-                            }
-
-                        if (matchingRectWithPrecedingView != null) {
-                            val precedingView = matchingRectWithPrecedingView.second
-                            val precedingViewIndex = indexOfChild(precedingView)
-                            val movedView = event.localState as View
-                            val movedViewIndex = indexOfChild(movedView)
-
-                            // Only initiate movement if dropped to a new position.
-                            if (precedingView != movedView
-                                && precedingViewIndex != movedViewIndex - 1
-                            ) {
-                                log.debug {
-                                    "initBookmarksDrag(): dropped_to_new_position:" +
-                                            "\nprecedingViewIndex=$precedingViewIndex," +
-                                            "\nmovedViewIndex=$movedViewIndex"
-                                }
-
-                                if (precedingViewIndex == movedViewIndex + 1
-                                    || precedingViewIndex == movedViewIndex - 2
-                                ) {
-                                    // Special handling for swap.
-                                    viewModel.onBookmarkChipsSwapped(
-                                        first = movedView.tag as SearchBookmarkItem,
-                                        second =
-                                        if (precedingViewIndex < movedViewIndex)
-                                            getChildAt(movedViewIndex - 1).tag as SearchBookmarkItem
-                                        else
-                                            getChildAt(movedViewIndex + 1).tag as SearchBookmarkItem
-                                    )
-                                } else {
-                                    viewModel.onBookmarkChipMoved(
-                                        item = movedView.tag as SearchBookmarkItem,
-                                        placedAfter = precedingView
-                                            ?.tag as? SearchBookmarkItem
-                                    )
-                                }
-                            }
-
-                            return@setOnDragListener true
-                        } else {
-                            log.debug {
-                                "initBookmarksDrag(): dropped_but_unmatched"
-                            }
-
-                            return@setOnDragListener false
-                        }
-                    }
-                }
-                return@setOnDragListener false
-            }
-        }
+        configurationView.bookmarksChipsLayout.setOnDragListener(
+            SearchBookmarkViewDragListener(viewModel)
+        )
     }
 
     private fun subscribeToData() {
@@ -382,19 +263,7 @@ class GallerySearchView(
         }
         val bookmarkChipLongClickListener = View.OnLongClickListener { chip ->
             if (viewModel.canMoveBookmarks) {
-                val dragShadow = View.DragShadowBuilder(chip)
-                @Suppress("DEPRECATION")
-                chip.startDrag(
-                    // Setting the clip data allows dropping the bookmark to the query field!
-                    // Do not set null
-                    ClipData.newPlainText(
-                        "",
-                        (chip.tag as SearchBookmarkItem).dragAndDropContent
-                    ),
-                    dragShadow,
-                    chip,
-                    0,
-                )
+                SearchBookmarkViewDragListener.beginDrag(chip as Chip)
             }
             true
         }
