@@ -11,6 +11,7 @@ import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
@@ -114,6 +115,16 @@ class GallerySearchView(
                 SearchView.TransitionState.SHOWING,
                 SearchView.TransitionState.SHOWN
             )
+        }
+
+        with(searchView.findViewById<ImageButton>(com.google.android.material.R.id.search_view_clear_button)) {
+            imageTintList = ColorStateList.valueOf(
+                MaterialColors.getColor(
+                    this,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant
+                )
+            )
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_backspace))
         }
 
         with(searchView.editText) {
