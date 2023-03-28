@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search_filters_guide"
+        android:icon="@drawable/ic_lightbulb"
+        android:title="@string/using_search_filters"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom" />
+</menu>

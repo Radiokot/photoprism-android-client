@@ -2,8 +2,10 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Rect
+import android.net.Uri
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -18,6 +20,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.SupportMenuInflater
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
@@ -42,6 +45,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkItem
+import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import kotlin.math.roundToInt
 
 
@@ -57,6 +61,8 @@ class GallerySearchView(
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
     private lateinit var configurationView: ViewGallerySearchContentBinding
+    private val context: Context
+        get() = searchBar.context
 
     val backPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -74,6 +80,7 @@ class GallerySearchView(
         this.configurationView = configurationView
 
         initView()
+        initCustomTabs()
 
         subscribeToData()
         subscribeToState()
@@ -143,7 +150,7 @@ class GallerySearchView(
             // Important. The external inflater is used to avoid setting SearchBar.menuResId
             // Otherwise, this ding dong tries to animate the menu which makes
             // all the items visible during the animation 🤦🏻‍
-            SupportMenuInflater(searchBar.context).inflate(menuRes, searchBar.menu)
+            SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
             with(searchBar.menu) {
                 findItem(R.id.reset_search)?.setOnMenuItemClickListener {
                     viewModel.onResetClicked()
@@ -160,7 +167,22 @@ class GallerySearchView(
             }
         }
 
+        with(searchView) {
+            inflateMenu(R.menu.search)
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.search_filters_guide ->
+                        viewModel.onSearchFiltersGuideClicked()
+                }
+                false
+            }
+        }
+
         initBookmarksDrag()
+    }
+
+    private fun initCustomTabs() {
+        CustomTabsHelper.safelyConnectAndInitialize(context)
     }
 
     private fun initBookmarksDrag() {
@@ -481,6 +503,9 @@ class GallerySearchView(
                         searchConfig = event.searchConfig,
                         existingBookmark = event.existingBookmark,
                     )
+
+                is GallerySearchViewModel.Event.OpenUrl ->
+                    openUrl(url = event.url)
             }
 
             log.debug {
@@ -574,6 +599,20 @@ class GallerySearchView(
         if (!fragment.isAdded || !fragment.showsDialog) {
             fragment.showNow(fragmentManager, BOOKMARK_DIALOG_TAG)
         }
+    }
+
+    private fun openUrl(url: String) {
+        val uri = Uri.parse(url)
+        CustomTabsHelper.safelyLaunchUrl(
+            context,
+            CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .build(),
+            uri
+        )
     }
 
     private companion object {
