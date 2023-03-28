@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Search bookmarks – a search configuration can be bookmarked and applied later
-in a single click
+- Search bookmarks – the search configuration can be bookmarked and applied later with a click
+- Search filters guide shortcut to the search screen
+
+### Changed
+- "Clear text" button icon on the search screen made different from the "Reset search" button
+icon on the main screen
 
 ## [1.0.2] - 2022-03-26
 
@@ -27,6 +31,7 @@ in a single click
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.2(3)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.1.0(4)...HEAD
+[1.1.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.2(3)...1.1.0(4)
 [1.0.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.1(2)...1.0.2(3)
 [1.0.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.0(1)...1.0.1(2)
