@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item_month_header"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:gravity="bottom|start"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="8dp"
+    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+    tools:text="February" />

@@ -57,4 +57,19 @@
     <string name="template_error_failed_to_edit_bookmark">Failed to edit the bookmark: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Failed to delete the bookmark: %1$s</string>
     <string name="using_search_filters">Using Search Filters</string>
+    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
+    <string-array name="months">
+        <item name="january">January</item>
+        <item name="february">February</item>
+        <item name="march">March</item>
+        <item name="april">April</item>
+        <item name="may">May</item>
+        <item name="june">June</item>
+        <item name="july">July</item>
+        <item name="august">August</item>
+        <item name="september">September</item>
+        <item name="october">October</item>
+        <item name="november">November</item>
+        <item name="december">December</item>
+    </string-array>
 </resources>

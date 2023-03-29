@@ -5,6 +5,8 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
@@ -14,7 +16,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import kotlin.random.Random
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -97,32 +98,11 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         @StringRes
         val textRes: Int?,
         override var identifier: Long,
+        @IdRes
+        override val type: Int,
+        @LayoutRes
+        override val layoutRes: Int,
     ) : GalleryListItem() {
-
-        constructor(
-            text: String,
-            identifier: Long = Random.nextLong()
-        ) : this(
-            text = text,
-            textRes = null,
-            identifier = identifier
-        )
-
-        constructor(
-            @StringRes
-            textRes: Int,
-            identifier: Long = Random.nextLong()
-        ) : this(
-            text = null,
-            textRes = textRes,
-            identifier = identifier
-        )
-
-        override val type: Int
-            get() = R.id.list_item_gallery_header
-
-        override val layoutRes: Int
-            get() = R.layout.list_item_gallery_header
 
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
@@ -138,6 +118,40 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             override fun unbindView(item: Header) {
             }
+        }
+
+        companion object {
+            fun day(text: String) = Header(
+                text = text,
+                textRes = null,
+                identifier = text.hashCode().toLong(),
+                type = R.id.list_item_gallery_day_header,
+                layoutRes = R.layout.list_item_gallery_day_header,
+            )
+
+            fun day(@StringRes textRes: Int) = Header(
+                text = null,
+                textRes = textRes,
+                identifier = textRes.toLong(),
+                type = R.id.list_item_gallery_day_header,
+                layoutRes = R.layout.list_item_gallery_day_header,
+            )
+
+            fun month(text: String) = Header(
+                text = text,
+                textRes = null,
+                identifier = text.hashCode().toLong(),
+                type = R.id.list_item_month_header,
+                layoutRes = R.layout.list_item_gallery_month_header,
+            )
+
+            fun month(@StringRes textRes: Int) = Header(
+                text = null,
+                textRes = textRes,
+                identifier = textRes.toLong(),
+                type = R.id.list_item_month_header,
+                layoutRes = R.layout.list_item_gallery_month_header,
+            )
         }
     }
 }

@@ -8,10 +8,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.addToCloseables
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -26,6 +23,8 @@ class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val dateHeaderDayYearDateFormat: DateFormat,
     private val dateHeaderDayDateFormat: DateFormat,
+    private val dateHeaderMonthYearDateFormat: DateFormat,
+    private val dateHeaderMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
@@ -230,12 +229,25 @@ class GalleryViewModel(
             .forEachIndexed { i, galleryMedia ->
                 val takenAt = galleryMedia.takenAt
 
+                if (i != 0 && !takenAt.isSameMonthAs(galleryMediaItems[i - 1].takenAt)) {
+                    val formattedMonth =
+                        if (takenAt.isSameYearAs(today))
+                            dateHeaderMonthDateFormat.format(takenAt)
+                        else
+                            dateHeaderMonthYearDateFormat.format(takenAt)
+
+                    newListItems.add(
+                        GalleryListItem.Header.month(
+                            text = formattedMonth,
+                        )
+                    )
+                }
+
                 if (i == 0 || !takenAt.isSameDayAs(galleryMediaItems[i - 1].takenAt)) {
                     newListItems.add(
                         if (takenAt.isSameDayAs(today))
-                            GalleryListItem.Header(
+                            GalleryListItem.Header.day(
                                 textRes = R.string.today,
-                                identifier = takenAt.time,
                             )
                         else {
                             val formattedDate =
@@ -244,14 +256,13 @@ class GalleryViewModel(
                                 else
                                     dateHeaderDayYearDateFormat.format(takenAt)
 
-                            GalleryListItem.Header(
+                            GalleryListItem.Header.day(
                                 text = formattedDate.replaceFirstChar {
                                     if (it.isLowerCase())
                                         it.titlecase(Locale.getDefault())
                                     else
                                         it.toString()
                                 },
-                                identifier = takenAt.time,
                             )
                         }
                     )
@@ -265,28 +276,6 @@ class GalleryViewModel(
             }
 
         itemsList.value = newListItems
-    }
-
-    private fun Date.isSameDayAs(other: Date): Boolean {
-        val calendar = Calendar.getInstance()
-        calendar.time = this
-        val thisYear = calendar[Calendar.YEAR]
-        val thisDay = calendar[Calendar.DAY_OF_YEAR]
-        calendar.time = other
-        val otherYear = calendar[Calendar.YEAR]
-        val otherDay = calendar[Calendar.DAY_OF_YEAR]
-
-        return thisYear == otherYear && thisDay == otherDay
-    }
-
-    private fun Date.isSameYearAs(other: Date): Boolean {
-        val calendar = Calendar.getInstance()
-        calendar.time = this
-        val thisYear = calendar[Calendar.YEAR]
-        calendar.time = other
-        val otherYear = calendar[Calendar.YEAR]
-
-        return thisYear == otherYear
     }
 
     private fun update(force: Boolean = false) {

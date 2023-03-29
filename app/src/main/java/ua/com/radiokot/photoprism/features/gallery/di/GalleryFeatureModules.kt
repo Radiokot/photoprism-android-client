@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.useMonthsFromResources
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
@@ -79,6 +80,7 @@ val galleryFeatureModules: List<Module> = listOf(
 
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
+
                     dateHeaderDayYearDateFormat = SimpleDateFormat(
                         DateFormat.getBestDateTimePattern(locale, "EEMMMMdyyyy"),
                         locale
@@ -87,6 +89,14 @@ val galleryFeatureModules: List<Module> = listOf(
                         DateFormat.getBestDateTimePattern(locale, "EEMMMMd"),
                         locale
                     ),
+
+                    dateHeaderMonthYearDateFormat = SimpleDateFormat(
+                        DateFormat.getBestDateTimePattern(locale, "MMMMyyyy"),
+                        locale
+                    ).useMonthsFromResources(get()),
+                    dateHeaderMonthDateFormat = SimpleDateFormat("MMMM", locale)
+                        .useMonthsFromResources(get()),
+
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 )
             }
