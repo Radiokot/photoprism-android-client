@@ -4,9 +4,11 @@ import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
@@ -81,6 +83,11 @@ val retrofitApiModules: List<Module> = listOf(
                 get<Retrofit>()
                     .create(PhotoPrismPhotosService::class.java)
             }
+
+            scoped<PhotoPrismAlbumsService> {
+                get<Retrofit>()
+                    .create(PhotoPrismAlbumsService::class.java)
+            } bind PhotoPrismAlbumsService::class
         }
     }
 )

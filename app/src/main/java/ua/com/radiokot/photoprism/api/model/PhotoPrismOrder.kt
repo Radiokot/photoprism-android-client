@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.api.photos.model
+package ua.com.radiokot.photoprism.api.model
 
 import java.util.*
 

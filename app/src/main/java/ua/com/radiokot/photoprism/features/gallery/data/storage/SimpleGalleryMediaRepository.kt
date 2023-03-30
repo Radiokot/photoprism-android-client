@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
 import io.reactivex.rxjava3.core.Single
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismOrder
+import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
