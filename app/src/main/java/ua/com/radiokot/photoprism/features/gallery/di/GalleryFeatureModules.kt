@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryMonthsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
@@ -59,6 +60,12 @@ val galleryFeatureModules: List<Module> = listOf(
                     pageLimit = 50,
                 )
             }.bind(SimpleGalleryMediaRepository.Factory::class)
+
+            scoped {
+                GalleryMonthsRepository(
+                    albumsService = get(),
+                )
+            } bind GalleryMonthsRepository::class
 
             viewModel {
                 DownloadMediaFileViewModel(
@@ -138,5 +145,5 @@ val galleryFeatureModules: List<Module> = listOf(
                 bookmarksRepository = get(),
             )
         }
-    }
+    },
 )

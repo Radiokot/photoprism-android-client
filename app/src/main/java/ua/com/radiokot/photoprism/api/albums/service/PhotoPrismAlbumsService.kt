@@ -18,5 +18,7 @@ interface PhotoPrismAlbumsService {
         type: String,
         @Query("order")
         order: PhotoPrismOrder = PhotoPrismOrder.NEWEST,
+        @Query("q")
+        q: String? = null,
     ): List<PhotoPrismAlbum>
 }

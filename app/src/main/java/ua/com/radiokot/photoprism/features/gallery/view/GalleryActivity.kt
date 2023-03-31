@@ -2,18 +2,25 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import me.zhanghai.android.fastscroll.FastScroller.ViewHelper
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import me.zhanghai.android.fastscroll.Predicate
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -28,11 +35,14 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryMonthsRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.view.ErrorView
 import java.io.File
+import java.text.DateFormatSymbols
+import kotlin.math.roundToInt
 
 
 class GalleryActivity : BaseActivity(), AndroidScopeComponent {
@@ -136,6 +146,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initSearch()
         initErrorView()
+        initFastScroll()
     }
 
     private fun subscribeToData() {
@@ -336,6 +347,88 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 }
             }
             addOnScrollListener(endlessScrollListener)
+        }
+    }
+
+    private fun initFastScroll() {
+        var s = 0
+        val months = mutableListOf<String>()
+        var notifyScrollChanged = {}
+
+        val fastScroller = FastScrollerBuilder(view.galleryRecyclerView)
+            .setViewHelper(object : ViewHelper {
+                override fun addOnPreDrawListener(onPreDraw: Runnable) {
+                    view.galleryRecyclerView.addItemDecoration(object : ItemDecoration() {
+                        override fun onDraw(
+                            c: Canvas,
+                            parent: RecyclerView,
+                            state: RecyclerView.State
+                        ) {
+                            onPreDraw.run()
+                        }
+                    })
+                }
+
+                override fun addOnScrollChangedListener(onScrollChanged: Runnable) {
+                    notifyScrollChanged = onScrollChanged::run
+                }
+
+                override fun addOnTouchEventListener(onTouchEvent: Predicate<MotionEvent>) {
+                    view.galleryRecyclerView.addOnItemTouchListener(object :
+                        SimpleOnItemTouchListener() {
+                        override fun onInterceptTouchEvent(
+                            rv: RecyclerView,
+                            e: MotionEvent
+                        ): Boolean {
+                            return onTouchEvent.test(e)
+                        }
+
+                        override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                            onTouchEvent.test(e)
+                        }
+                    })
+                }
+
+                override fun getScrollRange(): Int {
+                    return view.galleryRecyclerView.height * 2
+                }
+
+                override fun getScrollOffset(): Int {
+                    return s
+                }
+
+                override fun scrollTo(offset: Int) {
+                    s = offset
+                    view.galleryRecyclerView.invalidateItemDecorations()
+                }
+
+                override fun getPopupText(): CharSequence? {
+                    if (months.isNotEmpty())
+                        return months[((months.size - 1) * 2 * scrollOffset.toDouble() / scrollRange).roundToInt()]
+                    else return null
+                }
+            })
+            .useMd2Style()
+            .build()
+
+        with(get<GalleryMonthsRepository>()) {
+            items.subscribeBy {
+                log.debug {
+                    "got_months:" +
+                            "\nmonths=$it"
+                }
+            }.disposeOnDestroy(this@GalleryActivity)
+            update(null)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy { galleryMonths ->
+                    s = 0
+                    months.clear()
+                    months.addAll(galleryMonths.map { month ->
+                        DateFormatSymbols.getInstance().months[month.monthI] + " " + month.year
+                    })
+                    notifyScrollChanged()
+                }
+                .disposeOnDestroy(this@GalleryActivity)
         }
     }
 
