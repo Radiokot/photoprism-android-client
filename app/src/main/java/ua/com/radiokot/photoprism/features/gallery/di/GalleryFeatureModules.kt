@@ -17,10 +17,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryMonthsRep
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.io.File
@@ -29,7 +26,42 @@ import java.util.*
 
 const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
 
+private const val MONTH_DATE_FORMAT = "month"
+private const val MONTH_YEAR_DATE_FORMAT = "month-year"
+private const val DAY_DATE_FORMAT = "day"
+private const val DAY_YEAR_DATE_FORMAT = "day-year"
+
 val galleryFeatureModules: List<Module> = listOf(
+    module {
+        factory { Locale.getDefault() }
+
+        factory(named(MONTH_DATE_FORMAT)) {
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
+                get<Locale>()
+            ).useMonthsFromResources(get())
+        } bind java.text.DateFormat::class
+
+        factory(named(MONTH_YEAR_DATE_FORMAT)) {
+            SimpleDateFormat("MMMM", get<Locale>())
+                .useMonthsFromResources(get())
+        } bind java.text.DateFormat::class
+
+        factory(named(DAY_DATE_FORMAT)) {
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "EEMMMMd"),
+                get<Locale>()
+            )
+        } bind java.text.DateFormat::class
+
+        factory(named(DAY_YEAR_DATE_FORMAT)) {
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
+                get<Locale>()
+            )
+        } bind java.text.DateFormat::class
+    },
+
     module {
         includes(envModules)
 
@@ -83,27 +115,20 @@ val galleryFeatureModules: List<Module> = listOf(
             }
 
             viewModel {
-                val locale = Locale.getDefault()
+                GalleryFastScrollViewModel(
+                    galleryMonthsRepository = get(),
+                    bubbleMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
+                    bubbleMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
+                )
+            }
 
+            viewModel {
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
-
-                    dateHeaderDayYearDateFormat = SimpleDateFormat(
-                        DateFormat.getBestDateTimePattern(locale, "EEMMMMdyyyy"),
-                        locale
-                    ),
-                    dateHeaderDayDateFormat = SimpleDateFormat(
-                        DateFormat.getBestDateTimePattern(locale, "EEMMMMd"),
-                        locale
-                    ),
-
-                    dateHeaderMonthYearDateFormat = SimpleDateFormat(
-                        DateFormat.getBestDateTimePattern(locale, "MMMMyyyy"),
-                        locale
-                    ).useMonthsFromResources(get()),
-                    dateHeaderMonthDateFormat = SimpleDateFormat("MMMM", locale)
-                        .useMonthsFromResources(get()),
-
+                    dateHeaderDayYearDateFormat = get(named(DAY_YEAR_DATE_FORMAT)),
+                    dateHeaderDayDateFormat = get(named(DAY_DATE_FORMAT)),
+                    dateHeaderMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
+                    dateHeaderMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 )
             }
