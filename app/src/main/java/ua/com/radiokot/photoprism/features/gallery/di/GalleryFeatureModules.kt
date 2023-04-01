@@ -13,7 +13,6 @@ import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryMonthsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.*
@@ -36,15 +35,15 @@ val galleryFeatureModules: List<Module> = listOf(
         factory { Locale.getDefault() }
 
         factory(named(MONTH_DATE_FORMAT)) {
+            SimpleDateFormat("MMMM", get<Locale>())
+                .useMonthsFromResources(get())
+        } bind java.text.DateFormat::class
+
+        factory(named(MONTH_YEAR_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
                 get<Locale>()
             ).useMonthsFromResources(get())
-        } bind java.text.DateFormat::class
-
-        factory(named(MONTH_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat("MMMM", get<Locale>())
-                .useMonthsFromResources(get())
         } bind java.text.DateFormat::class
 
         factory(named(DAY_DATE_FORMAT)) {
@@ -93,12 +92,6 @@ val galleryFeatureModules: List<Module> = listOf(
                 )
             }.bind(SimpleGalleryMediaRepository.Factory::class)
 
-            scoped {
-                GalleryMonthsRepository(
-                    albumsService = get(),
-                )
-            } bind GalleryMonthsRepository::class
-
             viewModel {
                 DownloadMediaFileViewModel(
                     downloadFileUseCaseFactory = DownloadFileUseCase.Factory(
@@ -116,7 +109,6 @@ val galleryFeatureModules: List<Module> = listOf(
 
             viewModel {
                 GalleryFastScrollViewModel(
-                    galleryMonthsRepository = get(),
                     bubbleMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
                     bubbleMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
                 )

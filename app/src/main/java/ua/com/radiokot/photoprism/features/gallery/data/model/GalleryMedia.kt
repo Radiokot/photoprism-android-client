@@ -29,7 +29,7 @@ class GalleryMedia(
         hash = source.hash,
         width = source.width,
         height = source.height,
-        takenAt = photoPrismDateFormat.parse(source.takenAt)!!,
+        takenAt = parsePhotoPrismDate(source.takenAt)!!,
         name = source.name,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         files = source.files.map { photoPrismFile ->
@@ -151,5 +151,11 @@ class GalleryMedia(
             thumbnailUrlSmall = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
             downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
         )
+    }
+
+    companion object {
+        fun parsePhotoPrismDate(date: String): Date? = synchronized(photoPrismDateFormat) {
+            photoPrismDateFormat.parse(date)
+        }
     }
 }

@@ -138,7 +138,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initSearch()
         initErrorView()
-        initFastScroll()
     }
 
     private fun subscribeToData() {
@@ -339,6 +338,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             }
             addOnScrollListener(endlessScrollListener)
         }
+
+        fastScrollView.init(
+            fastScrollRecyclerView = view.galleryRecyclerView,
+        )
     }
 
     private fun initMediaFileSelection() {
@@ -356,12 +359,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             configurationView = view.searchContent,
         )
         onBackPressedDispatcher.addCallback(this, searchView.backPressedCallback)
-    }
-
-    private fun initFastScroll() {
-        fastScrollView.init(
-            fastScrollRecyclerView = view.galleryRecyclerView,
-        )
     }
 
     private fun initErrorView() {

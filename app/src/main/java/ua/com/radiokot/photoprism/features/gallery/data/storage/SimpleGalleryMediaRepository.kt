@@ -1,20 +1,20 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.mapSuccessful
-import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import java.util.*
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
@@ -107,6 +107,39 @@ class SimpleGalleryMediaRepository(
                     isLast = pageIsLast,
                 )
             }
+    }
+
+    fun getNewestAndOldestDates(): Maybe<Pair<Date, Date>> {
+        val getNewestDate = {
+            photoPrismPhotosService.getPhotos(
+                count = 1,
+                offset = 0,
+                q = query,
+                order = PhotoPrismOrder.NEWEST
+            )
+                .firstOrNull()
+                ?.takenAt
+                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+        }.toMaybe()
+
+        val getOldestDate = {
+            photoPrismPhotosService.getPhotos(
+                count = 1,
+                offset = 0,
+                q = query,
+                order = PhotoPrismOrder.OLDEST
+            )
+                .firstOrNull()
+                ?.takenAt
+                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+        }.toMaybe()
+
+        return Maybe.zip(
+            getNewestDate,
+            getOldestDate,
+            ::Pair
+        )
+            .subscribeOn(Schedulers.io())
     }
 
     override fun toString(): String {

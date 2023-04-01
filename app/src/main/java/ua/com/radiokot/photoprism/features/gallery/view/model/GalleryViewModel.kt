@@ -204,6 +204,7 @@ class GalleryViewModel(
         disposable.addToCloseables(this)
 
         eventsSubject.onNext(Event.ResetScroll)
+        fastScrollViewModel.setMediaRepository(currentMediaRepository)
     }
 
     private fun onNewRepositoryItems(galleryMediaItems: List<GalleryMedia>) {

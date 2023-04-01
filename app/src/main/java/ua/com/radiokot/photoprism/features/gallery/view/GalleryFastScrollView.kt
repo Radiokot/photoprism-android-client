@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.content.Context
 import android.graphics.Canvas
 import android.view.MotionEvent
 import androidx.lifecycle.LifecycleOwner
@@ -26,9 +25,6 @@ class GalleryFastScrollView(
     private var bubbles: List<GalleryMonthScrollBubble> = emptyList()
     private var fastScrollRange = 0
     private var fastScrollOffset = 0
-
-    private val context: Context
-        get() = fastScrollRecyclerView.context
 
     private val fastScrollViewHelper: FastScroller.ViewHelper by lazy {
         object : FastScroller.ViewHelper {
@@ -60,6 +56,10 @@ class GalleryFastScrollView(
 
                     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
                         onTouchEvent.test(e)
+
+                        if (e.action == MotionEvent.ACTION_UP) {
+                            onDragEnded()
+                        }
                     }
                 })
             }
@@ -78,15 +78,8 @@ class GalleryFastScrollView(
                 notifyFastScroller()
             }
 
-            override fun getPopupText(): CharSequence? {
-                return if (bubbles.isNotEmpty()) {
-                    val scrollFraction = 2.0 * fastScrollOffset / scrollRange
-                    val bubbleIndex = ((bubbles.size - 1) * scrollFraction).roundToInt()
-                    bubbles[bubbleIndex].name
-                } else {
-                    null
-                }
-            }
+            override fun getPopupText(): CharSequence? =
+                getCurrentBubble()?.name
         }
     }
 
@@ -106,6 +99,8 @@ class GalleryFastScrollView(
     private fun subscribeToData() {
         viewModel.bubbles.observe(this) { bubbles ->
             this.bubbles = bubbles
+            updateScrollRange()
+            notifyFastScroller()
         }
     }
 
@@ -116,19 +111,7 @@ class GalleryFastScrollView(
                         "\nstate=$state"
             }
 
-            fastScrollRange =
-                when (state) {
-                    is GalleryFastScrollViewModel.State.AtMonth,
-                    GalleryFastScrollViewModel.State.Idle -> {
-                        if (bubbles.size > 1)
-                        // For the fast scroller to appear, the range
-                        // must be greater than the view height.
-                            fastScrollRecyclerView.height * 2
-                        else
-                            0
-                    }
-                    GalleryFastScrollViewModel.State.Loading -> 0
-                }
+            updateScrollRange()
 
             when (state) {
                 GalleryFastScrollViewModel.State.Idle -> {
@@ -144,5 +127,44 @@ class GalleryFastScrollView(
                         "\nstate=$state"
             }
         }.disposeOnDestroy(this)
+    }
+
+    private fun updateScrollRange() {
+        fastScrollRange = when (viewModel.state.value) {
+            is GalleryFastScrollViewModel.State.AtMonth,
+            GalleryFastScrollViewModel.State.Idle -> {
+                if (bubbles.size > 1)
+                // For the fast scroller to appear, the range
+                // must be greater than the view height.
+                    fastScrollRecyclerView.height * 2
+                else
+                    0
+            }
+            GalleryFastScrollViewModel.State.Loading -> 0
+        }
+    }
+
+    private fun getCurrentBubble(): GalleryMonthScrollBubble? {
+        val range = fastScrollRange
+        if (range == 0) {
+            return null
+        }
+
+        val scrollFraction = 2.0 * fastScrollOffset / range
+        val bubbleIndex = ((bubbles.size - 1) * scrollFraction).roundToInt()
+        return bubbles.getOrNull(bubbleIndex)
+    }
+
+    private fun onDragEnded() {
+        val currentBubble = getCurrentBubble()
+
+        log.debug {
+            "onDragEnded(): drag_ended:" +
+                    "\ncurrentBubble=$currentBubble"
+        }
+
+        if (currentBubble != null) {
+            viewModel.onScrolledToMonth(currentBubble)
+        }
     }
 }
