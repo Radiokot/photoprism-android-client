@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.*
+import androidx.recyclerview.widget.RecyclerView.Adapter
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -29,7 +29,10 @@ import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.view.ErrorView
 import java.io.File
@@ -44,9 +47,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
-    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
-    private val searchViewModel: GallerySearchViewModel by viewModel()
-    private val fastScrollViewModel: GalleryFastScrollViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
@@ -63,7 +63,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = downloadViewModel,
+            viewModel = viewModel.downloadMediaFileViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.galleryRecyclerView,
             lifecycleOwner = this
@@ -71,7 +71,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val searchView: GallerySearchView by lazy {
         GallerySearchView(
-            viewModel = searchViewModel,
+            viewModel = viewModel.searchViewModel,
             fragmentManager = supportFragmentManager,
             menuRes = R.menu.gallery,
             lifecycleOwner = this
@@ -79,7 +79,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val fastScrollView: GalleryFastScrollView by lazy {
         GalleryFastScrollView(
-            viewModel = fastScrollViewModel,
+            viewModel = viewModel.fastScrollViewModel,
             lifecycleOwner = this,
         )
     }
@@ -112,8 +112,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             }
 
             viewModel.initSelectionOnce(
-                downloadViewModel = downloadViewModel,
-                searchViewModel = searchViewModel,
                 requestedMimeType = intent.type,
             )
         } else {
@@ -125,10 +123,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 return
             }
 
-            viewModel.initViewingOnce(
-                downloadViewModel = downloadViewModel,
-                searchViewModel = searchViewModel,
-            )
+            viewModel.initViewingOnce()
         }
 
         view = ActivityGalleryBinding.inflate(layoutInflater)

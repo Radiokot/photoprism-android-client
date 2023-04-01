@@ -26,6 +26,9 @@ class GalleryViewModel(
     private val dateHeaderMonthYearDateFormat: DateFormat,
     private val dateHeaderMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
+    val downloadMediaFileViewModel: DownloadMediaFileViewModel,
+    val searchViewModel: GallerySearchViewModel,
+    val fastScrollViewModel: GalleryFastScrollViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
@@ -41,12 +44,7 @@ class GalleryViewModel(
     var canLoadMore = true
         private set
 
-    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
-    private lateinit var searchViewModel: GallerySearchViewModel
-
     fun initSelectionOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
-        searchViewModel: GallerySearchViewModel,
         requestedMimeType: String?,
     ) {
         if (isInitialized) {
@@ -75,9 +73,6 @@ class GalleryViewModel(
                 emptySet()
         }
 
-        downloadMediaFileViewModel = downloadViewModel
-        this.searchViewModel = searchViewModel
-
         if (filterMediaTypes.isNotEmpty()) {
             searchViewModel.availableMediaTypes.value = filterMediaTypes
         }
@@ -103,10 +98,7 @@ class GalleryViewModel(
         isInitialized = true
     }
 
-    fun initViewingOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
-        searchViewModel: GallerySearchViewModel,
-    ) {
+    fun initViewingOnce() {
         if (isInitialized) {
             log.debug {
                 "initViewing(): already_initialized"
@@ -114,9 +106,6 @@ class GalleryViewModel(
 
             return
         }
-
-        downloadMediaFileViewModel = downloadViewModel
-        this.searchViewModel = searchViewModel
 
         initialMediaRepository = galleryMediaRepositoryFactory.get(null)
         currentMediaRepository = initialMediaRepository

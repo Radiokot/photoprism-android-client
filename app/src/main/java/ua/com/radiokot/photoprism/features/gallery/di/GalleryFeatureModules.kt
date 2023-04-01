@@ -130,6 +130,9 @@ val galleryFeatureModules: List<Module> = listOf(
                     dateHeaderMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
                     dateHeaderMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
+                    downloadMediaFileViewModel = get(),
+                    searchViewModel = get(),
+                    fastScrollViewModel = get(),
                 )
             }
         }
