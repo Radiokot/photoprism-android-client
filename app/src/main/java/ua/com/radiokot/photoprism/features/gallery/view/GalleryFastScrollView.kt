@@ -20,7 +20,6 @@ import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMonthScrollBubble
-import kotlin.math.roundToInt
 
 class GalleryFastScrollView(
     private val viewModel: GalleryFastScrollViewModel,
@@ -176,13 +175,18 @@ class GalleryFastScrollView(
     }
 
     private fun getCurrentBubble(): GalleryMonthScrollBubble? {
-        val range = scrollRange
-        if (range == 0) {
+        val scrollRange = scrollRange
+        val scrollOffset = scrollOffset
+        val bubbles = bubbles
+
+        if (scrollRange == 0 || bubbles.isEmpty()) {
             return null
         }
 
-        val scrollFraction = 2.0 * scrollOffset / range
-        val bubbleIndex = ((bubbles.size - 1) * scrollFraction).roundToInt()
+        val trueScrollPosition = scrollOffset * 2
+        val bubbleHeight = scrollRange / bubbles.size
+        val bubbleIndex = (trueScrollPosition / bubbleHeight)
+            .coerceAtMost(bubbles.size - 1)
         return bubbles.getOrNull(bubbleIndex)
     }
 
