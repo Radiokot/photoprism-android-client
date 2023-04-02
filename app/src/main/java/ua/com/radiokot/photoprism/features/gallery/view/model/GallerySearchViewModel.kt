@@ -192,6 +192,7 @@ class GallerySearchViewModel(
         val config = SearchConfig(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
             userQuery = userQuery.value?.trim(),
+            before = null,
         )
         val bookmark = bookmarksRepository.findByConfig(config)
         val appliedSearch =

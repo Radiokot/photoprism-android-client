@@ -1,26 +1,24 @@
-package ua.com.radiokot.photoprism.api.photos.service
+package ua.com.radiokot.photoprism.api.albums.service
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
 import java.io.IOException
 
-interface PhotoPrismPhotosService {
+interface PhotoPrismAlbumsService {
     @kotlin.jvm.Throws(IOException::class)
-    @GET("v1/photos")
-    fun getPhotos(
+    @GET("v1/albums")
+    fun getAlbums(
         @Query("count")
         count: Int,
         @Query("offset")
         offset: Int,
-        @Query("merged")
-        merged: Boolean = true,
+        @Query("type")
+        type: String,
         @Query("order")
         order: PhotoPrismOrder = PhotoPrismOrder.NEWEST,
-        @Query("public")
-        public: Boolean = true,
         @Query("q")
-        q: String? = null
-    ): List<PhotoPrismPhoto>
+        q: String? = null,
+    ): List<PhotoPrismAlbum>
 }

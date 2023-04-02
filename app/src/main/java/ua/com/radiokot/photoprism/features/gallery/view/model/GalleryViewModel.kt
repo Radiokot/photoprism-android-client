@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.*
@@ -26,10 +27,16 @@ class GalleryViewModel(
     private val dateHeaderMonthYearDateFormat: DateFormat,
     private val dateHeaderMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
+    val downloadMediaFileViewModel: DownloadMediaFileViewModel,
+    val searchViewModel: GallerySearchViewModel,
+    val fastScrollViewModel: GalleryFastScrollViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
-    private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
-    private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
+    private val currentMediaRepository: BehaviorSubject<SimpleGalleryMediaRepository> =
+        BehaviorSubject.create()
+
+    // Current search config regarding the fast scroll.
+    private var currentSearchConfig: SearchConfig? = null
     private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -41,12 +48,7 @@ class GalleryViewModel(
     var canLoadMore = true
         private set
 
-    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
-    private lateinit var searchViewModel: GallerySearchViewModel
-
     fun initSelectionOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
-        searchViewModel: GallerySearchViewModel,
         requestedMimeType: String?,
     ) {
         if (isInitialized) {
@@ -75,20 +77,9 @@ class GalleryViewModel(
                 emptySet()
         }
 
-        downloadMediaFileViewModel = downloadViewModel
-        this.searchViewModel = searchViewModel
-
         if (filterMediaTypes.isNotEmpty()) {
             searchViewModel.availableMediaTypes.value = filterMediaTypes
         }
-
-        initialMediaRepository = galleryMediaRepositoryFactory.getForSearch(
-            SearchConfig(
-                mediaTypes = filterMediaTypes,
-                userQuery = null,
-            )
-        )
-        currentMediaRepository = initialMediaRepository
 
         log.debug {
             "initSelection(): initialized_selection:" +
@@ -96,17 +87,14 @@ class GalleryViewModel(
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
-        state.value = State.Selecting
+        state.value = State.Selecting(filterMediaTypes = filterMediaTypes)
 
-        subscribeToSearch()
+        initCommon()
 
         isInitialized = true
     }
 
-    fun initViewingOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
-        searchViewModel: GallerySearchViewModel,
-    ) {
+    fun initViewingOnce() {
         if (isInitialized) {
             log.debug {
                 "initViewing(): already_initialized"
@@ -115,48 +103,137 @@ class GalleryViewModel(
             return
         }
 
-        downloadMediaFileViewModel = downloadViewModel
-        this.searchViewModel = searchViewModel
-
-        initialMediaRepository = galleryMediaRepositoryFactory.get(null)
-        currentMediaRepository = initialMediaRepository
-
         log.debug {
             "initViewing(): initialized_viewing"
         }
 
         state.value = State.Viewing
 
-        subscribeToSearch()
+        initCommon()
 
         isInitialized = true
     }
 
+    private fun initCommon() {
+        subscribeToSearch()
+        subscribeToFastScroll()
+        subscribeToRepositoryChanges()
+        resetRepositoryToInitial()
+    }
+
+    private fun resetRepositoryToInitial() {
+        when (val state = state.value!!) {
+            is State.Selecting -> {
+                val searchConfig = SearchConfig(
+                    mediaTypes = state.filterMediaTypes,
+                    userQuery = null,
+                    before = null,
+                )
+
+                currentSearchConfig = searchConfig
+                currentMediaRepository.onNext(
+                    galleryMediaRepositoryFactory.getForSearch(
+                        searchConfig
+                    )
+                )
+            }
+            State.Viewing -> {
+                currentSearchConfig = null
+                currentMediaRepository.onNext(galleryMediaRepositoryFactory.get(null))
+            }
+        }
+    }
+
     private fun subscribeToSearch() {
         searchViewModel.state.subscribe { state ->
+            log.debug {
+                "subscribeToSearch(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
+                    currentSearchConfig = state.search.config
                     val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(state.search.config)
 
-                    if (searchMediaRepository != currentMediaRepository) {
-                        currentMediaRepository = searchMediaRepository
-                        subscribeToRepository()
-                        update()
+                    fastScrollViewModel.reset()
+
+                    if (searchMediaRepository != currentMediaRepository.value) {
+                        currentMediaRepository.onNext(searchMediaRepository)
                     }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
-                    // TODO: initial repository saved here but removed from factory cache ->
-                    //  photo viewer is opened with a fresh repository.
-                    currentMediaRepository = initialMediaRepository
-                    subscribeToRepository()
-                    update()
+                    fastScrollViewModel.reset()
+                    resetRepositoryToInitial()
                 }
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
                     // Nothing to change.
                 }
             }
-        }
+
+            log.debug {
+                "subscribeToSearch(): handled_new_state:" +
+                        "\nstate=$state"
+            }
+        }.addToCloseables(this)
+    }
+
+    private fun subscribeToFastScroll() {
+        fastScrollViewModel.state.subscribe { state ->
+            log.debug {
+                "subscribeToFastScroll(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
+            when (state) {
+                is GalleryFastScrollViewModel.State.AtMonth -> {
+                    if (state.monthBubble.source != null) {
+                        val searchConfigForMonth: SearchConfig? =
+                            if (state.isTopMonth)
+                                currentSearchConfig
+                            else
+                                currentSearchConfig
+                                    ?.copy(before = state.monthBubble.source.nextDayAfter)
+                                    ?: SearchConfig(
+                                        mediaTypes = emptySet(),
+                                        before = state.monthBubble.source.nextDayAfter,
+                                        userQuery = null,
+                                    )
+
+                        if (searchConfigForMonth != null) {
+                            currentMediaRepository.onNext(
+                                galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+                            )
+                        } else {
+                            resetRepositoryToInitial()
+                        }
+                    }
+                }
+                GalleryFastScrollViewModel.State.Idle -> {
+                }
+                GalleryFastScrollViewModel.State.Loading -> {
+                }
+            }
+
+            log.debug {
+                "subscribeToFastScroll(): handled_new_state:" +
+                        "\nstate=$state"
+            }
+        }.addToCloseables(this)
+    }
+
+    private fun subscribeToRepositoryChanges() {
+        currentMediaRepository
+            .subscribe { currentMediaRepository ->
+                subscribeToRepository()
+                update()
+
+                eventsSubject.onNext(Event.ResetScroll)
+                if (fastScrollViewModel.state.value !is GalleryFastScrollViewModel.State.AtMonth) {
+                    fastScrollViewModel.setMediaRepository(currentMediaRepository)
+                }
+            }
             .addToCloseables(this)
     }
 
@@ -167,6 +244,9 @@ class GalleryViewModel(
         val disposable = CompositeDisposable()
         repositorySubscriptionDisposable = disposable
 
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
+
         log.debug {
             "subscribeToRepository(): subscribing:" +
                     "\nrepository=$currentMediaRepository"
@@ -174,7 +254,7 @@ class GalleryViewModel(
 
         currentMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onNewRepositoryItems)
+            .subscribe(::onNewGalleryMedia)
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -213,11 +293,9 @@ class GalleryViewModel(
             .addTo(disposable)
 
         disposable.addToCloseables(this)
-
-        eventsSubject.onNext(Event.ResetScroll)
     }
 
-    private fun onNewRepositoryItems(galleryMediaItems: List<GalleryMedia>) {
+    private fun onNewGalleryMedia(galleryMediaList: List<GalleryMedia>) {
         // Dismiss the main error when there are items.
         mainError.value = null
 
@@ -225,11 +303,13 @@ class GalleryViewModel(
 
         // Add date headers.
         val today = Date()
-        galleryMediaItems
+        galleryMediaList
             .forEachIndexed { i, galleryMedia ->
                 val takenAt = galleryMedia.takenAt
 
-                if (i != 0 && !takenAt.isSameMonthAs(galleryMediaItems[i - 1].takenAt)) {
+                if (i == 0 && !takenAt.isSameMonthAs(today)
+                    || i != 0 && !takenAt.isSameMonthAs(galleryMediaList[i - 1].takenAt)
+                ) {
                     val formattedMonth =
                         if (takenAt.isSameYearAs(today))
                             dateHeaderMonthDateFormat.format(takenAt)
@@ -243,7 +323,7 @@ class GalleryViewModel(
                     )
                 }
 
-                if (i == 0 || !takenAt.isSameDayAs(galleryMediaItems[i - 1].takenAt)) {
+                if (i == 0 || !takenAt.isSameDayAs(galleryMediaList[i - 1].takenAt)) {
                     newListItems.add(
                         if (takenAt.isSameDayAs(today))
                             GalleryListItem.Header.day(
@@ -279,6 +359,8 @@ class GalleryViewModel(
     }
 
     private fun update(force: Boolean = false) {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         if (!force) {
             currentMediaRepository.updateIfNotFresh()
         } else {
@@ -287,6 +369,8 @@ class GalleryViewModel(
     }
 
     fun loadMore() {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         if (!currentMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
             currentMediaRepository.loadMore()
@@ -358,6 +442,8 @@ class GalleryViewModel(
     }
 
     private fun openViewer(media: GalleryMedia) {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         val index = currentMediaRepository.itemsList.indexOf(media)
         val repositoryQuery = currentMediaRepository.query
 
@@ -409,7 +495,7 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        object Selecting : State
+        class Selecting(val filterMediaTypes: Set<GalleryMedia.TypeName>) : State
     }
 
     sealed interface Error {

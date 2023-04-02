@@ -1,20 +1,21 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismOrder
+import io.reactivex.rxjava3.schedulers.Schedulers
+import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.mapSuccessful
-import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.model.photoPrismDateFormat
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import java.util.*
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
@@ -109,6 +110,51 @@ class SimpleGalleryMediaRepository(
             }
     }
 
+    private var newestAndOldestDates: Pair<Date, Date>? = null
+    fun getNewestAndOldestDates(): Maybe<Pair<Date, Date>> {
+        val loadedDates = newestAndOldestDates
+        if (loadedDates != null) {
+            return Maybe.just(loadedDates)
+        }
+
+        val getNewestDate = {
+            photoPrismPhotosService.getPhotos(
+                count = 1,
+                offset = 0,
+                q = query,
+                order = PhotoPrismOrder.NEWEST
+            )
+                .firstOrNull()
+                ?.takenAt
+                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+        }.toMaybe()
+
+        val getOldestDate = {
+            photoPrismPhotosService.getPhotos(
+                count = 1,
+                offset = 0,
+                q = query,
+                order = PhotoPrismOrder.OLDEST
+            )
+                .firstOrNull()
+                ?.takenAt
+                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+        }.toMaybe()
+
+        return Maybe.zip(
+            getNewestDate,
+            getOldestDate,
+            ::Pair
+        )
+            .doOnSuccess { newestAndOldestDates = it }
+            .subscribeOn(Schedulers.io())
+    }
+
+    override fun invalidate() {
+        newestAndOldestDates = null
+        super.invalidate()
+    }
+
     override fun toString(): String {
         return "SimpleGalleryMediaRepository(query=$query)"
     }
@@ -119,7 +165,7 @@ class SimpleGalleryMediaRepository(
         private val downloadUrlFactory: MediaFileDownloadUrlFactory,
         private val pageLimit: Int,
     ) {
-        private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
+        private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
         fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
@@ -130,6 +176,12 @@ class SimpleGalleryMediaRepository(
                         config.mediaTypes.joinToString("|") { it.value }
                     }"
                 )
+            }
+
+            if (config.before != null) {
+                synchronized(photoPrismDateFormat) {
+                    queryBuilder.append(" before:\"${photoPrismDateFormat.format(config.before)}\"")
+                }
             }
 
             if (config.userQuery != null) {
