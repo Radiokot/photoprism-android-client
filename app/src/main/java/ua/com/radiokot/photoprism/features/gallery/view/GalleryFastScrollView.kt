@@ -115,6 +115,7 @@ class GalleryFastScrollView(
             .setViewHelper(fastScrollViewHelper)
             .useMd2Style()
             .setTrackDrawable(ContextCompat.getDrawable(context, R.drawable.fast_scroll_track)!!)
+            .setThumbDrawable(ContextCompat.getDrawable(context, R.drawable.fast_scroll_thumb)!!)
             .setPopupStyle(::setUpBubble)
             .build()
 
