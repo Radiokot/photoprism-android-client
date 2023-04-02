@@ -189,18 +189,25 @@ class GalleryViewModel(
             when (state) {
                 is GalleryFastScrollViewModel.State.AtMonth -> {
                     if (state.monthBubble.source != null) {
-                        val searchConfig =
-                            currentSearchConfig
-                                ?.copy(before = state.monthBubble.source.nextDayAfter)
-                                ?: SearchConfig(
-                                    mediaTypes = emptySet(),
-                                    before = state.monthBubble.source.nextDayAfter,
-                                    userQuery = null,
-                                )
+                        val searchConfigForMonth: SearchConfig? =
+                            if (state.isTopMonth)
+                                currentSearchConfig
+                            else
+                                currentSearchConfig
+                                    ?.copy(before = state.monthBubble.source.nextDayAfter)
+                                    ?: SearchConfig(
+                                        mediaTypes = emptySet(),
+                                        before = state.monthBubble.source.nextDayAfter,
+                                        userQuery = null,
+                                    )
 
-                        currentMediaRepository.onNext(
-                            galleryMediaRepositoryFactory.getForSearch(searchConfig)
-                        )
+                        if (searchConfigForMonth != null) {
+                            currentMediaRepository.onNext(
+                                galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+                            )
+                        } else {
+                            resetRepositoryToInitial()
+                        }
                     }
                 }
                 GalleryFastScrollViewModel.State.Idle -> {

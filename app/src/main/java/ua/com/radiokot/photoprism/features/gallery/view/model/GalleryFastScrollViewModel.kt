@@ -105,12 +105,20 @@ class GalleryFastScrollViewModel(
                     "\nmonthBubble=$monthBubble"
         }
 
-        state.onNext(State.AtMonth(monthBubble = monthBubble))
+        state.onNext(
+            State.AtMonth(
+                monthBubble = monthBubble,
+                isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
+            )
+        )
     }
 
     sealed interface State {
         object Loading : State
         object Idle : State
-        class AtMonth(val monthBubble: GalleryMonthScrollBubble) : State
+        class AtMonth(
+            val monthBubble: GalleryMonthScrollBubble,
+            val isTopMonth: Boolean
+        ) : State
     }
 }
