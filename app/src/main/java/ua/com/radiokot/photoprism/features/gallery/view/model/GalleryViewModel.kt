@@ -146,6 +146,11 @@ class GalleryViewModel(
 
     private fun subscribeToSearch() {
         searchViewModel.state.subscribe { state ->
+            log.debug {
+                "subscribeToSearch(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
                     currentSearchConfig = state.search.config
@@ -166,12 +171,21 @@ class GalleryViewModel(
                     // Nothing to change.
                 }
             }
-        }
-            .addToCloseables(this)
+
+            log.debug {
+                "subscribeToSearch(): handled_new_state:" +
+                        "\nstate=$state"
+            }
+        }.addToCloseables(this)
     }
 
     private fun subscribeToFastScroll() {
         fastScrollViewModel.state.subscribe { state ->
+            log.debug {
+                "subscribeToFastScroll(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
             when (state) {
                 is GalleryFastScrollViewModel.State.AtMonth -> {
                     if (state.monthBubble.source != null) {
@@ -193,6 +207,11 @@ class GalleryViewModel(
                 }
                 GalleryFastScrollViewModel.State.Loading -> {
                 }
+            }
+
+            log.debug {
+                "subscribeToFastScroll(): handled_new_state:" +
+                        "\nstate=$state"
             }
         }.addToCloseables(this)
     }
