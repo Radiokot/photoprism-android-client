@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.model.photoPrismDateFormat
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.*
@@ -152,7 +153,7 @@ class SimpleGalleryMediaRepository(
         private val downloadUrlFactory: MediaFileDownloadUrlFactory,
         private val pageLimit: Int,
     ) {
-        private val cache = LruCache<String, SimpleGalleryMediaRepository>(5)
+        private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
         fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
@@ -163,6 +164,12 @@ class SimpleGalleryMediaRepository(
                         config.mediaTypes.joinToString("|") { it.value }
                     }"
                 )
+            }
+
+            if (config.before != null) {
+                synchronized(photoPrismDateFormat) {
+                    queryBuilder.append(" before:\"${photoPrismDateFormat.format(config.before)}\"")
+                }
             }
 
             if (config.userQuery != null) {

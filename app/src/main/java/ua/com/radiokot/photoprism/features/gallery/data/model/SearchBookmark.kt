@@ -18,6 +18,7 @@ data class SearchBookmark(
             mediaTypes = dbEntity.mediaTypes
                 .map { GalleryMedia.TypeName.valueOf(it) }
                 .toSet(),
+            before = null,
             userQuery = dbEntity.userQuery,
         )
     )

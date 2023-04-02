@@ -115,8 +115,12 @@ class GalleryFastScrollView(
 
             when (state) {
                 GalleryFastScrollViewModel.State.Idle -> {
+                    fastScrollOffset = 0
+                    notifyFastScroller()
                 }
                 GalleryFastScrollViewModel.State.Loading -> {
+                    fastScrollOffset = 0
+                    notifyFastScroller()
                 }
                 is GalleryFastScrollViewModel.State.AtMonth -> {
                 }

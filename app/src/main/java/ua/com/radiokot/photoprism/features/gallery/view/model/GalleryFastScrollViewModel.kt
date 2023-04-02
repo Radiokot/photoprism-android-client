@@ -18,6 +18,7 @@ class GalleryFastScrollViewModel(
     private val bubbleMonthDateFormat: DateFormat,
 ) : ViewModel() {
     private val log = kLogger("GalleryFastScrollVM")
+    private var currentMediaRepository: SimpleGalleryMediaRepository? = null
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
     val state: BehaviorSubject<State> = BehaviorSubject.createDefault(State.Idle)
@@ -27,7 +28,18 @@ class GalleryFastScrollViewModel(
     }
 
     fun setMediaRepository(mediaRepository: SimpleGalleryMediaRepository) {
-        updateBubbles(mediaRepository)
+        if (mediaRepository != currentMediaRepository) {
+            log.debug {
+                "setMediaRepository(): set_new_repo:" +
+                        "\nmediaRepository=$mediaRepository"
+            }
+            currentMediaRepository = mediaRepository
+            updateBubbles(mediaRepository)
+        } else {
+            log.debug {
+                "setMediaRepository(): already_set"
+            }
+        }
     }
 
     private var bubblesUpdateDisposable: Disposable? = null
@@ -82,7 +94,9 @@ class GalleryFastScrollViewModel(
     }
 
     fun reset() {
+        log.debug { "reset(): resetting_to_idle" }
 
+        state.onNext(State.Idle)
     }
 
     fun onScrolledToMonth(monthBubble: GalleryMonthScrollBubble) {

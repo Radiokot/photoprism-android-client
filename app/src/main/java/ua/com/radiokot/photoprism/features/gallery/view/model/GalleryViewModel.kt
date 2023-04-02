@@ -32,9 +32,11 @@ class GalleryViewModel(
     val fastScrollViewModel: GalleryFastScrollViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
-    private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
     private val currentMediaRepository: BehaviorSubject<SimpleGalleryMediaRepository> =
         BehaviorSubject.create()
+
+    // Current search config regarding the fast scroll.
+    private var currentSearchConfig: SearchConfig? = null
     private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -79,20 +81,13 @@ class GalleryViewModel(
             searchViewModel.availableMediaTypes.value = filterMediaTypes
         }
 
-        initialMediaRepository = galleryMediaRepositoryFactory.getForSearch(
-            SearchConfig(
-                mediaTypes = filterMediaTypes,
-                userQuery = null,
-            )
-        )
-
         log.debug {
             "initSelection(): initialized_selection:" +
                     "\nrequestedMimeType=$requestedMimeType," +
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
-        state.value = State.Selecting
+        state.value = State.Selecting(filterMediaTypes = filterMediaTypes)
 
         initCommon()
 
@@ -108,8 +103,6 @@ class GalleryViewModel(
             return
         }
 
-        initialMediaRepository = galleryMediaRepositoryFactory.get(null)
-
         log.debug {
             "initViewing(): initialized_viewing"
         }
@@ -123,26 +116,51 @@ class GalleryViewModel(
 
     private fun initCommon() {
         subscribeToSearch()
+        subscribeToFastScroll()
         subscribeToRepositoryChanges()
+        resetRepositoryToInitial()
+    }
 
-        currentMediaRepository.onNext(initialMediaRepository)
+    private fun resetRepositoryToInitial() {
+        when (val state = state.value!!) {
+            is State.Selecting -> {
+                val searchConfig = SearchConfig(
+                    mediaTypes = state.filterMediaTypes,
+                    userQuery = null,
+                    before = null,
+                )
+
+                currentSearchConfig = searchConfig
+                currentMediaRepository.onNext(
+                    galleryMediaRepositoryFactory.getForSearch(
+                        searchConfig
+                    )
+                )
+            }
+            State.Viewing -> {
+                currentSearchConfig = null
+                currentMediaRepository.onNext(galleryMediaRepositoryFactory.get(null))
+            }
+        }
     }
 
     private fun subscribeToSearch() {
         searchViewModel.state.subscribe { state ->
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
+                    currentSearchConfig = state.search.config
                     val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(state.search.config)
+
+                    fastScrollViewModel.reset()
 
                     if (searchMediaRepository != currentMediaRepository.value) {
                         currentMediaRepository.onNext(searchMediaRepository)
                     }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
-                    // TODO: initial repository saved here but removed from factory cache ->
-                    //  photo viewer is opened with a fresh repository.
-                    currentMediaRepository.onNext(initialMediaRepository)
+                    fastScrollViewModel.reset()
+                    resetRepositoryToInitial()
                 }
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
                     // Nothing to change.
@@ -152,11 +170,43 @@ class GalleryViewModel(
             .addToCloseables(this)
     }
 
+    private fun subscribeToFastScroll() {
+        fastScrollViewModel.state.subscribe { state ->
+            when (state) {
+                is GalleryFastScrollViewModel.State.AtMonth -> {
+                    if (state.monthBubble.source != null) {
+                        val searchConfig =
+                            currentSearchConfig
+                                ?.copy(before = state.monthBubble.source.nextDayAfter)
+                                ?: SearchConfig(
+                                    mediaTypes = emptySet(),
+                                    before = state.monthBubble.source.nextDayAfter,
+                                    userQuery = null,
+                                )
+
+                        currentMediaRepository.onNext(
+                            galleryMediaRepositoryFactory.getForSearch(searchConfig)
+                        )
+                    }
+                }
+                GalleryFastScrollViewModel.State.Idle -> {
+                }
+                GalleryFastScrollViewModel.State.Loading -> {
+                }
+            }
+        }.addToCloseables(this)
+    }
+
     private fun subscribeToRepositoryChanges() {
         currentMediaRepository
-            .subscribe {
+            .subscribe { currentMediaRepository ->
                 subscribeToRepository()
                 update()
+
+                eventsSubject.onNext(Event.ResetScroll)
+                if (fastScrollViewModel.state.value !is GalleryFastScrollViewModel.State.AtMonth) {
+                    fastScrollViewModel.setMediaRepository(currentMediaRepository)
+                }
             }
             .addToCloseables(this)
     }
@@ -217,9 +267,6 @@ class GalleryViewModel(
             .addTo(disposable)
 
         disposable.addToCloseables(this)
-
-        eventsSubject.onNext(Event.ResetScroll)
-        fastScrollViewModel.setMediaRepository(currentMediaRepository)
     }
 
     private fun onNewGalleryMedia(galleryMediaList: List<GalleryMedia>) {
@@ -420,7 +467,7 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        object Selecting : State
+        class Selecting(val filterMediaTypes: Set<GalleryMedia.TypeName>) : State
     }
 
     sealed interface Error {
