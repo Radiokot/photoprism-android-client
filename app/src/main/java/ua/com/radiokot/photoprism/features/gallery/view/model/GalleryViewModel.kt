@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.*
@@ -32,7 +33,8 @@ class GalleryViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private lateinit var initialMediaRepository: SimpleGalleryMediaRepository
-    private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
+    private val currentMediaRepository: BehaviorSubject<SimpleGalleryMediaRepository> =
+        BehaviorSubject.create()
     private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -83,7 +85,6 @@ class GalleryViewModel(
                 userQuery = null,
             )
         )
-        currentMediaRepository = initialMediaRepository
 
         log.debug {
             "initSelection(): initialized_selection:" +
@@ -93,7 +94,7 @@ class GalleryViewModel(
 
         state.value = State.Selecting
 
-        subscribeToSearch()
+        initCommon()
 
         isInitialized = true
     }
@@ -108,7 +109,6 @@ class GalleryViewModel(
         }
 
         initialMediaRepository = galleryMediaRepositoryFactory.get(null)
-        currentMediaRepository = initialMediaRepository
 
         log.debug {
             "initViewing(): initialized_viewing"
@@ -116,9 +116,16 @@ class GalleryViewModel(
 
         state.value = State.Viewing
 
-        subscribeToSearch()
+        initCommon()
 
         isInitialized = true
+    }
+
+    private fun initCommon() {
+        subscribeToSearch()
+        subscribeToRepositoryChanges()
+
+        currentMediaRepository.onNext(initialMediaRepository)
     }
 
     private fun subscribeToSearch() {
@@ -128,24 +135,29 @@ class GalleryViewModel(
                     val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(state.search.config)
 
-                    if (searchMediaRepository != currentMediaRepository) {
-                        currentMediaRepository = searchMediaRepository
-                        subscribeToRepository()
-                        update()
+                    if (searchMediaRepository != currentMediaRepository.value) {
+                        currentMediaRepository.onNext(searchMediaRepository)
                     }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
                     // TODO: initial repository saved here but removed from factory cache ->
                     //  photo viewer is opened with a fresh repository.
-                    currentMediaRepository = initialMediaRepository
-                    subscribeToRepository()
-                    update()
+                    currentMediaRepository.onNext(initialMediaRepository)
                 }
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
                     // Nothing to change.
                 }
             }
         }
+            .addToCloseables(this)
+    }
+
+    private fun subscribeToRepositoryChanges() {
+        currentMediaRepository
+            .subscribe {
+                subscribeToRepository()
+                update()
+            }
             .addToCloseables(this)
     }
 
@@ -156,6 +168,9 @@ class GalleryViewModel(
         val disposable = CompositeDisposable()
         repositorySubscriptionDisposable = disposable
 
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
+
         log.debug {
             "subscribeToRepository(): subscribing:" +
                     "\nrepository=$currentMediaRepository"
@@ -163,7 +178,7 @@ class GalleryViewModel(
 
         currentMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onNewRepositoryItems)
+            .subscribe(::onNewGalleryMedia)
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -207,7 +222,7 @@ class GalleryViewModel(
         fastScrollViewModel.setMediaRepository(currentMediaRepository)
     }
 
-    private fun onNewRepositoryItems(galleryMediaItems: List<GalleryMedia>) {
+    private fun onNewGalleryMedia(galleryMediaList: List<GalleryMedia>) {
         // Dismiss the main error when there are items.
         mainError.value = null
 
@@ -215,11 +230,11 @@ class GalleryViewModel(
 
         // Add date headers.
         val today = Date()
-        galleryMediaItems
+        galleryMediaList
             .forEachIndexed { i, galleryMedia ->
                 val takenAt = galleryMedia.takenAt
 
-                if (i != 0 && !takenAt.isSameMonthAs(galleryMediaItems[i - 1].takenAt)) {
+                if (i != 0 && !takenAt.isSameMonthAs(galleryMediaList[i - 1].takenAt)) {
                     val formattedMonth =
                         if (takenAt.isSameYearAs(today))
                             dateHeaderMonthDateFormat.format(takenAt)
@@ -233,7 +248,7 @@ class GalleryViewModel(
                     )
                 }
 
-                if (i == 0 || !takenAt.isSameDayAs(galleryMediaItems[i - 1].takenAt)) {
+                if (i == 0 || !takenAt.isSameDayAs(galleryMediaList[i - 1].takenAt)) {
                     newListItems.add(
                         if (takenAt.isSameDayAs(today))
                             GalleryListItem.Header.day(
@@ -269,6 +284,8 @@ class GalleryViewModel(
     }
 
     private fun update(force: Boolean = false) {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         if (!force) {
             currentMediaRepository.updateIfNotFresh()
         } else {
@@ -277,6 +294,8 @@ class GalleryViewModel(
     }
 
     fun loadMore() {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         if (!currentMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
             currentMediaRepository.loadMore()
@@ -348,6 +367,8 @@ class GalleryViewModel(
     }
 
     private fun openViewer(media: GalleryMedia) {
+        val currentMediaRepository = currentMediaRepository.value
+            ?: return
         val index = currentMediaRepository.itemsList.indexOf(media)
         val repositoryQuery = currentMediaRepository.query
 
