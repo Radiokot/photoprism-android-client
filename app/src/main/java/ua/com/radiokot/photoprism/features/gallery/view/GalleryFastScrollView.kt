@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -114,6 +115,7 @@ class GalleryFastScrollView(
         fastScroller = FastScrollerBuilder(fastScrollRecyclerView)
             .setViewHelper(fastScrollViewHelper)
             .useMd2Style()
+            .setTrackDrawable(ContextCompat.getDrawable(context, R.drawable.fast_scroll_track)!!)
             .setPopupStyle(::setUpBubble)
             .build()
 

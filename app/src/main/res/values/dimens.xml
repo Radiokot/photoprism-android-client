@@ -9,4 +9,5 @@
     <dimen name="fast_scroll_bubble_padding_horizontal">16dp</dimen>
     <dimen name="fast_scroll_bubble_corner_size">16dp</dimen>
     <dimen name="fast_scroll_bubble_elevation">4dp</dimen>
+    <dimen name="afs_min_touch_target_size">4mm</dimen>
 </resources>
