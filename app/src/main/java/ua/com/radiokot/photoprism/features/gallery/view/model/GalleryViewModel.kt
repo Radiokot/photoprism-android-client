@@ -300,7 +300,9 @@ class GalleryViewModel(
             .forEachIndexed { i, galleryMedia ->
                 val takenAt = galleryMedia.takenAt
 
-                if (i != 0 && !takenAt.isSameMonthAs(galleryMediaList[i - 1].takenAt)) {
+                if (i == 0 && !takenAt.isSameMonthAs(today)
+                    || i != 0 && !takenAt.isSameMonthAs(galleryMediaList[i - 1].takenAt)
+                ) {
                     val formattedMonth =
                         if (takenAt.isSameYearAs(today))
                             dateHeaderMonthDateFormat.format(takenAt)
