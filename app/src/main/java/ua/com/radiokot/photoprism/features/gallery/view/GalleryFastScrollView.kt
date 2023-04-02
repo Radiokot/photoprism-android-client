@@ -1,12 +1,20 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.content.Context
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.view.MotionEvent
+import android.view.ViewGroup.MarginLayoutParams
+import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.MaterialShapeDrawable
 import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.Predicate
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
@@ -23,8 +31,24 @@ class GalleryFastScrollView(
     private lateinit var fastScroller: FastScroller
     private var notifyFastScroller = {}
     private var bubbles: List<GalleryMonthScrollBubble> = emptyList()
-    private var fastScrollRange = 0
-    private var fastScrollOffset = 0
+    private var scrollRange = 0
+    private var scrollOffset = 0
+    private val context: Context
+        get() = fastScrollRecyclerView.context
+
+    private val bubbleBackground: Drawable by lazy {
+        MaterialShapeDrawable.createWithElevationOverlay(
+            context,
+            context.resources.getDimensionPixelSize(R.dimen.fast_scroll_bubble_elevation)
+                .toFloat()
+        )
+            .apply {
+                setCornerSize(
+                    context.resources.getDimensionPixelSize(R.dimen.fast_scroll_bubble_corner_size)
+                        .toFloat()
+                )
+            }
+    }
 
     private val fastScrollViewHelper: FastScroller.ViewHelper by lazy {
         object : FastScroller.ViewHelper {
@@ -65,15 +89,15 @@ class GalleryFastScrollView(
             }
 
             override fun getScrollRange(): Int {
-                return fastScrollRange
+                return this@GalleryFastScrollView.scrollRange
             }
 
             override fun getScrollOffset(): Int {
-                return fastScrollOffset
+                return this@GalleryFastScrollView.scrollOffset
             }
 
             override fun scrollTo(offset: Int) {
-                fastScrollOffset = offset
+                this@GalleryFastScrollView.scrollOffset = offset
                 fastScrollRecyclerView.invalidateItemDecorations()
                 notifyFastScroller()
             }
@@ -90,6 +114,7 @@ class GalleryFastScrollView(
         fastScroller = FastScrollerBuilder(fastScrollRecyclerView)
             .setViewHelper(fastScrollViewHelper)
             .useMd2Style()
+            .setPopupStyle(::setUpBubble)
             .build()
 
         subscribeToData()
@@ -115,11 +140,11 @@ class GalleryFastScrollView(
 
             when (state) {
                 GalleryFastScrollViewModel.State.Idle -> {
-                    fastScrollOffset = 0
+                    scrollOffset = 0
                     notifyFastScroller()
                 }
                 GalleryFastScrollViewModel.State.Loading -> {
-                    fastScrollOffset = 0
+                    scrollOffset = 0
                     notifyFastScroller()
                 }
                 is GalleryFastScrollViewModel.State.AtMonth -> {
@@ -134,7 +159,7 @@ class GalleryFastScrollView(
     }
 
     private fun updateScrollRange() {
-        fastScrollRange = when (viewModel.state.value) {
+        scrollRange = when (viewModel.state.value) {
             is GalleryFastScrollViewModel.State.AtMonth,
             GalleryFastScrollViewModel.State.Idle -> {
                 if (bubbles.size > 1)
@@ -149,12 +174,12 @@ class GalleryFastScrollView(
     }
 
     private fun getCurrentBubble(): GalleryMonthScrollBubble? {
-        val range = fastScrollRange
+        val range = scrollRange
         if (range == 0) {
             return null
         }
 
-        val scrollFraction = 2.0 * fastScrollOffset / range
+        val scrollFraction = 2.0 * scrollOffset / range
         val bubbleIndex = ((bubbles.size - 1) * scrollFraction).roundToInt()
         return bubbles.getOrNull(bubbleIndex)
     }
@@ -170,5 +195,28 @@ class GalleryFastScrollView(
         if (currentBubble != null) {
             viewModel.onScrolledToMonth(currentBubble)
         }
+    }
+
+    private fun setUpBubble(textView: TextView) = with(textView) {
+        (layoutParams as MarginLayoutParams).apply {
+            marginEnd =
+                context.resources.getDimensionPixelSize(R.dimen.fast_scroll_bubble_end_spacing)
+        }
+        TextViewCompat.setTextAppearance(
+            this,
+            com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall
+        )
+        setTextColor(
+            MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorOnSurface
+            )
+        )
+        val verticalPadding =
+            context.resources.getDimensionPixelSize(R.dimen.fast_scroll_bubble_padding_vertical)
+        val horizontalPadding =
+            context.resources.getDimensionPixelSize(R.dimen.fast_scroll_bubble_padding_horizontal)
+        setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+        background = bubbleBackground
     }
 }

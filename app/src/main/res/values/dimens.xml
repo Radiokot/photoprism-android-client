@@ -4,4 +4,9 @@
     <dimen name="list_item_gallery_media_min_size">20mm</dimen>
     <dimen name="gallery_search_chip_spacing">8dp</dimen>
     <dimen name="gallery_search_chip_height">42dp</dimen>
+    <dimen name="fast_scroll_bubble_end_spacing">10mm</dimen>
+    <dimen name="fast_scroll_bubble_padding_vertical">8dp</dimen>
+    <dimen name="fast_scroll_bubble_padding_horizontal">16dp</dimen>
+    <dimen name="fast_scroll_bubble_corner_size">16dp</dimen>
+    <dimen name="fast_scroll_bubble_elevation">4dp</dimen>
 </resources>
