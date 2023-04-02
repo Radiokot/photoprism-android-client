@@ -110,7 +110,13 @@ class SimpleGalleryMediaRepository(
             }
     }
 
+    private var newestAndOldestDates: Pair<Date, Date>? = null
     fun getNewestAndOldestDates(): Maybe<Pair<Date, Date>> {
+        val loadedDates = newestAndOldestDates
+        if (loadedDates != null) {
+            return Maybe.just(loadedDates)
+        }
+
         val getNewestDate = {
             photoPrismPhotosService.getPhotos(
                 count = 1,
@@ -140,7 +146,13 @@ class SimpleGalleryMediaRepository(
             getOldestDate,
             ::Pair
         )
+            .doOnSuccess { newestAndOldestDates = it }
             .subscribeOn(Schedulers.io())
+    }
+
+    override fun invalidate() {
+        newestAndOldestDates = null
+        super.invalidate()
     }
 
     override fun toString(): String {

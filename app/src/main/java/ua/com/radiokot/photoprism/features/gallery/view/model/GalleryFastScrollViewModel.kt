@@ -23,10 +23,6 @@ class GalleryFastScrollViewModel(
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
     val state: BehaviorSubject<State> = BehaviorSubject.createDefault(State.Idle)
 
-    init {
-
-    }
-
     fun setMediaRepository(mediaRepository: SimpleGalleryMediaRepository) {
         if (mediaRepository != currentMediaRepository) {
             log.debug {
@@ -61,7 +57,7 @@ class GalleryFastScrollViewModel(
                 },
                 onSuccess = { (newestDate, oldestDate) ->
                     log.debug {
-                        "updateBubbles(): loaded_dates:" +
+                        "updateBubbles(): got_dates:" +
                                 "\nnewest=$newestDate," +
                                 "\noldest=$oldestDate"
                     }
@@ -90,6 +86,12 @@ class GalleryFastScrollViewModel(
                             bubbleMonthYearDateFormat.format(month.firstDay),
                         source = month
                     )
+                }
+                .also {
+                    log.debug {
+                        "createBubbles(): bubbles_created:" +
+                                "\ncount=${it.size}"
+                    }
                 }
     }
 
