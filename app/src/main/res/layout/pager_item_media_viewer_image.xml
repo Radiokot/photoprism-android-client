@@ -24,5 +24,6 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="@string/failed_to_load_the_preview"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="?android:textColorSecondary" />
 </FrameLayout>

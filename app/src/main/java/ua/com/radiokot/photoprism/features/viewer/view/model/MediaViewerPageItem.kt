@@ -35,7 +35,7 @@ sealed class MediaViewerPageItem(
             ViewHolder(v)
 
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Image>(itemView) {
-            private val view = PagerItemMediaViewerImageBinding.bind(itemView)
+            val view = PagerItemMediaViewerImageBinding.bind(itemView)
 
             private val imageLoadingCallback = object : Callback {
                 override fun onSuccess() {

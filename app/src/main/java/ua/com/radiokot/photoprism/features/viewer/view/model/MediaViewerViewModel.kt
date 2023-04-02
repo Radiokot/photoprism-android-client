@@ -30,6 +30,10 @@ class MediaViewerViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
     val state: MutableLiveData<State> = MutableLiveData(State.Idle)
+    val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false).apply {
+        observeForever { areActionsVisible.value = !it }
+    }
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
 
@@ -141,6 +145,23 @@ class MediaViewerViewModel(
         }
 
         startDownloadToExternalStorage(item)
+    }
+
+    fun onPageClicked() {
+        log.debug { "onPageClicked(): toggling_full_screen" }
+
+        isFullScreen.value = !isFullScreen.value!!
+    }
+
+    fun onFullScreenToggledBySystem(isFullScreen: Boolean) {
+        if (isFullScreen != this.isFullScreen.value) {
+            log.debug {
+                "onFullScreenToggledManually(): toggled_full_screen_manually:" +
+                        "\nisFullScreen=$isFullScreen"
+            }
+
+            this.isFullScreen.value = isFullScreen
+        }
     }
 
     private fun startDownloadToExternalStorage(media: GalleryMedia) {

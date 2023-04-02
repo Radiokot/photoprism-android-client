@@ -2,14 +2,21 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
+import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -30,6 +37,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileV
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
+import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
 
 class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
@@ -106,6 +114,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         initButtons()
         initMediaFileSelection()
         downloadProgressView.init()
+        initFullScreenToggle()
     }
 
     private fun initPager(
@@ -128,6 +137,20 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                         }
                     })
                 }
+
+                addClickListener(
+                    resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                        when (viewHolder) {
+                            is MediaViewerPageItem.Image.ViewHolder ->
+                                viewHolder.view.photoView
+                            else ->
+                                viewHolder.itemView
+                        }
+                    },
+                    onClick = { _, _, _, _ ->
+                        viewModel.onPageClicked()
+                    }
+                )
             }
 
             adapter = fastAdapter
@@ -154,29 +177,95 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 position = view.viewPager.currentItem,
             )
         }
+
+        window.decorView.post {
+            val navigationBarHeight =
+                FullscreenInsetsUtil.getNavigationBarOverlayHeight(window.decorView)
+
+            view.buttonsLayout.layoutParams =
+                (view.buttonsLayout.layoutParams as MarginLayoutParams).apply {
+                    bottomMargin += navigationBarHeight
+                }
+
+            log.debug {
+                "initButtons(): applied_bottom_margin:" +
+                        "\nmargin=$navigationBarHeight"
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun initFullScreenToggle() {
+        window.decorView.setOnSystemUiVisibilityChangeListener { flags ->
+            val isFullScreen =
+                flags and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN
+            viewModel.onFullScreenToggledBySystem(isFullScreen)
+        }
     }
 
     private fun subscribeToData() {
-        viewModel.isLoading
-            .observe(this) { isLoading ->
-                log.debug {
-                    "subscribeToData(): loading_changed:" +
-                            "\nis_loading=$isLoading"
-                }
-
-                if (isLoading) {
-                    view.progressIndicator.show()
-                } else {
-                    view.progressIndicator.hide()
-                }
+        viewModel.isLoading.observe(this) { isLoading ->
+            log.debug {
+                "subscribeToData(): loading_changed:" +
+                        "\nis_loading=$isLoading"
             }
 
-        viewModel.itemsList
-            .observe(this) {
-                if (it != null) {
-                    viewerPagesAdapter.setNewList(it)
-                }
+            if (isLoading) {
+                view.progressIndicator.show()
+            } else {
+                view.progressIndicator.hide()
             }
+        }
+
+        viewModel.itemsList.observe(this) {
+            if (it != null) {
+                viewerPagesAdapter.setNewList(it)
+            }
+        }
+
+        viewModel.areActionsVisible.observe(this) { areActionsVisible ->
+            view.buttonsLayout.isVisible = areActionsVisible
+        }
+
+        viewModel.isFullScreen.observe(this) { isFullScreen ->
+            if (isFullScreen) {
+                hideSystemUI()
+                window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+                log.debug { "initData(): enabled_full_screen" }
+            } else {
+                showSystemUI()
+                window.setBackgroundDrawable(
+                    ColorDrawable(
+                        MaterialColors.getColor(
+                            window.decorView,
+                            android.R.attr.colorBackground
+                        )
+                    )
+                )
+                log.debug { "initData(): disabled_full_screen" }
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun hideSystemUI() {
+        WindowInsetsControllerCompat(window, window.decorView)
+            .systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
+
+        val uiOptions = (View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        window.decorView.systemUiVisibility = uiOptions
+    }
+
+    @Suppress("DEPRECATION")
+    private fun showSystemUI() {
+        val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        window.decorView.systemUiVisibility = uiOptions
     }
 
     private fun subscribeToEvents() {
