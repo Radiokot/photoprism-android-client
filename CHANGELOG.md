@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Month headers for the gallery items
 - Chronological fast scroll – slide the scroll bar to quickly jump to a specific month
+- Showing that the app is in the content selection mode
+
+### Changed
+- Made the viewer immersive – now it is dark and all the controls can be hidden by a tap
+- Rearranged the action buttons on the viewer
+- Made the status bar light
 
 ## [1.1.0] - 2022-03-28
 
