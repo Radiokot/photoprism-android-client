@@ -266,6 +266,10 @@ class GallerySearchView(
             }
         }
 
+        viewModel.areSomeTypesUnavailable.observe(this) { areSomeTypesUnavailable ->
+            configurationView.typesNotAvailableNotice.isVisible = areSomeTypesUnavailable
+        }
+
         val bookmarkChipClickListener = View.OnClickListener { chip ->
             viewModel.onBookmarkChipClicked(chip.tag as SearchBookmarkItem)
         }

@@ -21,16 +21,19 @@ class GallerySearchViewModel(
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
-    val availableMediaTypes = MutableLiveData(
-        setOf(
-            GalleryMedia.TypeName.IMAGE,
-            GalleryMedia.TypeName.VIDEO,
-            GalleryMedia.TypeName.ANIMATED,
-            GalleryMedia.TypeName.LIVE,
-            GalleryMedia.TypeName.RAW,
-            GalleryMedia.TypeName.VECTOR,
-        )
+    private val defaultAvailableMediaTypes = setOf(
+        GalleryMedia.TypeName.IMAGE,
+        GalleryMedia.TypeName.VIDEO,
+        GalleryMedia.TypeName.ANIMATED,
+        GalleryMedia.TypeName.LIVE,
+        GalleryMedia.TypeName.RAW,
+        GalleryMedia.TypeName.VECTOR,
     )
+    val areSomeTypesUnavailable = MutableLiveData(false)
+    val availableMediaTypes = MutableLiveData(defaultAvailableMediaTypes).apply {
+        observeForever { areSomeTypesUnavailable.value = it.size < defaultAvailableMediaTypes.size }
+    }
+
     val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
     val userQuery = MutableLiveData<String>()
     val isApplyButtonEnabled = MutableLiveData(false)
