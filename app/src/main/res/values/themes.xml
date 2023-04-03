@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+    <style name="BaseLightAppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -30,7 +30,9 @@
 
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
         </item>
-    </style>
+        </style>
+
+    <style name="AppTheme" parent="BaseLightAppTheme" />
 
     <style name="DarkAppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
@@ -62,6 +64,7 @@
 
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
         </item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="MediaViewerTheme" parent="DarkAppTheme">
