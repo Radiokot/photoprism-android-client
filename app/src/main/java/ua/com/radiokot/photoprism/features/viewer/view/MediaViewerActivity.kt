@@ -2,8 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
@@ -12,7 +10,6 @@ import androidx.activity.result.registerForActivityResult
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -230,18 +227,9 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewModel.isFullScreen.observe(this) { isFullScreen ->
             if (isFullScreen) {
                 hideSystemUI()
-                window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
                 log.debug { "initData(): enabled_full_screen" }
             } else {
                 showSystemUI()
-                window.setBackgroundDrawable(
-                    ColorDrawable(
-                        MaterialColors.getColor(
-                            window.decorView,
-                            android.R.attr.colorBackground
-                        )
-                    )
-                )
                 log.debug { "initData(): disabled_full_screen" }
             }
         }

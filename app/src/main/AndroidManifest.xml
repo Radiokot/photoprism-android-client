@@ -43,7 +43,8 @@
 
         <activity
             android:name=".features.viewer.view.MediaViewerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/MediaViewerTheme" />
 
         <activity
             android:name=".features.envconnection.view.EnvConnectionActivity"
