@@ -19,44 +19,55 @@
         android:indeterminate="true" />
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttons_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="24dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/download_button"
             style="?materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
             android:contentDescription="@string/download"
             app:icon="@drawable/ic_download"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"
+            app:layout_constraintEnd_toStartOf="@id/share_button"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_button"
             style="?materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
             android:layout_marginHorizontal="16dp"
             android:contentDescription="@string/share"
             app:icon="@drawable/ic_share"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"
+            app:layout_constraintEnd_toStartOf="@id/open_in_button"
+            app:layout_constraintStart_toEndOf="@id/download_button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/open_in_button"
             style="?materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
             android:contentDescription="@string/open_in"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/open_in"
             app:icon="@drawable/ic_open_in"
-            app:iconGravity="textStart" />
+            app:iconGravity="textEnd"
+            app:iconPadding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/share_button"
+            app:layout_constraintWidth_default="spread" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
