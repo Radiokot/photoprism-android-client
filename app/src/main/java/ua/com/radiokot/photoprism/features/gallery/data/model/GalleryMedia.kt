@@ -100,8 +100,14 @@ class GalleryMedia(
 
         object Raw : TypeData(TypeName.RAW)
         object Animated : TypeData(TypeName.ANIMATED)
-        object Live : TypeData(TypeName.LIVE)
-        object Video : TypeData(TypeName.VIDEO)
+        class Live(
+            val avcPreviewUrl: String,
+        ) : TypeData(TypeName.LIVE)
+
+        class Video(
+            val avcPreviewUrl: String,
+        ) : TypeData(TypeName.VIDEO)
+
         object Vector : TypeData(TypeName.VECTOR)
         object Sidecar : TypeData(TypeName.SIDECAR)
         object Text : TypeData(TypeName.TEXT)
@@ -119,8 +125,12 @@ class GalleryMedia(
                     )
                     TypeName.RAW.value -> Raw
                     TypeName.ANIMATED.value -> Animated
-                    TypeName.LIVE.value -> Live
-                    TypeName.VIDEO.value -> Video
+                    TypeName.LIVE.value -> Live(
+                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                    )
+                    TypeName.VIDEO.value -> Video(
+                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                    )
                     TypeName.VECTOR.value -> Vector
                     TypeName.SIDECAR.value -> Sidecar
                     TypeName.TEXT.value -> Text

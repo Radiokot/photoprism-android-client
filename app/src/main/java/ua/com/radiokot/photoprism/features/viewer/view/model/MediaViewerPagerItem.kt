@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -14,17 +15,18 @@ import com.squareup.picasso.Picasso
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
+import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 
-sealed class MediaViewerPageItem(
+sealed class MediaViewerPagerItem(
     val thumbnailUrl: String,
 ) : AbstractItem<ViewHolder>() {
 
-    class Image(
+    class ImageViewer(
         val previewUrl: String,
         thumbnailUrl: String,
-    ) : MediaViewerPageItem(thumbnailUrl) {
+    ) : MediaViewerPagerItem(thumbnailUrl) {
         override val type: Int
             get() = R.id.pager_item_media_viewer_image
 
@@ -34,7 +36,7 @@ sealed class MediaViewerPageItem(
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
-        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Image>(itemView) {
+        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<ImageViewer>(itemView) {
             val view = PagerItemMediaViewerImageBinding.bind(itemView)
 
             private val imageLoadingCallback = object : Callback {
@@ -48,7 +50,7 @@ sealed class MediaViewerPageItem(
                 }
             }
 
-            override fun bindView(item: Image, payloads: List<Any>) {
+            override fun bindView(item: ImageViewer, payloads: List<Any>) {
                 view.progressIndicator.show()
                 view.errorTextView.visibility = View.GONE
 
@@ -57,8 +59,41 @@ sealed class MediaViewerPageItem(
                     .into(view.photoView, imageLoadingCallback)
             }
 
-            override fun unbindView(item: Image) {
+            override fun unbindView(item: ImageViewer) {
                 Picasso.get().cancelRequest(view.photoView)
+            }
+        }
+    }
+
+    class VideoViewer(
+        val previewUrl: String,
+        thumbnailUrl: String,
+    ) : MediaViewerPagerItem(thumbnailUrl) {
+        override val type: Int
+            get() = R.id.pager_item_media_viewer_video
+
+        override val layoutRes: Int
+            get() = R.layout.pager_item_media_viewer_video
+
+        override fun getViewHolder(v: View): ViewHolder =
+            ViewHolder(v)
+
+        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewer>(itemView) {
+            val view = PagerItemMediaViewerVideoBinding.bind(itemView)
+
+            override fun bindView(item: VideoViewer, payloads: List<Any>) {
+                view.videoView.setVideoURI(Uri.parse(item.previewUrl))
+                view.downloadButton.setOnClickListener {
+                    if (view.videoView.isPlaying && view.videoView.canPause()) {
+                        view.videoView.pause()
+                    } else {
+                        view.videoView.start()
+                    }
+                }
+            }
+
+            override fun unbindView(item: VideoViewer) {
+                view.videoView.stopPlayback()
             }
         }
     }
@@ -69,7 +104,7 @@ sealed class MediaViewerPageItem(
         @DrawableRes
         val mediaTypeIcon: Int?,
         thumbnailUrl: String,
-    ) : MediaViewerPageItem(thumbnailUrl) {
+    ) : MediaViewerPagerItem(thumbnailUrl) {
         override val type: Int
             get() = R.id.pager_item_media_viewer_unsupported
 
@@ -121,11 +156,21 @@ sealed class MediaViewerPageItem(
     }
 
     companion object {
-        fun fromGalleryMedia(source: GalleryMedia): MediaViewerPageItem {
+        fun fromGalleryMedia(source: GalleryMedia): MediaViewerPagerItem {
             return when (source.media) {
                 is GalleryMedia.TypeData.Image ->
-                    Image(
+                    ImageViewer(
                         previewUrl = source.media.hdPreviewUrl,
+                        thumbnailUrl = source.smallThumbnailUrl,
+                    )
+                is GalleryMedia.TypeData.Video ->
+                    VideoViewer(
+                        previewUrl = source.media.avcPreviewUrl,
+                        thumbnailUrl = source.smallThumbnailUrl,
+                    )
+                is GalleryMedia.TypeData.Live ->
+                    VideoViewer(
+                        previewUrl = source.media.avcPreviewUrl,
                         thumbnailUrl = source.smallThumbnailUrl,
                     )
                 else ->

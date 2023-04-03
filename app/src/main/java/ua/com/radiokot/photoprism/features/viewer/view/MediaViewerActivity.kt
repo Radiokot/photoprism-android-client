@@ -33,7 +33,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPageItem
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPagerItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
@@ -50,7 +50,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
-    private val viewerPagesAdapter = ItemAdapter<MediaViewerPageItem>()
+    private val viewerPagesAdapter = ItemAdapter<MediaViewerPagerItem>()
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
@@ -139,7 +139,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 addClickListener(
                     resolveView = { viewHolder: RecyclerView.ViewHolder ->
                         when (viewHolder) {
-                            is MediaViewerPageItem.Image.ViewHolder ->
+                            is MediaViewerPagerItem.ImageViewer.ViewHolder ->
                                 viewHolder.view.photoView
                             else ->
                                 viewHolder.itemView
