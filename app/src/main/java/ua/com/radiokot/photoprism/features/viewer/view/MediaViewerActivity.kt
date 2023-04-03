@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
+import ua.com.radiokot.photoprism.extension.fadeVisibility
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -221,7 +222,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
-            view.buttonsLayout.isVisible = areActionsVisible
+            view.buttonsLayout.fadeVisibility(areActionsVisible)
         }
 
         viewModel.isFullScreen.observe(this) { isFullScreen ->

@@ -156,7 +156,7 @@ class MediaViewerViewModel(
     fun onFullScreenToggledBySystem(isFullScreen: Boolean) {
         if (isFullScreen != this.isFullScreen.value) {
             log.debug {
-                "onFullScreenToggledManually(): toggled_full_screen_manually:" +
+                "onFullScreenToggledBySystem(): system_toggled_full_screen:" +
                         "\nisFullScreen=$isFullScreen"
             }
 
