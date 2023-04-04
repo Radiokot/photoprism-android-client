@@ -73,4 +73,5 @@
         <item name="december">December</item>
     </string-array>
     <string name="some_types_are_not_available_when_selecting">Some types are not available when selecting content</string>
+    <string name="include_private_content">Include private content</string>
 </resources>

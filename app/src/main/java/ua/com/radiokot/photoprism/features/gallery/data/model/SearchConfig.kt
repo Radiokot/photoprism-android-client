@@ -8,5 +8,15 @@ import java.util.*
 data class SearchConfig(
     val mediaTypes: Set<GalleryMedia.TypeName>,
     val before: Date?,
-    val userQuery: String?,
-) : Parcelable
+    val userQuery: String,
+    val includePrivate: Boolean,
+) : Parcelable {
+    companion object {
+        val DEFAULT = SearchConfig(
+            mediaTypes = emptySet(),
+            before = null,
+            userQuery = "",
+            includePrivate = false,
+        )
+    }
+}

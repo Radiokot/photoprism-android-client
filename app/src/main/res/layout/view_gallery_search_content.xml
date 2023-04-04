@@ -52,6 +52,15 @@
         android:textColor="?android:textColorSecondary"
         android:textSize="12sp" />
 
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/private_content_switch"
+        style="@style/Widget.Material3.CompoundButton.Switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/include_private_content"
+        app:switchPadding="4dp" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
         style="@style/Widget.Material3.Button"

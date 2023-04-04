@@ -170,6 +170,9 @@ class SimpleGalleryMediaRepository(
         fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
             val queryBuilder = StringBuilder()
 
+            // User query goes first, hence all the other params override the input.
+            queryBuilder.append(" ${config.userQuery}")
+
             if (config.mediaTypes.isNotEmpty()) {
                 queryBuilder.append(
                     " type:${
@@ -184,9 +187,7 @@ class SimpleGalleryMediaRepository(
                 }
             }
 
-            if (config.userQuery != null) {
-                queryBuilder.append(" ${config.userQuery}")
-            }
+            queryBuilder.append(" public:${!config.includePrivate}")
 
             val query = queryBuilder.toString()
                 .trim()
