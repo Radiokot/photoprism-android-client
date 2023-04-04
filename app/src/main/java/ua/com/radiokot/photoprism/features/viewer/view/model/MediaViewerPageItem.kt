@@ -123,7 +123,7 @@ sealed class MediaViewerPageItem(
     companion object {
         fun fromGalleryMedia(source: GalleryMedia): MediaViewerPageItem {
             return when (source.media) {
-                is GalleryMedia.TypeData.Image ->
+                is GalleryMedia.TypeData.ViewableAsImage ->
                     Image(
                         previewUrl = source.media.hdPreviewUrl,
                         thumbnailUrl = source.smallThumbnailUrl,

@@ -92,17 +92,28 @@ class GalleryMedia(
     }
 
     sealed class TypeData(val typeName: TypeName) {
+        interface ViewableAsImage {
+            val hdPreviewUrl: String
+        }
+
         object Unknown : TypeData(TypeName.UNKNOWN)
 
         class Image(
-            val hdPreviewUrl: String,
-        ) : TypeData(TypeName.IMAGE)
+            override val hdPreviewUrl: String,
+        ) : TypeData(TypeName.IMAGE), ViewableAsImage
 
-        object Raw : TypeData(TypeName.RAW)
+        class Raw(
+            override val hdPreviewUrl: String,
+        ) : TypeData(TypeName.RAW), ViewableAsImage
+
         object Animated : TypeData(TypeName.ANIMATED)
         object Live : TypeData(TypeName.LIVE)
         object Video : TypeData(TypeName.VIDEO)
-        object Vector : TypeData(TypeName.VECTOR)
+
+        class Vector(
+            override val hdPreviewUrl: String,
+        ) : TypeData(TypeName.VECTOR), ViewableAsImage
+
         object Sidecar : TypeData(TypeName.SIDECAR)
         object Text : TypeData(TypeName.TEXT)
         object Other : TypeData(TypeName.OTHER)
@@ -117,11 +128,15 @@ class GalleryMedia(
                     TypeName.IMAGE.value -> Image(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
-                    TypeName.RAW.value -> Raw
+                    TypeName.RAW.value -> Raw(
+                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                    )
                     TypeName.ANIMATED.value -> Animated
                     TypeName.LIVE.value -> Live
                     TypeName.VIDEO.value -> Video
-                    TypeName.VECTOR.value -> Vector
+                    TypeName.VECTOR.value -> Vector(
+                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                    )
                     TypeName.SIDECAR.value -> Sidecar
                     TypeName.TEXT.value -> Text
                     TypeName.OTHER.value -> Other
