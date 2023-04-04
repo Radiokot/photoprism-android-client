@@ -49,4 +49,17 @@
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.search.SearchView>
 
+    <TextView
+        android:id="@+id/select_content_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.85"
+        android:background="?colorPrimary"
+        android:gravity="center"
+        android:paddingVertical="4dp"
+        android:text="@string/select_content"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textColor="?colorOnPrimary"
+        app:layout_anchor="@id/gallery_recycler_view"
+        app:layout_anchorGravity="bottom" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

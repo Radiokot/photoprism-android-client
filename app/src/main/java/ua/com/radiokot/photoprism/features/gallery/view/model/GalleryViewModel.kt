@@ -124,10 +124,8 @@ class GalleryViewModel(
     private fun resetRepositoryToInitial() {
         when (val state = state.value!!) {
             is State.Selecting -> {
-                val searchConfig = SearchConfig(
+                val searchConfig = SearchConfig.DEFAULT.copy(
                     mediaTypes = state.filterMediaTypes,
-                    userQuery = null,
-                    before = null,
                 )
 
                 currentSearchConfig = searchConfig
@@ -193,13 +191,8 @@ class GalleryViewModel(
                             if (state.isTopMonth)
                                 currentSearchConfig
                             else
-                                currentSearchConfig
-                                    ?.copy(before = state.monthBubble.source.nextDayAfter)
-                                    ?: SearchConfig(
-                                        mediaTypes = emptySet(),
-                                        before = state.monthBubble.source.nextDayAfter,
-                                        userQuery = null,
-                                    )
+                                (currentSearchConfig ?: SearchConfig.DEFAULT)
+                                    .copy(before = state.monthBubble.source.nextDayAfter)
 
                         if (searchConfigForMonth != null) {
                             currentMediaRepository.onNext(

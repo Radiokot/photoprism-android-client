@@ -21,19 +21,26 @@ class GallerySearchViewModel(
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
-    val availableMediaTypes = MutableLiveData(
-        setOf(
-            GalleryMedia.TypeName.IMAGE,
-            GalleryMedia.TypeName.VIDEO,
-            GalleryMedia.TypeName.ANIMATED,
-            GalleryMedia.TypeName.LIVE,
-            GalleryMedia.TypeName.RAW,
-            GalleryMedia.TypeName.VECTOR,
-        )
+    private val defaultAvailableMediaTypes = setOf(
+        GalleryMedia.TypeName.IMAGE,
+        GalleryMedia.TypeName.VIDEO,
+        GalleryMedia.TypeName.ANIMATED,
+        GalleryMedia.TypeName.LIVE,
+        GalleryMedia.TypeName.RAW,
+        GalleryMedia.TypeName.VECTOR,
     )
-    val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
-    val userQuery = MutableLiveData<String>()
+    val areSomeTypesUnavailable = MutableLiveData(false)
+    val availableMediaTypes = MutableLiveData(defaultAvailableMediaTypes).apply {
+        observeForever { areSomeTypesUnavailable.value = it.size < defaultAvailableMediaTypes.size }
+    }
+
+    private val searchDefaults = SearchConfig.DEFAULT
+
     val isApplyButtonEnabled = MutableLiveData(false)
+    val selectedMediaTypes =
+        MutableLiveData(searchDefaults.mediaTypes)
+    val userQuery = MutableLiveData(searchDefaults.userQuery)
+    val includePrivateContent = MutableLiveData(searchDefaults.includePrivate)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
     val state: Observable<State> = stateSubject
     private val eventsSubject = PublishSubject.create<Event>()
@@ -42,12 +49,13 @@ class GallerySearchViewModel(
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
 
     init {
-        selectedMediaTypes.observeForever {
-            isApplyButtonEnabled.value = canApplyConfiguredSearch
+        val updateApplyButtonEnabled = { _: Any? ->
+            isApplyButtonEnabled.postValue(canApplyConfiguredSearch)
         }
-        userQuery.observeForever {
-            isApplyButtonEnabled.value = canApplyConfiguredSearch
-        }
+
+        selectedMediaTypes.observeForever(updateApplyButtonEnabled)
+        userQuery.observeForever(updateApplyButtonEnabled)
+        includePrivateContent.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
@@ -55,8 +63,11 @@ class GallerySearchViewModel(
     }
 
     private val canApplyConfiguredSearch: Boolean
-        get() = !selectedMediaTypes.value.isNullOrEmpty()
-                || !userQuery.value.isNullOrBlank()
+        get() {
+            return selectedMediaTypes.value != searchDefaults.mediaTypes
+                    || userQuery.value != searchDefaults.userQuery
+                    || includePrivateContent.value != searchDefaults.includePrivate
+        }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
 
@@ -126,7 +137,8 @@ class GallerySearchViewModel(
         when (val state = stateSubject.value!!) {
             is State.AppliedSearch -> {
                 selectedMediaTypes.value = state.search.config.mediaTypes
-                userQuery.value = state.search.config.userQuery ?: ""
+                userQuery.value = state.search.config.userQuery
+                includePrivateContent.value = state.search.config.includePrivate
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -136,8 +148,9 @@ class GallerySearchViewModel(
             }
 
             State.NoSearch -> {
-                selectedMediaTypes.value = emptySet()
-                userQuery.value = ""
+                selectedMediaTypes.value = searchDefaults.mediaTypes
+                userQuery.value = searchDefaults.userQuery
+                includePrivateContent.value = searchDefaults.includePrivate
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -191,8 +204,9 @@ class GallerySearchViewModel(
 
         val config = SearchConfig(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
-            userQuery = userQuery.value?.trim(),
+            userQuery = userQuery.value!!.trim(),
             before = null,
+            includePrivate = includePrivateContent.value == true,
         )
         val bookmark = bookmarksRepository.findByConfig(config)
         val appliedSearch =
@@ -280,7 +294,8 @@ class GallerySearchViewModel(
             // A bookmark may have more media types than allowed now
             // (due to the intent filter).
             .intersect(availableMediaTypes.value!!)
-        userQuery.value = bookmark.searchConfig.userQuery ?: ""
+        userQuery.value = bookmark.searchConfig.userQuery
+        includePrivateContent.value = bookmark.searchConfig.includePrivate
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +

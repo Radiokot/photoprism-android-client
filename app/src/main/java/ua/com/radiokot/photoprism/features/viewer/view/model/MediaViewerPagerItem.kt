@@ -158,7 +158,7 @@ sealed class MediaViewerPagerItem(
     companion object {
         fun fromGalleryMedia(source: GalleryMedia): MediaViewerPagerItem {
             return when (source.media) {
-                is GalleryMedia.TypeData.Image ->
+                is GalleryMedia.TypeData.ViewableAsImage ->
                     ImageViewer(
                         previewUrl = source.media.hdPreviewUrl,
                         thumbnailUrl = source.smallThumbnailUrl,

@@ -21,5 +21,7 @@ data class SearchBookmarksDbEntity(
     @ColumnInfo("user_query")
     val userQuery: String?,
     @ColumnInfo("media_types")
-    val mediaTypes: List<String>
+    val mediaTypes: List<String>,
+    @ColumnInfo("include_private")
+    val includePrivate: Boolean,
 )

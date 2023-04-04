@@ -17,11 +17,11 @@ you can select PhotoPrism Gallery among other galleries when picking a photo or 
 you can use your favorite image editor or video player instead of web viewer
 
 ## Other features
-- [x] Chronological grouping – the content is grouped by days
-- [x] Search by media types and custom queries
-- [x] Search bookmarks – the search configuration can be bookmarked and applied later with a click
-- [x] Endless session – no need to re-enter password
-- [ ] Chronological fast scroll
+- Chronological grouping – the content is grouped by days
+- Chronological fast scroll – slide the scroll bar to quickly jump to a specific month
+- Search by media types and custom queries
+- Search bookmarks – the search configuration can be bookmarked and applied later with a click
+- Endless session – no need to re-enter password
 
 ## Content sync
 The gallery is not intended to sync content with the library. 

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -235,6 +236,9 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     GalleryViewModel.State.Viewing ->
                         getString(R.string.library)
                 }
+
+                view.selectContentTextView.isVisible =
+                    state is GalleryViewModel.State.Selecting
 
                 log.debug {
                     "subscribeToState(): handled_new_state:" +
