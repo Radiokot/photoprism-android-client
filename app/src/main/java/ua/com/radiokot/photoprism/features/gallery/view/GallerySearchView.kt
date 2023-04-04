@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.SupportMenuInflater
@@ -433,39 +434,41 @@ class GallerySearchView(
             return spannableString
         }
 
-        val iconPlaceholder = "* "
+        val iconSize = (textView.lineHeight * 0.7).roundToInt()
+        val textColors = textView.textColors
+
+        fun SpannableStringBuilder.appendIcon(@DrawableRes id: Int, end: String = " ") {
+            val drawable = ContextCompat.getDrawable(
+                textView.context,
+                id
+            )!!.apply {
+                setBounds(0, 0, iconSize, iconSize)
+                DrawableCompat.setTintList(this, textColors)
+            }
+            append("x")
+            setSpan(
+                ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
+                length - 1,
+                length,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+            append(end)
+        }
+
         val spannableString = SpannableStringBuilder()
             .apply {
-                repeat(search.config.mediaTypes.size) {
-                    append(iconPlaceholder)
+                search.config.mediaTypes.forEach { mediaType ->
+                    appendIcon(
+                        id = GalleryMediaTypeResources.getIcon(mediaType)
+                    )
                 }
 
-                if (search.config.mediaTypes.isNotEmpty()) {
-                    append("  ")
+                if (search.config.includePrivate) {
+                    appendIcon(id = R.drawable.ic_eye_off)
                 }
             }
             .append(search.config.userQuery)
             .toSpannable()
-
-        val iconSize = (textView.lineHeight * 0.7).roundToInt()
-        val textColors = textView.textColors
-
-        search.config.mediaTypes.forEachIndexed { i, mediaType ->
-            val drawable = ContextCompat.getDrawable(
-                textView.context,
-                GalleryMediaTypeResources.getIcon(mediaType)
-            )!!.apply {
-                setBounds(0, 0, iconSize, iconSize)
-            }
-            DrawableCompat.setTintList(drawable, textColors)
-
-            spannableString.setSpan(
-                ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
-                i * iconPlaceholder.length,
-                (i * iconPlaceholder.length) + 1,
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-            )
-        }
 
         return spannableString
     }
