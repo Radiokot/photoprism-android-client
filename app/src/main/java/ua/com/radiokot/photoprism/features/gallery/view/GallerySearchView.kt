@@ -32,6 +32,7 @@ import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchContentBinding
+import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -142,6 +143,8 @@ class GallerySearchView(
 
             bindTextTwoWay(viewModel.userQuery)
         }
+
+        configurationView.privateContentSwitch.bindCheckedTwoWay(viewModel.includePrivateContent)
 
         configurationView.searchButton.setOnClickListener {
             viewModel.onSearchClicked()
