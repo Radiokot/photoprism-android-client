@@ -167,7 +167,9 @@ class GalleryFastScrollView(
                 if (bubbles.size > 1)
                 // For the fast scroller to appear, the range
                 // must be greater than the view height.
-                    fastScrollRecyclerView.height * 2
+                    (fastScrollRecyclerView.height * 3)
+                        // To avoid doubles, the range must exceed the number of bubbles.
+                        .coerceAtLeast(bubbles.size * 2)
                 else
                     0
             }
@@ -176,17 +178,27 @@ class GalleryFastScrollView(
     }
 
     private fun getCurrentBubble(): GalleryMonthScrollBubble? {
-        val scrollRange = scrollRange
+        val offsetRange = scrollRange - fastScrollRecyclerView.height
         val scrollOffset = scrollOffset
         val bubbles = bubbles
 
-        if (scrollRange == 0 || bubbles.isEmpty()) {
+        if (bubbles.isEmpty() || offsetRange <= 0) {
             return null
         }
 
-        val trueScrollPosition = scrollOffset * 2
-        val bubbleHeight = scrollRange / bubbles.size
-        val bubbleIndex = (trueScrollPosition / bubbleHeight)
+        val bubbleHeight = offsetRange / bubbles.size
+
+        if (bubbleHeight == 0) {
+            // Shouldn't ever get here, but who knows...
+            log.warn {
+                "getCurrentBubble(): not_enough_range:" +
+                        "\noffsetRange=$offsetRange," +
+                        "\nbubblesCount=${bubbles.size}"
+            }
+            return null
+        }
+
+        val bubbleIndex = (scrollOffset / bubbleHeight)
             .coerceAtMost(bubbles.size - 1)
         return bubbles.getOrNull(bubbleIndex)
     }
