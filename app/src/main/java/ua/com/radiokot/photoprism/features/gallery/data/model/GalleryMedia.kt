@@ -96,6 +96,11 @@ class GalleryMedia(
             val hdPreviewUrl: String
         }
 
+        interface ViewableAsVideo {
+            val avcPreviewUrl: String
+            val isLooped: Boolean
+        }
+
         object Unknown : TypeData(TypeName.UNKNOWN)
 
         class Image(
@@ -106,14 +111,20 @@ class GalleryMedia(
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.RAW), ViewableAsImage
 
-        object Animated : TypeData(TypeName.ANIMATED)
+        class Animated(
+            override val avcPreviewUrl: String,
+            override val isLooped: Boolean = true,
+        ) : TypeData(TypeName.ANIMATED), ViewableAsVideo
+
         class Live(
-            val avcPreviewUrl: String,
-        ) : TypeData(TypeName.LIVE)
+            override val avcPreviewUrl: String,
+            override val isLooped: Boolean = true,
+        ) : TypeData(TypeName.LIVE), ViewableAsVideo
 
         class Video(
-            val avcPreviewUrl: String,
-        ) : TypeData(TypeName.VIDEO)
+            override val avcPreviewUrl: String,
+            override val isLooped: Boolean = false,
+        ) : TypeData(TypeName.VIDEO), ViewableAsVideo
 
         class Vector(
             override val hdPreviewUrl: String,
@@ -136,7 +147,9 @@ class GalleryMedia(
                     TypeName.RAW.value -> Raw(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
-                    TypeName.ANIMATED.value -> Animated
+                    TypeName.ANIMATED.value -> Animated(
+                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                    )
                     TypeName.LIVE.value -> Live(
                         avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
                     )
@@ -156,7 +169,6 @@ class GalleryMedia(
 
     @Parcelize
     class File(
-        val hash: String,
         val name: String,
         val mimeType: String,
         val sizeBytes: Long,
@@ -168,7 +180,6 @@ class GalleryMedia(
             thumbnailUrlFactory: MediaPreviewUrlFactory,
             downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
-            hash = source.hash,
             name = source.name,
             mimeType = source.mime,
             sizeBytes = source.size,

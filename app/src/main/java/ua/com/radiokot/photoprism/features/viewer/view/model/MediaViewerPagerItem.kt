@@ -67,6 +67,7 @@ sealed class MediaViewerPagerItem(
 
     class VideoViewer(
         val previewUrl: String,
+        val isLooped: Boolean,
         thumbnailUrl: String,
     ) : MediaViewerPagerItem(thumbnailUrl) {
         override val type: Int
@@ -83,6 +84,9 @@ sealed class MediaViewerPagerItem(
 
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
                 view.videoView.setVideoURI(Uri.parse(item.previewUrl))
+                view.videoView.setOnPreparedListener { mediaPlayer ->
+                    mediaPlayer.isLooping = item.isLooped
+                }
                 view.downloadButton.setOnClickListener {
                     if (view.videoView.isPlaying && view.videoView.canPause()) {
                         view.videoView.pause()
@@ -163,14 +167,10 @@ sealed class MediaViewerPagerItem(
                         previewUrl = source.media.hdPreviewUrl,
                         thumbnailUrl = source.smallThumbnailUrl,
                     )
-                is GalleryMedia.TypeData.Video ->
+                is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewer(
                         previewUrl = source.media.avcPreviewUrl,
-                        thumbnailUrl = source.smallThumbnailUrl,
-                    )
-                is GalleryMedia.TypeData.Live ->
-                    VideoViewer(
-                        previewUrl = source.media.avcPreviewUrl,
+                        isLooped = source.media.isLooped,
                         thumbnailUrl = source.smallThumbnailUrl,
                     )
                 else ->
