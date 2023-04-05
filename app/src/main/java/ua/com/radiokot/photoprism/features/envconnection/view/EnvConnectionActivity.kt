@@ -1,9 +1,13 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.security.KeyChain
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -106,6 +110,12 @@ class EnvConnectionActivity : BaseActivity() {
                 }
             }
         }
+
+        view.certificateTextInput.editText!!.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                chooseClientCertificateAlias()
+            }
+        }
     }
 
     private fun initButtons() {
@@ -116,23 +126,6 @@ class EnvConnectionActivity : BaseActivity() {
             setOnClickListener {
                 viewModel.onConnectButtonClicked()
             }
-        }
-
-        viewModel.isPublic.observe(this@EnvConnectionActivity) { isPublic ->
-            view.authButtonGroup.check(
-                if (isPublic)
-                    R.id.public_button
-                else
-                    R.id.private_button
-            )
-        }
-
-        view.publicButton.setOnClickListener {
-            viewModel.isPublic.value = true
-        }
-
-        view.privateButton.setOnClickListener {
-            viewModel.isPublic.value = false
         }
     }
 
@@ -189,6 +182,30 @@ class EnvConnectionActivity : BaseActivity() {
                         "\nevent=$event"
             }
         }.disposeOnDestroy(this)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun chooseClientCertificateAlias() {
+        log.debug {
+            "chooseClientCertificateAlias(): opening_chooser"
+        }
+
+        KeyChain.choosePrivateKeyAlias(this, { alias ->
+            if (alias != null) {
+                log.debug {
+                    "chooseClientCertificateAlias(): alias_chosen:" +
+                            "\nalias=$alias"
+                }
+                view.certificateTextInput.post {
+                    view.certificateTextInput.editText?.setText(alias)
+                }
+            } else {
+                log.debug {
+                    "chooseClientCertificateAlias(): no_alias_chosen"
+                }
+            }
+
+        }, null, null, null, null)
     }
 
     private fun goToGallery() {
