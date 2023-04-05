@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -145,6 +146,8 @@ class EnvConnectionViewModel(
                     when (error) {
                         is InvalidCredentialsException ->
                             passwordError.value = PasswordError.Invalid
+                        is EnvIsNotPublicException ->
+                            rootUrlError.value = RootUrlError.IsNotPublic
                         else ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
                     }
@@ -156,6 +159,7 @@ class EnvConnectionViewModel(
     sealed interface RootUrlError {
         class Inaccessible(val shortSummary: String) : RootUrlError
         object InvalidFormat : RootUrlError
+        object IsNotPublic : RootUrlError
     }
 
     sealed interface PasswordError {

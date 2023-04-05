@@ -66,6 +66,10 @@ class EnvConnectionActivity : BaseActivity() {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_library_url_format)
                     }
+                    EnvConnectionViewModel.RootUrlError.IsNotPublic -> {
+                        isErrorEnabled = true
+                        error = getString(R.string.error_library_is_not_public)
+                    }
                     null -> {
                         isErrorEnabled = false
                         error = null
@@ -169,7 +173,7 @@ class EnvConnectionActivity : BaseActivity() {
     }
 
     private fun subscribeToEvents() {
-        viewModel.events.subscribe() { event ->
+        viewModel.events.subscribe { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
                         "\nevent=$event"

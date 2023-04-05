@@ -5,6 +5,7 @@ import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
@@ -22,6 +23,7 @@ typealias PhotoPrismConfigServiceFactory =
  * and the [EnvConnection.auth] to the [envAuthPersistence], if present.
  *
  * @see InvalidCredentialsException
+ * @see EnvIsNotPublicException
  */
 class ConnectToEnvUseCase(
     private val connection: EnvConnection,
@@ -54,6 +56,10 @@ class ConnectToEnvUseCase(
                     "perform(): got_config:" +
                             "\nconfig=$it"
                 }
+            }
+            .flatMap { checkConfig() }
+            .doOnSuccess {
+                log.debug { "perform(): config_checked" }
             }
             .map {
                 EnvSession(
@@ -109,13 +115,21 @@ class ConnectToEnvUseCase(
             .let(::Config)
     }.toSingle()
 
+    private fun checkConfig(): Single<Boolean> =
+        if (connection.auth is EnvAuth.Public && !config.isPublic)
+            Single.error(EnvIsNotPublicException())
+        else
+            Single.just(true)
+
     private data class Config(
         val previewToken: String,
         val downloadToken: String,
+        val isPublic: Boolean,
     ) {
         constructor(source: PhotoPrismClientConfig) : this(
             previewToken = source.previewToken,
             downloadToken = source.downloadToken,
+            isPublic = source.public
         )
     }
 }
