@@ -25,6 +25,7 @@ typealias ConnectUseCaseProvider = (
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,
     private val clientCertificatesGuideUrl: String,
+    private val rootUrlGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
@@ -129,6 +130,14 @@ class EnvConnectionViewModel(
         eventsSubject.onNext(
             Event.OpenUrl(
                 url = clientCertificatesGuideUrl,
+            )
+        )
+    }
+
+    fun onRootUrlGuideButtonClicked() {
+        eventsSubject.onNext(
+            Event.OpenUrl(
+                url = rootUrlGuideUrl,
             )
         )
     }

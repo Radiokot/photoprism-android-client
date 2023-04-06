@@ -5,10 +5,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyChain
-import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -70,6 +68,10 @@ class EnvConnectionActivity : BaseActivity() {
                         error = null
                     }
                 }
+            }
+
+            setEndIconOnClickListener {
+                viewModel.onRootUrlGuideButtonClicked()
             }
         }
 
