@@ -223,6 +223,7 @@ class EnvConnectionActivity : BaseActivity() {
             .setTitle(R.string.how_to_use_client_certificate)
             .setMessage(R.string.p12_certificate_guide)
             .setPositiveButton(R.string.ok) { _, _ -> }
+            .setNeutralButton(R.string.learn_more) { _, _ -> }
             .show()
     }
 

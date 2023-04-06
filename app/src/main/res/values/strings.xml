@@ -83,4 +83,5 @@
         2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;\n\n
         3. Return to the gallery and select the installed certificate.</string>
     <string name="ok">OK</string>
+    <string name="learn_more">Learn more</string>
 </resources>
