@@ -20,10 +20,15 @@ class EnvAuthPersistenceOnPrefs(
 
     private val v1Persistence =
         ObjectPersistenceOnPrefs.forType<StoredEnvAuth>(key, preferences, jsonObjectMapper)
-
-    private val v2Persistence: ObjectPersistenceOnPrefs<StoredEnvAuth2> by lazy {
-        migrate()
+    private val v2Persistence =
         ObjectPersistenceOnPrefs.forType<StoredEnvAuth2>("${key}_v2", preferences, jsonObjectMapper)
+
+    private val storedEnvAuthPersistence: ObjectPersistence<StoredEnvAuth2> by lazy {
+        object : ObjectPersistence<StoredEnvAuth2> by v2Persistence {
+            init {
+                migrate()
+            }
+        }
     }
 
     private fun migrate() {
@@ -41,17 +46,17 @@ class EnvAuthPersistenceOnPrefs(
     }
 
     override fun loadItem(): EnvAuth? = tryOrNull {
-        v2Persistence.loadItem()?.toSource()
+        storedEnvAuthPersistence.loadItem()?.toSource()
     }
 
     override fun saveItem(item: EnvAuth) =
-        v2Persistence.saveItem(StoredEnvAuth2(item))
+        storedEnvAuthPersistence.saveItem(StoredEnvAuth2(item))
 
     override fun hasItem(): Boolean =
-        v2Persistence.hasItem()
+        storedEnvAuthPersistence.hasItem()
 
     override fun clear() =
-        v2Persistence.clear()
+        storedEnvAuthPersistence.clear()
 
     private class StoredEnvAuth
     @JsonCreator
