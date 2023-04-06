@@ -11,9 +11,13 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 
@@ -34,8 +38,14 @@ sealed class MediaViewerPageItem(
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
-        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Image>(itemView) {
+        class ViewHolder(
+            itemView: View,
+        ) : FastAdapter.ViewHolder<Image>(itemView), KoinScopeComponent {
+            override val scope: Scope
+                get() = getKoin().getScope(DI_SCOPE_SESSION)
+
             val view = PagerItemMediaViewerImageBinding.bind(itemView)
+            private val picasso: Picasso by inject()
 
             private val imageLoadingCallback = object : Callback {
                 override fun onSuccess() {
@@ -52,13 +62,13 @@ sealed class MediaViewerPageItem(
                 view.progressIndicator.show()
                 view.errorTextView.visibility = View.GONE
 
-                Picasso.get()
+                picasso
                     .load(item.previewUrl)
                     .into(view.photoView, imageLoadingCallback)
             }
 
             override fun unbindView(item: Image) {
-                Picasso.get().cancelRequest(view.photoView)
+                picasso.cancelRequest(view.photoView)
             }
         }
     }
@@ -79,8 +89,14 @@ sealed class MediaViewerPageItem(
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
-        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Unsupported>(itemView) {
+        class ViewHolder(
+            itemView: View,
+        ) : FastAdapter.ViewHolder<Unsupported>(itemView), KoinScopeComponent {
+            override val scope: Scope
+                get() = getKoin().getScope(DI_SCOPE_SESSION)
+
             private val view = PagerItemMediaViewerUnsupportedBinding.bind(itemView)
+            private val picasso: Picasso by inject()
 
             private val imageLoadingCallback = object : Callback {
                 override fun onSuccess() {
@@ -107,7 +123,7 @@ sealed class MediaViewerPageItem(
                     )
                 }
 
-                Picasso.get()
+                picasso
                     .load(item.thumbnailUrl)
                     .placeholder(ColorDrawable(Color.LTGRAY))
                     .fit()
@@ -115,7 +131,7 @@ sealed class MediaViewerPageItem(
             }
 
             override fun unbindView(item: Unsupported) {
-                Picasso.get().cancelRequest(view.thumbnailImageView)
+                picasso.cancelRequest(view.thumbnailImageView)
             }
         }
     }

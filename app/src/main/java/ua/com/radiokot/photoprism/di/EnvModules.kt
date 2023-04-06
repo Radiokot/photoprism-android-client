@@ -1,5 +1,9 @@
 package ua.com.radiokot.photoprism.di
 
+import com.squareup.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.PicassoUtilsProxy
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,6 +24,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
     val clientCertificateAlias: String?,
+    val withLogging: Boolean = true,
 ) : SelfParameterHolder() {
     class SessionAwareness(
         val sessionIdProvider: () -> String,
@@ -85,8 +90,11 @@ val envModules = listOf(
                 builder.sslSocketFactory(sslContext.socketFactory, platformTrustManager)
             }
 
+            if (envParams.withLogging) {
+                builder.addInterceptor(get<HttpLoggingInterceptor>())
+            }
+
             builder
-                .addInterceptor(get<HttpLoggingInterceptor>())
                 .build()
         } bind HttpClient::class
 
@@ -137,7 +145,28 @@ val envModules = listOf(
                         clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                     )
                 }
-            }.bind(HttpClient::class)
+            } bind HttpClient::class
+
+            scoped {
+                val session = get<EnvSession>()
+
+                val cacheDir = PicassoUtilsProxy.createDefaultCacheDir(get())
+                val cacheSize = PicassoUtilsProxy.calculateDiskCacheSize(cacheDir)
+                val httpClient = get<HttpClient>(_q<EnvHttpClientParams>()) {
+                    EnvHttpClientParams(
+                        sessionAwareness = null,
+                        clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
+                        withLogging = false,
+                    )
+                }
+                    .newBuilder()
+                    .cache(Cache(cacheDir, cacheSize))
+                    .build()
+
+                Picasso.Builder(get())
+                    .downloader(OkHttp3Downloader(httpClient))
+                    .build()
+            } bind Picasso::class
         }
     }
 )

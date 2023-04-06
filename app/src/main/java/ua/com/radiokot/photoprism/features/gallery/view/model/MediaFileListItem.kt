@@ -10,8 +10,12 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
 import kotlinx.parcelize.Parcelize
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemMediaFileBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 @Parcelize
@@ -47,8 +51,14 @@ class MediaFileListItem(
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)
 
-    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<MediaFileListItem>(itemView) {
+    class ViewHolder(
+        itemView: View,
+    ) : FastAdapter.ViewHolder<MediaFileListItem>(itemView), KoinScopeComponent {
+        override val scope: Scope
+            get() = getKoin().getScope(DI_SCOPE_SESSION)
+
         private val view = ListItemMediaFileBinding.bind(itemView)
+        private val picasso: Picasso by inject()
 
         override fun bindView(item: MediaFileListItem, payloads: List<Any>) {
             view.nameTextView.text = item.name
@@ -57,7 +67,7 @@ class MediaFileListItem(
             view.sizeTextView.text = item.size
             view.typeTextView.text = item.mimeType
 
-            Picasso.get()
+            picasso
                 .load(item.thumbnailUrl)
                 .placeholder(ColorDrawable(Color.LTGRAY))
                 .fit()
@@ -66,7 +76,7 @@ class MediaFileListItem(
         }
 
         override fun unbindView(item: MediaFileListItem) {
-            Picasso.get().cancelRequest(view.thumbnailImageView)
+            picasso.cancelRequest(view.thumbnailImageView)
         }
     }
 }
