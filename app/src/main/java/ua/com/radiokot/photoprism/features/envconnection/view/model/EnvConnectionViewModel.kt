@@ -133,14 +133,18 @@ class EnvConnectionViewModel(
         val connection: EnvConnection = try {
             EnvConnection(
                 apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.trim()),
-                auth =
-                if (username != null && password != null)
-                    EnvAuth.Credentials(
-                        username = username,
-                        password = password
-                    )
-                else
-                    EnvAuth.Public
+                auth = EnvAuth(
+                    credentials =
+                    if (username != null && password != null)
+                        EnvAuth.Credentials(
+                            username = username,
+                            password = password
+                        )
+                    else
+                        null,
+                    clientCertificateAlias = clientCertificateAlias.value,
+                )
+
             )
         } catch (e: Exception) {
             log.warn(e) { "connect(): connection_creation_failed" }

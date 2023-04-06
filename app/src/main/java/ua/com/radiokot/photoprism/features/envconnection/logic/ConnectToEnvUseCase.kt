@@ -4,10 +4,7 @@ import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.env.data.model.EnvAuth
-import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
-import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.*
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -116,7 +113,7 @@ class ConnectToEnvUseCase(
     }.toSingle()
 
     private fun checkConfig(): Single<Boolean> =
-        if (connection.auth is EnvAuth.Public && !config.isPublic)
+        if (connection.auth.credentials == null && !config.isPublic)
             Single.error(EnvIsNotPublicException())
         else
             Single.just(true)
