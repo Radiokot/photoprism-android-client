@@ -24,6 +24,7 @@ typealias ConnectUseCaseProvider = (
 
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,
+    private val clientCertificatesGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
@@ -124,6 +125,14 @@ class EnvConnectionViewModel(
         clientCertificateAlias.value = null
     }
 
+    fun onCertificateLearnMoreButtonClicked() {
+        eventsSubject.onNext(
+            Event.OpenUrl(
+                url = clientCertificatesGuideUrl,
+            )
+        )
+    }
+
     private fun connect() {
         state.value = State.Connecting
 
@@ -218,5 +227,6 @@ class EnvConnectionViewModel(
         object GoToGallery : Event
         object ChooseClientCertificateAlias : Event
         object ShowMissingClientCertificatesNotice : Event
+        class OpenUrl(val url: String) : Event
     }
 }
