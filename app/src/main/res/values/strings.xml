@@ -40,7 +40,7 @@
     <string name="auth_private">Private</string>
     <string name="template_error_inaccessible_library_url">Library is not accessible: %1$s</string>
     <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
-    <string name="error_library_is_not_public">Library is not public</string>
+    <string name="error_library_requires_credentials">Library requires credentials</string>
     <string name="error_invalid_password">Invalid password</string>
     <string name="template_error_failed_to_load_content">Failed to load the content: %1$s</string>
     <string name="error_library_not_accessible_try_again">Library is not accessible. Check the connection and try again</string>
@@ -76,4 +76,11 @@
     <string name="some_types_are_not_available_when_selecting">Some types are not available when selecting content</string>
     <string name="include_private_content">Include private content</string>
     <string name="client_certificate_optional">Client certificate (optional)</string>
+    <string name="clear">Clear</string>
+    <string name="how_to_use_client_certificate">How to use client certificates</string>
+    <string name="p12_certificate_guide">
+        1. Download your PKCS12 (.p12) bundle to the device;\n\n
+        2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;\n\n
+        3. Return to the gallery and select the installed certificate.</string>
+    <string name="ok">OK</string>
 </resources>

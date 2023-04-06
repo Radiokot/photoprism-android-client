@@ -30,7 +30,7 @@
 
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
         </item>
-        </style>
+    </style>
 
     <style name="AppTheme" parent="BaseLightAppTheme" />
 

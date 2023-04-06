@@ -7,6 +7,7 @@
     tools:context=".features.envconnection.view.EnvConnectionActivity">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -101,6 +102,10 @@
                 android:layout_marginTop="24dp"
                 android:hint="@string/client_certificate_optional"
                 android:importantForAutofill="no"
+                app:endIconContentDescription="@string/clear"
+                app:endIconDrawable="@drawable/ic_close"
+                app:endIconMode="custom"
+                app:endIconTint="@color/text_input_layout_end_icon_tint"
                 app:startIconDrawable="@drawable/ic_certificate">
 
                 <com.google.android.material.textfield.TextInputEditText

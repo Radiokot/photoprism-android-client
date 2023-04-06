@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.security.KeyChain
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -39,21 +39,6 @@ class EnvConnectionActivity : BaseActivity() {
     }
 
     private fun initFields() {
-        viewModel.areCredentialsVisible.observe(this) { areCredentialsVisible ->
-            val visibility =
-                if (areCredentialsVisible)
-                    View.VISIBLE
-                else
-                    View.GONE
-
-            view.passwordTextInput.visibility = visibility
-            view.usernameTextInput.visibility = visibility
-
-            if (areCredentialsVisible == false && !view.rootUrlTextInput.isFocused) {
-                view.rootUrlTextInput.requestFocus()
-            }
-        }
-
         with(view.rootUrlTextInput) {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
@@ -70,9 +55,9 @@ class EnvConnectionActivity : BaseActivity() {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_library_url_format)
                     }
-                    EnvConnectionViewModel.RootUrlError.IsNotPublic -> {
+                    EnvConnectionViewModel.RootUrlError.RequiresCredentials -> {
                         isErrorEnabled = true
-                        error = getString(R.string.error_library_is_not_public)
+                        error = getString(R.string.error_library_requires_credentials)
                     }
                     null -> {
                         isErrorEnabled = false
@@ -111,9 +96,21 @@ class EnvConnectionActivity : BaseActivity() {
             }
         }
 
-        view.certificateTextInput.editText!!.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                chooseClientCertificateAlias()
+        with(view.certificateTextInput) {
+            isVisible = viewModel.isClientCertificateSelectionAvailable
+
+            editText!!.setOnClickListener {
+                viewModel.onCertificateFieldClicked()
+            }
+
+            viewModel.clientCertificateAlias.observe(this@EnvConnectionActivity) { alias ->
+                editText?.setText(alias ?: "")
+                isEndIconVisible = alias != null
+            }
+
+            isEndIconVisible = false
+            setEndIconOnClickListener {
+                viewModel.onCertificateClearButtonClicked()
             }
         }
     }
@@ -175,6 +172,10 @@ class EnvConnectionActivity : BaseActivity() {
             when (event) {
                 EnvConnectionViewModel.Event.GoToGallery ->
                     goToGallery()
+                EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
+                    chooseClientCertificateAlias()
+                EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
+                    showMissingClientCertificatesNotice()
             }
 
             log.debug {
@@ -184,28 +185,42 @@ class EnvConnectionActivity : BaseActivity() {
         }.disposeOnDestroy(this)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun chooseClientCertificateAlias() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+
         log.debug {
             "chooseClientCertificateAlias(): opening_chooser"
         }
 
+        val now = System.currentTimeMillis()
         KeyChain.choosePrivateKeyAlias(this, { alias ->
             if (alias != null) {
-                log.debug {
-                    "chooseClientCertificateAlias(): alias_chosen:" +
-                            "\nalias=$alias"
-                }
-                view.certificateTextInput.post {
-                    view.certificateTextInput.editText?.setText(alias)
-                }
+                viewModel.onCertificateAliasChosen(alias)
             } else {
-                log.debug {
-                    "chooseClientCertificateAlias(): no_alias_chosen"
+                val elapsed = System.currentTimeMillis() - now
+
+                // 🤡 An elegant way to determine whether the request is cancelled,
+                // or there are not certificates.
+                // Thanks, Android, for a meaningful result callback.
+                if (elapsed < 1000) {
+                    viewModel.onNoCertificatesAvailable()
+                } else {
+                    log.debug {
+                        "chooseClientCertificateAlias(): no_alias_chosen"
+                    }
                 }
             }
-
         }, null, null, null, null)
+    }
+
+    private fun showMissingClientCertificatesNotice() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.how_to_use_client_certificate)
+            .setMessage(R.string.p12_certificate_guide)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .show()
     }
 
     private fun goToGallery() {
