@@ -15,18 +15,18 @@ class PhotoPrismSessionCreator(
         auth: EnvAuth
     ): String {
         return try {
-            when {
-                auth.credentials != null ->
+            when (auth) {
+                is EnvAuth.Credentials ->
                     sessionService
                         .createSession(
                             PhotoPrismSessionCredentials(
-                                username = auth.credentials.username,
-                                password = auth.credentials.password,
+                                username = auth.username,
+                                password = auth.password,
                             )
                         )
                         .id
 
-                else ->
+                EnvAuth.Public ->
                     ""
             }
         } catch (e: HttpException) {

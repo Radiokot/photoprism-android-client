@@ -8,7 +8,6 @@ import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
-import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 
 class EnvAuthPersistenceOnPrefs(
@@ -16,49 +15,23 @@ class EnvAuthPersistenceOnPrefs(
     preferences: SharedPreferences,
     private val jsonObjectMapper: JsonObjectMapper,
 ) : ObjectPersistence<EnvAuth> {
-    private val log = kLogger("EnvAuthPersistenceSP")
-
-    private val v1Persistence =
+    private val underlyingPersistence =
         ObjectPersistenceOnPrefs.forType<StoredEnvAuth>(key, preferences, jsonObjectMapper)
-    private val v2Persistence =
-        ObjectPersistenceOnPrefs.forType<StoredEnvAuth2>("${key}_v2", preferences, jsonObjectMapper)
-
-    private val storedEnvAuthPersistence: ObjectPersistence<StoredEnvAuth2> by lazy {
-        object : ObjectPersistence<StoredEnvAuth2> by v2Persistence {
-            init {
-                migrate()
-            }
-        }
-    }
-
-    private fun migrate() {
-        try {
-            v1Persistence.loadItem()
-                ?.also { storedV1 ->
-                    v2Persistence.saveItem(storedV1.toV2(jsonObjectMapper))
-                    v1Persistence.clear()
-
-                    log.debug { "migrate(): migrated_from_1_to_2" }
-                }
-        } catch (e: Exception) {
-            log.error(e) { "migrate(): migration_failed" }
-        }
-    }
 
     override fun loadItem(): EnvAuth? = tryOrNull {
-        storedEnvAuthPersistence.loadItem()?.toSource()
+        underlyingPersistence.loadItem()?.toSource(jsonObjectMapper)
     }
 
     override fun saveItem(item: EnvAuth) =
-        storedEnvAuthPersistence.saveItem(StoredEnvAuth2(item))
+        underlyingPersistence.saveItem(StoredEnvAuth(item, jsonObjectMapper))
 
     override fun hasItem(): Boolean =
-        storedEnvAuthPersistence.hasItem()
+        underlyingPersistence.hasItem()
 
     override fun clear() =
-        storedEnvAuthPersistence.clear()
+        underlyingPersistence.clear()
 
-    private class StoredEnvAuth
+    class StoredEnvAuth
     @JsonCreator
     constructor(
         @JsonProperty("t")
@@ -82,71 +55,43 @@ class EnvAuthPersistenceOnPrefs(
 
                 @JsonProperty("p")
                 val password: String,
-            ) : Data
+            ) : Data {
+                constructor(source: EnvAuth.Credentials) : this(
+                    username = source.username,
+                    password = source.password,
+                )
+
+                fun toSource() = EnvAuth.Credentials(
+                    username = username,
+                    password = password,
+                )
+            }
         }
 
-        fun toV2(jsonObjectMapper: JsonObjectMapper): StoredEnvAuth2 = when (typeName) {
+        constructor(
+            source: EnvAuth,
+            jsonObjectMapper: JsonObjectMapper,
+        ) : this(
+            typeName = when (source) {
+                is EnvAuth.Credentials ->
+                    TypeName.CREDENTIALS
+                EnvAuth.Public ->
+                    TypeName.PUBLIC
+            },
+            data = when (source) {
+                is EnvAuth.Credentials ->
+                    jsonObjectMapper.valueToTree(Data.Credentials(source))
+                EnvAuth.Public ->
+                    jsonObjectMapper.createObjectNode()
+            }
+        )
+
+        fun toSource(jsonObjectMapper: JsonObjectMapper): EnvAuth = when (typeName) {
             TypeName.CREDENTIALS ->
                 jsonObjectMapper.treeToValue(data, Data.Credentials::class.java)
-                    .let { v1Credentials ->
-                        StoredEnvAuth2(
-                            credentials = StoredEnvAuth2.Credentials(
-                                username = v1Credentials.username,
-                                password = v1Credentials.password,
-                            ),
-                            clientCertificateAlias = null,
-                        )
-                    }
+                    .toSource()
             TypeName.PUBLIC ->
-                StoredEnvAuth2(
-                    credentials = null,
-                    clientCertificateAlias = null,
-                )
-        }
-    }
-
-    private class StoredEnvAuth2
-    @JsonCreator
-    constructor(
-        @JsonProperty("c")
-        val credentials: Credentials?,
-        @JsonProperty("crt")
-        val clientCertificateAlias: String?,
-        @JsonProperty("V")
-        val version: Int = 2,
-    ) {
-        init {
-            require(version == 2)
-        }
-
-        constructor(source: EnvAuth) : this(
-            credentials = source.credentials?.let(::Credentials),
-            clientCertificateAlias = source.clientCertificateAlias
-        )
-
-        fun toSource() = EnvAuth(
-            credentials = credentials?.toSource(),
-            clientCertificateAlias = clientCertificateAlias,
-        )
-
-        class Credentials
-        @JsonCreator
-        constructor(
-            @JsonProperty("u")
-            val username: String,
-
-            @JsonProperty("p")
-            val password: String,
-        ) {
-            constructor(source: EnvAuth.Credentials) : this(
-                username = source.username,
-                password = source.password,
-            )
-
-            fun toSource() = EnvAuth.Credentials(
-                username = username,
-                password = password,
-            )
+                EnvAuth.Public
         }
     }
 }

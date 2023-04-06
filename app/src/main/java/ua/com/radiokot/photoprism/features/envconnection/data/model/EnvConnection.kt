@@ -5,7 +5,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 
 data class EnvConnection(
     val apiUrl: String,
-    val auth: EnvAuth,
+    val auth: EnvAuth
 ) {
     companion object {
         fun rootUrlToApiUrl(rootUrl: String): String =

@@ -72,7 +72,7 @@ val envConnectionFeatureModules: List<Module> = listOf(
                 sessionCreator = get(_q<EnvSessionCreatorParams>()) {
                     EnvSessionCreatorParams(
                         apiUrl = connection.apiUrl,
-                        clientCertificateAlias = connection.auth.clientCertificateAlias
+                        clientCertificateAlias = null,
                     )
                 },
                 configServiceFactory = { apiUrl, sessionId, clientCertificateAlias ->
