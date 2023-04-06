@@ -4,29 +4,26 @@ import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.env.data.model.EnvAuth
-import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
-import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.*
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
 
 typealias PhotoPrismConfigServiceFactory =
-            (apiUrl: String, sessionId: String) -> PhotoPrismClientConfigService
+            (envConnectionParams: EnvConnectionParams, sessionId: String) -> PhotoPrismClientConfigService
 
 /**
- * Creates [EnvConnection] for the given [connection].
+ * Creates [EnvSession] for the given [EnvConnectionParams] and [EnvAuth].
  * On success, sets the session to the [envSessionHolder] and [envSessionPersistence]
- * and the [EnvConnection.auth] to the [envAuthPersistence], if present.
+ * and the [auth] to the [envAuthPersistence], if present.
  *
  * @see InvalidCredentialsException
  * @see EnvIsNotPublicException
  */
 class ConnectToEnvUseCase(
-    private val connection: EnvConnection,
+    private val connectionParams: EnvConnectionParams,
+    private val auth: EnvAuth,
     private val configServiceFactory: PhotoPrismConfigServiceFactory,
     private val sessionCreator: SessionCreator,
     private val envSessionHolder: EnvSessionHolder?,
@@ -63,8 +60,8 @@ class ConnectToEnvUseCase(
             }
             .map {
                 EnvSession(
-                    apiUrl = connection.apiUrl,
                     id = sessionId,
+                    envConnectionParams = connectionParams,
                     previewToken = config.previewToken,
                     downloadToken = config.downloadToken,
                 )
@@ -92,7 +89,7 @@ class ConnectToEnvUseCase(
                     }
                 }
                 envAuthPersistence?.apply {
-                    saveItem(connection.auth)
+                    saveItem(auth)
 
                     log.debug {
                         "perform(): auth_saved_to_persistence:" +
@@ -104,19 +101,19 @@ class ConnectToEnvUseCase(
 
     private fun getSessionId(): Single<String> = {
         sessionCreator.createSession(
-            auth = connection.auth,
+            auth = auth,
         )
     }
         .toSingle()
 
     private fun getConfig(): Single<Config> = {
-        configServiceFactory(connection.apiUrl, sessionId)
+        configServiceFactory(connectionParams, sessionId)
             .getClientConfig()
             .let(::Config)
     }.toSingle()
 
     private fun checkConfig(): Single<Boolean> =
-        if (connection.auth is EnvAuth.Public && !config.isPublic)
+        if (auth is EnvAuth.Public && !config.isPublic)
             Single.error(EnvIsNotPublicException())
         else
             Single.just(true)

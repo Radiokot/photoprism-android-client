@@ -7,6 +7,7 @@
     tools:context=".features.envconnection.view.EnvConnectionActivity">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -31,34 +32,6 @@
                 android:gravity="center_horizontal"
                 android:text="@string/connect_to_a_library"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
-
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/auth_button_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:checkedButton="@+id/private_button"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/private_button"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/auth_private" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/public_button"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/auth_public" />
-
-            </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/root_url_text_input"
@@ -87,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:autofillHints="username"
-                android:hint="@string/username"
+                android:hint="@string/username_optional"
                 app:startIconDrawable="@drawable/ic_account">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -107,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:autofillHints="password"
-                android:hint="@string/password"
+                android:hint="@string/password_optional"
                 app:passwordToggleEnabled="true"
                 app:startIconDrawable="@drawable/ic_lock">
 
@@ -117,6 +90,34 @@
                     android:autofillHints="password"
                     android:imeOptions="actionGo"
                     android:inputType="textPassword"
+                    android:maxLines="1"
+                    tools:ignore="SpeakableTextPresentCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/certificate_text_input"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:hint="@string/client_certificate_optional"
+                android:importantForAutofill="no"
+                app:endIconContentDescription="@string/clear"
+                app:endIconDrawable="@drawable/ic_close"
+                app:endIconMode="custom"
+                app:endIconTint="@color/text_input_layout_end_icon_tint"
+                app:startIconDrawable="@drawable/ic_certificate">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
                     android:maxLines="1"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>

@@ -1,9 +1,17 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.security.KeyChain
+import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.view.isVisible
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -13,6 +21,7 @@ import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
+import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.SoftInputUtil
 
 class EnvConnectionActivity : BaseActivity() {
@@ -29,27 +38,13 @@ class EnvConnectionActivity : BaseActivity() {
 
         initFields()
         initButtons()
+        initCustomTabs()
 
         subscribeToState()
         subscribeToEvents()
     }
 
     private fun initFields() {
-        viewModel.areCredentialsVisible.observe(this) { areCredentialsVisible ->
-            val visibility =
-                if (areCredentialsVisible)
-                    View.VISIBLE
-                else
-                    View.GONE
-
-            view.passwordTextInput.visibility = visibility
-            view.usernameTextInput.visibility = visibility
-
-            if (areCredentialsVisible == false && !view.rootUrlTextInput.isFocused) {
-                view.rootUrlTextInput.requestFocus()
-            }
-        }
-
         with(view.rootUrlTextInput) {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
@@ -66,9 +61,9 @@ class EnvConnectionActivity : BaseActivity() {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_library_url_format)
                     }
-                    EnvConnectionViewModel.RootUrlError.IsNotPublic -> {
+                    EnvConnectionViewModel.RootUrlError.RequiresCredentials -> {
                         isErrorEnabled = true
-                        error = getString(R.string.error_library_is_not_public)
+                        error = getString(R.string.error_library_requires_credentials)
                     }
                     null -> {
                         isErrorEnabled = false
@@ -106,6 +101,25 @@ class EnvConnectionActivity : BaseActivity() {
                 }
             }
         }
+
+        with(view.certificateTextInput) {
+            isVisible = viewModel.isClientCertificateSelectionAvailable
+
+            setOnClickListener {
+                viewModel.onCertificateFieldClicked()
+            }
+            editText!!.setOnClickListener { viewModel.onCertificateFieldClicked() }
+
+            viewModel.clientCertificateAlias.observe(this@EnvConnectionActivity) { alias ->
+                editText?.setText(alias ?: "")
+                isEndIconVisible = alias != null
+            }
+
+            isEndIconVisible = false
+            setEndIconOnClickListener {
+                viewModel.onCertificateClearButtonClicked()
+            }
+        }
     }
 
     private fun initButtons() {
@@ -117,23 +131,10 @@ class EnvConnectionActivity : BaseActivity() {
                 viewModel.onConnectButtonClicked()
             }
         }
+    }
 
-        viewModel.isPublic.observe(this@EnvConnectionActivity) { isPublic ->
-            view.authButtonGroup.check(
-                if (isPublic)
-                    R.id.public_button
-                else
-                    R.id.private_button
-            )
-        }
-
-        view.publicButton.setOnClickListener {
-            viewModel.isPublic.value = true
-        }
-
-        view.privateButton.setOnClickListener {
-            viewModel.isPublic.value = false
-        }
+    private fun initCustomTabs() {
+        CustomTabsHelper.safelyConnectAndInitialize(this)
     }
 
     private fun subscribeToState() {
@@ -182,6 +183,12 @@ class EnvConnectionActivity : BaseActivity() {
             when (event) {
                 EnvConnectionViewModel.Event.GoToGallery ->
                     goToGallery()
+                EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
+                    chooseClientCertificateAlias()
+                EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
+                    showMissingClientCertificatesNotice()
+                is EnvConnectionViewModel.Event.OpenUrl ->
+                    openUrl(url = event.url)
             }
 
             log.debug {
@@ -189,6 +196,61 @@ class EnvConnectionActivity : BaseActivity() {
                         "\nevent=$event"
             }
         }.disposeOnDestroy(this)
+    }
+
+    private fun chooseClientCertificateAlias() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+
+        log.debug {
+            "chooseClientCertificateAlias(): opening_chooser"
+        }
+
+        val now = System.currentTimeMillis()
+        KeyChain.choosePrivateKeyAlias(this, { alias ->
+            if (alias != null) {
+                viewModel.onCertificateAliasChosen(alias)
+            } else {
+                val elapsed = System.currentTimeMillis() - now
+
+                // 🤡 An elegant way to determine whether the request is cancelled,
+                // or there are not certificates.
+                // Thanks, Android, for a meaningful result callback.
+                if (elapsed < 1000) {
+                    viewModel.onNoCertificatesAvailable()
+                } else {
+                    log.debug {
+                        "chooseClientCertificateAlias(): no_alias_chosen"
+                    }
+                }
+            }
+        }, null, null, null, null)
+    }
+
+    private fun showMissingClientCertificatesNotice() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.how_to_use_client_certificate)
+            .setMessage(R.string.p12_certificate_guide)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .setNeutralButton(R.string.learn_more) { _, _ ->
+                viewModel.onCertificateLearnMoreButtonClicked()
+            }
+            .show()
+    }
+
+    private fun openUrl(url: String) {
+        val uri = Uri.parse(url)
+        CustomTabsHelper.safelyLaunchUrl(
+            this,
+            CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .build(),
+            uri
+        )
     }
 
     private fun goToGallery() {

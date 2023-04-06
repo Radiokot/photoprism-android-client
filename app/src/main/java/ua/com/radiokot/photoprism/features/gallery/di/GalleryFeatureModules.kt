@@ -69,7 +69,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 val session = get<EnvSession>()
 
                 PhotoPrismPreviewUrlFactory(
-                    apiUrl = session.apiUrl,
+                    apiUrl = session.envConnectionParams.apiUrl,
                     previewToken = session.previewToken,
                 )
             }.bind(MediaPreviewUrlFactory::class)
@@ -78,7 +78,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 val session = get<EnvSession>()
 
                 PhotoPrismMediaDownloadUrlFactory(
-                    apiUrl = session.apiUrl,
+                    apiUrl = session.envConnectionParams.apiUrl,
                     downloadToken = session.downloadToken,
                 )
             }.bind(MediaFileDownloadUrlFactory::class)
@@ -138,17 +138,21 @@ val galleryFeatureModules: List<Module> = listOf(
         } bind File::class
 
         single {
-            OkHttpObservableDownloader(
-                httpClient = get()
-            )
-        }.bind(ObservableDownloader::class)
-
-        single {
             FileReturnIntentCreator(
                 fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
                 context = get(),
             )
-        }.bind(FileReturnIntentCreator::class)
+        } bind FileReturnIntentCreator::class
+
+        scope<EnvSession> {
+            // Downloader must be session-scoped to have the correct
+            // HTTP client (e.g. for mTLS)
+            scoped {
+                OkHttpObservableDownloader(
+                    httpClient = get()
+                )
+            } bind ObservableDownloader::class
+        }
     },
 
     module {
