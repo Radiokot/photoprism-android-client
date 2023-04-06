@@ -70,21 +70,17 @@ val envConnectionFeatureModules: List<Module> = listOf(
             ConnectToEnvUseCase(
                 connection = connection,
                 sessionCreator = get(_q<EnvSessionCreatorParams>()) {
-                    parametersOf(
-                        EnvSessionCreatorParams(
-                            apiUrl = connection.apiUrl,
-                            clientCertificateAlias = connection.auth.clientCertificateAlias
-                        )
+                    EnvSessionCreatorParams(
+                        apiUrl = connection.apiUrl,
+                        clientCertificateAlias = connection.auth.clientCertificateAlias
                     )
                 },
                 configServiceFactory = { apiUrl, sessionId, clientCertificateAlias ->
                     get(_q<EnvPhotoPrismClientConfigServiceParams>()) {
-                        parametersOf(
-                            EnvPhotoPrismClientConfigServiceParams(
-                                apiUrl = apiUrl,
-                                sessionId = sessionId,
-                                clientCertificateAlias = clientCertificateAlias,
-                            )
+                        EnvPhotoPrismClientConfigServiceParams(
+                            apiUrl = apiUrl,
+                            sessionId = sessionId,
+                            clientCertificateAlias = clientCertificateAlias,
                         )
                     }
                 },

@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.di
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -20,7 +19,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
     val clientCertificateAlias: String?,
-) {
+) : SelfParameterHolder() {
     class SessionAwareness(
         val sessionIdProvider: () -> String,
         val renewal: Renewal?,
@@ -36,7 +35,7 @@ class EnvHttpClientParams(
 class EnvSessionCreatorParams(
     val apiUrl: String,
     val clientCertificateAlias: String?,
-)
+) : SelfParameterHolder()
 
 val envModules = listOf(
     module {
@@ -44,7 +43,8 @@ val envModules = listOf(
 
         // The factory must have a qualifier,
         // otherwise it is overridden by the scoped.
-        factory(_q<EnvHttpClientParams>()) { (envParams: EnvHttpClientParams) ->
+        factory(_q<EnvHttpClientParams>()) { envParams ->
+            envParams as EnvHttpClientParams
             val builder = get<OkHttpClient.Builder>()
 
             if (envParams.sessionAwareness != null) {
@@ -90,14 +90,13 @@ val envModules = listOf(
                 .build()
         } bind HttpClient::class
 
-        factory(_q<EnvSessionCreatorParams>()) { (params: EnvSessionCreatorParams) ->
+        factory(_q<EnvSessionCreatorParams>()) { params ->
+            params as EnvSessionCreatorParams
             PhotoPrismSessionCreator(
                 sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
-                    parametersOf(
-                        EnvPhotoPrismSessionServiceParams(
-                            apiUrl = params.apiUrl,
-                            clientCertificateAlias = params.clientCertificateAlias,
-                        )
+                    EnvPhotoPrismSessionServiceParams(
+                        apiUrl = params.apiUrl,
+                        clientCertificateAlias = params.clientCertificateAlias,
                     )
                 },
             )
@@ -118,11 +117,9 @@ val envModules = listOf(
                                 }
                             },
                             sessionCreator = get(_q<EnvSessionCreatorParams>()) {
-                                parametersOf(
-                                    EnvSessionCreatorParams(
-                                        apiUrl = session.apiUrl,
-                                        clientCertificateAlias = null,
-                                    )
+                                EnvSessionCreatorParams(
+                                    apiUrl = session.apiUrl,
+                                    clientCertificateAlias = null,
                                 )
                             },
                             onSessionRenewed = {
@@ -134,14 +131,12 @@ val envModules = listOf(
                         null
 
                 get<HttpClient>(_q<EnvHttpClientParams>()) {
-                    parametersOf(
-                        EnvHttpClientParams(
-                            sessionAwareness = EnvHttpClientParams.SessionAwareness(
-                                sessionIdProvider = session::id,
-                                renewal = renewal,
-                            ),
-                            clientCertificateAlias = null,
-                        )
+                    EnvHttpClientParams(
+                        sessionAwareness = EnvHttpClientParams.SessionAwareness(
+                            sessionIdProvider = session::id,
+                            renewal = renewal,
+                        ),
+                        clientCertificateAlias = null,
                     )
                 }
             }.bind(HttpClient::class)

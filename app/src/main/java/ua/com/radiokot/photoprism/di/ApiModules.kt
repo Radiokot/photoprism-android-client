@@ -1,7 +1,7 @@
 package ua.com.radiokot.photoprism.di
 
 import org.koin.core.module.Module
-import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.TypeQualifier
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -13,28 +13,30 @@ import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import kotlin.reflect.cast
 
 private class EnvRetrofitParams(
     val apiUrl: String,
     val httpClient: HttpClient,
-)
+) : SelfParameterHolder()
 
 class EnvPhotoPrismSessionServiceParams(
     val apiUrl: String,
     val clientCertificateAlias: String?,
-)
+) : SelfParameterHolder()
 
 class EnvPhotoPrismClientConfigServiceParams(
     val apiUrl: String,
     val clientCertificateAlias: String?,
     val sessionId: String
-)
+) : SelfParameterHolder()
 
 val retrofitApiModules: List<Module> = listOf(
     module {
         includes(envModules)
 
-        factory<Retrofit>(_q<EnvRetrofitParams>()) { (params: EnvRetrofitParams) ->
+        factory<Retrofit>(_q<EnvRetrofitParams>()) { params ->
+            params as EnvRetrofitParams
             Retrofit.Builder()
                 .baseUrl(params.apiUrl)
                 .addConverterFactory(JacksonConverterFactory.create(get()))
@@ -43,42 +45,36 @@ val retrofitApiModules: List<Module> = listOf(
                 .build()
         }
 
-        factory<PhotoPrismSessionService>(_q<EnvPhotoPrismSessionServiceParams>()) { (params: EnvPhotoPrismSessionServiceParams) ->
+        factory<PhotoPrismSessionService>(_q<EnvPhotoPrismSessionServiceParams>()) { params ->
+            params as EnvPhotoPrismSessionServiceParams
             get<Retrofit>(_q<EnvRetrofitParams>()) {
-                parametersOf(
-                    EnvRetrofitParams(
-                        apiUrl = params.apiUrl,
-                        httpClient = get(_q<EnvHttpClientParams>()) {
-                            parametersOf(
-                                EnvHttpClientParams(
-                                    sessionAwareness = null,
-                                    clientCertificateAlias = params.clientCertificateAlias,
-                                )
-                            )
-                        }
-                    )
+                EnvRetrofitParams(
+                    apiUrl = params.apiUrl,
+                    httpClient = get(_q<EnvHttpClientParams>()) {
+                        EnvHttpClientParams(
+                            sessionAwareness = null,
+                            clientCertificateAlias = params.clientCertificateAlias,
+                        )
+                    }
                 )
             }
                 .create(PhotoPrismSessionService::class.java)
         }
 
-        factory<PhotoPrismClientConfigService>(_q<EnvPhotoPrismClientConfigServiceParams>()) { (params: EnvPhotoPrismClientConfigServiceParams) ->
+        factory<PhotoPrismClientConfigService>(_q<EnvPhotoPrismClientConfigServiceParams>()) { params ->
+            params as EnvPhotoPrismClientConfigServiceParams
             get<Retrofit>(_q<EnvRetrofitParams>()) {
-                parametersOf(
-                    EnvRetrofitParams(
-                        apiUrl = params.apiUrl,
-                        httpClient = get(_q<EnvHttpClientParams>()) {
-                            parametersOf(
-                                EnvHttpClientParams(
-                                    sessionAwareness = EnvHttpClientParams.SessionAwareness(
-                                        sessionIdProvider = { params.sessionId },
-                                        renewal = null,
-                                    ),
-                                    clientCertificateAlias = params.clientCertificateAlias,
-                                )
-                            )
-                        }
-                    )
+                EnvRetrofitParams(
+                    apiUrl = params.apiUrl,
+                    httpClient = get(_q<EnvHttpClientParams>()) {
+                        EnvHttpClientParams(
+                            sessionAwareness = EnvHttpClientParams.SessionAwareness(
+                                sessionIdProvider = { params.sessionId },
+                                renewal = null,
+                            ),
+                            clientCertificateAlias = params.clientCertificateAlias,
+                        )
+                    }
                 )
             }
                 .create(PhotoPrismClientConfigService::class.java)
@@ -88,11 +84,9 @@ val retrofitApiModules: List<Module> = listOf(
             scoped<Retrofit> {
                 val session = get<EnvSession>()
                 get(_q<EnvRetrofitParams>()) {
-                    parametersOf(
-                        EnvRetrofitParams(
-                            apiUrl = session.apiUrl,
-                            httpClient = get()
-                        )
+                    EnvRetrofitParams(
+                        apiUrl = session.apiUrl,
+                        httpClient = get()
                     )
                 }
             }
