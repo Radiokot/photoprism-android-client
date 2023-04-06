@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Ability to include private content on the search screen
+- Preview of RAW and vector images
+- Support of mTLS (mutual TLS) authentication for Android 6 and higher
+- Showing an error when connecting to a private library without credentials
+
+### Fixed
+- Crash when there were too many months on the fast scroll bar
 
 ## [1.2.0] - 2023-04-03
 
