@@ -100,6 +100,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:hint="@string/client_certificate_optional"
                 android:importantForAutofill="no"
                 app:endIconContentDescription="@string/clear"
@@ -111,10 +113,11 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="false"
                     android:cursorVisible="false"
-                    android:focusableInTouchMode="false"
+                    android:focusable="false"
                     android:importantForAutofill="no"
-                    android:inputType="none"
+                    android:inputType="textNoSuggestions"
                     android:maxLines="1"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>

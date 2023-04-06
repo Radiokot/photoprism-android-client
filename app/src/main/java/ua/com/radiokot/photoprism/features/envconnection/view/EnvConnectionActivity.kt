@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyChain
+import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -99,9 +101,10 @@ class EnvConnectionActivity : BaseActivity() {
         with(view.certificateTextInput) {
             isVisible = viewModel.isClientCertificateSelectionAvailable
 
-            editText!!.setOnClickListener {
+            setOnClickListener {
                 viewModel.onCertificateFieldClicked()
             }
+            editText!!.setOnClickListener { viewModel.onCertificateFieldClicked() }
 
             viewModel.clientCertificateAlias.observe(this@EnvConnectionActivity) { alias ->
                 editText?.setText(alias ?: "")
