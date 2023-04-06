@@ -9,15 +9,18 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
-import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
-typealias ConnectUseCaseProvider = (connection: EnvConnection) -> ConnectToEnvUseCase
+typealias ConnectUseCaseProvider = (
+    connection: EnvConnectionParams,
+    auth: EnvAuth,
+) -> ConnectToEnvUseCase
 
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,
@@ -124,23 +127,10 @@ class EnvConnectionViewModel(
     private fun connect() {
         state.value = State.Connecting
 
-        val username = username.value
-            ?.trim()
-            ?.takeIf(String::isNotEmpty)
-        val password = password.value
-            ?.takeIf(String::isNotEmpty)
-
-        val connection: EnvConnection = try {
-            EnvConnection(
-                apiUrl = EnvConnection.rootUrlToApiUrl(rootUrl.value!!.trim()),
-                auth =
-                if (username != null && password != null)
-                    EnvAuth.Credentials(
-                        username = username,
-                        password = password
-                    )
-                else
-                    EnvAuth.Public
+        val connectionParams: EnvConnectionParams = try {
+            EnvConnectionParams(
+                apiUrl = EnvConnectionParams.rootUrlToApiUrl(rootUrl.value!!.trim()),
+                clientCertificateAlias = clientCertificateAlias.value,
             )
         } catch (e: Exception) {
             log.warn(e) { "connect(): connection_creation_failed" }
@@ -151,12 +141,28 @@ class EnvConnectionViewModel(
             return
         }
 
+        val username = username.value
+            ?.trim()
+            ?.takeIf(String::isNotEmpty)
+        val password = password.value
+            ?.takeIf(String::isNotEmpty)
+
+        val auth =
+            if (username != null && password != null)
+                EnvAuth.Credentials(
+                    username = username,
+                    password = password,
+                )
+            else
+                EnvAuth.Public
+
         log.debug {
             "connect(): connecting:" +
-                    "\nconnection=$connection"
+                    "\nconnectionParams=$connectionParams," +
+                    "\nauth=$auth"
         }
 
-        connectUseCaseProvider(connection)
+        connectUseCaseProvider(connectionParams, auth)
             .perform()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

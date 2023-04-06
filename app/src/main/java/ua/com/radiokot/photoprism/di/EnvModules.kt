@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
 import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
@@ -33,8 +34,7 @@ class EnvHttpClientParams(
 }
 
 class EnvSessionCreatorParams(
-    val apiUrl: String,
-    val clientCertificateAlias: String?,
+    val envConnectionParams: EnvConnectionParams,
 ) : SelfParameterHolder()
 
 val envModules = listOf(
@@ -95,8 +95,7 @@ val envModules = listOf(
             PhotoPrismSessionCreator(
                 sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
                     EnvPhotoPrismSessionServiceParams(
-                        apiUrl = params.apiUrl,
-                        clientCertificateAlias = params.clientCertificateAlias,
+                        envConnectionParams = params.envConnectionParams,
                     )
                 },
             )
@@ -118,8 +117,7 @@ val envModules = listOf(
                             },
                             sessionCreator = get(_q<EnvSessionCreatorParams>()) {
                                 EnvSessionCreatorParams(
-                                    apiUrl = session.apiUrl,
-                                    clientCertificateAlias = null,
+                                    envConnectionParams = session.envConnectionParams,
                                 )
                             },
                             onSessionRenewed = {
@@ -136,7 +134,7 @@ val envModules = listOf(
                             sessionIdProvider = session::id,
                             renewal = renewal,
                         ),
-                        clientCertificateAlias = null,
+                        clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                     )
                 }
             }.bind(HttpClient::class)
