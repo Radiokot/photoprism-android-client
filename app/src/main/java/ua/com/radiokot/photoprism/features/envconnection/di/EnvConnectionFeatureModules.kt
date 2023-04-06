@@ -13,6 +13,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
+import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
+import ua.com.radiokot.photoprism.di.EnvSessionCreatorParams
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
@@ -67,9 +69,24 @@ val envConnectionFeatureModules: List<Module> = listOf(
         factory { (connection: EnvConnection) ->
             ConnectToEnvUseCase(
                 connection = connection,
-                sessionCreator = get { parametersOf(connection.apiUrl) },
-                configServiceFactory = { apiUrl, sessionId ->
-                    get { parametersOf(apiUrl, sessionId) }
+                sessionCreator = get(_q<EnvSessionCreatorParams>()) {
+                    parametersOf(
+                        EnvSessionCreatorParams(
+                            apiUrl = connection.apiUrl,
+                            clientCertificateAlias = connection.auth.clientCertificateAlias
+                        )
+                    )
+                },
+                configServiceFactory = { apiUrl, sessionId, clientCertificateAlias ->
+                    get(_q<EnvPhotoPrismClientConfigServiceParams>()) {
+                        parametersOf(
+                            EnvPhotoPrismClientConfigServiceParams(
+                                apiUrl = apiUrl,
+                                sessionId = sessionId,
+                                clientCertificateAlias = clientCertificateAlias,
+                            )
+                        )
+                    }
                 },
                 envSessionHolder = get(),
                 envSessionPersistence = getOrNull(_q<EnvSession>()),

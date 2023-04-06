@@ -1,11 +1,13 @@
 package ua.com.radiokot.photoprism.di
 
 import okhttp3.OkHttpClient
+import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import ua.com.radiokot.photoprism.api.util.KeyChainClientCertificateKeyManager
 import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
 import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
@@ -17,6 +19,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
+    val clientCertificateAlias: String?,
 ) {
     class SessionAwareness(
         val sessionIdProvider: () -> String,
@@ -29,6 +32,11 @@ class EnvHttpClientParams(
         )
     }
 }
+
+class EnvSessionCreatorParams(
+    val apiUrl: String,
+    val clientCertificateAlias: String?,
+)
 
 val envModules = listOf(
     module {
@@ -62,16 +70,38 @@ val envModules = listOf(
                 )
             }
 
+            if (envParams.clientCertificateAlias != null) {
+                val clientCertKeyManager = KeyChainClientCertificateKeyManager(
+                    context = get(),
+                    alias = envParams.clientCertificateAlias,
+                )
+                val platformTrustManager = Platform.get().platformTrustManager()
+                val sslContext = Platform.get().newSSLContext()
+                sslContext.init(
+                    arrayOf(clientCertKeyManager),
+                    arrayOf(platformTrustManager),
+                    null,
+                )
+                builder.sslSocketFactory(sslContext.socketFactory, platformTrustManager)
+            }
+
             builder
                 .addInterceptor(get<HttpLoggingInterceptor>())
                 .build()
-        }.bind(HttpClient::class)
+        } bind HttpClient::class
 
-        factory { (apiUrl: String) ->
+        factory(_q<EnvSessionCreatorParams>()) { (params: EnvSessionCreatorParams) ->
             PhotoPrismSessionCreator(
-                sessionService = get { parametersOf(apiUrl) },
+                sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
+                    parametersOf(
+                        EnvPhotoPrismSessionServiceParams(
+                            apiUrl = params.apiUrl,
+                            clientCertificateAlias = params.clientCertificateAlias,
+                        )
+                    )
+                },
             )
-        }.bind(SessionCreator::class)
+        } bind SessionCreator::class
 
         scope<EnvSession> {
             scoped {
@@ -87,7 +117,14 @@ val envModules = listOf(
                                     "There must be an auth data in order to renew the session"
                                 }
                             },
-                            sessionCreator = get { parametersOf(session.apiUrl) },
+                            sessionCreator = get(_q<EnvSessionCreatorParams>()) {
+                                parametersOf(
+                                    EnvSessionCreatorParams(
+                                        apiUrl = session.apiUrl,
+                                        clientCertificateAlias = null,
+                                    )
+                                )
+                            },
                             onSessionRenewed = {
                                 session.id = it
                                 sessionPersistence?.saveItem(session)
@@ -102,7 +139,8 @@ val envModules = listOf(
                             sessionAwareness = EnvHttpClientParams.SessionAwareness(
                                 sessionIdProvider = session::id,
                                 renewal = renewal,
-                            )
+                            ),
+                            clientCertificateAlias = null,
                         )
                     )
                 }

@@ -12,7 +12,7 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.envconnection.data.model.EnvConnection
 
 typealias PhotoPrismConfigServiceFactory =
-            (apiUrl: String, sessionId: String) -> PhotoPrismClientConfigService
+            (apiUrl: String, sessionId: String, clientCertificateAlias: String?) -> PhotoPrismClientConfigService
 
 /**
  * Creates [EnvConnection] for the given [connection].
@@ -107,7 +107,7 @@ class ConnectToEnvUseCase(
         .toSingle()
 
     private fun getConfig(): Single<Config> = {
-        configServiceFactory(connection.apiUrl, sessionId)
+        configServiceFactory(connection.apiUrl, sessionId, connection.auth.clientCertificateAlias)
             .getClientConfig()
             .let(::Config)
     }.toSingle()
