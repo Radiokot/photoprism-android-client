@@ -22,6 +22,7 @@ you can use your favorite image editor or video player instead of web viewer
 - Search by media types and custom queries
 - Search bookmarks – the search configuration can be bookmarked and applied later with a click
 - Endless session – no need to re-enter password
+- Support of mTLS (mutual TLS) and HTTP basic authentication
 
 ## Content sync
 The gallery is not intended to sync content with the library. 
