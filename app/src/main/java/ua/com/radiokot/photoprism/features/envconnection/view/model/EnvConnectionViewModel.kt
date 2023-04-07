@@ -39,7 +39,7 @@ class EnvConnectionViewModel(
 
     val state = MutableLiveData<State>(State.Idle)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject
+    val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
 
     val isConnectButtonEnabled = MutableLiveData<Boolean>()
 
