@@ -81,6 +81,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'androidx.preference:preference:1.2.0'
 
     // Must be 2.13 for minSdk 21
     implementation('com.fasterxml.jackson.core:jackson-databind:2.13.0')

@@ -84,4 +84,9 @@
         3. Return to the gallery and select the installed certificate.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Learn more</string>
+    <string name="preferences">Preferences</string>
+    <string name="library_api_url">API URL</string>
+    <string name="about">About</string>
+    <string name="app_version">Version</string>
+    <string name="report_an_issue">Report an issue</string>
 </resources>

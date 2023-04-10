@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pk_library_api_url">library_api_url</string>
+    <string name="pk_report_issue">report_issue</string>
+    <string name="pk_app_version">app_version</string>
+</resources>
