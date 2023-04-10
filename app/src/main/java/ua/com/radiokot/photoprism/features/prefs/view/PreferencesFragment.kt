@@ -1,12 +1,17 @@
 package ua.com.radiokot.photoprism.features.prefs.view
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.getKoin
 import org.koin.android.scope.AndroidScopeComponent
@@ -17,6 +22,10 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.disposeOnDestroy
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 
 class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
@@ -25,6 +34,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             linkTo(getScope(DI_SCOPE_SESSION))
         }
     }
+
+    private val log = kLogger("PreferencesFragment")
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -42,7 +53,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             summary = get<EnvSession>().envConnectionParams.apiUrl
         }
 
-        with(requirePreference<Preference>(R.string.app_version)) {
+        with(requirePreference<Preference>(R.string.pk_export_bookmarks)) {
+            setOnPreferenceClickListener {
+                exportBookmarks()
+                true
+            }
+        }
+
+        with(requirePreference<Preference>(R.string.pk_app_version)) {
             summary = BuildConfig.VERSION_NAME
         }
 
@@ -52,6 +70,45 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 true
             }
         }
+    }
+
+    private fun exportBookmarks() {
+        log.debug { "exportBookmarks(): begin_export" }
+
+        get<ExportSearchBookmarksUseCase>()
+            .perform()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { intent ->
+                    log.debug {
+                        "exportBookmarks(): successfully_exported:" +
+                                "\nintent=$intent"
+                    }
+
+                    startActivity(
+                        Intent.createChooser(
+                            intent,
+                            getString(R.string.save_exported_file)
+                        )
+                    )
+                },
+                onError = { error ->
+                    log.error(error) {
+                        "exportBookmarks(): error_occurred"
+                    }
+
+                    Toast.makeText(
+                        requireContext(),
+                        getString(
+                            R.string.template_error_failed_to_export_bookmarks,
+                            error.shortSummary
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            )
+            .disposeOnDestroy(viewLifecycleOwner)
     }
 
     private fun openIssueReport() {

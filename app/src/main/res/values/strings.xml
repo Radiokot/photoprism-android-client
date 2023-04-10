@@ -85,8 +85,14 @@
     <string name="ok">OK</string>
     <string name="learn_more">Learn more</string>
     <string name="preferences">Preferences</string>
+    <string name="library_preferences">@string/library</string>
     <string name="library_api_url">API URL</string>
     <string name="about">About</string>
     <string name="app_version">Version</string>
     <string name="report_an_issue">Report an issue</string>
+    <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export_bookmarks">Export</string>
+    <string name="save_exported_file">Save exported file</string>
+    <string name="create_a_backup_file">Create a backup file</string>
 </resources>

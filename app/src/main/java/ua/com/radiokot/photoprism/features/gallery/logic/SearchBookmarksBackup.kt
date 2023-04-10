@@ -4,13 +4,21 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import java.io.InputStream
 import java.io.OutputStream
 
+/**
+ * A file backup strategy for search bookmarks.
+ */
 interface SearchBookmarksBackup {
+    /**
+     * File extension with "."
+     */
     val fileExtension: String
 
-    fun exportBookmarks(
+    val fileMimeType: String
+
+    fun writeBackup(
         bookmarks: List<SearchBookmark>,
         output: OutputStream
     )
 
-    fun importBookmarks(input: InputStream): List<SearchBookmark>
+    fun readBackup(input: InputStream): List<SearchBookmark>
 }

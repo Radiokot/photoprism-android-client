@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
+const val INTERNAL_EXPORT_DIRECTORY = "internal-export"
 
 private const val MONTH_DATE_FORMAT = "month"
 private const val MONTH_YEAR_DATE_FORMAT = "month-year"
@@ -138,6 +139,12 @@ val galleryFeatureModules: List<Module> = listOf(
                 .apply { mkdirs() }
         } bind File::class
 
+        single(named(INTERNAL_EXPORT_DIRECTORY)) {
+            // See file_provider_paths.
+            File(get<Context>().filesDir.absolutePath + "/export")
+                .apply { mkdirs() }
+        } bind File::class
+
         single {
             FileReturnIntentCreator(
                 fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
@@ -178,5 +185,14 @@ val galleryFeatureModules: List<Module> = listOf(
         single {
             JsonSearchBookmarksBackup(jsonObjectMapper = get())
         } bind SearchBookmarksBackup::class
+
+        factory {
+            ExportSearchBookmarksUseCase(
+                exportDir = get(named(INTERNAL_EXPORT_DIRECTORY)),
+                backupStrategy = get(),
+                fileReturnIntentCreator = get(),
+                searchBookmarksRepository = get(),
+            )
+        } bind ExportSearchBookmarksUseCase::class
     },
 )

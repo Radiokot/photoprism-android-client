@@ -14,8 +14,9 @@ class JsonSearchBookmarksBackup(
     private val jsonObjectMapper: JsonObjectMapper,
 ) : SearchBookmarksBackup {
     override val fileExtension: String = ".json"
+    override val fileMimeType: String = "application/json"
 
-    override fun exportBookmarks(bookmarks: List<SearchBookmark>, output: OutputStream) {
+    override fun writeBackup(bookmarks: List<SearchBookmark>, output: OutputStream) {
         jsonObjectMapper.writeValue(
             output,
             BookmarksBackup(
@@ -25,7 +26,7 @@ class JsonSearchBookmarksBackup(
         )
     }
 
-    override fun importBookmarks(input: InputStream): List<SearchBookmark> {
+    override fun readBackup(input: InputStream): List<SearchBookmark> {
         val backup: BookmarksBackup =
             jsonObjectMapper.readValue(input, BookmarksBackup::class.java)
 

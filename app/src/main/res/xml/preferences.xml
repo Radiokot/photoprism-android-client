@@ -1,23 +1,42 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/library">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/library_preferences">
 
         <Preference
+            app:iconSpaceReserved="false"
             app:key="@string/pk_library_api_url"
             app:persistent="false"
             app:summary="***"
             app:title="@string/library_api_url" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/about">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/bookmarks_preferences">
 
         <Preference
-            app:key="@string/app_version"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_export_bookmarks"
+            app:persistent="false"
+            app:summary="@string/create_a_backup_file"
+            app:title="@string/export_bookmarks" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/about">
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_app_version"
             app:persistent="false"
             app:summary="***"
             app:title="@string/app_version" />
 
         <Preference
+            app:iconSpaceReserved="false"
             app:key="@string/pk_report_issue"
             app:persistent="false"
             app:title="@string/report_an_issue" />

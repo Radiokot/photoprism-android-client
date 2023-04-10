@@ -64,7 +64,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         )
 
         val outputStream = ByteArrayOutputStream()
-        backup.exportBookmarks(bookmarks, outputStream)
+        backup.writeBackup(bookmarks, outputStream)
         val outputJson = String(outputStream.toByteArray(), Charsets.UTF_8)
 
         Assert.assertEquals(
@@ -109,7 +109,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         val inputJson =
             """{"v":1,"d":{"b":[{"id":1,"pos":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"priv":true},{"id":2,"pos":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":[],"priv":false}]}}"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
-        val imported = backup.importBookmarks(inputStream)
+        val imported = backup.readBackup(inputStream)
 
         Assert.assertEquals(
             bookmarks.size,
@@ -137,7 +137,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
 
         val inputJson = """{"v":-1,"d":{}}"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
-        backup.importBookmarks(inputStream)
+        backup.readBackup(inputStream)
     }
 
     @Test(expected = IOException::class)
@@ -146,6 +146,6 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
 
         val inputJson = """wtf"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
-        backup.importBookmarks(inputStream)
+        backup.readBackup(inputStream)
     }
 }
