@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
+import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -169,5 +170,13 @@ val galleryFeatureModules: List<Module> = listOf(
                 bookmarksRepository = get(),
             )
         }
+    },
+
+    module {
+        includes(ioModules)
+
+        single {
+            JsonSearchBookmarksBackup(jsonObjectMapper = get())
+        } bind SearchBookmarksBackup::class
     },
 )
