@@ -4,4 +4,5 @@
     <string name="pk_report_issue">report_issue</string>
     <string name="pk_app_version">app_version</string>
     <string name="pk_export_bookmarks">export_bookmarks</string>
+    <string name="pk_import_bookmarks">import_bookmarks</string>
 </resources>

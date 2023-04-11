@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.logic.JsonSearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.logic.UnsupportedVersionException
 import java.io.ByteArrayOutputStream
 
 class JsonSearchBookmarkBackupTest : KoinComponent {
@@ -131,7 +132,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         }
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = UnsupportedVersionException::class)
     fun unsupportedVersion() {
         val backup = getKoin().get<JsonSearchBookmarksBackup>()
 

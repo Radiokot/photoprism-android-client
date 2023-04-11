@@ -1,14 +1,17 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.content.Context
+import android.net.Uri
 import android.text.format.DateFormat
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
+import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.di.ioModules
@@ -31,6 +34,10 @@ private const val MONTH_DATE_FORMAT = "month"
 private const val MONTH_YEAR_DATE_FORMAT = "month-year"
 private const val DAY_DATE_FORMAT = "day"
 private const val DAY_YEAR_DATE_FORMAT = "day-year"
+
+class ImportSearchBookmarksUseCaseParams(
+    val fileUri: Uri,
+) : SelfParameterHolder()
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
@@ -194,5 +201,16 @@ val galleryFeatureModules: List<Module> = listOf(
                 searchBookmarksRepository = get(),
             )
         } bind ExportSearchBookmarksUseCase::class
+
+        factory(_q<ImportSearchBookmarksUseCaseParams>()) { params ->
+            params as ImportSearchBookmarksUseCaseParams
+
+            ImportSearchBookmarksUseCase(
+                fileUri = params.fileUri,
+                backupStrategy = get(),
+                searchBookmarksRepository = get(),
+                contentResolver = get<Context>().contentResolver,
+            )
+        } bind ImportSearchBookmarksUseCase::class
     },
 )

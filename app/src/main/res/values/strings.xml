@@ -92,7 +92,13 @@
     <string name="report_an_issue">Report an issue</string>
     <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
-    <string name="export_bookmarks">Export</string>
+    <string name="export_bookmarks">Export bookmarks</string>
     <string name="save_exported_file">Save exported file</string>
-    <string name="create_a_backup_file">Create a backup file</string>
+    <string name="import_bookmarks">Import bookmarks</string>
+    <string name="template_error_failed_to_import_bookmarks">Failed to import bookmarks: %1$s</string>
+    <string name="template_successfully_imported_bookmarks_plural">Successfully imported %1$d %2$s</string>
+    <string name="replace_current_bookmarks_with_saved">Replace current bookmarks with saved ones</string>
+    <string name="save_bookmarks_to_file">Save your bookmarks to a file</string>
+    <string name="your_bookmarks_will_be_replaced">Your current bookmarks will be replaced. Continue?</string>
+    <string name="ccontinue">Continue</string>
 </resources>

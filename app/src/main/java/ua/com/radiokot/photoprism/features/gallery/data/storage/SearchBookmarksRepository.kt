@@ -146,4 +146,17 @@ class SearchBookmarksRepository(
 
     fun findByConfig(config: SearchConfig): SearchBookmark? =
         itemsList.find { it.searchConfig == config }
+
+    /**
+     * Replaces all the bookmarks with given.
+     */
+    fun import(bookmarks: List<SearchBookmark>): Completable = {
+        invalidate()
+
+        bookmarksDbDao.deleteAll()
+        bookmarksDbDao.insert(*bookmarks.map(SearchBookmark::toDbEntity).toTypedArray())
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .andThen(updateDeferred())
 }

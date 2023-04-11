@@ -3,12 +3,17 @@ package ua.com.radiokot.photoprism.features.gallery.logic
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
+import okio.IOException
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import java.io.InputStream
 import java.io.OutputStream
+
+class UnsupportedVersionException(version: Int?) :
+    IOException("Unsupported backup version $version")
 
 class JsonSearchBookmarksBackup(
     private val jsonObjectMapper: JsonObjectMapper,
@@ -32,7 +37,7 @@ class JsonSearchBookmarksBackup(
 
         val data = when (val version = backup.version) {
             1 -> readBackupData(backup.data)
-            else -> error("Unsupported backup version $version")
+            else -> throw UnsupportedVersionException(version)
         }
 
         return data.bookmarks.map(BackupData.Bookmark::toSource)
