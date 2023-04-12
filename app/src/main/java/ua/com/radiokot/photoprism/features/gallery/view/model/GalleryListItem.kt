@@ -99,7 +99,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             override fun unbindView(item: Media) {
-                picasso!!.cancelRequest(view.imageView)
+                picasso.cancelRequest(view.imageView)
             }
         }
     }
