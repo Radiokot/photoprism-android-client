@@ -52,15 +52,15 @@
         android:textColor="?android:textColorSecondary"
         android:textSize="12sp" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/private_content_switch"
-        style="@style/Widget.Material3.CompoundButton.Switch"
+        style="@style/Widget.Material3.CompoundButton.CheckBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="-6dp"
         android:layout_marginTop="10dp"
         android:text="@string/include_private_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-        app:switchPadding="4dp" />
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
