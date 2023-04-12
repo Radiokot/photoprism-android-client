@@ -29,6 +29,8 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
+import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
@@ -41,6 +43,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             linkTo(getScope(DI_SCOPE_SESSION))
         }
     }
+
 
     private val log = kLogger("PreferencesFragment")
     private val bookmarksBackup: SearchBookmarksBackup by inject()
@@ -64,6 +67,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     private fun initPreferences() = preferenceScreen.apply {
         with(requirePreference(R.string.pk_library_api_url)) {
             summary = get<EnvSession>().envConnectionParams.apiUrl
+        }
+
+        with(requirePreference(R.string.pk_library_disconnect)) {
+            setOnPreferenceClickListener {
+                disconnect()
+                true
+            }
         }
 
         with(requirePreference(R.string.pk_import_bookmarks)) {
@@ -90,6 +100,31 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 true
             }
         }
+    }
+
+    private fun disconnect() {
+        log.debug { "disconnect(): begin_disconnect" }
+
+        get<DisconnectFromEnvUseCase>()
+            .perform()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onComplete = ::goToEnvConnection,
+                onError = { error ->
+                    log.error(error) {
+                        "disconnect(): error_occurred"
+                    }
+
+                    showError(
+                        getString(
+                            R.string.template_error_failed_to_disconnect,
+                            error.shortSummary
+                        )
+                    )
+                }
+            )
+            .disposeOnDestroy(viewLifecycleOwner)
     }
 
     private fun exportBookmarks() {
@@ -221,6 +256,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 .build(),
             uri
         )
+    }
+
+    private fun goToEnvConnection() {
+        log.debug {
+            "goToEnvConnection(): going_to_env_connection"
+        }
+
+        startActivity(Intent(requireContext(), EnvConnectionActivity::class.java))
+        requireActivity().finishAffinity()
     }
 
     private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {

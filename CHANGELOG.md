@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Preferences screen
 - Bookmarks backup – export your bookmarks to restore them later or use on other device
+- Disconnect from the library
 
 ## [1.3.0] - 2023-04-073
 

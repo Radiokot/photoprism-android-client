@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.env.data.storage.KoinScopeEnvSessionHolder
 import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvAuthPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvSessionPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
+import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 
 private const val AUTH_PREFERENCES = "auth"
@@ -94,7 +95,15 @@ val envConnectionFeatureModules: List<Module> = listOf(
                 envSessionPersistence = getOrNull(_q<EnvSession>()),
                 envAuthPersistence = get(_q<EnvAuth>()),
             )
-        }
+        } bind ConnectToEnvUseCase::class
+
+        factory {
+            DisconnectFromEnvUseCase(
+                envSessionHolder = get(),
+                envSessionPersistence = getOrNull(_q<EnvSession>()),
+                envAuthPersistence = get(_q<EnvAuth>()),
+            )
+        } bind DisconnectFromEnvUseCase::class
 
         viewModel {
             EnvConnectionViewModel(
