@@ -40,7 +40,7 @@ When a new version of PhotoPrism comes out, the app may break.
 
 ## Download
 - [APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases/latest)
-- ⏳ [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
+- [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
 - [Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Tech stack
