@@ -51,3 +51,9 @@ When a new version of PhotoPrism comes out, the app may break.
 - ViewModel
 - Room
 - kotlin-logging with slf4j-handroid
+
+---
+
+🙌🏻 [Send me a tip](https://radiokot.com.ua/tip)
+
+🏠 [Visit my homepage](https://radiokot.com.ua/tip)
