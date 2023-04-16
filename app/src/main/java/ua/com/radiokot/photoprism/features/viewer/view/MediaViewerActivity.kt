@@ -8,6 +8,8 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.view.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
@@ -153,6 +155,22 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
             adapter = fastAdapter
 
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    super.onDestroy(owner)
+                    val position = currentItem
+                    val viewHolder =
+                        (get(0) as RecyclerView).findViewHolderForAdapterPosition(position)
+                    if (viewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
+                        val currentPosition = viewHolder.view.videoView.currentPosition
+                        log.debug {
+                            "onDestroy(): destroying_with_video:" +
+                                    "\nvh=$viewHolder," +
+                                    "\ncurrentPosition=$currentPosition"
+                        }
+                    }
+                }
+            })
             // TODO: Endless scrolling
         }
     }

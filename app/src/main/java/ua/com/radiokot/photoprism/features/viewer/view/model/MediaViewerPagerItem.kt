@@ -29,6 +29,10 @@ sealed class MediaViewerPagerItem(
     val thumbnailUrl: String,
 ) : AbstractItem<ViewHolder>() {
 
+    override var identifier: Long
+        get() = thumbnailUrl.hashCode().toLong()
+        set(_) = error("Don't override my value")
+
     class ImageViewer(
         val previewUrl: String,
         thumbnailUrl: String,
@@ -106,7 +110,7 @@ sealed class MediaViewerPagerItem(
                         updatePlayPause()
                     }
                 }
-                view.videoView.setOnInfoListener { mp, what, extra ->
+                view.videoView.setOnInfoListener { _, what, extra ->
                     log.debug {
                         "init(): info_received:" +
                                 "\nwhat=$what," +
@@ -133,16 +137,7 @@ sealed class MediaViewerPagerItem(
                     view.videoView.changeVideoSize(mediaPlayer.videoWidth, mediaPlayer.videoHeight)
                     mediaPlayer.isLooping = item.isLooped
                     mediaPlayer.setScreenOnWhilePlaying(true)
-                    mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
-                        log.debug {
-                            "bindView(): buffering_updated:" +
-                                    "\npercent=$percent"
-                        }
-                    }
                     mediaPlayer.setOnCompletionListener {
-                        log.debug {
-                            "bindView(): completion"
-                        }
                         updatePlayPause()
                     }
                     mediaPlayer.start()
@@ -152,6 +147,10 @@ sealed class MediaViewerPagerItem(
             }
 
             override fun unbindView(item: VideoViewer) {
+                view.videoView.stopPlayback()
+            }
+
+            override fun detachFromWindow(item: VideoViewer) {
                 view.videoView.stopPlayback()
             }
         }
