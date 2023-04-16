@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorSurface"
     android:paddingStart="24dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp"
@@ -12,11 +11,11 @@
 
     <TextView
         android:id="@+id/title_text_view"
-        android:layout_width="match_parent"
+        style="@style/MaterialAlertDialog.Material3.Title.Text"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/add_search_bookmark"
-        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
         app:layout_constraintEnd_toStartOf="@id/close_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -14,8 +14,11 @@ interface SearchBookmarksDbDao {
     @Query("DELETE FROM bookmarks WHERE id=:id")
     fun delete(id: Long)
 
+    @Query("DELETE FROM bookmarks")
+    fun deleteAll()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: SearchBookmarksDbEntity)
+    fun insert(vararg entities: SearchBookmarksDbEntity)
 
     @Update
     fun update(entity: SearchBookmarksDbEntity)

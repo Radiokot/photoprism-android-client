@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
@@ -25,10 +29,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val mediaTypeIcon: Int?,
         @StringRes
         val mediaTypeName: Int?,
-        val source: GalleryMedia?
+        val source: GalleryMedia?,
     ) : GalleryListItem() {
 
-        constructor(source: GalleryMedia) : this(
+        constructor(
+            source: GalleryMedia,
+        ) : this(
             thumbnailUrl = source.smallThumbnailUrl,
             name = source.name,
             mediaTypeIcon =
@@ -57,13 +63,19 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
-        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Media>(itemView) {
+        class ViewHolder(
+            itemView: View,
+        ) : FastAdapter.ViewHolder<Media>(itemView), KoinScopeComponent {
+            override val scope: Scope
+                get() = getKoin().getScope(DI_SCOPE_SESSION)
+
             private val view = ListItemGalleryMediaBinding.bind(itemView)
+            private val picasso: Picasso by inject()
 
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
 
-                Picasso.get()
+                picasso
                     .load(item.thumbnailUrl)
                     .placeholder(ColorDrawable(Color.LTGRAY))
                     .fit()
@@ -87,7 +99,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             override fun unbindView(item: Media) {
-                Picasso.get().cancelRequest(view.imageView)
+                picasso.cancelRequest(view.imageView)
             }
         }
     }

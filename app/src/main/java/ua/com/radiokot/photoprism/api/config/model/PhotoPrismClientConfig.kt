@@ -10,4 +10,6 @@ constructor(
     val downloadToken: String,
     @JsonProperty("previewToken")
     val previewToken: String,
+    @JsonProperty("public")
+    val public: Boolean,
 )

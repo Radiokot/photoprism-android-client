@@ -13,9 +13,7 @@ class KoinScopeEnvSessionHolder(
 
     override fun set(session: EnvSession) {
         with(koin) {
-            getScopeOrNull(DI_SCOPE_SESSION)?.close()?.also {
-                log.debug { "set(): closed_existing_scope" }
-            }
+            closeExistingScope()
 
             createScope(
                 scopeId = DI_SCOPE_SESSION,
@@ -26,6 +24,18 @@ class KoinScopeEnvSessionHolder(
             log.debug {
                 "set(): created_new_scope:" +
                         "\nscopeId=$DI_SCOPE_SESSION"
+            }
+        }
+    }
+
+    override fun clear() {
+        closeExistingScope()
+    }
+
+    private fun closeExistingScope() {
+        with(koin) {
+            getScopeOrNull(DI_SCOPE_SESSION)?.close()?.also {
+                log.debug { "closeExistingScope(): scope_closed" }
             }
         }
     }

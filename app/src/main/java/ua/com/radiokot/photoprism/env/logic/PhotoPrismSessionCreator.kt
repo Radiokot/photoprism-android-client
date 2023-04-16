@@ -30,7 +30,11 @@ class PhotoPrismSessionCreator(
                     ""
             }
         } catch (e: HttpException) {
-            if (e.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            // Only throw the credentials exception for a genuine PhotoPrism response.
+            // There may be 401s due to the HTTP auth or deployment issues.
+            if (e.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+                && e.response()?.errorBody()?.contentType()?.subtype == "json"
+            ) {
                 throw InvalidCredentialsException()
             } else {
                 throw e

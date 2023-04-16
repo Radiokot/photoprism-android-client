@@ -21,8 +21,8 @@ android {
         applicationId "ua.com.radiokot.photoprism"
         minSdk 21
         targetSdk 33
-        versionCode 5
-        versionName "1.2.0"
+        versionCode 7
+        versionName "1.4.0"
 
         resConfigs "en"
 
@@ -49,6 +49,19 @@ android {
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
         }
+        releaseClone {
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+
+            applicationIdSuffix ".clone"
+            versionNameSuffix "-clone"
+
+            manifestPlaceholders.fileProviderAuthority = fileProviderAuthority + ".clone"
+            buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + ".clone" + "\""
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -68,6 +81,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'androidx.preference:preference:1.2.0'
 
     // Must be 2.13 for minSdk 21
     implementation('com.fasterxml.jackson.core:jackson-databind:2.13.0')

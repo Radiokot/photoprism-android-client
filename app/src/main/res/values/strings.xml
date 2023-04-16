@@ -32,14 +32,15 @@
     <string name="reset_search">Reset</string>
     <string name="error_you_have_to_connect_to_library">You have to connect to a library first</string>
     <string name="library_root_url">Library root URL</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
+    <string name="username_optional">Username (optional)</string>
+    <string name="password_optional">Password (optional)</string>
     <string name="connect_to_a_library">Connect to a library</string>
     <string name="connect">Connect</string>
     <string name="auth_public">Public</string>
     <string name="auth_private">Private</string>
     <string name="template_error_inaccessible_library_url">Library is not accessible: %1$s</string>
     <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
+    <string name="error_library_requires_credentials">Library requires credentials</string>
     <string name="error_invalid_password">Invalid password</string>
     <string name="template_error_failed_to_load_content">Failed to load the content: %1$s</string>
     <string name="error_library_not_accessible_try_again">Library is not accessible. Check the connection and try again</string>
@@ -74,4 +75,33 @@
     </string-array>
     <string name="some_types_are_not_available_when_selecting">Some types are not available when selecting content</string>
     <string name="include_private_content">Include private content</string>
+    <string name="client_certificate_optional">Client certificate (optional)</string>
+    <string name="clear">Clear</string>
+    <string name="how_to_use_client_certificate">How to use client certificates</string>
+    <string name="p12_certificate_guide">
+        1. Download your PKCS12 (.p12) bundle to the device;\n\n
+        2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;\n\n
+        3. Return to the gallery and select the installed certificate.</string>
+    <string name="ok">OK</string>
+    <string name="learn_more">Learn more</string>
+    <string name="preferences">Preferences</string>
+    <string name="library_preferences">@string/library</string>
+    <string name="library_endpoint">Library endpoint</string>
+    <string name="about">About</string>
+    <string name="app_version">Version</string>
+    <string name="report_an_issue">Report an issue</string>
+    <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export_bookmarks">Export bookmarks</string>
+    <string name="save_exported_file">Save exported file</string>
+    <string name="import_bookmarks">Import bookmarks</string>
+    <string name="template_error_failed_to_import_bookmarks">Failed to import bookmarks: %1$s</string>
+    <string name="template_successfully_imported_bookmarks_plural">Successfully imported %1$d %2$s</string>
+    <string name="replace_current_bookmarks_with_saved">Replace current bookmarks with saved ones</string>
+    <string name="save_bookmarks_to_file">Save your bookmarks to a file</string>
+    <string name="your_bookmarks_will_be_replaced">Your current bookmarks will be replaced. Continue?</string>
+    <string name="ccontinue">Continue</string>
+    <string name="disconnect_from_library">Disconnect</string>
+    <string name="your_bookmarks_will_be_kept">Your bookmarks will be kept</string>
+    <string name="template_error_failed_to_disconnect">Failed to disconnect: %1$s</string>
 </resources>

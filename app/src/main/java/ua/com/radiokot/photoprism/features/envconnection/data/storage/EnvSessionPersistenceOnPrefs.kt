@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
+import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.tryOrNull
 
@@ -35,6 +36,8 @@ class EnvSessionPersistenceOnPrefs(
     constructor(
         @JsonProperty("a")
         val apiUrl: String,
+        @JsonProperty("crt")
+        val clientCertificateAlias: String?,
         @JsonProperty("i")
         val id: String,
         @JsonProperty("pt")
@@ -43,15 +46,19 @@ class EnvSessionPersistenceOnPrefs(
         val downloadToken: String,
     ) {
         constructor(source: EnvSession) : this(
-            apiUrl = source.apiUrl,
             id = source.id,
+            apiUrl = source.envConnectionParams.apiUrl,
+            clientCertificateAlias = source.envConnectionParams.clientCertificateAlias,
             previewToken = source.previewToken,
             downloadToken = source.downloadToken,
         )
 
         fun toSource() = EnvSession(
-            apiUrl = apiUrl,
             id = id,
+            envConnectionParams = EnvConnectionParams(
+                apiUrl = apiUrl,
+                clientCertificateAlias = clientCertificateAlias,
+            ),
             previewToken = previewToken,
             downloadToken = downloadToken,
         )

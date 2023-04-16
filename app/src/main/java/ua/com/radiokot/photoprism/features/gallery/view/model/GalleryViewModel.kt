@@ -467,6 +467,10 @@ class GalleryViewModel(
         loadMore()
     }
 
+    fun onPreferencesButtonClicked() {
+        eventsSubject.onNext(Event.OpenPreferences)
+    }
+
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
@@ -484,6 +488,8 @@ class GalleryViewModel(
         object ResetScroll : Event
 
         class ShowFloatingError(val error: Error) : Event
+
+        object OpenPreferences : Event
     }
 
     sealed interface State {

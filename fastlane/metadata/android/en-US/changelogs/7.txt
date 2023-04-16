@@ -1,0 +1,4 @@
+Added:
+- Preferences screen
+- Bookmarks backup – export your bookmarks to restore them later or use on other device
+- Disconnect from the library

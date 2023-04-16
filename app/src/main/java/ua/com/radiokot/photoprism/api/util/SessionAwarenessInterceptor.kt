@@ -20,7 +20,7 @@ class SessionAwarenessInterceptor(
                 .build()
         )
 
-        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        if (sessionId.isNotEmpty() && response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             throw SessionExpiredException(sessionId)
         }
 

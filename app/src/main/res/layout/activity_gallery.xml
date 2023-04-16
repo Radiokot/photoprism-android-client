@@ -29,7 +29,10 @@
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search_the_library" />
+            android:hint="@string/search_the_library"
+            app:navigationContentDescription="@string/preferences"
+            app:navigationIcon="@drawable/ic_dots_vertical"
+            app:navigationIconTint="?colorOnSurfaceVariant" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.search.SearchView

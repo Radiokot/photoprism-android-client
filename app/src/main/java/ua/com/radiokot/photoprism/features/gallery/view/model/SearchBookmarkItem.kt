@@ -9,7 +9,7 @@ class SearchBookmarkItem(
 ) {
     constructor(source: SearchBookmark) : this(
         name = source.name,
-        dragAndDropContent = source.searchConfig.userQuery ?: "",
+        dragAndDropContent = source.searchConfig.userQuery,
         source = source,
     )
 

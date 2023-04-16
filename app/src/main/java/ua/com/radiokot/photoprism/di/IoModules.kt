@@ -9,6 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import ua.com.radiokot.photoprism.api.util.UrlBasicAuthInterceptor
 import java.util.concurrent.TimeUnit
 
 typealias HttpClient = OkHttpClient
@@ -39,6 +40,7 @@ val ioModules: List<Module> = listOf(
         factory {
             OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(UrlBasicAuthInterceptor())
         }.bind(OkHttpClient.Builder::class)
 
         single {

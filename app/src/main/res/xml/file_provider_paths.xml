@@ -3,4 +3,8 @@
     <files-path
         name="downloads"
         path="downloads/" />
+
+    <files-path
+        name="export"
+        path="export/" />
 </paths>

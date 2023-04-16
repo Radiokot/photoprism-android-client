@@ -52,6 +52,11 @@
             android:label="@string/connect_to_a_library"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
 
+        <activity
+            android:name=".features.prefs.view.PreferencesActivity"
+            android:exported="false"
+            android:label="@string/preferences" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

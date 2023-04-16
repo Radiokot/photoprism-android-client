@@ -34,6 +34,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
+import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.view.ErrorView
 import java.io.File
@@ -211,6 +212,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     is GalleryViewModel.Event.ShowFloatingError -> {
                         showFloatingError(event.error)
                     }
+
+                    is GalleryViewModel.Event.OpenPreferences -> {
+                        openPreferences()
+                    }
                 }
 
                 log.debug {
@@ -362,7 +367,12 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             searchView = view.searchView,
             configurationView = view.searchContent,
         )
+
         onBackPressedDispatcher.addCallback(this, searchView.backPressedCallback)
+
+        view.searchBar.setNavigationOnClickListener {
+            viewModel.onPreferencesButtonClicked()
+        }
     }
 
     private fun initErrorView() {
@@ -414,6 +424,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     )
                 )
         )
+    }
+
+    private fun openPreferences() {
+        startActivity(Intent(this, PreferencesActivity::class.java))
     }
 
     private fun resetScroll() {

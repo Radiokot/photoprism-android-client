@@ -1,16 +1,20 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.content.Context
+import android.net.Uri
 import android.text.format.DateFormat
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
+import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.envModules
+import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -24,11 +28,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
+const val INTERNAL_EXPORT_DIRECTORY = "internal-export"
 
 private const val MONTH_DATE_FORMAT = "month"
 private const val MONTH_YEAR_DATE_FORMAT = "month-year"
 private const val DAY_DATE_FORMAT = "day"
 private const val DAY_YEAR_DATE_FORMAT = "day-year"
+
+class ImportSearchBookmarksUseCaseParams(
+    val fileUri: Uri,
+) : SelfParameterHolder()
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
@@ -69,7 +78,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 val session = get<EnvSession>()
 
                 PhotoPrismPreviewUrlFactory(
-                    apiUrl = session.apiUrl,
+                    apiUrl = session.envConnectionParams.apiUrl,
                     previewToken = session.previewToken,
                 )
             }.bind(MediaPreviewUrlFactory::class)
@@ -78,7 +87,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 val session = get<EnvSession>()
 
                 PhotoPrismMediaDownloadUrlFactory(
-                    apiUrl = session.apiUrl,
+                    apiUrl = session.envConnectionParams.apiUrl,
                     downloadToken = session.downloadToken,
                 )
             }.bind(MediaFileDownloadUrlFactory::class)
@@ -137,18 +146,28 @@ val galleryFeatureModules: List<Module> = listOf(
                 .apply { mkdirs() }
         } bind File::class
 
-        single {
-            OkHttpObservableDownloader(
-                httpClient = get()
-            )
-        }.bind(ObservableDownloader::class)
+        single(named(INTERNAL_EXPORT_DIRECTORY)) {
+            // See file_provider_paths.
+            File(get<Context>().filesDir.absolutePath + "/export")
+                .apply { mkdirs() }
+        } bind File::class
 
         single {
             FileReturnIntentCreator(
                 fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
                 context = get(),
             )
-        }.bind(FileReturnIntentCreator::class)
+        } bind FileReturnIntentCreator::class
+
+        scope<EnvSession> {
+            // Downloader must be session-scoped to have the correct
+            // HTTP client (e.g. for mTLS)
+            scoped {
+                OkHttpObservableDownloader(
+                    httpClient = get()
+                )
+            } bind ObservableDownloader::class
+        }
     },
 
     module {
@@ -165,5 +184,33 @@ val galleryFeatureModules: List<Module> = listOf(
                 bookmarksRepository = get(),
             )
         }
+    },
+
+    module {
+        includes(ioModules)
+
+        single {
+            JsonSearchBookmarksBackup(jsonObjectMapper = get())
+        } bind SearchBookmarksBackup::class
+
+        factory {
+            ExportSearchBookmarksUseCase(
+                exportDir = get(named(INTERNAL_EXPORT_DIRECTORY)),
+                backupStrategy = get(),
+                fileReturnIntentCreator = get(),
+                searchBookmarksRepository = get(),
+            )
+        } bind ExportSearchBookmarksUseCase::class
+
+        factory(_q<ImportSearchBookmarksUseCaseParams>()) { params ->
+            params as ImportSearchBookmarksUseCaseParams
+
+            ImportSearchBookmarksUseCase(
+                fileUri = params.fileUri,
+                backupStrategy = get(),
+                searchBookmarksRepository = get(),
+                contentResolver = get<Context>().contentResolver,
+            )
+        } bind ImportSearchBookmarksUseCase::class
     },
 )
