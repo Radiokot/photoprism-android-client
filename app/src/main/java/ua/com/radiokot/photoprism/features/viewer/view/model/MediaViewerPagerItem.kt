@@ -130,6 +130,7 @@ sealed class MediaViewerPagerItem(
 
                 view.videoView.setVideoURI(Uri.parse(item.previewUrl))
                 view.videoView.setOnPreparedListener { mediaPlayer ->
+                    view.videoView.changeVideoSize(mediaPlayer.videoWidth, mediaPlayer.videoHeight)
                     mediaPlayer.isLooping = item.isLooped
                     mediaPlayer.setScreenOnWhilePlaying(true)
                     mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
