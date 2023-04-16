@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -20,6 +21,7 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 
@@ -90,19 +92,61 @@ sealed class MediaViewerPagerItem(
             ViewHolder(v)
 
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewer>(itemView) {
+            private val log = kLogger("VideoViewerVH")
             val view = PagerItemMediaViewerVideoBinding.bind(itemView)
 
+            init {
+                with(view.playPauseButton) {
+                    setOnClickListener {
+                        if (view.videoView.isPlaying && view.videoView.canPause()) {
+                            view.videoView.pause()
+                        } else {
+                            view.videoView.start()
+                        }
+                        updatePlayPause()
+                    }
+                }
+                view.videoView.setOnInfoListener { mp, what, extra ->
+                    log.debug {
+                        "init(): info_received:" +
+                                "\nwhat=$what," +
+                                "\nextra=$extra"
+                    }
+                    true
+                }
+            }
+
+            private fun updatePlayPause() {
+                view.playPauseButton.setIconResource(
+                    if (view.videoView.isPlaying)
+                        R.drawable.ic_pause
+                    else
+                        R.drawable.ic_play
+                )
+            }
+
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
+                view.playPauseButton.isVisible = false
+
                 view.videoView.setVideoURI(Uri.parse(item.previewUrl))
                 view.videoView.setOnPreparedListener { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
-                }
-                view.downloadButton.setOnClickListener {
-                    if (view.videoView.isPlaying && view.videoView.canPause()) {
-                        view.videoView.pause()
-                    } else {
-                        view.videoView.start()
+                    mediaPlayer.setScreenOnWhilePlaying(true)
+                    mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
+                        log.debug {
+                            "bindView(): buffering_updated:" +
+                                    "\npercent=$percent"
+                        }
                     }
+                    mediaPlayer.setOnCompletionListener {
+                        log.debug {
+                            "bindView(): completion"
+                        }
+                        updatePlayPause()
+                    }
+                    mediaPlayer.start()
+                    updatePlayPause()
+                    view.playPauseButton.isVisible = true
                 }
             }
 
