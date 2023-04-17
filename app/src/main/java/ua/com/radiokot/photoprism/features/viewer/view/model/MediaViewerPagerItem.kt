@@ -120,12 +120,12 @@ sealed class MediaViewerPagerItem(
             }
 
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
-                view.playPauseButton.isVisible = false
             }
 
             // Video preparation must be done here,
             // as the binding takes place when the view is not yet attached.
             override fun attachToWindow(item: VideoViewer) {
+                view.playPauseButton.isVisible = false
                 view.videoView.setUseInstanceCacheOnDetach(true)
                 view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
                 view.videoView.prepareAsyncWhenSurfaceAvailable { mediaPlayer ->

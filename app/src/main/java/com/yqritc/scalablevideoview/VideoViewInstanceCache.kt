@@ -18,6 +18,7 @@ object VideoViewInstanceCache {
             "put(): put:" +
                     "\nkey=$mediaUriKey"
         }
+
         cache = Triple(mediaUriKey, surfaceTexture, player)
     }
 
