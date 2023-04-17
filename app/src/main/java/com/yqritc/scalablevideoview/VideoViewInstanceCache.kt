@@ -10,10 +10,6 @@ object VideoViewInstanceCache {
     private var cache: Triple<Uri, SurfaceTexture, MediaPlayer>? = null
 
     fun put(mediaUriKey: Uri, surfaceTexture: SurfaceTexture, player: MediaPlayer) {
-        if (cache?.first != mediaUriKey) {
-            release()
-        }
-
         log.debug {
             "put(): put:" +
                     "\nkey=$mediaUriKey"
@@ -40,12 +36,15 @@ object VideoViewInstanceCache {
                 }
             }
 
-    fun release() {
+    fun clearAndRelease() {
         if (cache != null) {
             cache?.second?.release()
             cache?.third?.release()
+            cache = null
 
-            log.debug { "release(): released_instances" }
+            log.debug { "clearAndRelease(): released_instances" }
+        } else {
+            log.debug { "clearAndRelease(): nothing_to_clear" }
         }
     }
 }

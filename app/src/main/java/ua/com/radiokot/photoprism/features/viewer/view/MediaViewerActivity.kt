@@ -8,12 +8,15 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.view.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.addClickListener
+import com.yqritc.scalablevideoview.VideoViewInstanceCache
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -37,6 +40,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPagerIte
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
+import java.lang.ref.WeakReference
 
 class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -152,6 +156,29 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
 
             adapter = fastAdapter
+
+            // Prevent VideoView instance caching on complete screen destroy.
+            val recyclerReference = WeakReference<RecyclerView?>(get(0) as? RecyclerView)
+            viewModel.addCloseable {
+                recyclerReference.get()?.findViewHolderForAdapterPosition(currentItem)
+                ?.also { currentViewHolder ->
+                    if (currentViewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
+                        currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(false)
+                        VideoViewInstanceCache.clearAndRelease()
+                    }
+                }
+            }
+
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    (get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(currentItem)
+                        ?.also { currentViewHolder ->
+                            if (currentViewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
+                                currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(true)
+                            }
+                        }
+                }
+            })
 
             // TODO: Endless scrolling
         }

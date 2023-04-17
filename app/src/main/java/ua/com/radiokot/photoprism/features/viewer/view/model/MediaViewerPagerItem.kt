@@ -122,11 +122,13 @@ sealed class MediaViewerPagerItem(
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
             }
 
+            override fun unbindView(item: VideoViewer) {
+            }
+
             // Video preparation must be done here,
             // as the binding takes place when the view is not yet attached.
             override fun attachToWindow(item: VideoViewer) {
                 view.playPauseButton.isVisible = false
-                view.videoView.setUseInstanceCacheOnDetach(true)
                 view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
                 view.videoView.prepareAsyncWhenSurfaceAvailable { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
@@ -137,14 +139,6 @@ sealed class MediaViewerPagerItem(
                     updatePlayPause()
                     view.playPauseButton.isVisible = true
                 }
-            }
-
-            override fun detachFromWindow(item: VideoViewer) {
-                view.videoView.setUseInstanceCacheOnDetach(false)
-            }
-
-            override fun unbindView(item: VideoViewer) {
-                view.videoView.stop()
             }
         }
     }
