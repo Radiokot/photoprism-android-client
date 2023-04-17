@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaPlayer
 import android.net.Uri
 import android.view.View
 import androidx.annotation.DrawableRes
@@ -13,6 +14,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import com.yqritc.scalablevideoview.MediaPlayerInstanceCache
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
@@ -23,6 +25,7 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import java.lang.ref.WeakReference
 
 sealed class MediaViewerPagerItem(
     val thumbnailUrl: String,
@@ -126,6 +129,7 @@ sealed class MediaViewerPagerItem(
             // Video preparation must be done here,
             // as the binding takes place when the view is not yet attached.
             override fun attachToWindow(item: VideoViewer) {
+                view.videoView.useMediaPlayerInstanceCache(StupidAssCache)
                 view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
                 view.videoView.prepareAsyncWhenSurfaceAvailable { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
@@ -139,8 +143,31 @@ sealed class MediaViewerPagerItem(
                 }
             }
 
+            override fun detachFromWindow(item: VideoViewer) {
+                view.videoView.useMediaPlayerInstanceCache(null)
+            }
+
             override fun unbindView(item: VideoViewer) {
                 view.videoView.stop()
+            }
+
+            companion object StupidAssCache : MediaPlayerInstanceCache {
+                private var cache: Pair<Uri, WeakReference<MediaPlayer>>? = null
+
+                override fun put(mediaUriKey: Uri, instance: MediaPlayer) {
+                    println("OOLEG Cache put $mediaUriKey")
+                    cache = mediaUriKey to WeakReference(instance)
+                }
+
+                override fun get(mediaUriKey: Uri): MediaPlayer? {
+                    return cache?.takeIf { it.first == mediaUriKey }?.second?.get().also {
+                        if (it != null) {
+                            println("OOLEG Cache hit $mediaUriKey")
+                        } else {
+                            println("OOLEG Cache miss $mediaUriKey")
+                        }
+                    }
+                }
             }
         }
     }

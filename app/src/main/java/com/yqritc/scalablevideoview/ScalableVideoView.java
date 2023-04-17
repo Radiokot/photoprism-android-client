@@ -33,7 +33,8 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
     protected ScalableType mScalableType = ScalableType.NONE;
     protected boolean mIsSurfaceAvailable = false;
     protected boolean mPrepareAsyncOnSurfaceAvailable = false;
-
+    protected MediaPlayerInstanceCache mPlayerInstanceCache = null;
+    protected Uri mMediaUri = null;
 
     public ScalableVideoView(Context context) {
         this(context, null);
@@ -68,7 +69,11 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
             mIsSurfaceAvailable = true;
 
             if (mPrepareAsyncOnSurfaceAvailable) {
-                mMediaPlayer.prepareAsync();
+                try {
+                    mMediaPlayer.prepareAsync();
+                } catch (Exception ignored) {
+
+                }
                 mPrepareAsyncOnSurfaceAvailable = false;
             }
         }
@@ -95,10 +100,19 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
             return;
         }
 
-        if (isPlaying()) {
-            stop();
+        if (mPlayerInstanceCache != null && mMediaUri != null) {
+            if (isPlaying()) {
+                pause();
+            }
+
+            mPlayerInstanceCache.put(mMediaUri, mMediaPlayer);
+        } else {
+            if (isPlaying()) {
+                stop();
+            }
+
+            release();
         }
-        release();
     }
 
     @Override
@@ -122,7 +136,18 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
 
     private void initializeMediaPlayer() {
         if (mMediaPlayer == null) {
-            mMediaPlayer = new MediaPlayer();
+            MediaPlayer cachedMediaPlayer = null;
+            if (mMediaUri != null && mPlayerInstanceCache != null) {
+                cachedMediaPlayer = mPlayerInstanceCache.get(mMediaUri);
+            }
+
+            if (cachedMediaPlayer != null) {
+                mMediaPlayer = cachedMediaPlayer;
+//                mMediaPlayer.start();
+            } else {
+                mMediaPlayer = new MediaPlayer();
+            }
+
             mMediaPlayer.setOnVideoSizeChangedListener(this);
             setSurfaceTextureListener(this);
         } else {
@@ -152,14 +177,24 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
     }
 
     public void setDataSource(@NonNull Context context, @NonNull Uri uri,
-            @Nullable Map<String, String> headers) throws IOException {
+                              @Nullable Map<String, String> headers) throws IOException {
+        mMediaUri = uri;
         initializeMediaPlayer();
-        mMediaPlayer.setDataSource(context, uri, headers);
+        try {
+            mMediaPlayer.setDataSource(context, uri, headers);
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void setDataSource(@NonNull Context context, @NonNull Uri uri) throws IOException {
+        mMediaUri = uri;
         initializeMediaPlayer();
-        mMediaPlayer.setDataSource(context, uri);
+        try {
+            mMediaPlayer.setDataSource(context, uri);
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void setDataSource(@NonNull FileDescriptor fd, long offset, long length)
@@ -191,7 +226,7 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
     }
 
     public void prepareAsyncWhenSurfaceAvailable(@Nullable MediaPlayer.OnPreparedListener listener)
-        throws IllegalStateException {
+            throws IllegalStateException {
         mMediaPlayer.setOnPreparedListener(listener);
         if (mIsSurfaceAvailable) {
             mMediaPlayer.prepareAsync();
@@ -281,5 +316,9 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
         reset();
         mMediaPlayer.release();
         mMediaPlayer = null;
+    }
+
+    public void useMediaPlayerInstanceCache(@Nullable MediaPlayerInstanceCache cache) {
+        mPlayerInstanceCache = cache;
     }
 }
