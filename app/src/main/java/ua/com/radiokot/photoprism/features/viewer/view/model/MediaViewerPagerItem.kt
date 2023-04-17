@@ -21,7 +21,6 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 
@@ -96,27 +95,18 @@ sealed class MediaViewerPagerItem(
             ViewHolder(v)
 
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewer>(itemView) {
-            private val log = kLogger("VideoViewerVH")
             val view = PagerItemMediaViewerVideoBinding.bind(itemView)
 
             init {
                 with(view.playPauseButton) {
                     setOnClickListener {
-                        if (view.videoView.isPlaying && view.videoView.canPause()) {
+                        if (view.videoView.isPlaying) {
                             view.videoView.pause()
                         } else {
                             view.videoView.start()
                         }
                         updatePlayPause()
                     }
-                }
-                view.videoView.setOnInfoListener { _, what, extra ->
-                    log.debug {
-                        "init(): info_received:" +
-                                "\nwhat=$what," +
-                                "\nextra=$extra"
-                    }
-                    true
                 }
             }
 
@@ -131,10 +121,13 @@ sealed class MediaViewerPagerItem(
 
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
                 view.playPauseButton.isVisible = false
+            }
 
-                view.videoView.setVideoURI(Uri.parse(item.previewUrl))
-                view.videoView.setOnPreparedListener { mediaPlayer ->
-                    view.videoView.changeVideoSize(mediaPlayer.videoWidth, mediaPlayer.videoHeight)
+            // Video preparation must be done here,
+            // as the binding takes place when the view is not yet attached.
+            override fun attachToWindow(item: VideoViewer) {
+                view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
+                view.videoView.prepareAsyncWhenSurfaceAvailable { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
                     mediaPlayer.setScreenOnWhilePlaying(true)
                     mediaPlayer.setOnCompletionListener {
@@ -147,11 +140,7 @@ sealed class MediaViewerPagerItem(
             }
 
             override fun unbindView(item: VideoViewer) {
-                view.videoView.stopPlayback()
-            }
-
-            override fun detachFromWindow(item: VideoViewer) {
-                view.videoView.stopPlayback()
+                view.videoView.stop()
             }
         }
     }

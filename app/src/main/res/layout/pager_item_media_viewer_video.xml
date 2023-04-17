@@ -5,26 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ua.com.radiokot.photoprism.view.ScalableVideoView
+    <com.yqritc.scalablevideoview.ScalableVideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        app:scalableType="fitCenter"/>
 
-        <FrameLayout
-            android:id="@+id/media_controls_layout"
-            android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/media_controls_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/play_pause_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/play_pause_button"
-                style="?materialIconButtonFilledTonalStyle"
-                app:icon="@drawable/ic_play"
-                android:layout_width="wrap_content"
-                app:backgroundTint="@color/black_overlay"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/download" />
-        </FrameLayout>
+            android:layout_gravity="center"
+            android:contentDescription="@string/download"
+            app:backgroundTint="@color/black_overlay"
+            app:icon="@drawable/ic_play" />
+    </FrameLayout>
 </FrameLayout>
