@@ -13,6 +13,7 @@ class MediaViewerVideoViewInstanceCacheViewModel : ViewModel() {
 
     init {
         VideoViewInstanceCache.clearAndRelease()
+        VideoViewInstanceCache.isEnabled = false
         log.debug { "init(): clearedCache" }
     }
 
