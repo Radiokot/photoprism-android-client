@@ -26,7 +26,7 @@ class MediaViewerViewModel(
     private var isInitialized = false
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val itemsList: MutableLiveData<List<MediaViewerPagerItem>?> = MutableLiveData(null)
+    val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
     val state: MutableLiveData<State> = MutableLiveData(State.Idle)
@@ -69,7 +69,7 @@ class MediaViewerViewModel(
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .map { galleryMediaItems ->
-                galleryMediaItems.map(MediaViewerPagerItem.Companion::fromGalleryMedia)
+                galleryMediaItems.map(MediaViewerPage.Companion::fromGalleryMedia)
             }
             .subscribe(itemsList::setValue)
             .addToCloseables(this)

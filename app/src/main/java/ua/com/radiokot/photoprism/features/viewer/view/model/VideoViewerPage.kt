@@ -1,0 +1,62 @@
+package ua.com.radiokot.photoprism.features.viewer.view.model
+
+import android.net.Uri
+import android.view.View
+import com.google.android.exoplayer2.Player
+import com.mikepenz.fastadapter.FastAdapter
+import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
+
+class VideoViewerPage(
+    previewUrl: String,
+    val isLooped: Boolean,
+    thumbnailUrl: String,
+) : MediaViewerPage(thumbnailUrl) {
+    val previewUri: Uri = Uri.parse(previewUrl)
+
+    override val type: Int
+        get() = R.id.pager_item_media_viewer_video
+
+    override val layoutRes: Int
+        get() = R.layout.pager_item_media_viewer_video
+
+    override fun getViewHolder(v: View): ViewHolder =
+        ViewHolder(v)
+
+    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
+        val view = PagerItemMediaViewerVideoBinding.bind(itemView)
+
+        override fun attachToWindow(item: VideoViewerPage) {
+            val player = MediaViewerVideoPlayersCache.get(
+                mediaSourceUri = item.previewUri,
+                context = view.videoView.context,
+            )
+
+            player.apply {
+                repeatMode =
+                    if (item.isLooped) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+
+                if (!player.isPlaying) {
+                    prepare()
+                    play()
+                }
+            }
+
+            view.videoView.player = player
+        }
+
+        override fun detachFromWindow(item: VideoViewerPage) {
+            view.videoView.player?.apply {
+                stop()
+                seekToDefaultPosition()
+            }
+        }
+
+        // Video player must be set up only once it is attached.
+        override fun bindView(item: VideoViewerPage, payloads: List<Any>) {
+        }
+
+        override fun unbindView(item: VideoViewerPage) {
+        }
+    }
+}
