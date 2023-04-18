@@ -221,6 +221,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
+        viewHolder.bindToLifecycle(this.lifecycle)
 
         val view = viewHolder.view
 

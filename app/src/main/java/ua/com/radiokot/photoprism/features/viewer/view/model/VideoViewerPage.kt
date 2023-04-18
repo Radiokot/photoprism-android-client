@@ -2,6 +2,9 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.net.Uri
 import android.view.View
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import com.google.android.exoplayer2.Player
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
@@ -29,6 +32,16 @@ class VideoViewerPage(
     class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
         val view = PagerItemMediaViewerVideoBinding.bind(itemView)
         var playerCache: VideoPlayerCache? = null
+
+        fun bindToLifecycle(lifecycle: Lifecycle) {
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onPause(owner: LifecycleOwner) {
+                    if (view.videoView.player?.isPlaying == true) {
+                        view.videoView.player?.pause()
+                    }
+                }
+            })
+        }
 
         override fun attachToWindow(item: VideoViewerPage) {
             val playerCache = this.playerCache.checkNotNull {
