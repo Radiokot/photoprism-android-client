@@ -18,6 +18,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center">
 
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_indicator"
+            style="@style/Widget.Material3.CircularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/play_pause_button"
             style="?materialIconButtonFilledTonalStyle"

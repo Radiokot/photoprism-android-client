@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaPlayer
 import android.net.Uri
 import android.view.View
 import androidx.annotation.DrawableRes
@@ -81,10 +82,12 @@ sealed class MediaViewerPagerItem(
     }
 
     class VideoViewer(
-        val previewUrl: String,
+        previewUrl: String,
         val isLooped: Boolean,
         thumbnailUrl: String,
     ) : MediaViewerPagerItem(thumbnailUrl) {
+        val previewUri: Uri = Uri.parse(previewUrl)
+
         override val type: Int
             get() = R.id.pager_item_media_viewer_video
 
@@ -127,17 +130,34 @@ sealed class MediaViewerPagerItem(
 
             // Video preparation must be done here,
             // as the binding takes place when the view is not yet attached.
-            override fun attachToWindow(item: VideoViewer) {
-                view.playPauseButton.isVisible = false
-                view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
-                view.videoView.prepareAsync { mediaPlayer ->
+            override fun attachToWindow(item: VideoViewer) = with(view) {
+                playPauseButton.isVisible = false
+                progressIndicator.show()
+                videoView.setDataSource(videoView.context, item.previewUri)
+                videoView.prepareAsync { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
                     mediaPlayer.setOnCompletionListener {
                         updatePlayPause()
                     }
                     mediaPlayer.start()
                     updatePlayPause()
-                    view.playPauseButton.isVisible = true
+                    playPauseButton.isVisible = true
+                    progressIndicator.hide()
+                }
+                videoView.setOnInfoListener { _, what, _ ->
+                    when (what) {
+                        MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
+                            progressIndicator.hide()
+                        }
+                        MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
+                            progressIndicator.show()
+
+                        }
+                        MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
+                            progressIndicator.hide()
+                        }
+                    }
+                    false
                 }
             }
         }
