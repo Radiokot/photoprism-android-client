@@ -16,7 +16,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.addClickListener
-import com.yqritc.scalablevideoview.VideoViewInstanceCache
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -37,10 +36,10 @@ import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPagerItem
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerVideoViewInstanceCacheViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
-import java.lang.ref.WeakReference
 
 class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -52,6 +51,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
+    private val mediaViewerVideoCacheViewModel: MediaViewerVideoViewInstanceCacheViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPagerItem>()
@@ -157,26 +157,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
             adapter = fastAdapter
 
-            // Prevent VideoView instance caching on complete screen destroy.
-            val recyclerReference = WeakReference<RecyclerView?>(get(0) as? RecyclerView)
-            viewModel.addCloseable {
-                recyclerReference.get()?.findViewHolderForAdapterPosition(currentItem)
-                ?.also { currentViewHolder ->
-                    if (currentViewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
-//                        currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(false)
-//                        VideoViewInstanceCache.clearAndRelease()
-                    }
-                }
-            }
-
+            mediaViewerVideoCacheViewModel.touch()
             lifecycle.addObserver(object : DefaultLifecycleObserver {
                 override fun onDestroy(owner: LifecycleOwner) {
-                    (get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(currentItem)
-                        ?.also { currentViewHolder ->
-                            if (currentViewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
-                                currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(true)
-                            }
-                        }
+                    mediaViewerVideoCacheViewModel.onPreActivityDestroy()
                 }
             })
 

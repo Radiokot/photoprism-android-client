@@ -46,7 +46,6 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
     protected String mAssetName;
     protected String mFilePath;
     protected boolean mIsUsingCachedPlayer = false;
-    protected boolean mUseInstanceCacheOnDetach = false;
     protected ScalableType mScalableType = ScalableType.NONE;
 
     public ScalableVideoView(Context context) {
@@ -139,12 +138,13 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
         if (mMediaPlayer == null) {
             return;
         }
-        if (mUseInstanceCacheOnDetach && mUri != null) {
+
+        if (VideoViewInstanceCache.isEnabled() && mUri != null) {
             if (isPlaying()) {
                 pause();
             }
 
-            VideoViewInstanceCache.INSTANCE.put(mUri, getSurfaceTexture(), mMediaPlayer);
+            VideoViewInstanceCache.put(mUri, getSurfaceTexture(), mMediaPlayer);
         } else {
             if (isPlaying()) {
                 stop();
@@ -384,9 +384,5 @@ public class ScalableVideoView extends TextureView implements TextureView.Surfac
         reset();
         mMediaPlayer.release();
         mMediaPlayer = null;
-    }
-
-    public void setUseInstanceCacheOnDetach(boolean useInstanceCacheOnDetach) {
-        mUseInstanceCacheOnDetach = useInstanceCacheOnDetach;
     }
 }
