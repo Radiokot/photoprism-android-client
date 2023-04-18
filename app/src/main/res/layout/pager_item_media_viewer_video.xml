@@ -9,30 +9,5 @@
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:use_controller="false" />
-
-    <FrameLayout
-        android:id="@+id/media_controls_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progress_indicator"
-            style="@style/Widget.Material3.CircularProgressIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/play_pause_button"
-            style="?materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/download"
-            app:backgroundTint="@color/black_overlay"
-            app:icon="@drawable/ic_play" />
-    </FrameLayout>
+        app:controller_layout_id="@layout/layout_video_player_controls" />
 </FrameLayout>
