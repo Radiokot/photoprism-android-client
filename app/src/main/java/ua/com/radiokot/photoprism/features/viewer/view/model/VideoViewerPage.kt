@@ -36,14 +36,24 @@ class VideoViewerPage(
         fun bindToLifecycle(lifecycle: Lifecycle) {
             lifecycle.addObserver(object : DefaultLifecycleObserver {
                 override fun onPause(owner: LifecycleOwner) {
-                    if (view.videoView.player?.isPlaying == true) {
-                        view.videoView.player?.pause()
+                    val player = view.videoView.player
+                        ?: return
+
+                    view.videoView.post {
+                        // Only pause if the owner is not destroyed.
+                        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
+                            && player.isPlaying
+                        ) {
+                            player.pause()
+                        }
                     }
                 }
             })
         }
 
         override fun attachToWindow(item: VideoViewerPage) {
+            view.videoView.useController = item.needsVideoControls
+
             val playerCache = this.playerCache.checkNotNull {
                 "Player cache must be set"
             }
@@ -53,19 +63,20 @@ class VideoViewerPage(
                 context = view.videoView.context,
             )
 
-            view.videoView.useController = item.needsVideoControls
-
-            player.apply {
+            with(player) {
                 repeatMode =
-                    if (item.isLooped) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
-
-                if (!player.isPlaying) {
-                    prepare()
-                    play()
+                    if (item.isLooped)
+                        Player.REPEAT_MODE_ONE
+                    else
+                        Player.REPEAT_MODE_OFF
+                // Only play automatically on init.
+                if (!isPlaying && playbackState == Player.STATE_IDLE) {
+                    playWhenReady = true
                 }
-            }
+                prepare()
 
-            view.videoView.player = player
+                view.videoView.player = this
+            }
         }
 
         override fun detachFromWindow(item: VideoViewerPage) {
