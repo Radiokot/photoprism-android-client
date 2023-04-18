@@ -5,12 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.yqritc.scalablevideoview.ScalableVideoView
+    <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:scalableType="fitCenter"/>
+        android:layout_height="match_parent"
+        app:use_controller="false" />
 
     <FrameLayout
         android:id="@+id/media_controls_layout"

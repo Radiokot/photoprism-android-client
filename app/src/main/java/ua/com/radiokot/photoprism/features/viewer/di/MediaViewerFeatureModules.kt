@@ -11,7 +11,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerVideoViewInstanceCacheViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerVideoPlayersCache
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import java.io.File
 
@@ -46,7 +46,7 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             }
 
             viewModel {
-                MediaViewerVideoViewInstanceCacheViewModel()
+                MediaViewerVideoPlayersCache()
             }
         }
     }

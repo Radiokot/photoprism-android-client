@@ -8,8 +8,6 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.view.*
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
@@ -36,7 +34,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPagerItem
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerVideoViewInstanceCacheViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerVideoPlayersCache
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
@@ -51,7 +49,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
-    private val mediaViewerVideoCacheViewModel: MediaViewerVideoViewInstanceCacheViewModel by viewModel()
+    private val mediaViewerVideoCacheViewModel: MediaViewerVideoPlayersCache by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPagerItem>()
@@ -106,6 +104,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             downloadViewModel = downloadViewModel,
             repositoryQuery = repositoryQuery,
         )
+        mediaViewerVideoCacheViewModel.touch()
 
         // Init before the subscription.
         initPager(mediaIndex, savedInstanceState)
@@ -156,13 +155,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
 
             adapter = fastAdapter
-
-            mediaViewerVideoCacheViewModel.touch()
-            lifecycle.addObserver(object : DefaultLifecycleObserver {
-                override fun onDestroy(owner: LifecycleOwner) {
-                    mediaViewerVideoCacheViewModel.onPreActivityDestroy()
-                }
-            })
 
             // TODO: Endless scrolling
         }

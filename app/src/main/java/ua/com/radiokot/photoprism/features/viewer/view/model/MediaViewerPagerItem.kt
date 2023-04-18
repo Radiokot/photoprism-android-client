@@ -2,14 +2,13 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaPlayer
 import android.net.Uri
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.exoplayer2.Player
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Callback
@@ -100,64 +99,58 @@ sealed class MediaViewerPagerItem(
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewer>(itemView) {
             val view = PagerItemMediaViewerVideoBinding.bind(itemView)
 
-            init {
-                with(view.playPauseButton) {
-                    setOnClickListener {
-                        if (view.videoView.isPlaying) {
-                            view.videoView.pause()
-                        } else {
-                            view.videoView.start()
+            /*
+                        init {
+                            with(view.playPauseButton) {
+                                setOnClickListener {
+                                    if (view.videoView.isPlaying) {
+                                        view.videoView.pause()
+                                    } else {
+                                        view.videoView.start()
+                                    }
+                                    updatePlayPause()
+                                }
+                            }
                         }
-                        updatePlayPause()
-                    }
-                }
-            }
 
-            private fun updatePlayPause() {
-                view.playPauseButton.setIconResource(
-                    if (view.videoView.isPlaying)
-                        R.drawable.ic_pause
-                    else
-                        R.drawable.ic_play
-                )
-            }
-
+                        private fun updatePlayPause() {
+                            view.playPauseButton.setIconResource(
+                                if (view.videoView.isPlaying)
+                                    R.drawable.ic_pause
+                                else
+                                    R.drawable.ic_play
+                            )
+                        }
+            */
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
             }
 
             override fun unbindView(item: VideoViewer) {
             }
 
-            // Video preparation must be done here,
-            // as the binding takes place when the view is not yet attached.
-            override fun attachToWindow(item: VideoViewer) = with(view) {
-                playPauseButton.isVisible = false
-                progressIndicator.show()
-                videoView.setDataSource(videoView.context, item.previewUri)
-                videoView.prepareAsync { mediaPlayer ->
-                    mediaPlayer.isLooping = item.isLooped
-                    mediaPlayer.setOnCompletionListener {
-                        updatePlayPause()
-                    }
-                    mediaPlayer.start()
-                    updatePlayPause()
-                    playPauseButton.isVisible = true
-                    progressIndicator.hide()
-                }
-                videoView.setOnInfoListener { _, what, _ ->
-                    when (what) {
-                        MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                            progressIndicator.hide()
-                        }
-                        MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                            progressIndicator.show()
+            override fun attachToWindow(item: VideoViewer) {
+                val player = MediaViewerVideoPlayersCache.get(
+                    mediaSourceUri = item.previewUri,
+                    context = view.videoView.context,
+                )
 
-                        }
-                        MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                            progressIndicator.hide()
-                        }
+                player.apply {
+                    repeatMode =
+                        if (item.isLooped) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+
+                    if (!player.isPlaying) {
+                        prepare()
+                        play()
                     }
-                    false
+                }
+
+                view.videoView.player = player
+            }
+
+            override fun detachFromWindow(item: VideoViewer) {
+                view.videoView.player?.apply {
+                    stop()
+                    seekToDefaultPosition()
                 }
             }
         }

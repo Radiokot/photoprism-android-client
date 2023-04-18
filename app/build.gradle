@@ -116,6 +116,11 @@ dependencies {
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.5'
+//    implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.5'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.5'
+
     testImplementation 'junit:junit:4.13.2'
 
     testImplementation "io.insert-koin:koin-test:$koin_version"
