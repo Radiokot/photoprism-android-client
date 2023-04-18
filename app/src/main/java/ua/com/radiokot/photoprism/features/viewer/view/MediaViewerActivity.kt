@@ -23,7 +23,6 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
-import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
@@ -49,7 +48,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
     private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
-    private val mediaViewerVideoCacheViewModel: MediaViewerVideoPlayersCache by viewModel()
+    private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPage>()
@@ -104,7 +103,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             downloadViewModel = downloadViewModel,
             repositoryQuery = repositoryQuery,
         )
-        mediaViewerVideoCacheViewModel.touch()
 
         // Init before the subscription.
         initPager(mediaIndex, savedInstanceState)
@@ -161,7 +159,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                             return null
                         }
 
-                        setUpVideoViewer(viewHolder.view)
+                        setUpVideoViewer(viewHolder)
 
                         return null
                     }
@@ -221,7 +219,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
-    private fun setUpVideoViewer(view: PagerItemMediaViewerVideoBinding) {
+    private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
+        viewHolder.playerCache = videoPlayerCacheViewModel
+
+        val view = viewHolder.view
 
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
             if (areActionsVisible) {
