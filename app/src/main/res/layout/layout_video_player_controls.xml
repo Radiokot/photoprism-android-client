@@ -26,11 +26,12 @@
         app:icon="@drawable/ic_pause" />
 
     <LinearLayout
+        android:id="@+id/player_progress_payout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="364px"
+        android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:background="@android:color/holo_orange_dark">
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="@android:color/white"
+            android:textColor="?colorOnSecondaryContainer"
             tools:text="00:05" />
 
         <com.google.android.exoplayer2.ui.DefaultTimeBar
@@ -51,9 +52,9 @@
             android:layout_marginHorizontal="4dp"
             android:layout_weight="1"
             app:bar_height="2dp"
-            app:buffered_color="?attr/colorSecondaryContainer"
-            app:played_color="@android:color/white"
-            app:scrubber_color="@android:color/white"
+            app:buffered_color="?colorSecondaryContainer"
+            app:played_color="?colorOnSecondaryContainer"
+            app:scrubber_color="?colorOnSecondaryContainer"
             app:unplayed_color="@android:color/transparent" />
 
         <TextView
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="@android:color/white"
+            android:textColor="?colorOnSecondaryContainer"
             tools:text="00:55" />
 
     </LinearLayout>

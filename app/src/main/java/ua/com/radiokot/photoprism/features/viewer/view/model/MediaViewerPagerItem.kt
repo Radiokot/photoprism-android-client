@@ -99,29 +99,6 @@ sealed class MediaViewerPagerItem(
         class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewer>(itemView) {
             val view = PagerItemMediaViewerVideoBinding.bind(itemView)
 
-            /*
-                        init {
-                            with(view.playPauseButton) {
-                                setOnClickListener {
-                                    if (view.videoView.isPlaying) {
-                                        view.videoView.pause()
-                                    } else {
-                                        view.videoView.start()
-                                    }
-                                    updatePlayPause()
-                                }
-                            }
-                        }
-
-                        private fun updatePlayPause() {
-                            view.playPauseButton.setIconResource(
-                                if (view.videoView.isPlaying)
-                                    R.drawable.ic_pause
-                                else
-                                    R.drawable.ic_play
-                            )
-                        }
-            */
             override fun bindView(item: VideoViewer, payloads: List<Any>) {
             }
 

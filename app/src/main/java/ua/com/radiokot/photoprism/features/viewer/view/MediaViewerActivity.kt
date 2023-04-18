@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -22,6 +23,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
+import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
@@ -144,6 +146,8 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                         when (viewHolder) {
                             is MediaViewerPagerItem.ImageViewer.ViewHolder ->
                                 viewHolder.view.photoView
+                            is MediaViewerPagerItem.VideoViewer.ViewHolder ->
+                                viewHolder.view.videoView
                             else ->
                                 viewHolder.itemView
                         }
@@ -152,6 +156,18 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                         viewModel.onPageClicked()
                     }
                 )
+
+                addEventHook(object : EventHook<MediaViewerPagerItem> {
+                    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+                        if (viewHolder !is MediaViewerPagerItem.VideoViewer.ViewHolder) {
+                            return null
+                        }
+
+                        setUpVideoViewer(viewHolder.view)
+
+                        return null
+                    }
+                })
             }
 
             adapter = fastAdapter
@@ -183,14 +199,17 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             val navigationBarHeight =
                 FullscreenInsetsUtil.getNavigationBarOverlayHeight(window.decorView)
 
+            val appliedBottomMargin: Int
+
             view.buttonsLayout.layoutParams =
                 (view.buttonsLayout.layoutParams as MarginLayoutParams).apply {
                     bottomMargin += navigationBarHeight
+                    appliedBottomMargin = bottomMargin
                 }
 
             log.debug {
-                "initButtons(): applied_bottom_margin:" +
-                        "\nmargin=$navigationBarHeight"
+                "initButtons(): applied_buttons_bottom_margin:" +
+                        "\nmargin=$appliedBottomMargin"
             }
         }
     }
@@ -202,6 +221,37 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 flags and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN
             viewModel.onFullScreenToggledBySystem(isFullScreen)
         }
+    }
+
+    private fun setUpVideoViewer(view: PagerItemMediaViewerVideoBinding) {
+
+        viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
+            if (areActionsVisible) {
+                view.videoView.showController()
+            } else {
+                view.videoView.hideController()
+            }
+        }
+
+        window.decorView.post {
+            val extraBottomMargin = this.view.buttonsLayout.height +
+                    (this.view.buttonsLayout.layoutParams as MarginLayoutParams).bottomMargin
+
+            with(view.videoView.findViewById<View>(R.id.player_progress_payout)) {
+                val appliedBottomMargin: Int
+
+                layoutParams = (layoutParams as MarginLayoutParams).apply {
+                    bottomMargin += extraBottomMargin
+                    appliedBottomMargin = bottomMargin
+                }
+
+                log.debug {
+                    "setUpVideoViewer(): applied_video_progress_bottom_margin:" +
+                            "\nmargin=$appliedBottomMargin"
+                }
+            }
+        }
+
     }
 
     private fun subscribeToData() {
