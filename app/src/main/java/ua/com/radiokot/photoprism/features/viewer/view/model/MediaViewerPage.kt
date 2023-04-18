@@ -24,7 +24,9 @@ sealed class MediaViewerPage(
                 is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewerPage(
                         previewUrl = source.media.avcPreviewUrl,
-                        isLooped = source.media.isLooped,
+                        isLooped = source.media is GalleryMedia.TypeData.Live
+                                || source.media is GalleryMedia.TypeData.Animated,
+                        needsVideoControls = source.media is GalleryMedia.TypeData.Video,
                         thumbnailUrl = source.smallThumbnailUrl,
                     )
                 else ->

@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
 class VideoViewerPage(
     previewUrl: String,
     val isLooped: Boolean,
+    val needsVideoControls: Boolean,
     thumbnailUrl: String,
 ) : MediaViewerPage(thumbnailUrl) {
     val previewUri: Uri = Uri.parse(previewUrl)
@@ -38,6 +39,8 @@ class VideoViewerPage(
                 mediaSourceUri = item.previewUri,
                 context = view.videoView.context,
             )
+
+            view.videoView.useController = item.needsVideoControls
 
             player.apply {
                 repeatMode =

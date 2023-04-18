@@ -98,7 +98,6 @@ class GalleryMedia(
 
         interface ViewableAsVideo {
             val avcPreviewUrl: String
-            val isLooped: Boolean
         }
 
         object Unknown : TypeData(TypeName.UNKNOWN)
@@ -113,17 +112,14 @@ class GalleryMedia(
 
         class Animated(
             override val avcPreviewUrl: String,
-            override val isLooped: Boolean = true,
         ) : TypeData(TypeName.ANIMATED), ViewableAsVideo
 
         class Live(
             override val avcPreviewUrl: String,
-            override val isLooped: Boolean = true,
         ) : TypeData(TypeName.LIVE), ViewableAsVideo
 
         class Video(
             override val avcPreviewUrl: String,
-            override val isLooped: Boolean = false,
         ) : TypeData(TypeName.VIDEO), ViewableAsVideo
 
         class Vector(
