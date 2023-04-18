@@ -130,7 +130,7 @@ sealed class MediaViewerPagerItem(
             override fun attachToWindow(item: VideoViewer) {
                 view.playPauseButton.isVisible = false
                 view.videoView.setDataSource(view.videoView.context, Uri.parse(item.previewUrl))
-                view.videoView.prepareAsyncWhenSurfaceAvailable { mediaPlayer ->
+                view.videoView.prepareAsync { mediaPlayer ->
                     mediaPlayer.isLooping = item.isLooped
                     mediaPlayer.setOnCompletionListener {
                         updatePlayPause()

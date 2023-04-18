@@ -163,8 +163,8 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 recyclerReference.get()?.findViewHolderForAdapterPosition(currentItem)
                 ?.also { currentViewHolder ->
                     if (currentViewHolder is MediaViewerPagerItem.VideoViewer.ViewHolder) {
-                        currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(false)
-                        VideoViewInstanceCache.clearAndRelease()
+//                        currentViewHolder.view.videoView.setUseInstanceCacheOnDetach(false)
+//                        VideoViewInstanceCache.clearAndRelease()
                     }
                 }
             }
