@@ -5,5 +5,5 @@ interface MediaPreviewUrlFactory {
     fun getMediumThumbnailUrl(hash: String): String
 
     fun getHdPreviewUrl(hash: String): String
-    fun getAvcPreviewUrl(hash: String): String
+    fun getMp4PreviewUrl(hash: String): String
 }

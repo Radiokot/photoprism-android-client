@@ -15,6 +15,6 @@ class PhotoPrismPreviewUrlFactory(
     override fun getHdPreviewUrl(hash: String): String =
         "$previewUrlBase/t/$hash/$previewToken/fit_1280"
 
-    override fun getAvcPreviewUrl(hash: String): String =
+    override fun getMp4PreviewUrl(hash: String): String =
         "$previewUrlBase/videos/$hash/$previewToken/avc"
 }

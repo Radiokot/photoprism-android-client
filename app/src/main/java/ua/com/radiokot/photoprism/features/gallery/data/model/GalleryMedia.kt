@@ -144,13 +144,13 @@ class GalleryMedia(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
                     TypeName.ANIMATED.value -> Animated(
-                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
                     TypeName.LIVE.value -> Live(
-                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
                     TypeName.VIDEO.value -> Video(
-                        avcPreviewUrl = previewUrlFactory.getAvcPreviewUrl(source.hash),
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
                     TypeName.VECTOR.value -> Vector(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
