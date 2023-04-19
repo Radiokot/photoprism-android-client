@@ -22,6 +22,7 @@ you can use your favorite image editor or video player instead of web viewer
 - Search by media types and custom queries
 - Search bookmarks – the search configuration can be bookmarked and applied later with a click
 - Endless session – no need to re-enter password
+- Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
 
 ## Content sync
@@ -39,7 +40,7 @@ When a new version of PhotoPrism comes out, the app may break.
 
 ## Download
 - [APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases/latest)
-- ⏳ [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
+- [F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
 - [Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Tech stack
@@ -51,3 +52,9 @@ When a new version of PhotoPrism comes out, the app may break.
 - Room
 - kotlin-logging with slf4j-handroid
 - ExoPlayer
+
+---
+
+🙌🏻 [Send me a tip](https://radiokot.com.ua/tip)
+
+🏠 [Visit my homepage](https://radiokot.com.ua/tip)

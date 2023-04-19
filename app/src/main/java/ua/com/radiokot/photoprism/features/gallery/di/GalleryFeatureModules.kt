@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.di
 import android.content.Context
 import android.net.Uri
 import android.text.format.DateFormat
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
@@ -142,13 +143,13 @@ val galleryFeatureModules: List<Module> = listOf(
     module {
         single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
             // See file_provider_paths.
-            File(get<Context>().filesDir.absolutePath + "/downloads")
+            File(androidContext().filesDir.absolutePath + "/downloads")
                 .apply { mkdirs() }
         } bind File::class
 
         single(named(INTERNAL_EXPORT_DIRECTORY)) {
             // See file_provider_paths.
-            File(get<Context>().filesDir.absolutePath + "/export")
+            File(androidContext().filesDir.absolutePath + "/export")
                 .apply { mkdirs() }
         } bind File::class
 
@@ -209,7 +210,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 fileUri = params.fileUri,
                 backupStrategy = get(),
                 searchBookmarksRepository = get(),
-                contentResolver = get<Context>().contentResolver,
+                contentResolver = androidContext().contentResolver,
             )
         } bind ImportSearchBookmarksUseCase::class
     },
