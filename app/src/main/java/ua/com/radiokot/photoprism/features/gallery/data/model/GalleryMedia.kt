@@ -96,6 +96,10 @@ class GalleryMedia(
             val hdPreviewUrl: String
         }
 
+        interface ViewableAsVideo {
+            val avcPreviewUrl: String
+        }
+
         object Unknown : TypeData(TypeName.UNKNOWN)
 
         class Image(
@@ -106,9 +110,17 @@ class GalleryMedia(
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.RAW), ViewableAsImage
 
-        object Animated : TypeData(TypeName.ANIMATED)
-        object Live : TypeData(TypeName.LIVE)
-        object Video : TypeData(TypeName.VIDEO)
+        class Animated(
+            override val avcPreviewUrl: String,
+        ) : TypeData(TypeName.ANIMATED), ViewableAsVideo
+
+        class Live(
+            override val avcPreviewUrl: String,
+        ) : TypeData(TypeName.LIVE), ViewableAsVideo
+
+        class Video(
+            override val avcPreviewUrl: String,
+        ) : TypeData(TypeName.VIDEO), ViewableAsVideo
 
         class Vector(
             override val hdPreviewUrl: String,
@@ -131,9 +143,15 @@ class GalleryMedia(
                     TypeName.RAW.value -> Raw(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
-                    TypeName.ANIMATED.value -> Animated
-                    TypeName.LIVE.value -> Live
-                    TypeName.VIDEO.value -> Video
+                    TypeName.ANIMATED.value -> Animated(
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                    )
+                    TypeName.LIVE.value -> Live(
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                    )
+                    TypeName.VIDEO.value -> Video(
+                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                    )
                     TypeName.VECTOR.value -> Vector(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
@@ -147,7 +165,6 @@ class GalleryMedia(
 
     @Parcelize
     class File(
-        val hash: String,
         val name: String,
         val mimeType: String,
         val sizeBytes: Long,
@@ -159,7 +176,6 @@ class GalleryMedia(
             thumbnailUrlFactory: MediaPreviewUrlFactory,
             downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
-            hash = source.hash,
             name = source.name,
             mimeType = source.mime,
             sizeBytes = source.size,

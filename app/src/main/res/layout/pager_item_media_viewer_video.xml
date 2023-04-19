@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pager_item_media_viewer_video"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:controller_layout_id="@layout/layout_video_player_controls"
+        app:hide_on_touch="false"
+        app:auto_show="false"
+        app:show_timeout="0"
+        app:touch_target_height="0dp"
+        app:show_buffering="when_playing" />
+</FrameLayout>

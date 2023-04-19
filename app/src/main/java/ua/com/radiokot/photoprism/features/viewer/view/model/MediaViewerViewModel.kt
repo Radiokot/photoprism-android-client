@@ -25,8 +25,11 @@ class MediaViewerViewModel(
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
 
+    // Media that turned to be not viewable.
+    private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
+
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val itemsList: MutableLiveData<List<MediaViewerPageItem>?> = MutableLiveData(null)
+    val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
     val state: MutableLiveData<State> = MutableLiveData(State.Idle)
@@ -68,10 +71,7 @@ class MediaViewerViewModel(
     private fun subscribeToRepository() {
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .map { galleryMediaItems ->
-                galleryMediaItems.map(MediaViewerPageItem.Companion::fromGalleryMedia)
-            }
-            .subscribe(itemsList::setValue)
+            .subscribe { broadcastItemsFromRepository() }
             .addToCloseables(this)
 
         galleryMediaRepository.loading
@@ -87,15 +87,19 @@ class MediaViewerViewModel(
             .addToCloseables(this)
     }
 
-    private fun update() {
-        galleryMediaRepository.updateIfNotFresh()
+    private fun broadcastItemsFromRepository() {
+        itemsList.value = galleryMediaRepository
+            .itemsList
+            .map { galleryMedia ->
+                if (galleryMedia in afterAllNotViewableMedia)
+                    MediaViewerPage.unsupported(galleryMedia)
+                else
+                    MediaViewerPage.fromGalleryMedia(galleryMedia)
+            }
     }
 
-    fun loadMore() {
-        if (!galleryMediaRepository.isLoading) {
-            log.debug { "loadMore(): requesting_load_more" }
-            galleryMediaRepository.loadMore()
-        }
+    private fun update() {
+        galleryMediaRepository.updateIfNotFresh()
     }
 
     fun onShareClicked(position: Int) {
@@ -235,6 +239,24 @@ class MediaViewerViewModel(
                 downloadFileToExternalStorage(file)
             else ->
                 error("Can't select files in ${state.value} state")
+        }
+    }
+
+    fun onVideoPlayerFatalPlaybackError(page: VideoViewerPage) {
+        val source = page.source
+
+        log.error {
+            "onVideoPlayerFatalPlaybackError(): error_occurred:" +
+                    "\nsourceMedia=$source"
+        }
+
+        if (source != null) {
+            afterAllNotViewableMedia.add(source)
+            log.debug {
+                "onVideoPlayerFatalPlaybackError(): added_media_to_not_viewable:" +
+                        "\nmedia=$source"
+            }
+            broadcastItemsFromRepository()
         }
     }
 
