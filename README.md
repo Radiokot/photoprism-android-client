@@ -50,3 +50,4 @@ When a new version of PhotoPrism comes out, the app may break.
 - ViewModel
 - Room
 - kotlin-logging with slf4j-handroid
+- ExoPlayer
