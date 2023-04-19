@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.util
 
+import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Build
 import android.view.View
 import androidx.core.view.ViewCompat
@@ -8,20 +10,56 @@ import ua.com.radiokot.photoprism.R
 
 object FullscreenInsetsUtil {
     /**
-     * @return height of navigation bar overlay in fullscreen
+     * @return a [Rect] of insets considering default system bar heights
+     * on old SDK versions where translucent bars are already available.
      */
-    fun getNavigationBarOverlayHeight(viewToObtainInsets: View): Int {
+    fun getForTranslucentSystemBars(viewToObtainInsets: View): Rect {
+        val resources = viewToObtainInsets.resources
+        val orientation = resources.configuration.orientation
+        val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+
         return ViewCompat.getRootWindowInsets(viewToObtainInsets)
             ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
-            ?.bottom
-            .let { height ->
-                height
+            .let { insets ->
+                val left = insets?.left
                     ?: if (Build.VERSION.SDK_INT in
-                        (Build.VERSION_CODES.LOLLIPOP..Build.VERSION_CODES.LOLLIPOP_MR1)
+                        (Build.VERSION_CODES.KITKAT..Build.VERSION_CODES.LOLLIPOP_MR1)
+                        && orientation == Configuration.ORIENTATION_LANDSCAPE
+                        && isRtl
                     )
-                        viewToObtainInsets.context.resources.getDimensionPixelSize(R.dimen.default_navigation_bar_height)
+                        resources.getDimensionPixelSize(R.dimen.default_navigation_bar_height)
                     else
                         0
+
+                val top = insets?.top
+                    ?: if (Build.VERSION.SDK_INT in
+                        (Build.VERSION_CODES.KITKAT..Build.VERSION_CODES.LOLLIPOP_MR1)
+                        && orientation == Configuration.ORIENTATION_PORTRAIT
+                    )
+                        resources.getDimensionPixelSize(R.dimen.default_status_bar_height)
+                    else
+                        0
+
+                val right = insets?.right
+                    ?: if (Build.VERSION.SDK_INT in
+                        (Build.VERSION_CODES.KITKAT..Build.VERSION_CODES.LOLLIPOP_MR1)
+                        && orientation == Configuration.ORIENTATION_LANDSCAPE
+                        && !isRtl
+                    )
+                        resources.getDimensionPixelSize(R.dimen.default_navigation_bar_height)
+                    else
+                        0
+
+                val bottom = insets?.bottom
+                    ?: if (Build.VERSION.SDK_INT in
+                        (Build.VERSION_CODES.KITKAT..Build.VERSION_CODES.LOLLIPOP_MR1)
+                        && orientation == Configuration.ORIENTATION_PORTRAIT
+                    )
+                        resources.getDimensionPixelSize(R.dimen.default_navigation_bar_height)
+                    else
+                        0
+
+                Rect(left, top, right, bottom)
             }
     }
 }

@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
+    <!-- Margins are programmatically extended with insets -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttons_layout"
         android:layout_width="match_parent"

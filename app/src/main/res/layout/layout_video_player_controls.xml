@@ -25,12 +25,13 @@
         app:backgroundTint="@color/black_overlay"
         app:icon="@drawable/ic_pause" />
 
+    <!-- Horizontal margins are programmatically extended with insets -->
     <LinearLayout
         android:id="@+id/player_progress_payout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginHorizontal="20dp"
+        android:layout_marginHorizontal="4dp"
         android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"

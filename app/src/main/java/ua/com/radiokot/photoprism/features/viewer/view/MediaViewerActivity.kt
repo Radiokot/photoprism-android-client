@@ -192,21 +192,21 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         window.decorView.post {
-            val navigationBarHeight =
-                FullscreenInsetsUtil.getNavigationBarOverlayHeight(window.decorView)
-
-            val appliedBottomMargin: Int
+            val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
 
             view.buttonsLayout.layoutParams =
                 (view.buttonsLayout.layoutParams as MarginLayoutParams).apply {
-                    bottomMargin += navigationBarHeight
-                    appliedBottomMargin = bottomMargin
-                }
+                    bottomMargin += insets.bottom
+                    leftMargin += insets.left
+                    rightMargin += insets.right
 
-            log.debug {
-                "initButtons(): applied_buttons_bottom_margin:" +
-                        "\nmargin=$appliedBottomMargin"
-            }
+                    log.debug {
+                        "initButtons(): applied_buttons_insets_margin:" +
+                                "\nleft=$leftMargin," +
+                                "\nright=$rightMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+                }
         }
     }
 
@@ -236,18 +236,24 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +
                     (this.view.buttonsLayout.layoutParams as MarginLayoutParams).bottomMargin
+            val extraLeftMargin =
+                (this.view.buttonsLayout.layoutParams as MarginLayoutParams).leftMargin
+            val extraRightMargin =
+                (this.view.buttonsLayout.layoutParams as MarginLayoutParams).rightMargin
 
             with(view.videoView.findViewById<View>(R.id.player_progress_payout)) {
-                val appliedBottomMargin: Int
-
                 layoutParams = (layoutParams as MarginLayoutParams).apply {
                     bottomMargin += extraBottomMargin
-                    appliedBottomMargin = bottomMargin
-                }
+                    leftMargin += extraLeftMargin
+                    rightMargin += extraRightMargin
 
-                log.debug {
-                    "setUpVideoViewer(): applied_video_progress_bottom_margin:" +
-                            "\nmargin=$appliedBottomMargin"
+                    log.debug {
+                        "setUpVideoViewer(): applied_controls_insets_margin:" +
+                                "\nleft=$leftMargin," +
+                                "\nright=$rightMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+
                 }
             }
         }
