@@ -15,6 +15,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 class UnsupportedNoticePage(
     @StringRes
@@ -22,7 +23,8 @@ class UnsupportedNoticePage(
     @DrawableRes
     val mediaTypeIcon: Int?,
     thumbnailUrl: String,
-) : MediaViewerPage(thumbnailUrl) {
+    source: GalleryMedia?,
+) : MediaViewerPage(thumbnailUrl, source) {
     override val type: Int
         get() = R.id.pager_item_media_viewer_unsupported
 

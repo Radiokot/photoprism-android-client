@@ -10,11 +10,13 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 class ImageViewerPage(
     val previewUrl: String,
     thumbnailUrl: String,
-) : MediaViewerPage(thumbnailUrl) {
+    source: GalleryMedia?,
+) : MediaViewerPage(thumbnailUrl, source) {
     override val type: Int
         get() = R.id.pager_item_media_viewer_image
 

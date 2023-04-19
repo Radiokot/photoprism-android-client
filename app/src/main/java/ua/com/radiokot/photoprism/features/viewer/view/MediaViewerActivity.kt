@@ -252,6 +252,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
         }
 
+        viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
     }
 
     private fun subscribeToData() {

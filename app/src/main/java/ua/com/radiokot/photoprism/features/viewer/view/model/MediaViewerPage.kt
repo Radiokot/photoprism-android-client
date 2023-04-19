@@ -7,10 +7,11 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeRe
 
 sealed class MediaViewerPage(
     val thumbnailUrl: String,
+    val source: GalleryMedia?,
 ) : AbstractItem<ViewHolder>() {
 
     override var identifier: Long
-        get() = thumbnailUrl.hashCode().toLong()
+        get() = (thumbnailUrl + type).hashCode().toLong()
         set(_) = error("Don't override my value")
 
     companion object {
@@ -20,6 +21,7 @@ sealed class MediaViewerPage(
                     ImageViewerPage(
                         previewUrl = source.media.hdPreviewUrl,
                         thumbnailUrl = source.smallThumbnailUrl,
+                        source = source,
                     )
                 is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewerPage(
@@ -28,14 +30,18 @@ sealed class MediaViewerPage(
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
                         thumbnailUrl = source.smallThumbnailUrl,
+                        source = source,
                     )
                 else ->
-                    UnsupportedNoticePage(
-                        mediaTypeIcon = GalleryMediaTypeResources.getIcon(source.media.typeName),
-                        mediaTypeName = GalleryMediaTypeResources.getName(source.media.typeName),
-                        thumbnailUrl = source.smallThumbnailUrl,
-                    )
+                    unsupported(source)
             }
         }
+
+        fun unsupported(source: GalleryMedia) = UnsupportedNoticePage(
+            mediaTypeIcon = GalleryMediaTypeResources.getIcon(source.media.typeName),
+            mediaTypeName = GalleryMediaTypeResources.getName(source.media.typeName),
+            thumbnailUrl = source.smallThumbnailUrl,
+            source = source,
+        )
     }
 }

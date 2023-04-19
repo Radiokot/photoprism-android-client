@@ -5,11 +5,15 @@ import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.audio.AudioSink
+import com.google.android.exoplayer2.decoder.DecoderException
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
 
 class VideoViewerPage(
@@ -17,7 +21,8 @@ class VideoViewerPage(
     val isLooped: Boolean,
     val needsVideoControls: Boolean,
     thumbnailUrl: String,
-) : MediaViewerPage(thumbnailUrl) {
+    source: GalleryMedia?,
+) : MediaViewerPage(thumbnailUrl, source) {
     val previewUri: Uri = Uri.parse(previewUrl)
 
     override val type: Int
@@ -32,6 +37,7 @@ class VideoViewerPage(
     class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
         val view = PagerItemMediaViewerVideoBinding.bind(itemView)
         var playerCache: VideoPlayerCache? = null
+        var fatalPlaybackErrorListener: (VideoViewerPage) -> Unit = {}
 
         fun bindToLifecycle(lifecycle: Lifecycle) {
             lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -75,6 +81,12 @@ class VideoViewerPage(
                 }
                 prepare()
 
+                val decoderExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
+                    fatalPlaybackErrorListener(item)
+                }
+                player.removeListener(decoderExceptionListener)
+                player.addListener(decoderExceptionListener)
+
                 view.videoView.player = this
             }
         }
@@ -91,6 +103,26 @@ class VideoViewerPage(
         }
 
         override fun unbindView(item: VideoViewerPage) {
+        }
+
+        private class TheOnlyPlayerFatalPlaybackExceptionListener(
+            private val onError: (Throwable) -> Unit,
+        ) : Player.Listener {
+            override fun onPlayerError(error: PlaybackException) {
+                when (val cause = error.cause) {
+                    is DecoderException,
+                    is AudioSink.InitializationException ->
+                        onError(cause)
+                }
+            }
+
+            override fun equals(other: Any?): Boolean {
+                return other is TheOnlyPlayerFatalPlaybackExceptionListener
+            }
+
+            override fun hashCode(): Int {
+                return 333
+            }
         }
     }
 }
