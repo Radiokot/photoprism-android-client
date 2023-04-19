@@ -290,7 +290,11 @@ class GalleryViewModel(
 
     private fun onNewGalleryMedia(galleryMediaList: List<GalleryMedia>) {
         // Dismiss the main error when there are items.
-        mainError.value = null
+        mainError.value =
+            if (galleryMediaList.isEmpty())
+                Error.NoMediaFound
+            else
+                null
 
         val newListItems = mutableListOf<GalleryListItem>()
 
@@ -500,5 +504,6 @@ class GalleryViewModel(
     sealed interface Error {
         object LibraryNotAccessible : Error
         class LoadingFailed(val shortSummary: String) : Error
+        object NoMediaFound : Error
     }
 }

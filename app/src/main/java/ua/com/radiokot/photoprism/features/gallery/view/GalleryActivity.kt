@@ -168,13 +168,21 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 return@observe
             }
 
-            view.errorView.showError(
-                ErrorView.Error.General(
-                    message = error.localizedMessage,
-                    retryButtonText = getString(R.string.try_again),
-                    retryButtonClickListener = viewModel::onMainErrorRetryClicked
-                )
-            )
+            val errorToShow: ErrorView.Error = when (error) {
+                GalleryViewModel.Error.NoMediaFound ->
+                    ErrorView.Error.EmptyView(
+                        messageRes = R.string.no_media_found,
+                        context = this,
+                    )
+                else ->
+                    ErrorView.Error.General(
+                        message = error.localizedMessage,
+                        retryButtonText = getString(R.string.try_again),
+                        retryButtonClickListener = viewModel::onMainErrorRetryClicked
+                    )
+            }
+
+            view.errorView.showError(errorToShow)
         }
     }
 
@@ -465,5 +473,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     R.string.template_error_failed_to_load_content,
                     shortSummary,
                 )
+            GalleryViewModel.Error.NoMediaFound ->
+                getString(R.string.no_media_found)
         }
 }

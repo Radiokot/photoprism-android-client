@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewErrorBinding
 import java.lang.ref.WeakReference
 
@@ -94,6 +96,38 @@ constructor(
                             setOnClickListener(null)
                         }
                     }
+
+                    imageView.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            imageView.context,
+                            R.drawable.image_error
+                        )
+                    )
+                }
+            }
+        }
+
+        class EmptyView(
+            val message: String,
+        ) : Error {
+            constructor(
+                context: Context,
+                @StringRes
+                messageRes: Int,
+            ) : this(
+                message = context.getString(messageRes),
+            )
+
+            override fun bindView(view: ViewErrorBinding) {
+                with(view) {
+                    messageTextView.text = message
+                    retryButton.visibility = View.GONE
+                    imageView.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            imageView.context,
+                            R.drawable.image_empty
+                        )
+                    )
                 }
             }
         }

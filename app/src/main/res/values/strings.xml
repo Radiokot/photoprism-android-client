@@ -106,4 +106,5 @@
     <string name="template_error_failed_to_disconnect">Failed to disconnect: %1$s</string>
     <string name="play_video">Play</string>
     <string name="pause_video">Pause</string>
+    <string name="no_media_found">No media found</string>
 </resources>
