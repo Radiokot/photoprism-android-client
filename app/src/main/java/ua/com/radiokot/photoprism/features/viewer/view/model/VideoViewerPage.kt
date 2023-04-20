@@ -41,6 +41,8 @@ class VideoViewerPage(
 
         fun bindToLifecycle(lifecycle: Lifecycle) {
             lifecycle.addObserver(object : DefaultLifecycleObserver {
+                private var playerHasBeenPaused = false
+
                 override fun onPause(owner: LifecycleOwner) {
                     val player = view.videoView.player
                         ?: return
@@ -51,7 +53,17 @@ class VideoViewerPage(
                             && player.isPlaying
                         ) {
                             player.pause()
+                            playerHasBeenPaused = true
                         }
+                    }
+                }
+
+                override fun onResume(owner: LifecycleOwner) {
+                    val player = view.videoView.player
+                        ?: return
+
+                    if (player.playbackState != Player.STATE_IDLE && playerHasBeenPaused) {
+                        player.playWhenReady = true
                     }
                 }
             })
@@ -75,6 +87,7 @@ class VideoViewerPage(
                         Player.REPEAT_MODE_ONE
                     else
                         Player.REPEAT_MODE_OFF
+
                 // Only play automatically on init.
                 if (!isPlaying && playbackState == Player.STATE_IDLE) {
                     playWhenReady = true
