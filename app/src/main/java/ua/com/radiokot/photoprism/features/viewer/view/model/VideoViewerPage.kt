@@ -94,11 +94,11 @@ class VideoViewerPage(
                 }
                 prepare()
 
-                val decoderExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
+                val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
                     fatalPlaybackErrorListener(item)
                 }
-                player.removeListener(decoderExceptionListener)
-                player.addListener(decoderExceptionListener)
+                player.removeListener(theOnlyFatalExceptionListener)
+                player.addListener(theOnlyFatalExceptionListener)
 
                 view.videoView.player = this
             }
@@ -118,6 +118,10 @@ class VideoViewerPage(
         override fun unbindView(item: VideoViewerPage) {
         }
 
+        /**
+         * An error listener that triggers when a fatal playback exception occurs.
+         * The player can only have one of such listener as all the instances are equal.
+         */
         private class TheOnlyPlayerFatalPlaybackExceptionListener(
             private val onError: (Throwable) -> Unit,
         ) : Player.Listener {
