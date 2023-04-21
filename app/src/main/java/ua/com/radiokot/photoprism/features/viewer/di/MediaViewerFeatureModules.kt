@@ -16,7 +16,8 @@ import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
-import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
+import ua.com.radiokot.photoprism.features.viewer.view.DefaultVideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import java.io.File
@@ -37,26 +38,22 @@ val mediaViewerFeatureModules: List<Module> = listOf(
                 MediaViewerViewModel(
                     galleryMediaRepositoryFactory = get(),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
-                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
-                    mediaScannerConnection = object : WrappedMediaScannerConnection {
-                        override fun scanFile(path: String, mimeType: String) {
-                            MediaScannerConnection.scanFile(
-                                get(),
-                                arrayOf(path),
-                                arrayOf(mimeType),
-                                null,
-                            )
-                        }
-                    }
-                )
+                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY))
+                ) { path, mimeType ->
+                    MediaScannerConnection.scanFile(
+                        get(),
+                        arrayOf(path),
+                        arrayOf(mimeType),
+                        null,
+                    )
+                }
             }
 
-            viewModel {
+            scoped {
                 val session = get<EnvSession>()
 
                 // TODO: inject cache dirs: picasso-cache and video-cache
                 // TODO: move cache size calculator to some no-Picasso util
-                // TODO: create video player factory
                 val cacheDir = File(androidContext().cacheDir, "video-cache")
                     .apply { mkdirs() }
                 val cacheSize = PicassoUtilsProxy.calculateDiskCacheSize(cacheDir)
@@ -71,8 +68,17 @@ val mediaViewerFeatureModules: List<Module> = listOf(
                     .cache(Cache(cacheDir, cacheSize))
                     .build()
 
-                VideoPlayerCacheViewModel(
+                DefaultVideoPlayerFactory(
                     httpClient = httpClient,
+                    context = get(),
+                )
+            } bind VideoPlayerFactory::class
+
+            viewModel {
+                VideoPlayerCacheViewModel(
+                    videoPlayerFactory = get(),
+                    // 2 is enough for pages swiping.
+                    cacheMaxSize = 2,
                 )
             }
         }

@@ -4,31 +4,31 @@ import android.content.Context
 import android.net.Uri
 import android.util.LruCache
 import androidx.lifecycle.ViewModel
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.util.MimeTypes
-import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayer
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
 
 /**
- * A view model that implements activity-scoped [VideoPlayerCache].
+ * A view model that implements activity-scoped [VideoPlayerCache] based on an [LruCache].
+ *
+ * @param cacheMaxSize max number of cached players,
+ * should not be less then a number of simultaneously visible players.
+ * 2 is enough for pages swiping
  */
 class VideoPlayerCacheViewModel(
-    private val httpClient: HttpClient,
+    private val videoPlayerFactory: VideoPlayerFactory,
+    cacheMaxSize: Int,
 ) : ViewModel(), VideoPlayerCache {
     private val log = kLogger("VideoPlayerCacheVM")
-    private val playersCache = object : LruCache<Int, ExoPlayer>(2) {
+    private val playersCache = object : LruCache<Int, VideoPlayer>(cacheMaxSize) {
         override fun entryRemoved(
             evicted: Boolean,
             key: Int,
-            oldValue: ExoPlayer?,
-            newValue: ExoPlayer?
+            oldValue: VideoPlayer,
+            newValue: VideoPlayer?
         ) {
-            oldValue?.release()
+            oldValue.release()
             log.debug {
                 "entryRemoved(): released_player:" +
                         "\nkey=$key," +
@@ -37,38 +37,38 @@ class VideoPlayerCacheViewModel(
         }
     }
 
-    override fun getPlayer(mediaSourceUri: Uri, context: Context): ExoPlayer {
+    override fun getPlayer(mediaSourceUri: Uri, context: Context): VideoPlayer {
         // Do not use URI as a key, as it may contain HTTP auth credentials.
         val key = mediaSourceUri.hashCode()
 
-        return playersCache[key]
+        return getCachedPlayer(key)
+            ?: createAndCacheMissingPlayer(key, mediaSourceUri)
+    }
+
+    private fun getCachedPlayer(key: Int): VideoPlayer? =
+        playersCache[key]
             ?.also { player ->
                 log.debug {
                     "get(): cache_hit:" +
                             "\nkey=$key," +
                             "\nplayer=$player"
                 }
-            } ?: ExoPlayer.Builder(context)
-            .setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(OkHttpDataSource.Factory(httpClient)))
-            .build()
-            .apply {
-                setMediaItem(
-                    MediaItem.Builder()
-                        .setMimeType(MimeTypes.VIDEO_MP4)
-                        .setMediaId(mediaSourceUri.toString())
-                        .setUri(mediaSourceUri)
-                        .build()
-                )
+            }
+
+    private fun createAndCacheMissingPlayer(
+        key: Int,
+        mediaSourceUri: Uri
+    ): VideoPlayer =
+        videoPlayerFactory.createVideoPlayer(mediaSourceUri = mediaSourceUri)
+            .also { createdPlayer ->
+                playersCache.put(key, createdPlayer)
 
                 log.debug {
                     "get(): cache_miss:" +
-                            "\nkey=$mediaSourceUri"
+                            "\nkey=$key," +
+                            "\ncreatedPlayer=$createdPlayer"
                 }
-
-                playersCache.put(key, this)
             }
-    }
 
     override fun onCleared() {
         playersCache.evictAll()
