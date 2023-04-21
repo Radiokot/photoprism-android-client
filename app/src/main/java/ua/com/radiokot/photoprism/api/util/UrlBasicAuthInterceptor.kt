@@ -4,6 +4,7 @@ import okhttp3.Credentials
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 
 /**
  * An [Interceptor] that takes [HttpUrl.username] and [HttpUrl.password]
@@ -27,12 +28,7 @@ class UrlBasicAuthInterceptor : Interceptor {
                         AUTH_HEADER,
                         Credentials.basic(urlUsername, urlPassword, Charsets.UTF_8)
                     )
-                    .url(
-                        request.url.newBuilder()
-                            .username(URL_CREDENTIALS_MASK)
-                            .password(URL_CREDENTIALS_MASK)
-                            .build()
-                    )
+                    .url(url.withMaskedCredentials())
                     .build()
             else
                 request
@@ -42,6 +38,5 @@ class UrlBasicAuthInterceptor : Interceptor {
 
     private companion object {
         private const val AUTH_HEADER = "Authorization"
-        private const val URL_CREDENTIALS_MASK = "handled"
     }
 }

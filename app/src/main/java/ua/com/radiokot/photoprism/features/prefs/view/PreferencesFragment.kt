@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -25,10 +26,7 @@ import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
-import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
@@ -44,7 +42,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         }
     }
 
-
     private val log = kLogger("PreferencesFragment")
     private val bookmarksBackup: SearchBookmarksBackup by inject()
     private val bookmarksBackupFileOpeningLauncher =
@@ -52,6 +49,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             ActivityResultContracts.OpenDocument(),
             this::importBookmarksFromFile
         )
+    private val session: EnvSession by inject()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -66,7 +64,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
     private fun initPreferences() = preferenceScreen.apply {
         with(requirePreference(R.string.pk_library_api_url)) {
-            summary = get<EnvSession>().envConnectionParams.apiUrl
+            summary = session.envConnectionParams.apiUrl
+                .toHttpUrl()
+                .withMaskedCredentials()
+                .toString()
         }
 
         with(requirePreference(R.string.pk_library_disconnect)) {
