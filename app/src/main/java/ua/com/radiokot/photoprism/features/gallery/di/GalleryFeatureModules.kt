@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
-import android.content.Context
 import android.net.Uri
 import android.text.format.DateFormat
 import org.koin.android.ext.koin.androidContext

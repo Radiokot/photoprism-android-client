@@ -7,14 +7,19 @@ import androidx.lifecycle.ViewModel
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.util.MimeTypes
+import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
 
 /**
  * A view model that implements activity-scoped [VideoPlayerCache].
  */
-class VideoPlayerCacheViewModel : ViewModel(), VideoPlayerCache {
+class VideoPlayerCacheViewModel(
+    private val httpClient: HttpClient,
+) : ViewModel(), VideoPlayerCache {
     private val log = kLogger("VideoPlayerCacheVM")
     private val playersCache = object : LruCache<Uri, ExoPlayer>(2) {
         override fun entryRemoved(
@@ -40,6 +45,7 @@ class VideoPlayerCacheViewModel : ViewModel(), VideoPlayerCache {
                 }
             } ?: ExoPlayer.Builder(context)
             .setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(OkHttpDataSource.Factory(httpClient)))
             .build()
             .apply {
                 setMediaItem(
