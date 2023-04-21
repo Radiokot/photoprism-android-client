@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Non-functional video viewer when using mTLS authentication
+- Displaying unmasked HTTP basic authentication credentials on the preferences screen
 
 ## [1.5.0] - 2023-04-20
 
