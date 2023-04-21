@@ -27,7 +27,7 @@ class VideoViewerPage(
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
     val previewUri: Uri = Uri.parse(previewUrl)
-    val mediaId: String = previewUrl.hashCode().toString()
+    val mediaId: String = identifier.toString()
 
     override val type: Int
         get() = R.id.pager_item_media_viewer_video
@@ -91,6 +91,7 @@ class VideoViewerPage(
                     MediaItem.Builder()
                         .setMediaId(item.mediaId)
                         .setUri(item.previewUri)
+                        // Assumption: PhotoPrism previews are always "video/mp4".
                         .setMimeType(MimeTypes.VIDEO_MP4)
                         .build()
                 )
