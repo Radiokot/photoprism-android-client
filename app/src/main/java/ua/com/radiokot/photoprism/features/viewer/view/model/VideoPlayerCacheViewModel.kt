@@ -1,7 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
-import android.content.Context
-import android.net.Uri
 import android.util.LruCache
 import androidx.lifecycle.ViewModel
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -37,12 +35,11 @@ class VideoPlayerCacheViewModel(
         }
     }
 
-    override fun getPlayer(mediaSourceUri: Uri, context: Context): VideoPlayer {
-        // Do not use URI as a key, as it may contain HTTP auth credentials.
-        val key = mediaSourceUri.hashCode()
+    override fun getPlayer(key: Any): VideoPlayer {
+        val cacheKey = key.hashCode()
 
-        return getCachedPlayer(key)
-            ?: createAndCacheMissingPlayer(key, mediaSourceUri)
+        return getCachedPlayer(cacheKey)
+            ?: createAndCacheMissingPlayer(cacheKey)
     }
 
     private fun getCachedPlayer(key: Int): VideoPlayer? =
@@ -55,11 +52,8 @@ class VideoPlayerCacheViewModel(
                 }
             }
 
-    private fun createAndCacheMissingPlayer(
-        key: Int,
-        mediaSourceUri: Uri
-    ): VideoPlayer =
-        videoPlayerFactory.createVideoPlayer(mediaSourceUri = mediaSourceUri)
+    private fun createAndCacheMissingPlayer(key: Int): VideoPlayer =
+        videoPlayerFactory.createVideoPlayer()
             .also { createdPlayer ->
                 playersCache.put(key, createdPlayer)
 

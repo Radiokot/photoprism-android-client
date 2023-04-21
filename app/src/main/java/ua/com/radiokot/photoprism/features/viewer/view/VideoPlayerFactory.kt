@@ -1,11 +1,8 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
-import android.net.Uri
-
 fun interface VideoPlayerFactory {
     /**
-     * Creates and sets up a video player to play the media
-     * described by [mediaSourceUri]
+     * Creates and initially sets up a video player.
      */
-    fun createVideoPlayer(mediaSourceUri: Uri): VideoPlayer
+    fun createVideoPlayer(): VideoPlayer
 }

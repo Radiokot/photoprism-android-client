@@ -5,15 +5,18 @@ import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioSink
 import com.google.android.exoplayer2.decoder.DecoderException
+import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayer
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
 
 class VideoViewerPage(
@@ -24,6 +27,7 @@ class VideoViewerPage(
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
     val previewUri: Uri = Uri.parse(previewUrl)
+    val mediaId: String = previewUrl.hashCode().toString()
 
     override val type: Int
         get() = R.id.pager_item_media_viewer_video
@@ -76,32 +80,39 @@ class VideoViewerPage(
                 "Player cache must be set"
             }
 
-            val player = playerCache.getPlayer(
-                mediaSourceUri = item.previewUri,
-                context = view.videoView.context,
-            )
+            val player = playerCache.getPlayer(key = item.mediaId)
+            setUpPlayer(player, item)
+            view.videoView.player = player
+        }
 
-            with(player) {
+        private fun setUpPlayer(player: VideoPlayer, item: VideoViewerPage) = with(player) {
+            if (currentMediaItem?.mediaId != item.mediaId) {
+                setMediaItem(
+                    MediaItem.Builder()
+                        .setMediaId(item.mediaId)
+                        .setUri(item.previewUri)
+                        .setMimeType(MimeTypes.VIDEO_MP4)
+                        .build()
+                )
+
                 repeatMode =
                     if (item.isLooped)
                         Player.REPEAT_MODE_ONE
                     else
                         Player.REPEAT_MODE_OFF
-
-                // Only play automatically on init.
-                if (!isPlaying && playbackState == Player.STATE_IDLE) {
-                    playWhenReady = true
-                }
-                prepare()
-
-                val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
-                    fatalPlaybackErrorListener(item)
-                }
-                player.removeListener(theOnlyFatalExceptionListener)
-                player.addListener(theOnlyFatalExceptionListener)
-
-                view.videoView.player = this
             }
+
+            // Only play automatically on init.
+            if (!isPlaying && playbackState == Player.STATE_IDLE) {
+                playWhenReady = true
+            }
+            prepare()
+
+            val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
+                fatalPlaybackErrorListener(item)
+            }
+            player.removeListener(theOnlyFatalExceptionListener)
+            player.addListener(theOnlyFatalExceptionListener)
         }
 
         override fun detachFromWindow(item: VideoViewerPage) {
