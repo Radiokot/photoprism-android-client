@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.di
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import okhttp3.Cache
+import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
@@ -167,8 +168,19 @@ val envModules = listOf(
                     )
                 }
 
+                val cacheControl = CacheControl.Builder()
+                    // Assumption: PhotoPrism content identified by hash is immutable.
+                    .immutable()
+                    .build()
+
                 Picasso.Builder(get())
-                    .downloader(OkHttp3Downloader(httpClient))
+                    .downloader(OkHttp3Downloader { request ->
+                        httpClient.newCall(
+                            request.newBuilder()
+                                .cacheControl(cacheControl)
+                                .build()
+                        )
+                    })
                     .build()
             } bind Picasso::class
         }
