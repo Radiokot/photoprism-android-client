@@ -21,27 +21,32 @@ class VideoPlayerCacheViewModel(
     private val httpClient: HttpClient,
 ) : ViewModel(), VideoPlayerCache {
     private val log = kLogger("VideoPlayerCacheVM")
-    private val playersCache = object : LruCache<Uri, ExoPlayer>(2) {
+    private val playersCache = object : LruCache<Int, ExoPlayer>(2) {
         override fun entryRemoved(
             evicted: Boolean,
-            key: Uri,
+            key: Int,
             oldValue: ExoPlayer?,
             newValue: ExoPlayer?
         ) {
             oldValue?.release()
             log.debug {
                 "entryRemoved(): released_player:" +
-                        "\nkey=$key"
+                        "\nkey=$key," +
+                        "\nplayer=$oldValue"
             }
         }
     }
 
-    override fun getPlayer(mediaSourceUri: Uri, context: Context): ExoPlayer =
-        playersCache[mediaSourceUri]
-            ?.also {
+    override fun getPlayer(mediaSourceUri: Uri, context: Context): ExoPlayer {
+        // Do not use URI as a key, as it may contain HTTP auth credentials.
+        val key = mediaSourceUri.hashCode()
+
+        return playersCache[key]
+            ?.also { player ->
                 log.debug {
                     "get(): cache_hit:" +
-                            "\nkey=$mediaSourceUri"
+                            "\nkey=$key," +
+                            "\nplayer=$player"
                 }
             } ?: ExoPlayer.Builder(context)
             .setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
@@ -61,8 +66,9 @@ class VideoPlayerCacheViewModel(
                             "\nkey=$mediaSourceUri"
                 }
 
-                playersCache.put(mediaSourceUri, this)
+                playersCache.put(key, this)
             }
+    }
 
     override fun onCleared() {
         playersCache.evictAll()
