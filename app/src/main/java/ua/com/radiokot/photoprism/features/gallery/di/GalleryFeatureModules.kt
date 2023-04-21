@@ -11,10 +11,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
-import ua.com.radiokot.photoprism.di.SelfParameterHolder
-import ua.com.radiokot.photoprism.di.dbModules
-import ua.com.radiokot.photoprism.di.envModules
-import ua.com.radiokot.photoprism.di.ioModules
+import ua.com.radiokot.photoprism.di.*
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -23,12 +20,8 @@ import ua.com.radiokot.photoprism.features.gallery.logic.*
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-
-const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
-const val INTERNAL_EXPORT_DIRECTORY = "internal-export"
 
 private const val MONTH_DATE_FORMAT = "month"
 private const val MONTH_YEAR_DATE_FORMAT = "month-year"
@@ -140,18 +133,6 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
-        single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
-            // See file_provider_paths.
-            File(androidContext().filesDir.absolutePath + "/downloads")
-                .apply { mkdirs() }
-        } bind File::class
-
-        single(named(INTERNAL_EXPORT_DIRECTORY)) {
-            // See file_provider_paths.
-            File(androidContext().filesDir.absolutePath + "/export")
-                .apply { mkdirs() }
-        } bind File::class
-
         single {
             FileReturnIntentCreator(
                 fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,

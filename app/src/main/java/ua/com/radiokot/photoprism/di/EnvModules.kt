@@ -2,12 +2,12 @@ package ua.com.radiokot.photoprism.di
 
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.PicassoUtilsProxy
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier._q
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.util.KeyChainClientCertificateKeyManager
@@ -20,11 +20,14 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.util.MediaCacheUtil
+import java.io.File
 
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
     val clientCertificateAlias: String?,
     val withLogging: Boolean = true,
+    val cache: Cache? = null,
 ) : SelfParameterHolder() {
     class SessionAwareness(
         val sessionIdProvider: () -> String,
@@ -94,6 +97,10 @@ val envModules = listOf(
                 builder.addInterceptor(get<HttpLoggingInterceptor>())
             }
 
+            if (envParams.cache != null) {
+                builder.cache(envParams.cache)
+            }
+
             builder
                 .build()
         } bind HttpClient::class
@@ -150,18 +157,15 @@ val envModules = listOf(
             scoped {
                 val session = get<EnvSession>()
 
-                val cacheDir = PicassoUtilsProxy.createDefaultCacheDir(get())
-                val cacheSize = PicassoUtilsProxy.calculateDiskCacheSize(cacheDir)
+                val cacheDir: File = get(named(IMAGE_CACHE_DIRECTORY))
                 val httpClient = get<HttpClient>(_q<EnvHttpClientParams>()) {
                     EnvHttpClientParams(
                         sessionAwareness = null,
                         clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                         withLogging = false,
+                        cache = Cache(cacheDir, MediaCacheUtil.calculateCacheMaxSize(cacheDir))
                     )
                 }
-                    .newBuilder()
-                    .cache(Cache(cacheDir, cacheSize))
-                    .build()
 
                 Picasso.Builder(get())
                     .downloader(OkHttp3Downloader(httpClient))
