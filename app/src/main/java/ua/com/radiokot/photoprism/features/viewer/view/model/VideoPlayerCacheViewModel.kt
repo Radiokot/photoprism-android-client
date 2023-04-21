@@ -23,14 +23,14 @@ class VideoPlayerCacheViewModel(
         override fun entryRemoved(
             evicted: Boolean,
             key: Int,
-            oldValue: VideoPlayer,
+            releasedPlayer: VideoPlayer,
             newValue: VideoPlayer?
         ) {
-            oldValue.release()
+            releasedPlayer.release()
             log.debug {
                 "entryRemoved(): released_player:" +
                         "\nkey=$key," +
-                        "\nplayer=$oldValue"
+                        "\nplayer=$releasedPlayer"
             }
         }
     }
@@ -46,7 +46,7 @@ class VideoPlayerCacheViewModel(
         playersCache[key]
             ?.also { player ->
                 log.debug {
-                    "get(): cache_hit:" +
+                    "getCachedPlayer(): cache_hit:" +
                             "\nkey=$key," +
                             "\nplayer=$player"
                 }
@@ -58,7 +58,7 @@ class VideoPlayerCacheViewModel(
                 playersCache.put(key, createdPlayer)
 
                 log.debug {
-                    "get(): cache_miss:" +
+                    "createAndCacheMissingPlayer(): cached_created_player:" +
                             "\nkey=$key," +
                             "\ncreatedPlayer=$createdPlayer"
                 }
