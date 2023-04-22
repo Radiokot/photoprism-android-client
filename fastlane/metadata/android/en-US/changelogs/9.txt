@@ -1,0 +1,10 @@
+Fixed:
+- Non-functional video viewer when using mTLS authentication
+- Displaying unmasked HTTP basic authentication credentials on the preferences screen
+
+Added:
+- Video preview caching – big videos and live photos are not be re-downloaded on each repeat
+
+Changed:
+- Lowered minimal video buffer duration requirements for faster start of playback
+- Slightly improved look of video player controls
