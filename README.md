@@ -55,7 +55,4 @@ When a new version of PhotoPrism comes out, the app may break.
 - FastAdapter
 
 ---
-
-🙌🏻 [Send me a tip](https://radiokot.com.ua/tip)
-
-🏠 [Visit my homepage](https://radiokot.com.ua/tip)
+🙌🏻 [Send me a tip](https://radiokot.com.ua/tip)&emsp;&emsp;🏠 [Visit my homepage](https://radiokot.com.ua/tip)
