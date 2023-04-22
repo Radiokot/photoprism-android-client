@@ -225,12 +225,14 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
         val view = viewHolder.view
 
+        val controlsLayout = view.videoView.findViewById<View>(R.id.player_controls_layout)
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            if (areActionsVisible) {
-                view.videoView.showController()
-            } else {
-                view.videoView.hideController()
-            }
+            controlsLayout.fadeVisibility(isVisible = areActionsVisible)
+        }
+        if (viewModel.areActionsVisible.value == true) {
+            view.videoView.showController()
+        } else {
+            view.videoView.hideController()
         }
 
         window.decorView.post {
