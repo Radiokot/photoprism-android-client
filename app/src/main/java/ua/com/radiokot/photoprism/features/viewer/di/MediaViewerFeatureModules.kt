@@ -1,7 +1,10 @@
 package ua.com.radiokot.photoprism.features.viewer.di
 
 import android.media.MediaScannerConnection
-import okhttp3.Cache
+import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
+import com.google.android.exoplayer2.upstream.cache.Cache
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
+import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
@@ -22,6 +25,19 @@ val mediaViewerFeatureModules: List<Module> = listOf(
     module {
         includes(galleryFeatureModules)
 
+        // Shared ExoPlayer cache.
+        // Must be single instance per directory.
+        single {
+            val cacheDir: File = get(named(VIDEO_CACHE_DIRECTORY))
+            SimpleCache(
+                cacheDir,
+                LeastRecentlyUsedCacheEvictor(
+                    MediaCacheUtil.calculateCacheMaxSize(cacheDir)
+                ),
+                StandaloneDatabaseProvider(get())
+            )
+        } bind Cache::class
+
         scope<EnvSession> {
             viewModel {
                 MediaViewerViewModel(
@@ -41,18 +57,19 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             scoped {
                 val session = get<EnvSession>()
 
-                val cacheDir: File = get(named(VIDEO_CACHE_DIRECTORY))
+                // Own HTTP client is used for video player to enable mTLS and HTTP basic auth.
+                // It should not have a cache, as it is managed by the player.
                 val httpClient = get<HttpClient>(_q<EnvHttpClientParams>()) {
                     EnvHttpClientParams(
                         sessionAwareness = null,
                         clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                         withLogging = false,
-                        cache = Cache(cacheDir, MediaCacheUtil.calculateCacheMaxSize(cacheDir))
                     )
                 }
 
                 DefaultVideoPlayerFactory(
                     httpClient = httpClient,
+                    sharedCache = get(),
                     context = get(),
                 )
             } bind VideoPlayerFactory::class

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Non-functional video viewer when using mTLS authentication
 - Displaying unmasked HTTP basic authentication credentials on the preferences screen
 
+### Added
+- Video preview caching – big videos and live photos are not be re-downloaded on each repeat
+
 ## [1.5.0] - 2023-04-20
 
 ### Added
