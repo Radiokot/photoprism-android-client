@@ -20,10 +20,11 @@ abstract class SimplePagedDataRepository<T>(
     protected open val pagingOrder: PagingOrder,
     protected open val pageLimit: Int,
 ) : Repository() {
-    private var nextPage: String? = null
+    protected var nextPage: String? = null
 
-    protected val itemsSubject = BehaviorSubject.createDefault(listOf<T>())
-    protected open val mutableItemsList = mutableListOf<T>()
+    protected val itemsSubject: BehaviorSubject<List<T>> =
+        BehaviorSubject.createDefault(emptyList())
+    protected open val mutableItemsList: MutableList<T> = mutableListOf()
 
     /**
      * Emits all the currently loaded items.
@@ -31,7 +32,7 @@ abstract class SimplePagedDataRepository<T>(
     val items: Observable<List<T>> = itemsSubject
 
     open val itemsList: List<T>
-        get() = itemsSubject.value ?: listOf()
+        get() = itemsSubject.value ?: emptyList()
 
     val isOnFirstPage: Boolean
         get() = nextPage == null
@@ -84,7 +85,7 @@ abstract class SimplePagedDataRepository<T>(
         return true
     }
 
-    open fun onNewPage(page: DataPage<T>) {
+    protected open fun onNewPage(page: DataPage<T>) {
         isNeverUpdated = false
         noMoreItems = page.isLast
 
@@ -96,9 +97,12 @@ abstract class SimplePagedDataRepository<T>(
 
         nextPage = page.nextCursor
 
-        mutableItemsList.addAll(page.items)
-
+        addNewPageItems(page)
         broadcast()
+    }
+
+    protected open fun addNewPageItems(page: DataPage<T>) {
+        mutableItemsList.addAll(page.items)
     }
 
     open fun loadMore(): Boolean {

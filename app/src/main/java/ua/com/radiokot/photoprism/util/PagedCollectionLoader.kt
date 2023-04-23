@@ -13,7 +13,7 @@ typealias PageProvider<T> = (
  * @param pageProvider provider of the next page loading [Single]
  * @param startCursor cursor to start from
  * @param distinct if set to true, no duplicates will be added to the result.
- * Useful when loading a mutable collection in the descending order with page-number-based pagination.
+ * Useful when loading a mutable collection in the descending order with offset-limit pagination.
  *
  * @see loadAll
  */

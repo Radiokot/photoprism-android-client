@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.collection.LruCache
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -29,12 +30,18 @@ class SimpleGalleryMediaRepository(
 ) {
     private val log = kLogger("SimpleGalleryMediaRepo")
 
+    // See .addNewPageItems for explanation.
+    private val itemsByUid = mutableMapOf<String, GalleryMedia>()
+
     override fun getPage(
         limit: Int,
         cursor: String?,
         order: PagingOrder
     ): Single<DataPage<GalleryMedia>> {
-        val galleryMediaItems = mutableListOf<GalleryMedia>()
+        // Must not be changed to a set. Do not distinct items.
+        // See .addNewPageItems for explanation.
+        val collectedGalleryMediaItems = mutableListOf<GalleryMedia>()
+
         var nextCursor = cursor
         var offset = 0
         var pageIsLast = false
@@ -48,7 +55,7 @@ class SimpleGalleryMediaRepository(
                         "\blimit=$pageLimit"
             }
 
-            photoPrismPhotosService.getPhotos(
+            photoPrismPhotosService.getMergedPhotos(
                 count = pageLimit,
                 offset = offset,
                 q = query,
@@ -78,7 +85,7 @@ class SimpleGalleryMediaRepository(
                 }
             }
             .doOnSuccess { successfullyLoadedItems ->
-                galleryMediaItems.addAll(successfullyLoadedItems)
+                collectedGalleryMediaItems.addAll(successfullyLoadedItems)
 
                 // Load extra data to fulfill the requested page limit.
                 nextCursor = (limit + offset).toString()
@@ -91,17 +98,17 @@ class SimpleGalleryMediaRepository(
             }
 
         return loadPage
-            .repeatUntil { pageIsLast || galleryMediaItems.size >= pageLimit }
+            .repeatUntil { pageIsLast || collectedGalleryMediaItems.size >= pageLimit }
             .ignoreElements()
             .toSingle {
                 log.debug {
                     "getPage(): loaded_enough_data:" +
-                            "\nitemsCount=${galleryMediaItems.size}," +
+                            "\nitemsCount=${collectedGalleryMediaItems.size}," +
                             "\nlimit=$limit"
                 }
 
                 DataPage(
-                    items = galleryMediaItems,
+                    items = collectedGalleryMediaItems,
                     nextCursor = nextCursor.checkNotNull {
                         "The cursor must be defined at this moment"
                     },
@@ -118,7 +125,7 @@ class SimpleGalleryMediaRepository(
         }
 
         val getNewestDate = {
-            photoPrismPhotosService.getPhotos(
+            photoPrismPhotosService.getMergedPhotos(
                 count = 1,
                 offset = 0,
                 q = query,
@@ -130,7 +137,7 @@ class SimpleGalleryMediaRepository(
         }.toMaybe()
 
         val getOldestDate = {
-            photoPrismPhotosService.getPhotos(
+            photoPrismPhotosService.getMergedPhotos(
                 count = 1,
                 offset = 0,
                 q = query,
@@ -148,6 +155,44 @@ class SimpleGalleryMediaRepository(
         )
             .doOnSuccess { newestAndOldestDates = it }
             .subscribeOn(Schedulers.io())
+    }
+
+    override fun addNewPageItems(page: DataPage<GalleryMedia>) {
+        page.items.forEach { item ->
+            if (itemsByUid.containsKey(item.uid)) {
+                // If this item is already loaded, just merge the files. Why?
+                // Scenario:
+                // 1. Loaded a page of merged photos. PhotoPrism page limit limits number of files, not photos;
+                // 2. Last page photo is happened to be a video, it has 2 files (preview and video);
+                // 3. Because of the limit, only the first file is returned (preview);
+                // 4. Now in the repository we have an item with only one file.
+                //    Until the next page is loaded, this item is in some way broken;
+                // 5. Loaded the next page. The first photo is the same video, but now
+                //    it contains only the second file (video);
+                // 5. Ha, we've caught that! Merging the files;
+                // 6. Now the existing item has all the required files.
+                //
+                // More reliable workaround is not to fetch files from the merged photos pages,
+                // but to load them on demand through the /view endpoint.
+                // But I think this doesn't worth it.
+
+                itemsByUid.getValue(item.uid).mergeFiles(item.files)
+
+                log.debug {
+                    "addNewPageItems(): merged_files:" +
+                            "\nitemUid=${item.uid}"
+                }
+            } else {
+                mutableItemsList.add(item)
+                itemsByUid[item.uid] = item
+            }
+        }
+    }
+
+    override fun update(): Completable {
+        newestAndOldestDates = null
+        itemsByUid.clear()
+        return super.update()
     }
 
     override fun invalidate() {

@@ -2,23 +2,26 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhoto
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.*
 
 class GalleryMedia(
     val media: TypeData,
-    val hash: String,
+    val uid: String,
     val width: Int,
     val height: Int,
     val takenAt: Date,
     val name: String,
     val smallThumbnailUrl: String,
-    val files: List<File>,
+    files: List<File>,
 ) {
+    var files: List<File> = files
+        private set
+
     constructor(
-        source: PhotoPrismPhoto,
+        source: PhotoPrismMergedPhoto,
         previewUrlFactory: MediaPreviewUrlFactory,
         downloadUrlFactory: MediaFileDownloadUrlFactory,
     ) : this(
@@ -26,7 +29,7 @@ class GalleryMedia(
             source = source,
             previewUrlFactory = previewUrlFactory
         ),
-        hash = source.hash,
+        uid = source.uid,
         width = source.width,
         height = source.height,
         takenAt = parsePhotoPrismDate(source.takenAt)!!,
@@ -38,8 +41,15 @@ class GalleryMedia(
                 thumbnailUrlFactory = previewUrlFactory,
                 downloadUrlFactory = downloadUrlFactory,
             )
-        }
+        }.toMutableList()
     )
+
+    /**
+     * Merges current [files] with [moreFiles] overwriting the value
+     */
+    fun mergeFiles(moreFiles: Collection<File>) {
+        files = (files + moreFiles).distinct()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -47,17 +57,17 @@ class GalleryMedia(
 
         other as GalleryMedia
 
-        if (hash != other.hash) return false
+        if (uid != other.uid) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return hash.hashCode()
+        return uid.hashCode()
     }
 
     override fun toString(): String {
-        return "GalleryMedia(hash='$hash', kind=$media)"
+        return "GalleryMedia(uid='$uid', media=$media)"
     }
 
 
@@ -132,7 +142,7 @@ class GalleryMedia(
 
         companion object {
             fun fromPhotoPrism(
-                source: PhotoPrismPhoto,
+                source: PhotoPrismMergedPhoto,
                 previewUrlFactory: MediaPreviewUrlFactory,
             ): TypeData =
                 when (val type = source.type) {
@@ -166,22 +176,43 @@ class GalleryMedia(
     @Parcelize
     class File(
         val name: String,
+        val uid: String,
         val mimeType: String,
         val sizeBytes: Long,
         val thumbnailUrlSmall: String,
         val downloadUrl: String,
     ) : Parcelable {
         constructor(
-            source: PhotoPrismPhoto.File,
+            source: PhotoPrismMergedPhoto.File,
             thumbnailUrlFactory: MediaPreviewUrlFactory,
             downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
             name = source.name,
+            uid = source.uid,
             mimeType = source.mime,
             sizeBytes = source.size,
             thumbnailUrlSmall = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
             downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
         )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as File
+
+            if (uid != other.uid) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return uid.hashCode()
+        }
+
+        override fun toString(): String {
+            return "File(uid='$uid', name='$name')"
+        }
     }
 
     companion object {

@@ -3,9 +3,11 @@ package ua.com.radiokot.photoprism.api.photos.model
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class PhotoPrismPhoto
+data class PhotoPrismMergedPhoto
 @JsonCreator
 constructor(
+    @JsonProperty("UID")
+    val uid: String,
     @JsonProperty("Hash")
     val hash: String,
     @JsonProperty("Width")
@@ -24,6 +26,8 @@ constructor(
     class File(
         @JsonProperty("Hash")
         val hash: String,
+        @JsonProperty("UID")
+        val uid: String,
         @JsonProperty("Name")
         val name: String,
         @JsonProperty("Mime")
