@@ -11,8 +11,10 @@ import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier._q
+import org.koin.core.qualifier.named
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
+import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.retrofitApiModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
@@ -22,7 +24,9 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
+import java.io.File
 import java.io.IOException
+import kotlin.concurrent.thread
 
 class App : Application() {
     private val log = kLogger("App")
@@ -43,10 +47,11 @@ class App : Application() {
             androidFileProperties("app.properties")
         }
 
-        loadSessionIfPresent()
-
         initRxErrorHandler()
         initLogging()
+
+        loadSessionIfPresent()
+        clearInternalDownloads()
     }
 
     private fun initRxErrorHandler() {
@@ -107,6 +112,18 @@ class App : Application() {
             log.debug { "loadSessionIfPresent(): loaded_session_from_persistence" }
         } else {
             log.debug { "loadSessionIfPresent(): no_session_found_in_persistence" }
+        }
+    }
+
+    private fun clearInternalDownloads() {
+        thread {
+            try {
+                get<File>(named(INTERNAL_DOWNLOADS_DIRECTORY))
+                    .listFiles()
+                    ?.forEach(File::deleteRecursively)
+            } catch (e: Throwable) {
+                log.error(e) { "clearInternalDownloads(): error_occurred" }
+            }
         }
     }
 }

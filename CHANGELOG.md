@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Infinite scrolling (swiping?) in the media viewer
+- Clearing of the app internal downloads directory on startup, which frees "Data" storage
 
 ## [1.5.1] - 2023-04-22
 
