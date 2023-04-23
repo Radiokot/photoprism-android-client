@@ -102,6 +102,13 @@ class MediaViewerViewModel(
         galleryMediaRepository.updateIfNotFresh()
     }
 
+    fun loadMore() {
+        if (!galleryMediaRepository.isLoading) {
+            log.debug { "loadMore(): requesting_load_more" }
+            galleryMediaRepository.loadMore()
+        }
+    }
+
     fun onShareClicked(position: Int) {
         val item = galleryMediaRepository.itemsList[position]
 

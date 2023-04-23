@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.GenericItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
+import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -24,10 +26,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
-import ua.com.radiokot.photoprism.extension.fadeVisibility
-import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
@@ -168,7 +167,35 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
             adapter = fastAdapter
 
-            // TODO: Endless scrolling
+            val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
+                // TODO: Should I add loading "footer"?
+                footerAdapter = GenericItemAdapter(),
+                layoutManager = recyclerView.layoutManager.checkNotNull {
+                    "There must be a layout manager at this point"
+                },
+                visibleThreshold = 6
+            ) {
+                override fun onLoadMore(currentPage: Int) {
+                    if (currentPage == 0) {
+                        // Filter out false-triggering.
+                        return
+                    }
+
+                    log.debug {
+                        "onLoadMore(): load_more:" +
+                                "\npage=$currentPage"
+                    }
+                    viewModel.loadMore()
+                }
+            }
+            viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
+                if (isLoading) {
+                    endlessScrollListener.disable()
+                } else {
+                    endlessScrollListener.enable()
+                }
+            }
+            recyclerView.addOnScrollListener(endlessScrollListener)
         }
     }
 
