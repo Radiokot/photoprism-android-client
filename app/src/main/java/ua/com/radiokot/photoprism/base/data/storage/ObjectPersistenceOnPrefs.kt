@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.base.data.storage
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs.Companion.forType
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 
@@ -28,10 +29,9 @@ open class ObjectPersistenceOnPrefs<T : Any>(
 
     override fun saveItem(item: T) {
         loadedItem = item
-        preferences
-            .edit()
-            .putString(key, serializeItem(item))
-            .apply()
+        preferences.edit {
+            putString(key, serializeItem(item))
+        }
     }
 
     override fun hasItem(): Boolean {
@@ -40,10 +40,9 @@ open class ObjectPersistenceOnPrefs<T : Any>(
 
     override fun clear() {
         loadedItem = null
-        preferences
-            .edit()
-            .remove(key)
-            .apply()
+        preferences.edit {
+            remove(key)
+        }
     }
 
     protected open fun serializeItem(item: T): String =
