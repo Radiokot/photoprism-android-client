@@ -35,7 +35,7 @@ class GalleryViewModel(
     private val currentMediaRepository: BehaviorSubject<SimpleGalleryMediaRepository> =
         BehaviorSubject.create()
 
-    // Current search config regarding the fast scroll.
+    // Current search config regardless the fast scroll.
     private var currentSearchConfig: SearchConfig? = null
     private var isInitialized = false
 
