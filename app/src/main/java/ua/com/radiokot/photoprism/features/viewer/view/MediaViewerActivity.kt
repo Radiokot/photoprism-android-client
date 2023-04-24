@@ -2,11 +2,15 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
+import androidx.annotation.RequiresApi
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -325,25 +329,58 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun hideSystemUI() {
-        WindowInsetsControllerCompat(window, window.decorView)
-            .systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
-
-        val uiOptions = (View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        window.decorView.systemUiVisibility = uiOptions
+        // Check if the device is running on Android 11 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Get the WindowInsetsController
+            val controller = window.insetsController
+            controller?.let {
+                // Set the window to extend into the area covered by the system bars
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+                // Set the behavior of the system bars to the default behavior
+                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_DEFAULT
+                // Hide the system bars
+                it.hide(WindowInsets.Type.systemBars())
+            }
+        } else { // For devices running on Android 10 or lower
+            // Suppress the deprecation warning for the system UI flags
+            @Suppress("DEPRECATION")
+            // Set the system UI flags to hide the navigation bar and status bar,
+            // and layout the content behind them
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        }
     }
 
-    @Suppress("DEPRECATION")
+
     private fun showSystemUI() {
-        val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        window.decorView.systemUiVisibility = uiOptions
+        // Set the window to fit its content within the system windows
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // Check if the device is running API level 30 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Get the insets controller for the window
+            val controller = window.insetsController
+            if (controller != null) {
+                // Show the system bars (status bar and navigation bar)
+                controller.show(WindowInsets.Type.systemBars())
+            } else {
+                // If the insets controller is null, use deprecated system UI flags to show the system bars
+                @Suppress("DEPRECATION")
+                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+            }
+        } else {
+            // If the device is running an API level lower than 30, use deprecated system UI flags to show the system bars
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        }
     }
 
     private fun subscribeToEvents() {
