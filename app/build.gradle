@@ -90,9 +90,16 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.preference:preference:1.2.0'
 
-    // Must be 2.13 for minSdk 21
-    implementation('com.fasterxml.jackson.core:jackson-databind:2.13.0')
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0'
+    implementation('com.fasterxml.jackson.core:jackson-databind'){
+        version {
+            strictly jackson_version
+        }
+    }
+    implementation('com.fasterxml.jackson.module:jackson-module-kotlin'){
+        version {
+            strictly jackson_version
+        }
+    }
 
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_android_version"
@@ -123,7 +130,9 @@ dependencies {
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.5'
+    implementation('com.google.android.exoplayer:exoplayer-core:2.18.5'){
+        exclude group: 'com.google.guava', module: 'guava'
+    }
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.5'
     implementation 'com.google.android.exoplayer:extension-okhttp:2.18.5'
 
