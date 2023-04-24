@@ -75,6 +75,11 @@ class EnvConnectionViewModel(
         }
         username.observeForever(clearCredentialsErrors)
         password.observeForever(clearCredentialsErrors)
+        clientCertificateAlias.observeForever {
+            if (rootUrlError.value is RootUrlError.Inaccessible) {
+                rootUrlError.value = null
+            }
+        }
     }
 
     fun onConnectButtonClicked() {
