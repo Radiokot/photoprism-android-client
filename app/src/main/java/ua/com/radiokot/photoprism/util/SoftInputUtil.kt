@@ -21,6 +21,8 @@ object SoftInputUtil {
         val hasChanged = imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
 
         if (!wasAcceptingText && !hasChanged) {
+            // Works fine anyway.
+            @Suppress("DEPRECATION")
             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0)
         }
     }

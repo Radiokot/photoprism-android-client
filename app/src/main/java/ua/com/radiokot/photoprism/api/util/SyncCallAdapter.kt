@@ -23,6 +23,8 @@ class SyncCallAdapter<T : Any>(
         }
 
         return if (returnType == Unit::class.java) {
+            // Expected.
+            @Suppress("UNCHECKED_CAST")
             Unit as T
         } else {
             response.body().checkNotNull()
