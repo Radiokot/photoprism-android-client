@@ -218,6 +218,7 @@ class GalleryViewModel(
 
     private fun subscribeToRepositoryChanges() {
         currentMediaRepository
+            .distinctUntilChanged()
             .subscribe { currentMediaRepository ->
                 subscribeToRepository()
                 update()
