@@ -144,16 +144,14 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun subscribeToData() {
         viewModel.isLoading.observe(this) { isLoading ->
-            val footer = GalleryLoadingFooterListItem(
-                isLoading = isLoading,
-                canLoadMore = viewModel.canLoadMore
+            galleryProgressFooterAdapter.setNewList(
+                listOf(
+                    GalleryLoadingFooterListItem(
+                        isLoading = isLoading,
+                        canLoadMore = viewModel.canLoadMore
+                    )
+                )
             )
-
-            if (galleryProgressFooterAdapter.adapterItemCount == 0) {
-                galleryProgressFooterAdapter.set(listOf(footer))
-            } else {
-                galleryProgressFooterAdapter[0] = footer
-            }
         }
 
         viewModel.itemsList.observe(this) {

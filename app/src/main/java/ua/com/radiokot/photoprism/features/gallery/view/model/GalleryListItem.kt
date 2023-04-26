@@ -50,9 +50,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             source = source,
         )
 
-        override var identifier: Long
-            get() = source?.hashCode()?.toLong() ?: -1L
-            set(_) = error("Do not overwrite my value!")
+        override var identifier: Long =
+            source?.hashCode()?.toLong() ?: -1L
 
         override val type: Int
             get() = R.id.list_item_gallery_media

@@ -45,6 +45,7 @@ class MediaFileListItem(
         get() = R.layout.list_item_media_file
 
     override var identifier: Long
+        // The getter must be kept for Parcelable.
         get() = source?.hashCode()?.toLong() ?: hashCode().toLong()
         set(_) = error("Do not overwrite my value!")
 
