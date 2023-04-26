@@ -251,16 +251,17 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewHolder.bindToLifecycle(this.lifecycle)
 
         val view = viewHolder.view
+        val playerControlsLayout = viewHolder.playerControlsLayout
 
-        val controlsLayout = view.videoView.findViewById<View>(R.id.player_controls_layout)
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            controlsLayout.fadeVisibility(isVisible = areActionsVisible)
+            playerControlsLayout.fadeVisibility(isVisible = areActionsVisible)
         }
         if (viewModel.areActionsVisible.value == true) {
             view.videoView.showController()
         } else {
             view.videoView.hideController()
         }
+        playerControlsLayout.clearAnimation()
 
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +

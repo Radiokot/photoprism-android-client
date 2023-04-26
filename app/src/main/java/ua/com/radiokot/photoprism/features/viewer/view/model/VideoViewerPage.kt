@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.net.Uri
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -40,38 +41,42 @@ class VideoViewerPage(
 
     class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
         val view = PagerItemMediaViewerVideoBinding.bind(itemView)
+        val playerControlsLayout: ViewGroup by lazy {
+            view.videoView.findViewById(R.id.player_controls_layout)
+        }
         var playerCache: VideoPlayerCache? = null
         var fatalPlaybackErrorListener: (VideoViewerPage) -> Unit = {}
 
-        fun bindToLifecycle(lifecycle: Lifecycle) {
-            lifecycle.addObserver(object : DefaultLifecycleObserver {
-                private var playerHasBeenPaused = false
+        private val lifecycleObserver = object : DefaultLifecycleObserver {
+            private var playerHasBeenPaused = false
 
-                override fun onPause(owner: LifecycleOwner) {
-                    val player = view.videoView.player
-                        ?: return
+            override fun onPause(owner: LifecycleOwner) {
+                val player = view.videoView.player
+                    ?: return
 
-                    view.videoView.post {
-                        // Only pause if the owner is not destroyed.
-                        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
-                            && player.isPlaying
-                        ) {
-                            player.pause()
-                            playerHasBeenPaused = true
-                        }
+                view.videoView.post {
+                    // Only pause if the owner is not destroyed.
+                    if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
+                        && player.isPlaying
+                    ) {
+                        player.pause()
+                        playerHasBeenPaused = true
                     }
                 }
+            }
 
-                override fun onResume(owner: LifecycleOwner) {
-                    val player = view.videoView.player
-                        ?: return
+            override fun onResume(owner: LifecycleOwner) {
+                val player = view.videoView.player
+                    ?: return
 
-                    if (player.playbackState != Player.STATE_IDLE && playerHasBeenPaused) {
-                        player.playWhenReady = true
-                    }
+                if (player.playbackState != Player.STATE_IDLE && playerHasBeenPaused) {
+                    player.playWhenReady = true
                 }
-            })
+            }
         }
+
+        fun bindToLifecycle(lifecycle: Lifecycle) =
+            lifecycle.addObserver(lifecycleObserver)
 
         override fun attachToWindow(item: VideoViewerPage) {
             view.videoView.useController = item.needsVideoControls
