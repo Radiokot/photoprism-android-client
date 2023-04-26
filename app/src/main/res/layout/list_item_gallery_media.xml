@@ -32,4 +32,19 @@
         app:layout_constraintTop_toTopOf="@id/image_view"
         app:tint="@android:color/white"
         tools:src="@drawable/ic_sledding" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/view_button"
+        style="?materialIconButtonFilledTonalStyle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/view_media"
+        android:paddingStart="6dp"
+        app:iconSize="17dp"
+        app:iconPadding="0dp"
+        android:paddingEnd="0dp"
+        app:icon="@drawable/ic_arrows_expand"
+        app:layout_constraintBottom_toBottomOf="@id/image_view"
+        app:layout_constraintEnd_toEndOf="@id/image_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>
