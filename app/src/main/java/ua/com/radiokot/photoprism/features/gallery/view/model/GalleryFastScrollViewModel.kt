@@ -3,15 +3,20 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
 import java.text.DateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class GalleryFastScrollViewModel(
     private val bubbleMonthYearDateFormat: DateFormat,
@@ -101,18 +106,47 @@ class GalleryFastScrollViewModel(
         state.onNext(State.Idle)
     }
 
-    fun onScrolledToMonth(monthBubble: GalleryMonthScrollBubble) {
-        log.debug {
-            "onScrolledToMonth(): scrolled_to_month:" +
-                    "\nmonthBubble=$monthBubble"
-        }
+    private val monthsDraggingSubject: PublishSubject<GalleryMonthScrollBubble> =
+        PublishSubject.create()
+    private val monthsDraggedSubject: PublishSubject<GalleryMonthScrollBubble> =
+        PublishSubject.create()
 
-        state.onNext(
-            State.AtMonth(
-                monthBubble = monthBubble,
-                isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
-            )
+    init {
+        Observable.merge(
+            monthsDraggedSubject,
+            monthsDraggingSubject
+                .debounce(300, TimeUnit.MILLISECONDS, Schedulers.newThread())
         )
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { monthBubble ->
+                state.onNext(
+                    State.AtMonth(
+                        monthBubble = monthBubble,
+                        isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
+                    )
+                )
+            }
+            .addToCloseables(this)
+    }
+
+    fun onDraggingOnMonth(monthBubble: GalleryMonthScrollBubble) {
+        monthsDraggingSubject.onNext(monthBubble)
+//        log.debug {
+//            "onScrolledToMonth(): scrolled_to_month:" +
+//                    "\nmonthBubble=$monthBubble"
+//        }
+//
+//        state.onNext(
+//            State.AtMonth(
+//                monthBubble = monthBubble,
+//                isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
+//            )
+//        )
+    }
+
+    fun onDraggedToMonth(monthBubble: GalleryMonthScrollBubble) {
+        monthsDraggedSubject.onNext(monthBubble)
     }
 
     sealed interface State {

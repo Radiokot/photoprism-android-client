@@ -81,8 +81,11 @@ class GalleryFastScrollView(
                     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
                         onTouchEvent.test(e)
 
-                        if (e.action == MotionEvent.ACTION_UP) {
-                            onDragEnded()
+                        when (e.action) {
+                            MotionEvent.ACTION_MOVE ->
+                                onDragging()
+                            MotionEvent.ACTION_UP ->
+                                onDragEnded()
                         }
                     }
                 })
@@ -212,7 +215,20 @@ class GalleryFastScrollView(
         }
 
         if (currentBubble != null) {
-            viewModel.onScrolledToMonth(currentBubble)
+            viewModel.onDraggedToMonth(currentBubble)
+        }
+    }
+
+    private fun onDragging() {
+        val currentBubble = getCurrentBubble()
+
+        log.debug {
+            "onDragging(): dragging:" +
+                    "\ncurrentBubble=$currentBubble"
+        }
+
+        if (currentBubble != null) {
+            viewModel.onDraggingOnMonth(currentBubble)
         }
     }
 
