@@ -51,7 +51,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         )
 
         override var identifier: Long
-            get() = source?.hashCode()?.toLong() ?: hashCode().toLong()
+            get() = source?.hashCode()?.toLong() ?: -1L
             set(_) = error("Do not overwrite my value!")
 
         override val type: Int
