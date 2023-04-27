@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -24,10 +25,17 @@ class GalleryFastScrollViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryFastScrollVM")
     private var currentMediaRepository: SimpleGalleryMediaRepository? = null
+
+    // A subject to post the current bubble when dragging.
     private val monthsDraggingSubject: PublishSubject<GalleryMonthScrollBubble> =
         PublishSubject.create()
+
+    // A subject to post the current bubble when the drag is ended.
     private val monthsDragEndedSubject: PublishSubject<GalleryMonthScrollBubble> =
         PublishSubject.create()
+
+    // A subject to post the reset signal.
+    private val monthsDragResetSubject: PublishSubject<Unit> = PublishSubject.create()
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
     val state: BehaviorSubject<State> = BehaviorSubject.createDefault(State.Idle)
@@ -39,6 +47,7 @@ class GalleryFastScrollViewModel(
     private fun subscribeToDragging() {
         // Combine months dragging and drag ended to make the scroll bar responsive.
         Observable.merge(
+            monthsDragResetSubject,
             monthsDragEndedSubject,
             monthsDraggingSubject
                 .debounce(
@@ -48,6 +57,7 @@ class GalleryFastScrollViewModel(
                 )
         )
             .distinctUntilChanged()
+            .filterIsInstance<GalleryMonthScrollBubble>()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { monthBubble ->
                 log.debug {
@@ -140,6 +150,7 @@ class GalleryFastScrollViewModel(
     fun reset() {
         log.debug { "reset(): resetting_to_idle" }
 
+        monthsDragResetSubject.onNext(Unit)
         state.onNext(State.Idle)
     }
 
