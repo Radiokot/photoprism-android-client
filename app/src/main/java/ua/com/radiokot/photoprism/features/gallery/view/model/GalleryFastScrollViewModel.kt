@@ -3,15 +3,20 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
 import java.text.DateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class GalleryFastScrollViewModel(
     private val bubbleMonthYearDateFormat: DateFormat,
@@ -19,9 +24,46 @@ class GalleryFastScrollViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryFastScrollVM")
     private var currentMediaRepository: SimpleGalleryMediaRepository? = null
+    private val monthsDraggingSubject: PublishSubject<GalleryMonthScrollBubble> =
+        PublishSubject.create()
+    private val monthsDragEndedSubject: PublishSubject<GalleryMonthScrollBubble> =
+        PublishSubject.create()
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
     val state: BehaviorSubject<State> = BehaviorSubject.createDefault(State.Idle)
+
+    init {
+        subscribeToDragging()
+    }
+
+    private fun subscribeToDragging() {
+        // Combine months dragging and drag ended to make the scroll bar responsive.
+        Observable.merge(
+            monthsDragEndedSubject,
+            monthsDraggingSubject
+                .debounce(
+                    DRAGGING_DEBOUNCE_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS,
+                    Schedulers.newThread()
+                )
+        )
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { monthBubble ->
+                log.debug {
+                    "subscribeToDragging(): setting_the_month:" +
+                            "\nbubble=$monthBubble"
+                }
+
+                state.onNext(
+                    State.AtMonth(
+                        monthBubble = monthBubble,
+                        isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
+                    )
+                )
+            }
+            .addToCloseables(this)
+    }
 
     fun setMediaRepository(mediaRepository: SimpleGalleryMediaRepository) {
         if (mediaRepository != currentMediaRepository) {
@@ -101,18 +143,12 @@ class GalleryFastScrollViewModel(
         state.onNext(State.Idle)
     }
 
-    fun onScrolledToMonth(monthBubble: GalleryMonthScrollBubble) {
-        log.debug {
-            "onScrolledToMonth(): scrolled_to_month:" +
-                    "\nmonthBubble=$monthBubble"
-        }
+    fun onDragging(monthBubble: GalleryMonthScrollBubble) {
+        monthsDraggingSubject.onNext(monthBubble)
+    }
 
-        state.onNext(
-            State.AtMonth(
-                monthBubble = monthBubble,
-                isTopMonth = bubbles.value?.firstOrNull() == monthBubble,
-            )
-        )
+    fun onDragEnded(monthBubble: GalleryMonthScrollBubble) {
+        monthsDragEndedSubject.onNext(monthBubble)
     }
 
     sealed interface State {
@@ -122,5 +158,9 @@ class GalleryFastScrollViewModel(
             val monthBubble: GalleryMonthScrollBubble,
             val isTopMonth: Boolean
         ) : State
+    }
+
+    private companion object {
+        private const val DRAGGING_DEBOUNCE_TIMEOUT_MS = 200L
     }
 }
