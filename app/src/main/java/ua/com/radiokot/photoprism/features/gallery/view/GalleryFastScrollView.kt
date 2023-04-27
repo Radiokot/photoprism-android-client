@@ -208,27 +208,15 @@ class GalleryFastScrollView(
 
     private fun onDragEnded() {
         val currentBubble = getCurrentBubble()
-
-        log.debug {
-            "onDragEnded(): drag_ended:" +
-                    "\ncurrentBubble=$currentBubble"
-        }
-
         if (currentBubble != null) {
-            viewModel.onDraggedToMonth(currentBubble)
+            viewModel.onDragEnded(currentBubble)
         }
     }
 
     private fun onDragging() {
         val currentBubble = getCurrentBubble()
-
-        log.debug {
-            "onDragging(): dragging:" +
-                    "\ncurrentBubble=$currentBubble"
-        }
-
         if (currentBubble != null) {
-            viewModel.onDraggingOnMonth(currentBubble)
+            viewModel.onDragging(currentBubble)
         }
     }
 
