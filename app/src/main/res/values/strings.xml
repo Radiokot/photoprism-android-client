@@ -86,7 +86,6 @@
     <string name="learn_more">Learn more</string>
     <string name="preferences">Preferences</string>
     <string name="library_preferences">@string/library</string>
-    <string name="library_endpoint">Library endpoint</string>
     <string name="about">About</string>
     <string name="app_version">Version</string>
     <string name="report_an_issue">Report an issue</string>

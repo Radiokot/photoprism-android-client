@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.di
 
+import okhttp3.HttpUrl
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
@@ -15,7 +16,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 
 private class EnvRetrofitParams(
-    val apiUrl: String,
+    val apiUrl: HttpUrl,
     val httpClient: HttpClient,
 ) : SelfParameterHolder()
 

@@ -14,7 +14,6 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -63,9 +62,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun initPreferences() = preferenceScreen.apply {
-        with(requirePreference(R.string.pk_library_api_url)) {
-            summary = session.envConnectionParams.apiUrl
-                .toHttpUrl()
+        with(requirePreference(R.string.pk_library_root_url)) {
+            summary = session.envConnectionParams.rootUrl
                 .withMaskedCredentials()
                 .toString()
         }
