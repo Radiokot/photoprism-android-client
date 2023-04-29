@@ -74,7 +74,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     apiUrl = session.envConnectionParams.apiUrl.toString(),
                     previewToken = session.previewToken,
                 )
-            }.bind(MediaPreviewUrlFactory::class)
+            } bind MediaPreviewUrlFactory::class
 
             scoped {
                 val session = get<EnvSession>()
@@ -83,16 +83,25 @@ val galleryFeatureModules: List<Module> = listOf(
                     apiUrl = session.envConnectionParams.apiUrl.toString(),
                     downloadToken = session.downloadToken,
                 )
-            }.bind(MediaFileDownloadUrlFactory::class)
+            } bind MediaFileDownloadUrlFactory::class
+
+            scoped {
+                val session = get<EnvSession>()
+
+                PhotoPrismMediaWebUrlFactory(
+                    webLibraryUrl = session.envConnectionParams.webLibraryUrl,
+                )
+            } bind MediaWebUrlFactory::class
 
             scoped {
                 SimpleGalleryMediaRepository.Factory(
                     photoPrismPhotosService = get(),
                     thumbnailUrlFactory = get(),
                     downloadUrlFactory = get(),
+                    webUrlFactory = get(),
                     pageLimit = 50,
                 )
-            }.bind(SimpleGalleryMediaRepository.Factory::class)
+            } bind SimpleGalleryMediaRepository.Factory::class
 
             viewModel {
                 DownloadMediaFileViewModel(
