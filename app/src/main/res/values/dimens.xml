@@ -12,5 +12,6 @@
     <dimen name="afs_min_touch_target_size">4mm</dimen>
     <dimen name="default_navigation_bar_height">56dp</dimen>
     <dimen name="default_status_bar_height">24dp</dimen>
-    <dimen name="media_viewer_buttons_horizontal_spacing">4dp</dimen>
+    <dimen name="media_viewer_buttons_horizontal_spacing">0dp</dimen>
+    <dimen name="media_viewer_buttons_layout_horizontal_spacing">0dp</dimen>
 </resources>
