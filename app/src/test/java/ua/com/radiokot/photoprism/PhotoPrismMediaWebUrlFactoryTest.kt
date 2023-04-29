@@ -14,6 +14,9 @@ class PhotoPrismMediaWebUrlFactoryTest {
         val url = factory.getWebViewUrl(
             uid = "prtkeob2g20yq13w",
         )
-        Assert.assertEquals("https://photoprism.me/library/browse?q=uid%3Aprtkeob2g20yq13w", url)
+        Assert.assertEquals(
+            "https://photoprism.me/library/browse?q=uid%3Aprtkeob2g20yq13w%20quality%3A0&public=false&view=cards",
+            url
+        )
     }
 }

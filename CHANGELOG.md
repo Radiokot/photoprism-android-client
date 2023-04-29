@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Ability to open a media in the web viewer, to see EXIF data, location, etc.
+
 ### Changed
 - Library root URL is now shown in the preferences instead of the API endpoint
 
