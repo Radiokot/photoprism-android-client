@@ -69,6 +69,13 @@ class DownloadMediaFileViewModel(
             .doOnSubscribe {
                 downloadStateSubject.onNext(DownloadProgressViewModel.State.Running(-1.0))
             }
+            .doOnDispose {
+                try {
+                    destination.delete()
+                } catch (e: Exception) {
+                    log.error(e) { "downloadFile(): failed_to_delete_destination_on_dispose" }
+                }
+            }
             .subscribeBy(
                 onNext = { progress ->
                     val percent = progress.percent
@@ -85,6 +92,12 @@ class DownloadMediaFileViewModel(
                     log.error(error) {
                         "downloadFile(): error_occurred:" +
                                 "\nurl=$downloadUrl"
+                    }
+
+                    try {
+                        destination.delete()
+                    } catch (e: Exception) {
+                        log.error(e) { "downloadFile(): failed_to_delete_destination_on_error" }
                     }
 
                     downloadEventsSubject.onNext(DownloadProgressViewModel.Event.DownloadFailed)
