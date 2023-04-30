@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Hanging of network calls after multiple media download cancellations
+
 ### Added
 - Ability to open a media in the web viewer, to see EXIF data, location, etc.
 

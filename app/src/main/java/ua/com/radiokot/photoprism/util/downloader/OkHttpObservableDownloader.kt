@@ -50,24 +50,28 @@ class OkHttpObservableDownloader(
     override fun download(
         url: String,
         destination: Sink
-    ): Observable<ObservableDownloader.Progress> = Observable.create { emitter ->
+    ): Observable<ObservableDownloader.Progress> {
         val emitterKey = requestCounter.incrementAndGet()
 
-        val request = Request.Builder()
-            .get()
-            .url(url)
-            .tag(emitterKey)
-            .build()
-        emittersMap[emitterKey] = emitter
+        val call = observableHttpClient.newCall(
+            Request.Builder()
+                .get()
+                .url(url)
+                .tag(emitterKey)
+                .build()
+        )
 
-        observableHttpClient
-            .newCall(request)
-            .execute()
-            .body
-            .checkNotNull {
-                "The request must have a body, otherwise there is nothing to download"
+        return Observable.create { emitter ->
+            emittersMap[emitterKey] = emitter
+
+            call.execute().use { response ->
+                response.body
+                    .checkNotNull {
+                        "The request must have a body, otherwise there is nothing to download"
+                    }
+                    .source()
+                    .readAll(destination)
             }
-            .source()
-            .readAll(destination)
+        }.doOnDispose(call::cancel)
     }
 }

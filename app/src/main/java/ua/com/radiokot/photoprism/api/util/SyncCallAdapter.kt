@@ -2,9 +2,11 @@ package ua.com.radiokot.photoprism.api.util
 
 import retrofit2.Call
 import retrofit2.CallAdapter
+import retrofit2.Response
 import retrofit2.Retrofit
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import java.io.IOException
+import java.io.InterruptedIOException
 import java.lang.reflect.Type
 import java.net.HttpURLConnection
 
@@ -16,7 +18,15 @@ class SyncCallAdapter<T : Any>(
 
     @kotlin.jvm.Throws(IOException::class)
     override fun adapt(call: Call<T>): T {
-        val response = call.execute()
+        val response: Response<T>
+
+        try {
+            response = call.execute()
+        } catch (interruption: InterruptedIOException) {
+            // Call cancellation is important for OkHTTP.
+            call.cancel()
+            throw interruption
+        }
 
         if (response.code() >= HttpURLConnection.HTTP_BAD_REQUEST) {
             throw retrofit2.HttpException(response)

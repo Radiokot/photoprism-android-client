@@ -106,7 +106,7 @@ val galleryFeatureModules: List<Module> = listOf(
             viewModel {
                 DownloadMediaFileViewModel(
                     downloadFileUseCaseFactory = DownloadFileUseCase.Factory(
-                        observableDownloader = get()
+                        observableDownloader = get(),
                     )
                 )
             }
