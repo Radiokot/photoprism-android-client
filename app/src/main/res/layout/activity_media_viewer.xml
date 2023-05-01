@@ -58,8 +58,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
-            android:contentDescription="@string/open_in"
-            android:tooltipText="@string/open_in"
+            android:contentDescription="@string/open_with"
+            android:tooltipText="@string/open_with"
             app:icon="@drawable/ic_open_in"
             tools:targetApi="o" />
 
