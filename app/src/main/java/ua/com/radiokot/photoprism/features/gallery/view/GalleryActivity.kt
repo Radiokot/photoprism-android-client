@@ -209,6 +209,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         openViewer(
                             mediaIndex = event.mediaIndex,
                             repositoryQuery = event.repositoryQuery,
+                            areActionsEnabled = event.areActionsEnabled,
                         )
 
                     is GalleryViewModel.Event.ResetScroll -> {
@@ -428,6 +429,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private fun openViewer(
         mediaIndex: Int,
         repositoryQuery: String?,
+        areActionsEnabled: Boolean,
     ) {
         startActivity(
             Intent(this, MediaViewerActivity::class.java)
@@ -435,6 +437,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     MediaViewerActivity.getBundle(
                         mediaIndex = mediaIndex,
                         repositoryQuery = repositoryQuery,
+                        areActionsEnabled = areActionsEnabled,
                     )
                 )
         )

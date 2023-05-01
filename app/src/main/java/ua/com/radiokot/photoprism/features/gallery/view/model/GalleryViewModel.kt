@@ -410,7 +410,10 @@ class GalleryViewModel(
 
             is State.Viewing ->
                 if (item.source != null) {
-                    openViewer(item.source)
+                    openViewer(
+                        media = item.source,
+                        areActionsEnabled = true,
+                    )
                 }
         }
     }
@@ -426,7 +429,10 @@ class GalleryViewModel(
         }
 
         if (item.source != null) {
-            openViewer(item.source)
+            openViewer(
+                media = item.source,
+                areActionsEnabled = false,
+            )
         }
     }
 
@@ -464,7 +470,10 @@ class GalleryViewModel(
         )
     }
 
-    private fun openViewer(media: GalleryMedia) {
+    private fun openViewer(
+        media: GalleryMedia,
+        areActionsEnabled: Boolean,
+    ) {
         val currentMediaRepository = currentMediaRepository.value
             ?: return
         val index = currentMediaRepository.itemsList.indexOf(media)
@@ -474,13 +483,15 @@ class GalleryViewModel(
             "openViewer(): opening_viewer:" +
                     "\nmedia=$media," +
                     "\nindex=$index," +
-                    "\nrepositoryQuery=$repositoryQuery"
+                    "\nrepositoryQuery=$repositoryQuery," +
+                    "\nareActionsEnabled=$areActionsEnabled"
         }
 
         eventsSubject.onNext(
             Event.OpenViewer(
                 mediaIndex = index,
                 repositoryQuery = repositoryQuery,
+                areActionsEnabled = areActionsEnabled,
             )
         )
     }
@@ -513,6 +524,7 @@ class GalleryViewModel(
         class OpenViewer(
             val mediaIndex: Int,
             val repositoryQuery: String?,
+            val areActionsEnabled: Boolean,
         ) : Event
 
         object ResetScroll : Event

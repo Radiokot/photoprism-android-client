@@ -24,6 +24,7 @@ class MediaViewerViewModel(
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
+    private var areActionsEnabled = false
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -34,15 +35,14 @@ class MediaViewerViewModel(
     val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
     val state: MutableLiveData<State> = MutableLiveData(State.Idle)
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
-    val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false).apply {
-        observeForever { areActionsVisible.value = !it }
-    }
+    val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
 
     fun initOnce(
         downloadViewModel: DownloadMediaFileViewModel,
         repositoryQuery: String?,
+        areActionsEnabled: Boolean,
     ) {
         if (isInitialized) {
             log.debug {
@@ -60,12 +60,24 @@ class MediaViewerViewModel(
             }
         subscribeToRepository()
 
+        this.areActionsEnabled = areActionsEnabled
+        initActionsVisibility()
+
         log.debug {
             "init(): initialized:" +
                     "\nrepositoryQuery=$repositoryQuery"
         }
 
         update()
+    }
+
+    private fun initActionsVisibility() {
+        fun updateActionsVisibility() {
+            areActionsVisible.value =
+                isFullScreen.value == false && areActionsEnabled
+        }
+        isFullScreen.observeForever { updateActionsVisibility() }
+        updateActionsVisibility()
     }
 
     private fun subscribeToRepository() {
