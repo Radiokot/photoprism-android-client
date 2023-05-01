@@ -16,17 +16,8 @@ class GalleryLoadingFooterListItem(
     override val layoutRes: Int
         get() = R.layout.list_item_gallery_loading_footer
 
-    override var identifier: Long
-        get() {
-            var r = 1L
-            r = 31 * r + isLoading.hashCode()
-            r = 31 * r + canLoadMore.hashCode()
-            return r
-        }
-        set(_) {
-            error("Do not rewrite my value")
-        }
-
+    override var identifier: Long =
+        "loading".hashCode().toLong()
 
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)

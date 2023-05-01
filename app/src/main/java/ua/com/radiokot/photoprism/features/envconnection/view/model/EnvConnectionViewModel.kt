@@ -152,7 +152,7 @@ class EnvConnectionViewModel(
 
         val connectionParams: EnvConnectionParams = try {
             EnvConnectionParams(
-                apiUrl = EnvConnectionParams.rootUrlToApiUrl(rootUrl.value!!.trim()),
+                rootUrlString = rootUrl.value!!.trim(),
                 clientCertificateAlias = clientCertificateAlias.value,
             )
         } catch (e: Exception) {

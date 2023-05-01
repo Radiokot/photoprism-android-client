@@ -248,7 +248,12 @@ class GalleryViewModel(
 
         currentMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onNewGalleryMedia)
+            .subscribe {
+                onNewGalleryMedia(
+                    galleryMediaList = it,
+                    repository = currentMediaRepository,
+                )
+            }
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -289,10 +294,13 @@ class GalleryViewModel(
         disposable.addToCloseables(this)
     }
 
-    private fun onNewGalleryMedia(galleryMediaList: List<GalleryMedia>) {
+    private fun onNewGalleryMedia(
+        galleryMediaList: List<GalleryMedia>,
+        repository: SimpleGalleryMediaRepository,
+    ) {
         // Dismiss the main error when there are items.
         mainError.value =
-            if (galleryMediaList.isEmpty())
+            if (galleryMediaList.isEmpty() && !repository.isNeverUpdated)
                 Error.NoMediaFound
             else
                 null

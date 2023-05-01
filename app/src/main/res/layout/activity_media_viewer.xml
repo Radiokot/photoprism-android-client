@@ -19,14 +19,15 @@
         android:indeterminate="true" />
 
     <!-- Margins are programmatically extended with insets -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginHorizontal="16dp"
+        android:layout_marginHorizontal="@dimen/media_viewer_buttons_layout_horizontal_spacing"
         android:layout_marginBottom="24dp"
-        android:orientation="horizontal"
+        app:flexWrap="wrap"
+        app:justifyContent="center"
         tools:ignore="MissingConstraints">
 
         <com.google.android.material.button.MaterialButton
@@ -34,40 +35,44 @@
             style="?materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/download"
+            android:tooltipText="@string/download"
             app:icon="@drawable/ic_download"
-            app:iconGravity="textStart"
-            app:layout_constraintEnd_toStartOf="@id/share_button"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent" />
+            tools:targetApi="o" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_button"
             style="?materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/share"
+            android:tooltipText="@string/share"
             app:icon="@drawable/ic_share"
-            app:iconGravity="textStart"
-            app:layout_constraintEnd_toStartOf="@id/open_in_button"
-            app:layout_constraintStart_toEndOf="@id/download_button" />
+            tools:targetApi="o" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/open_in_button"
             style="?materialIconButtonFilledTonalStyle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/open_in"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/open_in"
+            android:tooltipText="@string/open_in"
             app:icon="@drawable/ic_open_in"
-            app:iconGravity="textEnd"
-            app:iconPadding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/share_button"
-            app:layout_constraintWidth_default="spread" />
+            tools:targetApi="o" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/open_in_web_viewer_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
+            android:contentDescription="@string/open_in_web_viewer"
+            android:tooltipText="@string/open_in_web_viewer"
+            app:icon="@drawable/ic_web"
+            tools:targetApi="o" />
+
+    </com.google.android.flexbox.FlexboxLayout>
 </FrameLayout>

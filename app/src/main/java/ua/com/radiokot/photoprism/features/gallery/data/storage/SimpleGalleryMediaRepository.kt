@@ -16,12 +16,14 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.photoPrismDateFormat
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import java.util.*
 
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     private val thumbnailUrlFactory: MediaPreviewUrlFactory,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
+    private val webUrlFactory: MediaWebUrlFactory,
     val query: String?,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
@@ -81,6 +83,7 @@ class SimpleGalleryMediaRepository(
                         source = it,
                         previewUrlFactory = thumbnailUrlFactory,
                         downloadUrlFactory = downloadUrlFactory,
+                        webUrlFactory = webUrlFactory,
                     )
                 }
             }
@@ -208,6 +211,7 @@ class SimpleGalleryMediaRepository(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
         private val thumbnailUrlFactory: MediaPreviewUrlFactory,
         private val downloadUrlFactory: MediaFileDownloadUrlFactory,
+        private val webUrlFactory: MediaWebUrlFactory,
         private val pageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
@@ -249,6 +253,7 @@ class SimpleGalleryMediaRepository(
                     photoPrismPhotosService = photoPrismPhotosService,
                     thumbnailUrlFactory = thumbnailUrlFactory,
                     downloadUrlFactory = downloadUrlFactory,
+                    webUrlFactory = webUrlFactory,
                     query = query,
                     pageLimit = pageLimit,
                 ).also {

@@ -8,7 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Hanging of network calls after multiple media download cancellations
+
+### Added
+- Ability to open a media in the web viewer, to see EXIF data, location, etc.
+
+### Changed
+- Library root URL is now shown in the preferences instead of the API endpoint
+
+## [1.5.2] - 2023-04-27
+
+### Changed
+- Made the fast scroll responsible – the content will be loaded as you are dragging
+
+## [1.5.2-rc1] - 2023-04-26
+
+### Fixed
 - Duplication of gallery items, which happened to be at the edge of the data page
+- Blinking of the empty view when the data is being loaded for the first time
 
 ### Added
 - Infinite scrolling (swiping?) in the media viewer
@@ -90,7 +107,9 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.1(9)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2(11)...HEAD
+[1.5.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2-rc1(10)...1.5.2(11)
+[1.5.2-rc1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.1(9)...1.5.2-rc1(10)
 [1.5.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.0(8)...1.5.1(9)
 [1.5.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.4.0(7)...1.5.0(8)
 [1.4.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.3.0(6)...1.4.0(7)

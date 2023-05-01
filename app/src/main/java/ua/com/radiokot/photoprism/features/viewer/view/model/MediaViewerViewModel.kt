@@ -147,6 +147,17 @@ class MediaViewerViewModel(
         }
     }
 
+    fun onOpenInWebViewerClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onOpenInWebViewerClicked(): opening_viewer:" +
+                    "\nitem=$item"
+        }
+
+        eventsSubject.onNext(Event.OpenUrl(url = item.webViewUrl))
+    }
+
     fun onDownloadClicked(position: Int) {
         val item = galleryMediaRepository.itemsList[position]
 
@@ -356,6 +367,7 @@ class MediaViewerViewModel(
         object CheckStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
         class ShowSuccessfulDownloadMessage(val fileName: String) : Event
+        class OpenUrl(val url: String) : Event
     }
 
     sealed interface State {

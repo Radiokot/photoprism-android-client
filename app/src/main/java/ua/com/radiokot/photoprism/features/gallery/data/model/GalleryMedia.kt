@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import java.util.*
 
 class GalleryMedia(
@@ -15,6 +16,7 @@ class GalleryMedia(
     val takenAt: Date,
     val name: String,
     val smallThumbnailUrl: String,
+    val webViewUrl: String,
     files: List<File>,
 ) {
     var files: List<File> = files
@@ -24,6 +26,7 @@ class GalleryMedia(
         source: PhotoPrismMergedPhoto,
         previewUrlFactory: MediaPreviewUrlFactory,
         downloadUrlFactory: MediaFileDownloadUrlFactory,
+        webUrlFactory: MediaWebUrlFactory,
     ) : this(
         media = TypeData.fromPhotoPrism(
             source = source,
@@ -35,6 +38,7 @@ class GalleryMedia(
         takenAt = parsePhotoPrismDate(source.takenAt)!!,
         name = source.name,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
+        webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
         files = source.files.map { photoPrismFile ->
             File(
                 source = photoPrismFile,

@@ -2,11 +2,13 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -34,6 +36,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
+import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
 
@@ -113,6 +116,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         initMediaFileSelection()
         downloadProgressView.init()
         initFullScreenToggle()
+        initCustomTabs()
     }
 
     private fun initPager(
@@ -218,6 +222,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             )
         }
 
+        view.openInWebViewerButton.setOnClickListener {
+            viewModel.onOpenInWebViewerClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
+
         window.decorView.post {
             val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
 
@@ -246,21 +256,26 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
+    private fun initCustomTabs() {
+        CustomTabsHelper.safelyConnectAndInitialize(this)
+    }
+
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
         viewHolder.bindToLifecycle(this.lifecycle)
 
         val view = viewHolder.view
+        val playerControlsLayout = viewHolder.playerControlsLayout
 
-        val controlsLayout = view.videoView.findViewById<View>(R.id.player_controls_layout)
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            controlsLayout.fadeVisibility(isVisible = areActionsVisible)
+            playerControlsLayout.fadeVisibility(isVisible = areActionsVisible)
         }
         if (viewModel.areActionsVisible.value == true) {
             view.videoView.showController()
         } else {
             view.videoView.hideController()
         }
+        playerControlsLayout.clearAnimation()
 
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +
@@ -383,6 +398,11 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
                 is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showMissingStoragePermissionMessage()
+
+                is MediaViewerViewModel.Event.OpenUrl ->
+                    openUrl(
+                        url = event.url,
+                    )
             }
 
             log.debug {
@@ -480,6 +500,22 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             getString(R.string.error_storage_permission_is_required),
             Snackbar.LENGTH_SHORT,
         ).show()
+    }
+
+    private fun openUrl(url: String) {
+        val uri = Uri.parse(url)
+
+        CustomTabsHelper.safelyLaunchUrl(
+            this,
+            CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK)
+                .build(),
+            uri
+        )
     }
 
     companion object {

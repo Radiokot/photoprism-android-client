@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import okio.IOException
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
-import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig

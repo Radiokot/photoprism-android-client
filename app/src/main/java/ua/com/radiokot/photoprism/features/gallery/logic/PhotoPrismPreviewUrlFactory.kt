@@ -4,7 +4,7 @@ class PhotoPrismPreviewUrlFactory(
     apiUrl: String,
     private val previewToken: String,
 ) : MediaPreviewUrlFactory {
-    private val previewUrlBase = apiUrl.trimEnd('/') + "/v1"
+    private val previewUrlBase = "${apiUrl}v1"
 
     override fun getSmallThumbnailUrl(hash: String): String =
         "$previewUrlBase/t/$hash/$previewToken/tile_224"
