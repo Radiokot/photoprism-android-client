@@ -93,17 +93,20 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
 
         val repositoryQuery = intent.getStringExtra(REPO_QUERY_KEY)
+        val areActionsEnabled = intent.getBooleanExtra(ACTIONS_ENABLED_KEY, true)
 
         log.debug {
             "onCreate(): creating:" +
                     "\nmediaIndex=$mediaIndex," +
                     "\nrepositoryQuery=$repositoryQuery," +
+                    "\nareActionsEnabled=$areActionsEnabled," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
         viewModel.initOnce(
             downloadViewModel = downloadViewModel,
             repositoryQuery = repositoryQuery,
+            areActionsEnabled = areActionsEnabled,
         )
 
         // Init before the subscription.
@@ -172,7 +175,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             adapter = fastAdapter
 
             val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
-                // TODO: Should I add loading "footer"?
                 footerAdapter = GenericItemAdapter(),
                 layoutManager = recyclerView.layoutManager.checkNotNull {
                     "There must be a layout manager at this point"
@@ -521,13 +523,16 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     companion object {
         private const val MEDIA_INDEX_KEY = "media-index"
         private const val REPO_QUERY_KEY = "repo-query"
+        private const val ACTIONS_ENABLED_KEY = "actions-enabled"
 
         fun getBundle(
             mediaIndex: Int,
             repositoryQuery: String?,
+            areActionsEnabled: Boolean,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
             putString(REPO_QUERY_KEY, repositoryQuery)
+            putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
         }
     }
 }

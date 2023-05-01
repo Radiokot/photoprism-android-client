@@ -306,6 +306,7 @@ class GalleryViewModel(
                 null
 
         val newListItems = mutableListOf<GalleryListItem>()
+        val areViewButtonsVisible = state.value is State.Selecting
 
         // Add date headers.
         val today = Date()
@@ -357,6 +358,7 @@ class GalleryViewModel(
                 newListItems.add(
                     GalleryListItem.Media(
                         source = galleryMedia,
+                        isViewButtonVisible = areViewButtonsVisible,
                     )
                 )
             }
@@ -408,8 +410,29 @@ class GalleryViewModel(
 
             is State.Viewing ->
                 if (item.source != null) {
-                    openViewer(item.source)
+                    openViewer(
+                        media = item.source,
+                        areActionsEnabled = true,
+                    )
                 }
+        }
+    }
+
+    fun onItemViewButtonClicked(item: GalleryListItem) {
+        log.debug {
+            "onItemViewButtonClicked(): gallery_item_view_button_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item !is GalleryListItem.Media) {
+            return
+        }
+
+        if (item.source != null) {
+            openViewer(
+                media = item.source,
+                areActionsEnabled = false,
+            )
         }
     }
 
@@ -447,7 +470,10 @@ class GalleryViewModel(
         )
     }
 
-    private fun openViewer(media: GalleryMedia) {
+    private fun openViewer(
+        media: GalleryMedia,
+        areActionsEnabled: Boolean,
+    ) {
         val currentMediaRepository = currentMediaRepository.value
             ?: return
         val index = currentMediaRepository.itemsList.indexOf(media)
@@ -457,13 +483,15 @@ class GalleryViewModel(
             "openViewer(): opening_viewer:" +
                     "\nmedia=$media," +
                     "\nindex=$index," +
-                    "\nrepositoryQuery=$repositoryQuery"
+                    "\nrepositoryQuery=$repositoryQuery," +
+                    "\nareActionsEnabled=$areActionsEnabled"
         }
 
         eventsSubject.onNext(
             Event.OpenViewer(
                 mediaIndex = index,
                 repositoryQuery = repositoryQuery,
+                areActionsEnabled = areActionsEnabled,
             )
         )
     }
@@ -496,6 +524,7 @@ class GalleryViewModel(
         class OpenViewer(
             val mediaIndex: Int,
             val repositoryQuery: String?,
+            val areActionsEnabled: Boolean,
         ) : Event
 
         object ResetScroll : Event

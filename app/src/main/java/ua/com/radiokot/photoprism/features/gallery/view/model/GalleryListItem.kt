@@ -8,6 +8,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -29,11 +30,13 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val mediaTypeIcon: Int?,
         @StringRes
         val mediaTypeName: Int?,
+        val isViewButtonVisible: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
 
         constructor(
             source: GalleryMedia,
+            isViewButtonVisible: Boolean,
         ) : this(
             thumbnailUrl = source.smallThumbnailUrl,
             name = source.name,
@@ -47,6 +50,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 GalleryMediaTypeResources.getName(source.media.typeName)
             else
                 null,
+            isViewButtonVisible = isViewButtonVisible,
             source = source,
         )
 
@@ -68,7 +72,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             override val scope: Scope
                 get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-            private val view = ListItemGalleryMediaBinding.bind(itemView)
+            val view = ListItemGalleryMediaBinding.bind(itemView)
             private val picasso: Picasso by inject()
 
             override fun bindView(item: Media, payloads: List<Any>) {
@@ -95,6 +99,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                         else
                             null
                 }
+
+                view.viewButton.isVisible = item.isViewButtonVisible
             }
 
             override fun unbindView(item: Media) {

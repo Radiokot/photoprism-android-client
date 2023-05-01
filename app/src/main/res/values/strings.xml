@@ -106,5 +106,6 @@
     <string name="play_video">Play</string>
     <string name="pause_video">Pause</string>
     <string name="no_media_found">No media found</string>
+    <string name="view_media">View</string>
     <string name="open_in_web_viewer">Open in web viewer</string>
 </resources>

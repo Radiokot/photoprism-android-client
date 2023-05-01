@@ -209,6 +209,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         openViewer(
                             mediaIndex = event.mediaIndex,
                             repositoryQuery = event.repositoryQuery,
+                            areActionsEnabled = event.areActionsEnabled,
                         )
 
                     is GalleryViewModel.Event.ResetScroll -> {
@@ -268,18 +269,26 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
-                resolveView = { viewHolder: ViewHolder ->
+                resolveView = { null },
+                resolveViews = { viewHolder: ViewHolder ->
                     when (viewHolder) {
                         is GalleryLoadingFooterListItem.ViewHolder ->
-                            viewHolder.view.loadMoreButton
+                            listOf(viewHolder.view.loadMoreButton)
+                        is GalleryListItem.Media.ViewHolder ->
+                            listOf(viewHolder.itemView, viewHolder.view.viewButton)
                         else ->
-                            viewHolder.itemView
+                            listOf(viewHolder.itemView)
                     }
                 },
-                onClick = { _, _, _, item ->
+                onClick = { view, _, _, item ->
                     when (item) {
                         is GalleryListItem ->
-                            viewModel.onItemClicked(item)
+                            when (view.id) {
+                                R.id.view_button ->
+                                    viewModel.onItemViewButtonClicked(item)
+                                else ->
+                                    viewModel.onItemClicked(item)
+                            }
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
                     }
@@ -420,6 +429,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private fun openViewer(
         mediaIndex: Int,
         repositoryQuery: String?,
+        areActionsEnabled: Boolean,
     ) {
         startActivity(
             Intent(this, MediaViewerActivity::class.java)
@@ -427,6 +437,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     MediaViewerActivity.getBundle(
                         mediaIndex = mediaIndex,
                         repositoryQuery = repositoryQuery,
+                        areActionsEnabled = areActionsEnabled,
                     )
                 )
         )
