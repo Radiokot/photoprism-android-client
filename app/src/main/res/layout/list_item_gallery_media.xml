@@ -41,10 +41,12 @@
         android:layout_gravity="center"
         android:contentDescription="@string/view_media"
         android:paddingStart="6dp"
-        app:iconSize="17dp"
-        app:iconPadding="0dp"
         android:paddingEnd="0dp"
+        android:tooltipText="@string/view_media"
         app:icon="@drawable/ic_arrows_expand"
+        app:iconPadding="0dp"
+        app:iconSize="17dp"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
-        app:layout_constraintEnd_toEndOf="@id/image_view" />
+        app:layout_constraintEnd_toEndOf="@id/image_view"
+        tools:targetApi="o" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -268,18 +268,26 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
-                resolveView = { viewHolder: ViewHolder ->
+                resolveView = { null },
+                resolveViews = { viewHolder: ViewHolder ->
                     when (viewHolder) {
                         is GalleryLoadingFooterListItem.ViewHolder ->
-                            viewHolder.view.loadMoreButton
+                            listOf(viewHolder.view.loadMoreButton)
+                        is GalleryListItem.Media.ViewHolder ->
+                            listOf(viewHolder.itemView, viewHolder.view.viewButton)
                         else ->
-                            viewHolder.itemView
+                            listOf(viewHolder.itemView)
                     }
                 },
-                onClick = { _, _, _, item ->
+                onClick = { view, _, _, item ->
                     when (item) {
                         is GalleryListItem ->
-                            viewModel.onItemClicked(item)
+                            when (view.id) {
+                                R.id.view_button ->
+                                    viewModel.onItemViewButtonClicked(item)
+                                else ->
+                                    viewModel.onItemClicked(item)
+                            }
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
                     }

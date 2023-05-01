@@ -306,6 +306,7 @@ class GalleryViewModel(
                 null
 
         val newListItems = mutableListOf<GalleryListItem>()
+        val areViewButtonsVisible = state.value is State.Selecting
 
         // Add date headers.
         val today = Date()
@@ -357,6 +358,7 @@ class GalleryViewModel(
                 newListItems.add(
                     GalleryListItem.Media(
                         source = galleryMedia,
+                        isViewButtonVisible = areViewButtonsVisible,
                     )
                 )
             }
@@ -410,6 +412,21 @@ class GalleryViewModel(
                 if (item.source != null) {
                     openViewer(item.source)
                 }
+        }
+    }
+
+    fun onItemViewButtonClicked(item: GalleryListItem) {
+        log.debug {
+            "onItemViewButtonClicked(): gallery_item_view_button_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item !is GalleryListItem.Media) {
+            return
+        }
+
+        if (item.source != null) {
+            openViewer(item.source)
         }
     }
 
