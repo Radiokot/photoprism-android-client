@@ -1,0 +1,10 @@
+Fixed:
+- Hanging of network calls after multiple media download cancellations
+- Keeping a corrupted file in the device gallery when the downloading is cancelled
+
+Added:
+- Ability to open a media in the web viewer, to see EXIF data, location, etc.
+- Ability to view a media while selecting
+
+Changed:
+- Library root URL is now shown in the preferences instead of the API endpoint
