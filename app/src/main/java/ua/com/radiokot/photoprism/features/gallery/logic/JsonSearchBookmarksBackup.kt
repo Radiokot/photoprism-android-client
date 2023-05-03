@@ -21,11 +21,13 @@ class JsonSearchBookmarksBackup(
     override val fileMimeType: String = "application/json"
 
     override fun writeBackup(bookmarks: List<SearchBookmark>, output: OutputStream) {
-        jsonObjectMapper.writeValue(
+        // Trying to solve F-Droid build bytecode magic.
+        val data: JsonNode = this.jsonObjectMapper.valueToTree(createBackupData(bookmarks))
+        this.jsonObjectMapper.writeValue(
             output,
             BookmarksBackup(
                 version = VERSION,
-                data = jsonObjectMapper.valueToTree(createBackupData(bookmarks))
+                data = data,
             )
         )
     }
