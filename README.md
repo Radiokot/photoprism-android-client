@@ -31,7 +31,7 @@ I recommend using [Autosync app](https://play.google.com/store/apps/details?id=c
 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from 
-[November 18, 2022](https://github.com/photoprism/photoprism/releases/tag/221118-e58fee0fb) 
+[May 2, 2023](https://github.com/photoprism/photoprism/releases/tag/230502-c405f6eff) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
 The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), 
