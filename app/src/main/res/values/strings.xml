@@ -12,6 +12,10 @@
     <string name="media_type_text">Text</string>
     <string name="media_type_other">Other file</string>
     <string name="media_type_unknown">Unknown file type</string>
+    <string name="album_type_album">Album</string>
+    <string name="album_type_folder">Folder</string>
+    <string name="album_type_moment">Moment</string>
+    <string name="album_type_month">Month</string>
     <string name="select_media_file">Select media file</string>
     <string name="file_thumbnail">File thumbnail</string>
     <string name="downloading_progress">Downloading…</string>

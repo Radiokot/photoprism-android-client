@@ -5,6 +5,9 @@ import java.util.*
 enum class PhotoPrismOrder {
     NEWEST,
     OLDEST,
+    FAVORITES,
+    NAME,
+    PLACE,
     ;
 
     override fun toString(): String {
