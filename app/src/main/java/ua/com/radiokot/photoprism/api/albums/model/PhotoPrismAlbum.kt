@@ -8,8 +8,8 @@ data class PhotoPrismAlbum
 constructor(
     @JsonProperty("UID")
     val uid: String,
-    @JsonProperty("Year")
-    val year: Int,
-    @JsonProperty("Month")
-    val month: Int,
+    @JsonProperty("Title")
+    val title: String,
+    @JsonProperty("Thumb")
+    val thumb: String,
 )

@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.api.albums.service
 import retrofit2.http.GET
 import retrofit2.http.Query
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
-import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import java.io.IOException
 
 interface PhotoPrismAlbumsService {
@@ -17,7 +16,7 @@ interface PhotoPrismAlbumsService {
         @Query("type")
         type: String,
         @Query("order")
-        order: PhotoPrismOrder = PhotoPrismOrder.NEWEST,
+        order: String,
         @Query("q")
         q: String? = null,
     ): List<PhotoPrismAlbum>
