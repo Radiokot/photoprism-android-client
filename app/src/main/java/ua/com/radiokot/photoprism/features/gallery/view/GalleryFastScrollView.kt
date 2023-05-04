@@ -176,8 +176,8 @@ class GalleryFastScrollView(
                 else
                     0
             }
-            GalleryFastScrollViewModel.State.Loading -> 0
-            null -> TODO()
+            GalleryFastScrollViewModel.State.Loading,
+            null -> 0
         }
     }
 
