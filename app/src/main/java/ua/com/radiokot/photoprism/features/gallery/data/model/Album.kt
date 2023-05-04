@@ -2,9 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import java.util.*
 
 class Album (
@@ -52,7 +50,7 @@ class Album (
 
     sealed class TypeData(val typeName: TypeName) {
         interface order {
-            val orderBy: String
+            val orderBy: PhotoPrismOrder
         }
         interface ViewableAsImage {
             val hdPreviewUrl: String
@@ -61,22 +59,22 @@ class Album (
         //object Unknown : TypeData(GalleryMedia.TypeName.UNKNOWN)
 
         class Album(
-            override val orderBy: String,
+            override val orderBy: PhotoPrismOrder,
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.ALBUM), order, ViewableAsImage
 
         class Folder(
-            override val orderBy: String,
+            override val orderBy: PhotoPrismOrder,
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.FOLDER), order, ViewableAsImage
 
         class Moment(
-            override val orderBy: String,
+            override val orderBy: PhotoPrismOrder,
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.MOMENT), order, ViewableAsImage
 
         class Month(
-            override val orderBy: String,
+            override val orderBy: PhotoPrismOrder,
             override val hdPreviewUrl: String,
         ) : TypeData(TypeName.MONTH), order, ViewableAsImage
 
@@ -93,19 +91,19 @@ class Album (
             ): TypeData =
                 when (val type = source.type) {
                     TypeName.ALBUM.value -> Album(
-                        orderBy = PhotoPrismOrder.FAVORITES.toString(),
+                        orderBy = PhotoPrismOrder.FAVORITES,
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.thumb),
                     )
                     TypeName.FOLDER.value -> Folder(
-                        orderBy = PhotoPrismOrder.NAME.toString(),
+                        orderBy = PhotoPrismOrder.NAME,
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.thumb),
                     )
                     TypeName.MOMENT.value -> Moment(
-                        orderBy = PhotoPrismOrder.NEWEST.toString(),
+                        orderBy = PhotoPrismOrder.NEWEST,
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.thumb),
                     )
                     TypeName.MONTH.value -> Month(
-                        orderBy = PhotoPrismOrder.NEWEST.toString(),
+                        orderBy = PhotoPrismOrder.NEWEST,
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.thumb),
                     )
                     /*
