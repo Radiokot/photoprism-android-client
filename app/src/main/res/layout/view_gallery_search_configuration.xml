@@ -29,6 +29,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/albums"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/albums_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        tools:background="@android:color/system_neutral1_50"
+        tools:layout_height="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/media_type"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 

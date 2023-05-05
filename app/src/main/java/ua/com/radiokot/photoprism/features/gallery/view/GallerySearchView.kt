@@ -32,7 +32,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchContentBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
@@ -58,7 +58,7 @@ class GallerySearchView(
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
-    private lateinit var configurationView: ViewGallerySearchContentBinding
+    private lateinit var configurationView: ViewGallerySearchConfigurationBinding
     private val context: Context
         get() = searchBar.context
 
@@ -71,7 +71,7 @@ class GallerySearchView(
     fun init(
         searchBar: SearchBar,
         searchView: SearchView,
-        configurationView: ViewGallerySearchContentBinding,
+        configurationView: ViewGallerySearchConfigurationBinding,
     ) {
         this.searchBar = searchBar
         this.searchView = searchView

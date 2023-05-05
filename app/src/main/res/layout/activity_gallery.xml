@@ -48,7 +48,7 @@
 
             <include
                 android:id="@+id/search_content"
-                layout="@layout/view_gallery_search_content" />
+                layout="@layout/view_gallery_search_configuration" />
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.search.SearchView>
 

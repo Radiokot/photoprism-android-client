@@ -13,10 +13,12 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
+    private val albumsRepository: AlbumsRepository,
     private val searchFiltersGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
@@ -47,6 +49,7 @@ class GallerySearchViewModel(
     val events: Observable<Event> = eventsSubject
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
+    val albums = MutableLiveData<List<AlbumListItem>>()
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -58,8 +61,12 @@ class GallerySearchViewModel(
         includePrivateContent.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
+        subscribeToAlbums()
 
+        // Auxiliary repositories are updated on config view opening as well.
+        // ::onConfigurationViewOpening.
         bookmarksRepository.updateIfNotFresh()
+        albumsRepository.updateIfNotFresh()
     }
 
     private val canApplyConfiguredSearch: Boolean
@@ -110,6 +117,22 @@ class GallerySearchViewModel(
                 )
             )
         }
+    }
+
+    private fun subscribeToAlbums() {
+        albumsRepository.items
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { albums ->
+                log.debug {
+                    "subscribeToAlbums(): received_new_albums:" +
+                            "\ncount=${albums.size}"
+                }
+
+                this.albums.value = albums.map(::AlbumListItem)
+            }
+            .addToCloseables(this)
+
+        // TODO: Subscribe to loading and errors as well
     }
 
     fun onAvailableMediaTypeClicked(typeName: GalleryMedia.TypeName) {
@@ -164,6 +187,8 @@ class GallerySearchViewModel(
             }
         }
 
+        bookmarksRepository.updateIfNotFresh()
+        albumsRepository.updateIfNotFresh()
     }
 
     fun onConfigurationViewClosing() {
