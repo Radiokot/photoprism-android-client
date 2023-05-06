@@ -1,9 +1,17 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
+import com.squareup.picasso.Picasso
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 
 class AlbumListItem(
@@ -31,14 +39,28 @@ class AlbumListItem(
         ViewHolder(v)
 
     class ViewHolder(itemView: View) :
-        FastAdapter.ViewHolder<AlbumListItem>(itemView) {
+        FastAdapter.ViewHolder<AlbumListItem>(itemView), KoinScopeComponent {
+        override val scope: Scope
+            get() = getKoin().getScope(DI_SCOPE_SESSION)
+
+        val view = ListItemAlbumBinding.bind(itemView)
+        private val picasso: Picasso by inject()
+
         override fun bindView(item: AlbumListItem, payloads: List<Any>) {
-            TODO("Not yet implemented")
+            view.imageView.contentDescription = item.title
+
+            picasso
+                .load(item.thumbnailUrl)
+                .placeholder(ColorDrawable(Color.LTGRAY))
+                .fit()
+                .centerCrop()
+                .into(view.imageView)
+
+            view.titleTextView.text = item.title
         }
 
         override fun unbindView(item: AlbumListItem) {
-            TODO("Not yet implemented")
+            picasso.cancelRequest(view.imageView)
         }
-
     }
 }

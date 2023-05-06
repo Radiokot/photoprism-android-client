@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_album"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/list_item_album_width"
     android:layout_height="wrap_content"
-    tools:layout_width="160dp">
+    android:layout_marginEnd="8dp"
+    app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
             android:id="@+id/image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="H,1:0.62"
+            app:layout_constraintDimensionRatio="H,1:0.8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
