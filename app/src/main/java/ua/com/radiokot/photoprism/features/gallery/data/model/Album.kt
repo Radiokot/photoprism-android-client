@@ -15,6 +15,7 @@ class Album(
     val title: String, //same as photos name
     val uid: String,
     val smallThumbnailUrl: String,
+    val isFavorite: Boolean,
 ) {
 
     constructor(
@@ -25,6 +26,7 @@ class Album(
         title = source.title,
         uid = source.uid,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.thumb),
+        isFavorite = source.favorite,
     )
 
     override fun equals(other: Any?): Boolean {

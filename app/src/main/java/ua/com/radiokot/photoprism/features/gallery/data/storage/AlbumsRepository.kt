@@ -26,9 +26,13 @@ class AlbumsRepository(
         Single.merge(types.map(::getAlbumsOfType))
             .collect<MutableList<Album>>(
                 { mutableListOf() },
-                { collection, albums -> collection.addAll(albums) }
+                { collectedAlbums, albums -> collectedAlbums.addAll(albums) }
             )
-            .map { it as List<Album> }
+            .map { collectedAlbums ->
+                collectedAlbums.sortWith(favoriteFirstAlbumComparator)
+
+                collectedAlbums as List<Album>
+            }
 
     private fun getAlbumsOfType(type: String): Single<List<Album>> {
         val loader = PagedCollectionLoader(
@@ -67,5 +71,7 @@ class AlbumsRepository(
 
     private companion object {
         private const val PAGE_LIMIT = 30
+        private val favoriteFirstAlbumComparator =
+            Comparator<Album> { o1, o2 -> o2.isFavorite.compareTo(o1.isFavorite) }
     }
 }

@@ -16,4 +16,6 @@ constructor(
     val type: String,
     @JsonProperty("CreatedAt")
     val createdAt: String,
+    @JsonProperty("Favorite")
+    val favorite: Boolean,
 )
