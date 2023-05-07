@@ -81,6 +81,8 @@ class JsonSearchBookmarksBackup(
             val mediaTypes: List<String>,
             @JsonProperty("priv")
             val includePrivate: Boolean,
+            @JsonProperty("a")
+            val albumUid: String?,
         ) {
             constructor(source: SearchBookmark) : this(
                 id = source.id,
@@ -90,6 +92,7 @@ class JsonSearchBookmarksBackup(
                 mediaTypes = source.searchConfig.mediaTypes
                     .map(GalleryMedia.TypeName::toString),
                 includePrivate = source.searchConfig.includePrivate,
+                albumUid = source.searchConfig.albumUid,
             )
 
             fun toSource() = SearchBookmark(
@@ -103,7 +106,7 @@ class JsonSearchBookmarksBackup(
                         .toSet(),
                     includePrivate = includePrivate,
                     before = null,
-                    albumUid = null, // TODO: Add album UID to bookmarks
+                    albumUid = albumUid,
                 )
             )
         }
