@@ -238,6 +238,10 @@ class SimpleGalleryMediaRepository(
 
             queryBuilder.append(" public:${!config.includePrivate}")
 
+            if (config.albumUid != null) {
+                queryBuilder.append(" album:${config.albumUid}")
+            }
+
             val query = queryBuilder.toString()
                 .trim()
                 .takeUnless(String::isNullOrBlank)

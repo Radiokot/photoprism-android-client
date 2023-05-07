@@ -216,8 +216,17 @@ class GallerySearchView(
             return@post
         }
 
+        val listAdapter = FastAdapter.with(albumsAdapter).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+            onClickListener = { _, _, item: AlbumListItem, _ ->
+                viewModel.onAlbumItemClicked(item)
+                true
+            }
+        }
+
         with(configurationView.albumsRecyclerView) {
-            adapter = FastAdapter.with(albumsAdapter)
+            adapter = listAdapter
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
 

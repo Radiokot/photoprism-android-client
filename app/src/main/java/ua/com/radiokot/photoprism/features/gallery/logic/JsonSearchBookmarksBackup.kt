@@ -103,6 +103,7 @@ class JsonSearchBookmarksBackup(
                         .toSet(),
                     includePrivate = includePrivate,
                     before = null,
+                    albumUid = null, // TODO: Add album UID to bookmarks
                 )
             )
         }

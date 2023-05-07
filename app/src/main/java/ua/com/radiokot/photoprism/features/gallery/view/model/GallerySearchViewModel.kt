@@ -50,6 +50,7 @@ class GallerySearchViewModel(
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
     val albums = MutableLiveData<List<AlbumListItem>>()
+    private val selectedAlbumUid = MutableLiveData<String?>(searchDefaults.albumUid)
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -59,6 +60,7 @@ class GallerySearchViewModel(
         selectedMediaTypes.observeForever(updateApplyButtonEnabled)
         userQuery.observeForever(updateApplyButtonEnabled)
         includePrivateContent.observeForever(updateApplyButtonEnabled)
+        selectedAlbumUid.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
         subscribeToAlbums()
@@ -74,6 +76,7 @@ class GallerySearchViewModel(
             return selectedMediaTypes.value != searchDefaults.mediaTypes
                     || userQuery.value != searchDefaults.userQuery
                     || includePrivateContent.value != searchDefaults.includePrivate
+                    || selectedAlbumUid.value != searchDefaults.albumUid
         }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
@@ -162,6 +165,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = state.search.config.mediaTypes
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
+                selectedAlbumUid.value = state.search.config.albumUid
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -174,6 +178,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = searchDefaults.mediaTypes
                 userQuery.value = searchDefaults.userQuery
                 includePrivateContent.value = searchDefaults.includePrivate
+                selectedAlbumUid.value = searchDefaults.albumUid
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -230,6 +235,7 @@ class GallerySearchViewModel(
         val config = SearchConfig(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
             userQuery = userQuery.value!!.trim(),
+            albumUid = selectedAlbumUid.value,
             before = null,
             includePrivate = includePrivateContent.value == true,
         )
@@ -421,6 +427,27 @@ class GallerySearchViewModel(
         }
 
         eventsSubject.onNext(Event.OpenUrl(url = searchFiltersGuideUrl))
+    }
+
+    fun onAlbumItemClicked(item: AlbumListItem) {
+        check(stateSubject.value is State.ConfiguringSearch) {
+            "Albums are clickable only in the search configuration state"
+        }
+
+        log.debug {
+            "onAlbumItemClicked(): album_item_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item.source != null) {
+            val uid = item.source.uid
+
+            log.debug {
+                "onAlbumItemClicked(): setting_selected_album_uid:" +
+                        "\nuid=$uid"
+            }
+            selectedAlbumUid.value = uid
+        }
     }
 
     sealed interface State {

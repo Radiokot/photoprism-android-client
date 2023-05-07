@@ -18,6 +18,7 @@ data class SearchBookmark(
             mediaTypes = dbEntity.mediaTypes
                 .map { GalleryMedia.TypeName.valueOf(it) }
                 .toSet(),
+            albumUid = null, // TODO: Add album UID to bookmarks
             before = null,
             userQuery = dbEntity.userQuery ?: "",
             includePrivate = dbEntity.includePrivate,

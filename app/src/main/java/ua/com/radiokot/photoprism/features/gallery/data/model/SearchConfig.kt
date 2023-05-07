@@ -7,6 +7,7 @@ import java.util.*
 @Parcelize
 data class SearchConfig(
     val mediaTypes: Set<GalleryMedia.TypeName>,
+    val albumUid: String?,
     val before: Date?,
     val userQuery: String,
     val includePrivate: Boolean,
@@ -14,6 +15,7 @@ data class SearchConfig(
     companion object {
         val DEFAULT = SearchConfig(
             mediaTypes = emptySet(),
+            albumUid = null,
             before = null,
             userQuery = "",
             includePrivate = false,
