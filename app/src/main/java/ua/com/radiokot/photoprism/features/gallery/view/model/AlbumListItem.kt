@@ -54,8 +54,7 @@ data class AlbumListItem(
         private val selectedCardBackgroundTint = ColorStateList.valueOf(
             MaterialColors.getColor(
                 view.listItemAlbum,
-                // TODO: Find the right color
-                com.google.android.material.R.attr.colorPrimaryInverse,
+                com.google.android.material.R.attr.colorSecondaryContainer,
             )
         )
         private val unselectedCardStrokeWidth = view.listItemAlbum.strokeWidth
