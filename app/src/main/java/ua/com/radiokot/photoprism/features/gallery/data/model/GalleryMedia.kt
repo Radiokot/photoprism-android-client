@@ -218,10 +218,4 @@ class GalleryMedia(
             return "File(uid='$uid', name='$name')"
         }
     }
-
-    companion object {
-        fun parsePhotoPrismDate(date: String): Date? = synchronized(photoPrismDateFormat) {
-            photoPrismDateFormat.parse(date)
-        }
-    }
 }

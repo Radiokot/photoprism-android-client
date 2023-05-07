@@ -14,8 +14,8 @@ constructor(
     val thumb: String,
     @JsonProperty("Type")
     val type: String,
-    @JsonProperty("CreatedAt")
-    val createdAt: String,
+    @JsonProperty("UpdatedAt")
+    val updatedAt: String,
     @JsonProperty("Favorite")
     val favorite: Boolean,
 )

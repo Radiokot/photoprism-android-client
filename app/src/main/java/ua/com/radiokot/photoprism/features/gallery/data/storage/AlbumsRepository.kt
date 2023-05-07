@@ -16,11 +16,13 @@ import ua.com.radiokot.photoprism.util.PagedCollectionLoader
  * Combines albums of multiple [types].
  *
  * @param types types of albums to combine in the desired order, e.g. ["albums", "folders"]
+ * @param comparator used to sort collected albums of given [types]
  */
 class AlbumsRepository(
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
     private val previewUrlFactory: MediaPreviewUrlFactory,
     private val types: Collection<String>,
+    private val comparator: Comparator<Album>?,
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
         Single.merge(types.map(::getAlbumsOfType))
@@ -29,7 +31,9 @@ class AlbumsRepository(
                 { collectedAlbums, albums -> collectedAlbums.addAll(albums) }
             )
             .map { collectedAlbums ->
-                collectedAlbums.sortWith(favoriteFirstAlbumComparator)
+                if (comparator != null) {
+                    collectedAlbums.sortWith(comparator)
+                }
 
                 collectedAlbums as List<Album>
             }
@@ -71,7 +75,5 @@ class AlbumsRepository(
 
     private companion object {
         private const val PAGE_LIMIT = 30
-        private val favoriteFirstAlbumComparator =
-            Comparator<Album> { o1, o2 -> o2.isFavorite.compareTo(o1.isFavorite) }
     }
 }

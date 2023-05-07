@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.*
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.useMonthsFromResources
+import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -108,7 +109,9 @@ val galleryFeatureModules: List<Module> = listOf(
                 AlbumsRepository(
                     photoPrismAlbumsService = get(),
                     previewUrlFactory = get(),
-                    types = listOf("album", "folder")
+                    types = listOf("album", "folder"),
+                    comparator = compareByDescending(Album::isFavorite)
+                        .thenByDescending(Album::updatedAt)
                 )
             } bind AlbumsRepository::class
 
