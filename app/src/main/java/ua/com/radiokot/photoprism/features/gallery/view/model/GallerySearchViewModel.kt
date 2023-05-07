@@ -39,10 +39,6 @@ class GallerySearchViewModel(
     private val searchDefaults = SearchConfig.DEFAULT
 
     val isApplyButtonEnabled = MutableLiveData(false)
-    val selectedMediaTypes =
-        MutableLiveData(searchDefaults.mediaTypes)
-    val userQuery = MutableLiveData(searchDefaults.userQuery)
-    val includePrivateContent = MutableLiveData(searchDefaults.includePrivate)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
     val state: Observable<State> = stateSubject
     private val eventsSubject = PublishSubject.create<Event>()
@@ -50,7 +46,13 @@ class GallerySearchViewModel(
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
     val albums = MutableLiveData<List<AlbumListItem>>()
-    private val selectedAlbumUid = MutableLiveData<String?>(searchDefaults.albumUid)
+
+    // Current search configuration values.
+    // Values are set to searchDefaults values in onConfigurationViewOpening()
+    val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
+    val userQuery = MutableLiveData<String>()
+    val includePrivateContent = MutableLiveData<Boolean>()
+    private val selectedAlbumUid = MutableLiveData<String?>()
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
