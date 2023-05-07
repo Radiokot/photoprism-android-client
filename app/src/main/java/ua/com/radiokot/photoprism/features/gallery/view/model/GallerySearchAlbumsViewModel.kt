@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
@@ -38,18 +37,11 @@ class GallerySearchAlbumsViewModel(
     private fun subscribeToRepository() {
         albumsRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy {
-                if (state.value is State.Loading) {
-                    postReadyState()
-                }
-            }
-            .addToCloseables(this)
-
-        albumsRepository.loading
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { isLoading ->
-                if (isLoading) {
+            .subscribe { albums ->
+                if (albums.isEmpty() && albumsRepository.isNeverUpdated) {
                     state.value = State.Loading
+                } else {
+                    postReadyState()
                 }
             }
             .addToCloseables(this)
