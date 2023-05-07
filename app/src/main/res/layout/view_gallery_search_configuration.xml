@@ -32,17 +32,48 @@
         android:text="@string/albums"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albums_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
         android:fadingEdge="horizontal"
         android:fadingEdgeLength="6dp"
         android:requiresFadingEdge="horizontal"
         tools:background="@android:color/system_neutral1_50"
         tools:layout_height="30dp" />
+
+    <TextView
+        android:id="@+id/loading_albums_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="@string/loading_albums_progress"
+        android:textAppearance="@style/NoticeTextAppearance" />
+
+    <TextView
+        android:id="@+id/no_albums_found_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="@string/no_albums_found"
+        android:textAppearance="@style/NoticeTextAppearance" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reload_albums_button"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:paddingVertical="0dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/reload_albums" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -67,8 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
         android:text="@string/some_types_are_not_available_when_selecting"
-        android:textColor="?android:textColorSecondary"
-        android:textSize="12sp" />
+        android:textAppearance="@style/NoticeTextAppearance" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/private_content_switch"
@@ -85,7 +115,6 @@
         style="@style/Widget.Material3.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:text="@string/apply_search" />
 
@@ -94,7 +123,6 @@
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
         android:text="@string/reset_search" />
 </LinearLayout>

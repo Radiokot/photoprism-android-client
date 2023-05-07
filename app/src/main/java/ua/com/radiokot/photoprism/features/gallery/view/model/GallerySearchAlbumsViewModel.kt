@@ -125,6 +125,14 @@ class GallerySearchAlbumsViewModel(
         }
     }
 
+    fun onReloadAlbumsClicked() {
+        log.debug {
+            "onReloadAlbumsClicked(): reload_albums_clicked"
+        }
+
+        updateIfNotFresh()
+    }
+
     sealed interface State {
         object Loading : State
         class Ready(

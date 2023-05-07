@@ -232,6 +232,10 @@ class GallerySearchView(
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
 
+        configurationView.reloadAlbumsButton.setOnClickListener {
+            albumsViewModel.onReloadAlbumsClicked()
+        }
+
         isAlbumsListInitialized = true
     }
 
@@ -354,11 +358,19 @@ class GallerySearchView(
 
             albumsAdapter.setNewList(
                 when (state) {
-                    GallerySearchAlbumsViewModel.State.Loading -> emptyList()
-                    GallerySearchAlbumsViewModel.State.LoadingFailed -> emptyList()
                     is GallerySearchAlbumsViewModel.State.Ready -> state.albums
+                    else -> emptyList()
                 }
             )
+
+            configurationView.loadingAlbumsTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Loading
+
+            configurationView.reloadAlbumsButton.isVisible =
+                state is GallerySearchAlbumsViewModel.State.LoadingFailed
+
+            configurationView.noAlbumsFoundTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Ready && state.albums.isEmpty()
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +
