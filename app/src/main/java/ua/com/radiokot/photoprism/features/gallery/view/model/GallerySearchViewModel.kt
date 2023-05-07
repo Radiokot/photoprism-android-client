@@ -313,6 +313,7 @@ class GallerySearchViewModel(
             .intersect(availableMediaTypes.value!!)
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
+        selectedAlbumUid.value = bookmark.searchConfig.albumUid
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +

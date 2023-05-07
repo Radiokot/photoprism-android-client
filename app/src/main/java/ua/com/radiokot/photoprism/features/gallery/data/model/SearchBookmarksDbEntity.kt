@@ -24,4 +24,6 @@ data class SearchBookmarksDbEntity(
     val mediaTypes: List<String>,
     @ColumnInfo("include_private")
     val includePrivate: Boolean,
+    @ColumnInfo("album_uid")
+    val albumUid: String?,
 )
