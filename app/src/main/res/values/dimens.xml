@@ -14,4 +14,5 @@
     <dimen name="default_status_bar_height">24dp</dimen>
     <dimen name="media_viewer_buttons_horizontal_spacing">0dp</dimen>
     <dimen name="media_viewer_buttons_layout_horizontal_spacing">0dp</dimen>
+    <dimen name="list_item_album_width">22mm</dimen>
 </resources>

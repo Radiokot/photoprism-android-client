@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksR
 
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
+    val albumsViewModel: GallerySearchAlbumsViewModel,
     private val searchFiltersGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
@@ -37,16 +38,19 @@ class GallerySearchViewModel(
     private val searchDefaults = SearchConfig.DEFAULT
 
     val isApplyButtonEnabled = MutableLiveData(false)
-    val selectedMediaTypes =
-        MutableLiveData(searchDefaults.mediaTypes)
-    val userQuery = MutableLiveData(searchDefaults.userQuery)
-    val includePrivateContent = MutableLiveData(searchDefaults.includePrivate)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
     val state: Observable<State> = stateSubject
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
+
+    // Current search configuration values.
+    // Values are set to searchDefaults values in onConfigurationViewOpening()
+    val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
+    val userQuery = MutableLiveData<String>()
+    val includePrivateContent = MutableLiveData<Boolean>()
+    private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -56,10 +60,13 @@ class GallerySearchViewModel(
         selectedMediaTypes.observeForever(updateApplyButtonEnabled)
         userQuery.observeForever(updateApplyButtonEnabled)
         includePrivateContent.observeForever(updateApplyButtonEnabled)
+        selectedAlbumUid.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
-        bookmarksRepository.updateIfNotFresh()
+        // External data is updated on config view opening as well.
+        // ::onConfigurationViewOpening.
+        updateExternalData()
     }
 
     private val canApplyConfiguredSearch: Boolean
@@ -67,6 +74,7 @@ class GallerySearchViewModel(
             return selectedMediaTypes.value != searchDefaults.mediaTypes
                     || userQuery.value != searchDefaults.userQuery
                     || includePrivateContent.value != searchDefaults.includePrivate
+                    || selectedAlbumUid.value != searchDefaults.albumUid
         }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
@@ -139,6 +147,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = state.search.config.mediaTypes
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
+                selectedAlbumUid.value = state.search.config.albumUid
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -151,6 +160,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = searchDefaults.mediaTypes
                 userQuery.value = searchDefaults.userQuery
                 includePrivateContent.value = searchDefaults.includePrivate
+                selectedAlbumUid.value = searchDefaults.albumUid
 
                 stateSubject.onNext(
                     State.ConfiguringSearch(
@@ -164,6 +174,12 @@ class GallerySearchViewModel(
             }
         }
 
+        updateExternalData()
+    }
+
+    private fun updateExternalData() {
+        bookmarksRepository.updateIfNotFresh()
+        albumsViewModel.updateIfNotFresh()
     }
 
     fun onConfigurationViewClosing() {
@@ -205,6 +221,7 @@ class GallerySearchViewModel(
         val config = SearchConfig(
             mediaTypes = selectedMediaTypes.value ?: emptySet(),
             userQuery = userQuery.value!!.trim(),
+            albumUid = selectedAlbumUid.value,
             before = null,
             includePrivate = includePrivateContent.value == true,
         )
@@ -296,6 +313,7 @@ class GallerySearchViewModel(
             .intersect(availableMediaTypes.value!!)
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
+        selectedAlbumUid.value = bookmark.searchConfig.albumUid
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +

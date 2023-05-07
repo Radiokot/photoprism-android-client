@@ -12,4 +12,10 @@ constructor(
     val title: String,
     @JsonProperty("Thumb")
     val thumb: String,
+    @JsonProperty("Type")
+    val type: String,
+    @JsonProperty("UpdatedAt")
+    val updatedAt: String,
+    @JsonProperty("Favorite")
+    val favorite: Boolean,
 )

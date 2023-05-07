@@ -21,6 +21,11 @@ val dbModules = listOf(
                         override fun migrate(database: SupportSQLiteDatabase) = with(database) {
                             execSQL("ALTER TABLE `bookmarks` ADD COLUMN `include_private` INTEGER NOT NULL DEFAULT 0")
                         }
+                    },
+                    object : Migration(2, 3) {
+                        override fun migrate(database: SupportSQLiteDatabase)= with(database) {
+                            execSQL("ALTER TABLE `bookmarks` ADD COLUMN `album_uid` TEXT")
+                        }
                     }
                 )
                 .build()

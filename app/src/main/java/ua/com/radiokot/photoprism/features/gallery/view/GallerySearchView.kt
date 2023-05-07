@@ -26,23 +26,24 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchContentBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.view.model.AppliedGallerySearch
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import kotlin.math.roundToInt
 
@@ -58,9 +59,11 @@ class GallerySearchView(
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
-    private lateinit var configurationView: ViewGallerySearchContentBinding
+    private lateinit var configurationView: ViewGallerySearchConfigurationBinding
     private val context: Context
         get() = searchBar.context
+    private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
+    private val albumsAdapter = ItemAdapter<AlbumListItem>()
 
     val backPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -71,7 +74,7 @@ class GallerySearchView(
     fun init(
         searchBar: SearchBar,
         searchView: SearchView,
-        configurationView: ViewGallerySearchContentBinding,
+        configurationView: ViewGallerySearchConfigurationBinding,
     ) {
         this.searchBar = searchBar
         this.searchView = searchView
@@ -81,10 +84,12 @@ class GallerySearchView(
         initBookmarksDrag()
         initCustomTabs()
         initMenus()
+        // Albums list is initialized on config view opening.
 
         subscribeToData()
         subscribeToState()
         subscribeToEvents()
+        subscribeToAlbumsState()
     }
 
     private fun initSearchBarAndView() {
@@ -106,6 +111,8 @@ class GallerySearchView(
                         searchView.editText.text = searchTextStash
                         searchView.editText.setSelection(searchTextStash?.length ?: 0)
                     }
+
+                    initAlbumsListOnce()
                 }
                 SearchView.TransitionState.HIDING -> {
                     viewModel.onConfigurationViewClosing()
@@ -203,6 +210,33 @@ class GallerySearchView(
         configurationView.bookmarksChipsLayout.setOnDragListener(
             SearchBookmarkViewDragListener(viewModel)
         )
+    }
+
+    private var isAlbumsListInitialized = false
+    private fun initAlbumsListOnce() = configurationView.albumsRecyclerView.post {
+        if (isAlbumsListInitialized) {
+            return@post
+        }
+
+        val listAdapter = FastAdapter.with(albumsAdapter).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+            onClickListener = { _, _, item: AlbumListItem, _ ->
+                albumsViewModel.onAlbumItemClicked(item)
+                true
+            }
+        }
+
+        with(configurationView.albumsRecyclerView) {
+            adapter = listAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        }
+
+        configurationView.reloadAlbumsButton.setOnClickListener {
+            albumsViewModel.onReloadAlbumsClicked()
+        }
+
+        isAlbumsListInitialized = true
     }
 
     private fun subscribeToData() {
@@ -312,6 +346,36 @@ class GallerySearchView(
         viewModel.isBookmarksSectionVisible.observe(this) { isBookmarksSectionVisible ->
             configurationView.bookmarksChipsLayout.isVisible = isBookmarksSectionVisible
             configurationView.bookmarksTitleTextView.isVisible = isBookmarksSectionVisible
+        }
+    }
+
+    private fun subscribeToAlbumsState() {
+        albumsViewModel.state.observe(this) { state ->
+            log.debug {
+                "subscribeToAlbumsState(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
+            albumsAdapter.setNewList(
+                when (state) {
+                    is GallerySearchAlbumsViewModel.State.Ready -> state.albums
+                    else -> emptyList()
+                }
+            )
+
+            configurationView.loadingAlbumsTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Loading
+
+            configurationView.reloadAlbumsButton.isVisible =
+                state is GallerySearchAlbumsViewModel.State.LoadingFailed
+
+            configurationView.noAlbumsFoundTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Ready && state.albums.isEmpty()
+
+            log.debug {
+                "subscribeToState(): handled_new_state:" +
+                        "\nstate=$state"
+            }
         }
     }
 
@@ -465,6 +529,10 @@ class GallerySearchView(
 
                 if (search.config.includePrivate) {
                     appendIcon(id = R.drawable.ic_eye_off)
+                }
+
+                if (search.config.albumUid != null) {
+                    appendIcon(id = R.drawable.ic_album)
                 }
             }
             .append(search.config.userQuery)

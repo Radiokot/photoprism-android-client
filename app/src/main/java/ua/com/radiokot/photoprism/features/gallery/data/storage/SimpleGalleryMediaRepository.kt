@@ -13,7 +13,8 @@ import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.model.photoPrismDateFormat
+import ua.com.radiokot.photoprism.features.gallery.data.model.formatPhotoPrismDate
+import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
@@ -136,7 +137,7 @@ class SimpleGalleryMediaRepository(
             )
                 .firstOrNull()
                 ?.takenAt
-                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+                ?.let(::parsePhotoPrismDate)
         }.toMaybe()
 
         val getOldestDate = {
@@ -148,7 +149,7 @@ class SimpleGalleryMediaRepository(
             )
                 .firstOrNull()
                 ?.takenAt
-                ?.let(GalleryMedia.Companion::parsePhotoPrismDate)
+                ?.let(::parsePhotoPrismDate)
         }.toMaybe()
 
         return Maybe.zip(
@@ -231,12 +232,14 @@ class SimpleGalleryMediaRepository(
             }
 
             if (config.before != null) {
-                synchronized(photoPrismDateFormat) {
-                    queryBuilder.append(" before:\"${photoPrismDateFormat.format(config.before)}\"")
-                }
+                queryBuilder.append(" before:\"${formatPhotoPrismDate(config.before)}\"")
             }
 
             queryBuilder.append(" public:${!config.includePrivate}")
+
+            if (config.albumUid != null) {
+                queryBuilder.append(" album:${config.albumUid}")
+            }
 
             val query = queryBuilder.toString()
                 .trim()

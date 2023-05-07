@@ -18,6 +18,7 @@ data class SearchBookmark(
             mediaTypes = dbEntity.mediaTypes
                 .map { GalleryMedia.TypeName.valueOf(it) }
                 .toSet(),
+            albumUid = dbEntity.albumUid,
             before = null,
             userQuery = dbEntity.userQuery ?: "",
             includePrivate = dbEntity.includePrivate,
@@ -31,6 +32,7 @@ data class SearchBookmark(
         userQuery = searchConfig.userQuery,
         mediaTypes = searchConfig.mediaTypes.map(GalleryMedia.TypeName::toString),
         includePrivate = searchConfig.includePrivate,
+        albumUid = searchConfig.albumUid,
     )
 
     override fun compareTo(other: SearchBookmark): Int = position.compareTo(other.position)

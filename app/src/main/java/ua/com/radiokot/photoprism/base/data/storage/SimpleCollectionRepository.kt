@@ -14,7 +14,8 @@ import io.reactivex.rxjava3.subjects.CompletableSubject
  * Use it if the data is mutable and you don't need caching (it doesn't have it).
  */
 abstract class SimpleCollectionRepository<T> : Repository() {
-    protected val itemsSubject = BehaviorSubject.createDefault(listOf<T>())
+    protected val itemsSubject: BehaviorSubject<List<T>> =
+        BehaviorSubject.createDefault(emptyList())
     protected open val mutableItemsList = mutableListOf<T>()
 
     /**

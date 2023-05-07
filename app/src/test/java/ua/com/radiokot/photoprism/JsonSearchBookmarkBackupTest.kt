@@ -49,6 +49,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     before = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
+                    albumUid = "ars1juz1456bluxz"
                 )
             ),
             SearchBookmark(
@@ -60,6 +61,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     before = null,
                     userQuery = "",
                     includePrivate = false,
+                    albumUid = null,
                 )
             ),
         )
@@ -69,7 +71,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         val outputJson = String(outputStream.toByteArray(), Charsets.UTF_8)
 
         Assert.assertEquals(
-            """{"v":1,"d":{"b":[{"id":1,"pos":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"priv":true},{"id":2,"pos":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":[],"priv":false}]}}""",
+            """{"v":1,"d":{"b":[{"id":1,"pos":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"priv":true,"a":"ars1juz1456bluxz"},{"id":2,"pos":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":[],"priv":false,"a":null}]}}""",
             outputJson,
         )
     }
@@ -92,6 +94,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     before = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
+                    albumUid = "ars1juz1456bluxz",
                 )
             ),
             SearchBookmark(
@@ -103,12 +106,13 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     before = null,
                     userQuery = "",
                     includePrivate = false,
+                    albumUid = null,
                 )
             ),
         )
 
         val inputJson =
-            """{"v":1,"d":{"b":[{"id":1,"pos":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"priv":true},{"id":2,"pos":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":[],"priv":false}]}}"""
+            """{"v":1,"d":{"b":[{"id":1,"pos":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"priv":true,"a":"ars1juz1456bluxz"},{"id":2,"pos":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":[],"priv":false,"a":null}]}}"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
         val imported = backup.readBackup(inputStream)
 

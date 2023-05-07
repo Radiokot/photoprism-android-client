@@ -108,4 +108,8 @@
     <string name="no_media_found">No media found</string>
     <string name="view_media">View</string>
     <string name="open_in_web_viewer">Open in web viewer</string>
+    <string name="albums">Albums</string>
+    <string name="loading_albums_progress">Loading albums…</string>
+    <string name="reload_albums">Reload albums</string>
+    <string name="no_albums_found">No albums found</string>
 </resources>
