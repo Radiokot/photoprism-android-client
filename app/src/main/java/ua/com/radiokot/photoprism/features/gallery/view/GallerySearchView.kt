@@ -530,6 +530,10 @@ class GallerySearchView(
                 if (search.config.includePrivate) {
                     appendIcon(id = R.drawable.ic_eye_off)
                 }
+
+                if (search.config.albumUid != null) {
+                    appendIcon(id = R.drawable.ic_album)
+                }
             }
             .append(search.config.userQuery)
             .toSpannable()

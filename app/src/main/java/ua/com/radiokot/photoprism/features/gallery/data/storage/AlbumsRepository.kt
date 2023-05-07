@@ -10,7 +10,6 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
-import java.util.concurrent.TimeUnit
 
 /**
  * A repository for albums which the gallery content can be filtered by.
@@ -30,8 +29,6 @@ class AlbumsRepository(
                 { collection, albums -> collection.addAll(albums) }
             )
             .map { it as List<Album> }
-            .delay(3, TimeUnit.SECONDS)
-            .map { emptyList<Album>() }
 
     private fun getAlbumsOfType(type: String): Single<List<Album>> {
         val loader = PagedCollectionLoader(
