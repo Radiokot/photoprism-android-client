@@ -13,12 +13,11 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
-    private val albumsRepository: AlbumsRepository,
+    val albumsViewModel: GallerySearchAlbumsViewModel,
     private val searchFiltersGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
@@ -45,14 +44,13 @@ class GallerySearchViewModel(
     val events: Observable<Event> = eventsSubject
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
-    val albums = MutableLiveData<List<AlbumListItem>>()
 
     // Current search configuration values.
     // Values are set to searchDefaults values in onConfigurationViewOpening()
     val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
     val userQuery = MutableLiveData<String>()
     val includePrivateContent = MutableLiveData<Boolean>()
-    private val selectedAlbumUid = MutableLiveData<String?>()
+    private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -65,12 +63,10 @@ class GallerySearchViewModel(
         selectedAlbumUid.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
-        subscribeToAlbums()
 
-        // Auxiliary repositories are updated on config view opening as well.
+        // External data is updated on config view opening as well.
         // ::onConfigurationViewOpening.
-        bookmarksRepository.updateIfNotFresh()
-        albumsRepository.updateIfNotFresh()
+        updateExternalData()
     }
 
     private val canApplyConfiguredSearch: Boolean
@@ -122,22 +118,6 @@ class GallerySearchViewModel(
                 )
             )
         }
-    }
-
-    private fun subscribeToAlbums() {
-        albumsRepository.items
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { albums ->
-                log.debug {
-                    "subscribeToAlbums(): received_new_albums:" +
-                            "\ncount=${albums.size}"
-                }
-
-                this.albums.value = albums.map(::AlbumListItem)
-            }
-            .addToCloseables(this)
-
-        // TODO: Subscribe to loading and errors as well
     }
 
     fun onAvailableMediaTypeClicked(typeName: GalleryMedia.TypeName) {
@@ -194,8 +174,12 @@ class GallerySearchViewModel(
             }
         }
 
+        updateExternalData()
+    }
+
+    private fun updateExternalData() {
         bookmarksRepository.updateIfNotFresh()
-        albumsRepository.updateIfNotFresh()
+        albumsViewModel.updateIfNotFresh()
     }
 
     fun onConfigurationViewClosing() {
@@ -429,27 +413,6 @@ class GallerySearchViewModel(
         }
 
         eventsSubject.onNext(Event.OpenUrl(url = searchFiltersGuideUrl))
-    }
-
-    fun onAlbumItemClicked(item: AlbumListItem) {
-        check(stateSubject.value is State.ConfiguringSearch) {
-            "Albums are clickable only in the search configuration state"
-        }
-
-        log.debug {
-            "onAlbumItemClicked(): album_item_clicked:" +
-                    "\nitem=$item"
-        }
-
-        if (item.source != null) {
-            val uid = item.source.uid
-
-            log.debug {
-                "onAlbumItemClicked(): setting_selected_album_uid:" +
-                        "\nuid=$uid"
-            }
-            selectedAlbumUid.value = uid
-        }
     }
 
     sealed interface State {

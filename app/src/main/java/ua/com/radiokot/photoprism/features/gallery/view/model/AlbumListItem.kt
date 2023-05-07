@@ -1,8 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import com.google.android.material.color.MaterialColors
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
@@ -14,10 +16,10 @@ import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 
-class AlbumListItem(
+data class AlbumListItem(
     val title: String,
     val thumbnailUrl: String,
-    // TODO: Selection state
+    val isAlbumSelected: Boolean,
     val source: Album?,
 ) : AbstractItem<AlbumListItem.ViewHolder>() {
     override val layoutRes: Int =
@@ -29,9 +31,13 @@ class AlbumListItem(
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
 
-    constructor(source: Album) : this(
+    constructor(
+        source: Album,
+        isAlbumSelected: Boolean,
+    ) : this(
         title = source.title,
         thumbnailUrl = source.smallThumbnailUrl,
+        isAlbumSelected = isAlbumSelected,
         source = source,
     )
 
@@ -45,6 +51,14 @@ class AlbumListItem(
 
         val view = ListItemAlbumBinding.bind(itemView)
         private val picasso: Picasso by inject()
+        private val selectedCardBackgroundTint = ColorStateList.valueOf(
+            MaterialColors.getColor(
+                view.listItemAlbum,
+                // TODO: Find the right color
+                com.google.android.material.R.attr.colorPrimaryInverse,
+            )
+        )
+        private val unselectedCardStrokeWidth = view.listItemAlbum.strokeWidth
 
         override fun bindView(item: AlbumListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.title
@@ -57,6 +71,20 @@ class AlbumListItem(
                 .into(view.imageView)
 
             view.titleTextView.text = item.title
+
+            with(view.listItemAlbum) {
+                backgroundTintList =
+                    if (item.isAlbumSelected)
+                        selectedCardBackgroundTint
+                    else
+                        null
+
+                strokeWidth =
+                    if (item.isAlbumSelected)
+                        0
+                    else
+                        unselectedCardStrokeWidth
+            }
         }
 
         override fun unbindView(item: AlbumListItem) {

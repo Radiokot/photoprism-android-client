@@ -62,6 +62,7 @@ class GallerySearchView(
     private lateinit var configurationView: ViewGallerySearchConfigurationBinding
     private val context: Context
         get() = searchBar.context
+    private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
 
     val backPressedCallback = object : OnBackPressedCallback(false) {
@@ -88,6 +89,7 @@ class GallerySearchView(
         subscribeToData()
         subscribeToState()
         subscribeToEvents()
+        subscribeToAlbumsState()
     }
 
     private fun initSearchBarAndView() {
@@ -220,7 +222,7 @@ class GallerySearchView(
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             onClickListener = { _, _, item: AlbumListItem, _ ->
-                viewModel.onAlbumItemClicked(item)
+                albumsViewModel.onAlbumItemClicked(item)
                 true
             }
         }
@@ -341,9 +343,27 @@ class GallerySearchView(
             configurationView.bookmarksChipsLayout.isVisible = isBookmarksSectionVisible
             configurationView.bookmarksTitleTextView.isVisible = isBookmarksSectionVisible
         }
+    }
 
-        viewModel.albums.observe(this) { albums ->
-            albumsAdapter.setNewList(albums)
+    private fun subscribeToAlbumsState() {
+        albumsViewModel.state.observe(this) { state ->
+            log.debug {
+                "subscribeToAlbumsState(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
+            albumsAdapter.setNewList(
+                when (state) {
+                    GallerySearchAlbumsViewModel.State.Loading -> emptyList()
+                    GallerySearchAlbumsViewModel.State.LoadingFailed -> emptyList()
+                    is GallerySearchAlbumsViewModel.State.Ready -> state.albums
+                }
+            )
+
+            log.debug {
+                "subscribeToState(): handled_new_state:" +
+                        "\nstate=$state"
+            }
         }
     }
 
