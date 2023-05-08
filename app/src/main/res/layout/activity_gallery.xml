@@ -13,27 +13,24 @@
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
         android:paddingTop="?actionBarSize"
-        app:layout_behavior="@string/searchbar_scrolling_view_behavior"
         tools:ignore="PrivateResource" />
+
+    <!-- No layout behavior is set to make the search bar always visible -->
 
     <ua.com.radiokot.photoprism.view.ErrorView
         android:id="@+id/error_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:paddingTop="?actionBarSize" />
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.search.SearchBar
+        android:id="@+id/search_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/search_the_library"
-            app:navigationContentDescription="@string/preferences"
-            app:navigationIcon="@drawable/ic_dots_vertical"
-            app:navigationIconTint="?colorOnSurfaceVariant" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="wrap_content"
+        android:hint="@string/search_the_library"
+        app:navigationContentDescription="@string/preferences"
+        app:navigationIcon="@drawable/ic_dots_vertical"
+        app:navigationIconTint="?colorOnSurfaceVariant" />
 
     <com.google.android.material.search.SearchView
         android:id="@+id/search_view"
@@ -41,6 +38,9 @@
         android:layout_height="match_parent"
         android:hint="@string/search_the_library"
         app:layout_anchor="@id/search_bar">
+
+        <!-- It is important for this view to be in a ConstraintLayout
+        and have an anchor-->
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

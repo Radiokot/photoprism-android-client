@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Ability to filter library content by album (or folder)
 
+### Changed
+- Made the search bar be always visible
+
 ## [1.6.0] - 2023-05-02
 
 ### Fixed
