@@ -25,7 +25,7 @@ class AlbumsRepository(
     private val comparator: Comparator<Album>?,
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
-        Single.merge(types.map(::getAlbumsOfType))
+        Single.mergeDelayError(types.map(::getAlbumsOfType))
             .collect<MutableList<Album>>(
                 { mutableListOf() },
                 { collectedAlbums, albums -> collectedAlbums.addAll(albums) }

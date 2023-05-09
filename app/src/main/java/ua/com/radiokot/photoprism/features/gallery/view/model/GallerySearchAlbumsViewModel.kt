@@ -49,7 +49,7 @@ class GallerySearchAlbumsViewModel(
         albumsRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { error ->
-                log.debug(error) {
+                log.error(error) {
                     "subscribeToRepository(): albums_loading_failed"
                 }
 
