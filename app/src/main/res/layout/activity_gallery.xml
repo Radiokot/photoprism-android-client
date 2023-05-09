@@ -42,14 +42,9 @@
         <!-- It is important for this view to be in a ConstraintLayout
         and have an anchor-->
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <include
-                android:id="@+id/search_content"
-                layout="@layout/view_gallery_search_configuration" />
-        </androidx.core.widget.NestedScrollView>
+        <include
+            android:id="@+id/search_content"
+            layout="@layout/view_gallery_search_configuration" />
     </com.google.android.material.search.SearchView>
 
     <TextView

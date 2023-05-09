@@ -1,128 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/bookmarks_title_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/search_bookmarks"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/bookmarks_chips_layout"
+    <ua.com.radiokot.photoprism.view.ZeroTopFadingEdgeNestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        app:flexWrap="wrap"
-        tools:background="@android:color/system_neutral1_50"
-        tools:layout_height="30dp">
-        <!--Filled programmatically -->
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/albums"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="8dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/albums_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fadingEdge="horizontal"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:fadingEdge="vertical"
         android:fadingEdgeLength="6dp"
-        android:requiresFadingEdge="horizontal"
-        tools:background="@android:color/system_neutral1_50"
-        tools:layout_height="30dp" />
+        android:requiresFadingEdge="vertical"
+        app:layout_constraintBottom_toTopOf="@id/buttons_barrier"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/loading_albums_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="@string/loading_albums_progress"
-        android:textAppearance="@style/NoticeTextAppearance" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <TextView
-        android:id="@+id/no_albums_found_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="@string/no_albums_found"
-        android:textAppearance="@style/NoticeTextAppearance" />
+            <TextView
+                android:id="@+id/bookmarks_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_bookmarks"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/bookmarks_chips_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:flexWrap="wrap"
+                tools:background="@android:color/system_neutral1_50"
+                tools:layout_height="30dp">
+                <!--Filled programmatically -->
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/albums"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/albums_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fadingEdge="horizontal"
+                android:fadingEdgeLength="6dp"
+                android:requiresFadingEdge="horizontal"
+                tools:background="@android:color/system_neutral1_50"
+                tools:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/loading_albums_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:gravity="center"
+                android:text="@string/loading_albums_progress"
+                android:textAppearance="@style/NoticeTextAppearance" />
+
+            <TextView
+                android:id="@+id/no_albums_found_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:gravity="center"
+                android:text="@string/no_albums_found"
+                android:textAppearance="@style/NoticeTextAppearance" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reload_albums_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:paddingVertical="0dp"
+                android:text="@string/reload_albums" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_type"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/media_type_chips_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:flexWrap="wrap"
+                tools:background="@android:color/system_neutral1_50"
+                tools:layout_height="30dp">
+                <!--Filled programmatically -->
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:id="@+id/types_not_available_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="@string/some_types_are_not_available_when_selecting"
+                android:textAppearance="@style/NoticeTextAppearance" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/private_content_switch"
+                style="@style/Widget.Material3.CompoundButton.CheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-6dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/include_private_content"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+        </LinearLayout>
+    </ua.com.radiokot.photoprism.view.ZeroTopFadingEdgeNestedScrollView>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttons_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="reset_button,search_button" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/reload_albums_button"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:paddingVertical="0dp"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/reload_albums" />
-
-    <Space
+        android:id="@+id/reset_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="0dp"
-        android:layout_height="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/media_type"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/media_type_chips_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:flexWrap="wrap"
-        tools:background="@android:color/system_neutral1_50"
-        tools:layout_height="30dp">
-        <!--Filled programmatically -->
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <TextView
-        android:id="@+id/types_not_available_notice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:text="@string/some_types_are_not_available_when_selecting"
-        android:textAppearance="@style/NoticeTextAppearance" />
-
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/private_content_switch"
-        style="@style/Widget.Material3.CompoundButton.CheckBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="-6dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/include_private_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/reset_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/search_button"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
         style="@style/Widget.Material3.Button"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/apply_search" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/reset_button"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/reset_search" />
-</LinearLayout>
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/apply_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/reset_button" />
+</androidx.constraintlayout.widget.ConstraintLayout>
