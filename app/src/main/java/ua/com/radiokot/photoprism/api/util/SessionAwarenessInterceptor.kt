@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.api.util
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import okhttp3.internal.closeQuietly
 import ua.com.radiokot.photoprism.env.data.model.SessionExpiredException
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -21,6 +22,7 @@ class SessionAwarenessInterceptor(
         )
 
         if (sessionId.isNotEmpty() && response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            response.closeQuietly()
             throw SessionExpiredException(sessionId)
         }
 
