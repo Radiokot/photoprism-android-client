@@ -29,6 +29,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         fileProviderAuthority = applicationId + ".files"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                    "room.schemaLocation": "$projectDir/db-schema".toString(),
+                    "room.incremental"   : "true"
+                ]
+            }
+        }
     }
 
     buildTypes {

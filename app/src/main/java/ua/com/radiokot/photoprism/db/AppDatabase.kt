@@ -11,7 +11,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksD
     entities = [
         SearchBookmarksDbEntity::class,
     ],
-    exportSchema = false,
+    exportSchema = true,
 )
 @TypeConverters(
     value = [
