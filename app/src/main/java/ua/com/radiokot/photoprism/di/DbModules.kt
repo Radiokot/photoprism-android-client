@@ -1,11 +1,10 @@
 package ua.com.radiokot.photoprism.di
 
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.db.roomMigration
 
 val dbModules = listOf(
     module {
@@ -17,16 +16,12 @@ val dbModules = listOf(
                     name = "database"
                 )
                 .addMigrations(
-                    object : Migration(1, 2) {
-                        override fun migrate(database: SupportSQLiteDatabase) = with(database) {
-                            execSQL("ALTER TABLE `bookmarks` ADD COLUMN `include_private` INTEGER NOT NULL DEFAULT 0")
-                        }
+                    roomMigration(from = 1, to = 2) {
+                        execSQL("ALTER TABLE `bookmarks` ADD COLUMN `include_private` INTEGER NOT NULL DEFAULT 0")
                     },
-                    object : Migration(2, 3) {
-                        override fun migrate(database: SupportSQLiteDatabase)= with(database) {
-                            execSQL("ALTER TABLE `bookmarks` ADD COLUMN `album_uid` TEXT")
-                        }
-                    }
+                    roomMigration(from = 2, to = 3) {
+                        execSQL("ALTER TABLE `bookmarks` ADD COLUMN `album_uid` TEXT")
+                    },
                 )
                 .build()
         } bind AppDatabase::class
