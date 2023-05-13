@@ -479,66 +479,97 @@ class GallerySearchView(
         search: AppliedGallerySearch,
         textView: TextView
     ): CharSequence {
-        if (search is AppliedGallerySearch.Bookmarked) {
-            val spannableString = SpannableStringBuilder().apply {
-                append(search.bookmark.name)
-                setSpan(
-                    ForegroundColorSpan(
-                        MaterialColors.getColor(
-                            textView,
-                            com.google.android.material.R.attr.colorPrimary
-                        )
-                    ),
-                    0,
-                    length,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                )
-            }
+        fun SpannableStringBuilder.appendHighlightedText(content: String) =
+            appendHighlightedText(
+                content = content,
+                view = textView,
+            )
 
-            return spannableString
+        // For bookmarked search show only bookmark name
+        if (search is AppliedGallerySearch.Bookmarked) {
+            return SpannableStringBuilder().apply {
+                appendHighlightedText(search.bookmark.name)
+            }
         }
 
         val iconSize = (textView.lineHeight * 0.7).roundToInt()
         val textColors = textView.textColors
 
-        fun SpannableStringBuilder.appendIcon(@DrawableRes id: Int, end: String = " ") {
-            val drawable = ContextCompat.getDrawable(
-                textView.context,
-                id
-            )!!.apply {
-                setBounds(0, 0, iconSize, iconSize)
-                DrawableCompat.setTintList(this, textColors)
-            }
-            append("x")
-            setSpan(
-                ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
-                length - 1,
-                length,
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        fun SpannableStringBuilder.appendIcon(@DrawableRes id: Int) =
+            appendIcon(
+                id = id,
+                context = context,
+                colors = textColors,
+                sizePx = iconSize,
             )
-            append(end)
-        }
 
         val spannableString = SpannableStringBuilder()
             .apply {
                 search.config.mediaTypes.forEach { mediaType ->
-                    appendIcon(
-                        id = GalleryMediaTypeResources.getIcon(mediaType)
-                    )
+                    appendIcon(GalleryMediaTypeResources.getIcon(mediaType))
                 }
 
                 if (search.config.includePrivate) {
-                    appendIcon(id = R.drawable.ic_eye_off)
+                    appendIcon(R.drawable.ic_eye_off)
                 }
 
-                if (search.config.albumUid != null) {
-                    appendIcon(id = R.drawable.ic_album)
+                // If an album is selected, show icon and, if possible, the title.
+                val albumUid = search.config.albumUid
+                if (albumUid != null) {
+                    appendIcon(R.drawable.ic_album)
+
+                    val albumTitle = viewModel.albumsViewModel.getAlbumTitle(albumUid)
+                    if (albumTitle != null) {
+                        appendHighlightedText(albumTitle)
+                        if (search.config.userQuery.isNotEmpty()) {
+                            append(" ")
+                        }
+                    }
                 }
             }
             .append(search.config.userQuery)
             .toSpannable()
 
         return spannableString
+    }
+
+    private fun SpannableStringBuilder.appendHighlightedText(content: String, view: TextView) {
+        append(content)
+        setSpan(
+            ForegroundColorSpan(
+                MaterialColors.getColor(
+                    view,
+                    com.google.android.material.R.attr.colorPrimary
+                )
+            ),
+            0,
+            length,
+            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        )
+    }
+
+    private fun SpannableStringBuilder.appendIcon(
+        @DrawableRes id: Int,
+        context: Context,
+        sizePx: Int,
+        colors: ColorStateList,
+        end: String = " "
+    ) {
+        val drawable = ContextCompat.getDrawable(
+            context,
+            id
+        )!!.apply {
+            setBounds(0, 0, sizePx, sizePx)
+            DrawableCompat.setTintList(this, colors)
+        }
+        append("x")
+        setSpan(
+            ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
+            length - 1,
+            length,
+            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        )
+        append(end)
     }
 
     private fun openBookmarkDialog(

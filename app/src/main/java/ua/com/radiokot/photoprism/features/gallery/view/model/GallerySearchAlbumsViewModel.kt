@@ -125,6 +125,9 @@ class GallerySearchAlbumsViewModel(
         updateIfNotFresh()
     }
 
+    fun getAlbumTitle(uid: String): String? =
+        albumsRepository.getLoadedAlbum(uid)?.title
+
     sealed interface State {
         object Loading : State
         class Ready(

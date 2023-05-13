@@ -38,6 +38,13 @@ class AlbumsRepository(
                 collectedAlbums as List<Album>
             }
 
+    /**
+     * @return [Album] found by [uid] in the [itemsList]
+     * or null if nothing found.
+     */
+    fun getLoadedAlbum(uid: String): Album? =
+        itemsList.find { it.uid == uid }
+
     private fun getAlbumsOfType(type: String): Single<List<Album>> {
         val loader = PagedCollectionLoader(
             pageProvider = { cursor ->
