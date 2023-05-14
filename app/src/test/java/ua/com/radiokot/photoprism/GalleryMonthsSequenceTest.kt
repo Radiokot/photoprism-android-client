@@ -2,18 +2,15 @@ package ua.com.radiokot.photoprism
 
 import org.junit.Assert
 import org.junit.Test
-import ua.com.radiokot.photoprism.features.gallery.data.model.photoPrismDateFormat
+import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
-import java.text.SimpleDateFormat
 import java.util.*
 
 class GalleryMonthsSequenceTest {
     @Test
     fun generateForRange() {
-        val format = photoPrismDateFormat.clone() as SimpleDateFormat
-        format.timeZone = TimeZone.getTimeZone("UTC+3")
-        val endDate = format.parse("2023-04-01T00:05:10Z")!!
-        val startDate = format.parse("2021-02-15T22:06:45Z")!!
+        val endDate = parsePhotoPrismDate("2023-04-01T00:05:10Z")!!
+        val startDate = parsePhotoPrismDate("2021-02-15T22:06:45Z")!!
 
         val months = GalleryMonthsSequence(
             startDate = startDate,
@@ -34,9 +31,7 @@ class GalleryMonthsSequenceTest {
 
     @Test
     fun generateForSingleDate() {
-        val format = photoPrismDateFormat.clone() as SimpleDateFormat
-        format.timeZone = TimeZone.getTimeZone("UTC+3")
-        val date = format.parse("2023-04-01T00:05:10Z")!!
+        val date = parsePhotoPrismDate("2023-04-01T00:05:10Z")!!
 
         val months = GalleryMonthsSequence(
             startDate = date,
