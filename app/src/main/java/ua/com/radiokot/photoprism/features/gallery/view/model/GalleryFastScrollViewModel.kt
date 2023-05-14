@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.extension.addToCloseables
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
 import java.text.DateFormat
@@ -55,18 +56,20 @@ class GalleryFastScrollViewModel(
                     Schedulers.newThread()
                 )
         )
-            .distinctUntilChanged()
             .filterIsInstance<GalleryMonthScrollBubble>()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { monthBubble ->
+                val month = monthBubble.source
+                    ?: return@subscribeBy
+
                 log.debug {
-                    "subscribeToDragging(): setting_the_month:" +
-                            "\nbubble=$monthBubble"
+                    "subscribeToDragging(): posting_drag_event:" +
+                            "\nmonth=$month"
                 }
 
                 events.onNext(
-                    Event.DraggedToMonth(
-                        bubble = monthBubble,
+                    Event.DraggingAtMonth(
+                        month = month,
                         isTopMonth = bubbles.value?.firstOrNull() == monthBubble
                     )
                 )
@@ -159,10 +162,10 @@ class GalleryFastScrollViewModel(
     }
 
     sealed interface Event {
-        class DraggedToMonth(
-            val bubble: GalleryMonthScrollBubble,
+        class DraggingAtMonth(
+            val month: GalleryMonth,
             val isTopMonth: Boolean,
-        ): Event
+        ) : Event
     }
 
     private companion object {

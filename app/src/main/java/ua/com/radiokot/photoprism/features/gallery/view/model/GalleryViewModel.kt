@@ -197,21 +197,31 @@ class GalleryViewModel(
             }
 
             when (event) {
-                is GalleryFastScrollViewModel.Event.DraggedToMonth -> {
-                    if (event.bubble.source != null) {
-                        val searchConfigForMonth: SearchConfig? =
-                            if (event.isTopMonth)
-                                currentSearchConfig
-                            else
-                                (currentSearchConfig ?: SearchConfig.DEFAULT)
-                                    .copy(before = event.bubble.source.nextDayAfter)
+                is GalleryFastScrollViewModel.Event.DraggingAtMonth -> {
+                    val searchConfigForMonth: SearchConfig? =
+                        if (event.isTopMonth)
+                        // For top month we don't need to alter the "before" date,
+                        // if altered the result is the same as if the date is not set at all.
+                            currentSearchConfig
+                        else
+                            (currentSearchConfig ?: SearchConfig.DEFAULT)
+                                .copy(before = event.month.nextDayAfter)
+
+                    // Always reset the scroll.
+                    // If the list is scrolled manually, setting fast scroll to the same month
+                    // must bring it back to the top.
+                    eventsSubject.onNext(Event.ResetScroll)
+
+                    // We need to change the repo if scrolled to the top month
+                    // (return to initial state before scrolling)
+                    // or if the search config for the month differs from the current.
+                    if (event.isTopMonth || searchConfigForMonth != currentSearchConfig) {
+                        log.debug {
+                            "subscribeToFastScroll(): switching_to_month_search_config:" +
+                                    "\nconfig=$searchConfigForMonth"
+                        }
 
                         if (searchConfigForMonth != null) {
-                            log.debug {
-                                "subscribeToFastScroll(): switching_to_month_search_config:" +
-                                        "\nconfig=$searchConfigForMonth"
-                            }
-
                             val repositoryForMonth =
                                 galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
 

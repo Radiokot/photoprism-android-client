@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Laggy chronological scroll dragging
+- Not bringing the list to the top when scrolling to the current month
 
 ## [1.7.0] - 2023-05-09
 
