@@ -35,6 +35,7 @@ import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.extension.*
@@ -347,7 +348,7 @@ class GallerySearchView(
     }
 
     private fun subscribeToAlbumsState() {
-        albumsViewModel.state.observe(this) { state ->
+        albumsViewModel.state.subscribeBy { state ->
             log.debug {
                 "subscribeToAlbumsState(): received_new_state:" +
                         "\nstate=$state"
@@ -373,7 +374,7 @@ class GallerySearchView(
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }
+        }.autoDispose(this)
     }
 
     private fun subscribeToState() {

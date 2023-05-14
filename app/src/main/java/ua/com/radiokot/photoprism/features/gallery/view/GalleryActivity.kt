@@ -14,7 +14,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -231,7 +231,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun subscribeToState() {
-        viewModel.state.observe(this) { state ->
+        viewModel.state.subscribeBy { state ->
             log.debug {
                 "subscribeToState(): received_new_state:" +
                         "\nstate=$state"
@@ -252,7 +252,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }
+        }.autoDispose(this)
     }
 
     private fun initList() {

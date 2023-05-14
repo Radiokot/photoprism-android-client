@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -34,7 +35,8 @@ class MediaViewerViewModel(
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
-    val state: MutableLiveData<State> = MutableLiveData(State.Idle)
+    private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
+    val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -130,7 +132,7 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        state.value = State.Sharing
+        stateSubject.onNext(State.Sharing)
 
         if (item.files.size > 1) {
             openFileSelectionDialog(item.files)
@@ -149,7 +151,7 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        state.value = State.OpeningIn
+        stateSubject.onNext(State.OpeningIn)
 
         if (item.files.size > 1) {
             openFileSelectionDialog(item.files)
@@ -200,7 +202,7 @@ class MediaViewerViewModel(
     }
 
     private fun startDownloadToExternalStorage(media: GalleryMedia) {
-        state.value = State.DownloadingToExternalStorage(media)
+        stateSubject.onNext(State.DownloadingToExternalStorage(media))
 
         if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)) {
             log.debug {
@@ -233,12 +235,12 @@ class MediaViewerViewModel(
                     "\nisGranted=$isGranted"
         }
 
-        when (val state = state.value!!) {
+        when (val state = stateSubject.value!!) {
             is State.DownloadingToExternalStorage ->
                 if (isGranted) {
                     downloadToExternalStorage(state.media)
                 } else {
-                    this.state.value = State.Idle
+                    stateSubject.onNext(State.Idle)
                     eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
                 }
             else ->
@@ -261,7 +263,7 @@ class MediaViewerViewModel(
                     "\nfile=$file"
         }
 
-        when (state.value.checkNotNull()) {
+        when (stateSubject.value.checkNotNull()) {
             State.Sharing ->
                 downloadAndShareFile(file)
             State.OpeningIn ->
@@ -269,7 +271,7 @@ class MediaViewerViewModel(
             is State.DownloadingToExternalStorage ->
                 downloadFileToExternalStorage(file)
             else ->
-                error("Can't select files in ${state.value} state")
+                error("Can't select files in ${stateSubject.value} state")
         }
     }
 
@@ -301,7 +303,7 @@ class MediaViewerViewModel(
             file = file,
             destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
             onSuccess = { destinationFile ->
-                state.value = State.Idle
+                stateSubject.onNext(State.Idle)
                 eventsSubject.onNext(
                     Event.ShareDownloadedFile(
                         downloadedFile = destinationFile,
@@ -323,7 +325,7 @@ class MediaViewerViewModel(
             file = file,
             destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
             onSuccess = { destinationFile ->
-                state.value = State.Idle
+                stateSubject.onNext(State.Idle)
                 eventsSubject.onNext(
                     Event.OpenDownloadedFile(
                         downloadedFile = destinationFile,
@@ -345,7 +347,7 @@ class MediaViewerViewModel(
             file = file,
             destination = File(externalDownloadsDir, File(file.name).name),
             onSuccess = { destinationFile ->
-                state.value = State.Idle
+                stateSubject.onNext(State.Idle)
                 eventsSubject.onNext(
                     Event.ShowSuccessfulDownloadMessage(
                         fileName = destinationFile.name,

@@ -3,8 +3,10 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 
 /**
@@ -18,7 +20,8 @@ class GallerySearchAlbumsViewModel(
 ) : ViewModel() {
     private val log = kLogger("GallerySearchAlbumsVM")
 
-    val state = MutableLiveData<State>(State.Loading)
+    private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
+    val state = stateSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
 
     init {
@@ -39,7 +42,7 @@ class GallerySearchAlbumsViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { albums ->
                 if (albums.isEmpty() && albumsRepository.isNeverUpdated) {
-                    state.value = State.Loading
+                    stateSubject.onNext(State.Loading)
                 } else {
                     postReadyState()
                 }
@@ -53,7 +56,7 @@ class GallerySearchAlbumsViewModel(
                     "subscribeToRepository(): albums_loading_failed"
                 }
 
-                state.value = State.LoadingFailed
+                stateSubject.onNext(State.LoadingFailed)
             }
             .autoDispose(this)
     }
@@ -69,19 +72,20 @@ class GallerySearchAlbumsViewModel(
                     "\nselectedAlbumUid=$selectedAlbumUid"
         }
 
-        state.value = State.Ready(
-            albums = repositoryAlbums.map { album ->
-                AlbumListItem(
-                    source = album,
-                    isAlbumSelected = album.uid == selectedAlbumUid
-                )
-            }
-        )
+        stateSubject.onNext(
+            State.Ready(
+                albums = repositoryAlbums.map { album ->
+                    AlbumListItem(
+                        source = album,
+                        isAlbumSelected = album.uid == selectedAlbumUid
+                    )
+                }
+            ))
     }
 
     private fun subscribeToAlbumSelection() {
         selectedAlbumUid.observeForever {
-            val currentState = state.value
+            val currentState = stateSubject.value
             if (currentState is State.Ready) {
                 postReadyState()
             }
@@ -89,7 +93,7 @@ class GallerySearchAlbumsViewModel(
     }
 
     fun onAlbumItemClicked(item: AlbumListItem) {
-        val currentState = state.value
+        val currentState = stateSubject.value
         check(currentState is State.Ready) {
             "Albums are clickable only in the ready state"
         }

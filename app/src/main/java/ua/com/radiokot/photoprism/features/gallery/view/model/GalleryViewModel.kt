@@ -33,8 +33,7 @@ class GalleryViewModel(
     val fastScrollViewModel: GalleryFastScrollViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
-    private val mediaRepositoryChanges: BehaviorSubject<MediaRepositoryChange> =
-        BehaviorSubject.create()
+    private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
 
     // Current search config regardless the fast scroll.
     private var currentSearchConfig: SearchConfig? = null
@@ -44,9 +43,10 @@ class GalleryViewModel(
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
-    private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
+    private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
-    val state: MutableLiveData<State> = MutableLiveData()
+    private val stateSubject = BehaviorSubject.create<State>()
+    val state: Observable<State> = stateSubject.toMainThreadObservable()
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
@@ -90,7 +90,7 @@ class GalleryViewModel(
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
-        state.value = State.Selecting(filterMediaTypes = filterMediaTypes)
+        stateSubject.onNext(State.Selecting(filterMediaTypes = filterMediaTypes))
 
         initCommon()
 
@@ -110,7 +110,7 @@ class GalleryViewModel(
             "initViewing(): initialized_viewing"
         }
 
-        state.value = State.Viewing
+        stateSubject.onNext(State.Viewing)
 
         initCommon()
 
@@ -125,7 +125,7 @@ class GalleryViewModel(
     }
 
     private fun resetRepositoryToInitial() {
-        when (val state = state.value!!) {
+        when (val state = stateSubject.value!!) {
             is State.Selecting -> {
                 val searchConfig = SearchConfig.DEFAULT.copy(
                     mediaTypes = state.filterMediaTypes,
@@ -335,7 +335,7 @@ class GalleryViewModel(
                 null
 
         val newListItems = mutableListOf<GalleryListItem>()
-        val areViewButtonsVisible = state.value is State.Selecting
+        val areViewButtonsVisible = stateSubject.value is State.Selecting
 
         // Add date headers.
         val today = Date()
@@ -426,7 +426,7 @@ class GalleryViewModel(
             return
         }
 
-        when (state.value.checkNotNull()) {
+        when (stateSubject.value.checkNotNull()) {
             is State.Selecting -> {
                 if (item.source != null) {
                     if (item.source.files.size > 1) {

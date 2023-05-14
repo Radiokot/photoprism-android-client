@@ -24,18 +24,16 @@ class GalleryFastScrollViewModel(
     private var currentMediaRepository: SimpleGalleryMediaRepository? = null
 
     // A subject to post the current bubble when dragging.
-    private val monthsDraggingSubject: PublishSubject<GalleryMonthScrollBubble> =
-        PublishSubject.create()
+    private val monthsDraggingSubject = PublishSubject.create<GalleryMonthScrollBubble>()
 
     // A subject to post the current bubble when the drag is ended.
-    private val monthsDragEndedSubject: PublishSubject<GalleryMonthScrollBubble> =
-        PublishSubject.create()
+    private val monthsDragEndedSubject = PublishSubject.create<GalleryMonthScrollBubble>()
 
     // A subject to post the reset signal.
-    private val monthsDragResetSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val monthsDragResetSubject = PublishSubject.create<Unit>()
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
-    private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
+    private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
 
     init {
