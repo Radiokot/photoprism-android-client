@@ -3,7 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 
@@ -44,7 +44,7 @@ class GallerySearchAlbumsViewModel(
                     postReadyState()
                 }
             }
-            .addToCloseables(this)
+            .autoDispose(this)
 
         albumsRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
@@ -55,7 +55,7 @@ class GallerySearchAlbumsViewModel(
 
                 state.value = State.LoadingFailed
             }
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     private fun postReadyState() {
@@ -80,7 +80,7 @@ class GallerySearchAlbumsViewModel(
     }
 
     private fun subscribeToAlbumSelection() {
-        selectedAlbumUid.observeForever { uid ->
+        selectedAlbumUid.observeForever {
             val currentState = state.value
             if (currentState is State.Ready) {
                 postReadyState()

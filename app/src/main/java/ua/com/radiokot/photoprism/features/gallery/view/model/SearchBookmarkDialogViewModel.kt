@@ -7,10 +7,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.addToCloseables
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -23,9 +20,9 @@ class SearchBookmarkDialogViewModel(
     private var isInitialized = false
 
     private val stateSubject = BehaviorSubject.create<State>()
-    val state: Observable<State> = stateSubject
+    val state: Observable<State> = stateSubject.toMainThreadObservable()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject
+    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
 
     val name = MutableLiveData<String>()
     val isSaveButtonEnabled = MutableLiveData(false)
@@ -135,7 +132,7 @@ class SearchBookmarkDialogViewModel(
                     )
                 }
             )
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     private fun updateExisting(
@@ -173,7 +170,7 @@ class SearchBookmarkDialogViewModel(
                     )
                 }
             )
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     fun onDeleteButtonClicked() {
@@ -217,7 +214,7 @@ class SearchBookmarkDialogViewModel(
                     )
                 }
             )
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     sealed interface State {

@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
@@ -118,7 +118,7 @@ class DownloadMediaFileViewModel(
                     onSuccess(destination)
                 }
             )
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     override fun onDownloadProgressDialogCancelled() {

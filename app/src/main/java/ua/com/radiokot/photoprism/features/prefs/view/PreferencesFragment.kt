@@ -123,7 +123,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                     )
                 }
             )
-            .disposeOnDestroy(viewLifecycleOwner)
+            .autoDispose(viewLifecycleOwner)
     }
 
     private fun exportBookmarks() {
@@ -160,7 +160,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                     )
                 }
             )
-            .disposeOnDestroy(viewLifecycleOwner)
+            .autoDispose(viewLifecycleOwner)
     }
 
     private fun importBookmarks() {
@@ -226,7 +226,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                     )
                 },
             )
-            .disposeOnDestroy(viewLifecycleOwner)
+            .autoDispose(viewLifecycleOwner)
     }
 
     private fun showError(text: String) {

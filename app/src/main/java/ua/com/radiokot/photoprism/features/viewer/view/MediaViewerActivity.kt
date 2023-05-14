@@ -411,7 +411,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun initMediaFileSelection() {

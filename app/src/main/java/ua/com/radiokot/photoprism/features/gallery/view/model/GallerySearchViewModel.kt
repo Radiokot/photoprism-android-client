@@ -7,9 +7,10 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
@@ -39,9 +40,9 @@ class GallerySearchViewModel(
 
     val isApplyButtonEnabled = MutableLiveData(false)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
-    val state: Observable<State> = stateSubject
+    val state: Observable<State> = stateSubject.toMainThreadObservable()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject
+    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
 
@@ -95,7 +96,7 @@ class GallerySearchViewModel(
 
                 onBookmarksUpdated(bookmarks)
             }
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     private fun onBookmarksUpdated(newBookmarks: List<SearchBookmark>) {
@@ -371,7 +372,7 @@ class GallerySearchViewModel(
                     }
                 }
                 .subscribe()
-                .addToCloseables(this)
+                .autoDispose(this)
         }
     }
 
@@ -403,7 +404,7 @@ class GallerySearchViewModel(
                     }
                 }
                 .subscribe()
-                .addToCloseables(this)
+                .autoDispose(this)
         }
     }
 

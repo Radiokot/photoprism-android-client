@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -32,7 +33,7 @@ class MediaViewerViewModel(
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
+    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     val state: MutableLiveData<State> = MutableLiveData(State.Idle)
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -84,19 +85,19 @@ class MediaViewerViewModel(
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { broadcastItemsFromRepository() }
-            .addToCloseables(this)
+            .autoDispose(this)
 
         galleryMediaRepository.loading
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(isLoading::setValue)
-            .addToCloseables(this)
+            .autoDispose(this)
 
         galleryMediaRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 log.error(it) { "subscribeToRepository(): error_occurred" }
             }
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     private fun broadcastItemsFromRepository() {

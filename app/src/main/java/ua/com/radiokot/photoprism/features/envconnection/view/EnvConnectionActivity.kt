@@ -10,12 +10,13 @@ import android.view.inputmethod.EditorInfo
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
@@ -140,7 +141,7 @@ class EnvConnectionActivity : BaseActivity() {
     }
 
     private fun subscribeToState() {
-        viewModel.state.observe(this) { state ->
+        viewModel.state.subscribeBy { state ->
             log.debug {
                 "subscribeToState(): received_new_state:" +
                         "\nstate=$state"
@@ -172,7 +173,7 @@ class EnvConnectionActivity : BaseActivity() {
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }
+        }.autoDispose(this)
     }
 
     private fun subscribeToEvents() {
@@ -197,7 +198,7 @@ class EnvConnectionActivity : BaseActivity() {
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun chooseClientCertificateAlias() {

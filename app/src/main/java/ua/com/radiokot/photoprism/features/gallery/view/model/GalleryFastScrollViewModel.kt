@@ -8,10 +8,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.addToCloseables
-import ua.com.radiokot.photoprism.extension.filterIsInstance
-import ua.com.radiokot.photoprism.extension.isSameYearAs
-import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
@@ -38,7 +35,8 @@ class GalleryFastScrollViewModel(
     private val monthsDragResetSubject: PublishSubject<Unit> = PublishSubject.create()
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
-    val events: PublishSubject<Event> = PublishSubject.create()
+    private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
+    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
 
     init {
         subscribeToDragging()
@@ -67,14 +65,14 @@ class GalleryFastScrollViewModel(
                             "\nmonth=$month"
                 }
 
-                events.onNext(
+                eventsSubject.onNext(
                     Event.DraggingAtMonth(
                         month = month,
                         isTopMonth = bubbles.value?.firstOrNull() == monthBubble
                     )
                 )
             }
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     fun setMediaRepository(mediaRepository: SimpleGalleryMediaRepository) {

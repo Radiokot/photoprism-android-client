@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadProgressViewModel
 
@@ -43,7 +43,7 @@ class DownloadProgressView(
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun subscribeToEvents() {
@@ -62,7 +62,7 @@ class DownloadProgressView(
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun showDownloadProgress(percent: Double) {

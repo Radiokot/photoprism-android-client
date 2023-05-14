@@ -4,17 +4,18 @@ import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.extension.addToCloseables
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
 typealias ConnectUseCaseProvider = (
@@ -37,14 +38,15 @@ class EnvConnectionViewModel(
     val isClientCertificateSelectionAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     val clientCertificateAlias = MutableLiveData<String?>()
 
-    val state = MutableLiveData<State>(State.Idle)
+    private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
+    val state = stateSubject.toMainThreadObservable()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.observeOn(AndroidSchedulers.mainThread())
+    val events = eventsSubject.toMainThreadObservable()
 
     val isConnectButtonEnabled = MutableLiveData<Boolean>()
 
     private val canConnect: Boolean
-        get() = state.value is State.Idle
+        get() = stateSubject.value is State.Idle
                 // Ignore URL error as it may be caused by the network
                 && !rootUrl.value.isNullOrBlank()
                 // Check the credentials if the username is entered.
@@ -61,7 +63,7 @@ class EnvConnectionViewModel(
         username.observeForever(updateConnectionButtonEnabled)
         password.observeForever(updateConnectionButtonEnabled)
         passwordError.observeForever(updateConnectionButtonEnabled)
-        state.observeForever(updateConnectionButtonEnabled)
+        state.subscribe(updateConnectionButtonEnabled).autoDispose(this)
 
         rootUrl.observeForever {
             rootUrlError.value = null
@@ -148,7 +150,7 @@ class EnvConnectionViewModel(
     }
 
     private fun connect() {
-        state.value = State.Connecting
+        stateSubject.onNext(State.Connecting)
 
         val connectionParams: EnvConnectionParams = try {
             EnvConnectionParams(
@@ -158,7 +160,7 @@ class EnvConnectionViewModel(
         } catch (e: Exception) {
             log.warn(e) { "connect(): connection_creation_failed" }
 
-            state.value = State.Idle
+            stateSubject.onNext(State.Idle)
             rootUrlError.value = RootUrlError.InvalidFormat
 
             return
@@ -190,10 +192,10 @@ class EnvConnectionViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                state.value = State.Connecting
+                stateSubject.onNext(State.Connecting)
             }
             .doOnTerminate {
-                state.value = State.Idle
+                stateSubject.onNext(State.Idle)
             }
             .subscribeBy(
                 onSuccess = { session ->
@@ -219,7 +221,7 @@ class EnvConnectionViewModel(
                     }
                 }
             )
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     sealed interface RootUrlError {

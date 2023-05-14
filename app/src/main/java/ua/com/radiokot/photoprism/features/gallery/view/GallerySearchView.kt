@@ -37,10 +37,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
-import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
-import ua.com.radiokot.photoprism.extension.bindTextTwoWay
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
-import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
@@ -439,7 +436,7 @@ class GallerySearchView(
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun subscribeToEvents() {
@@ -464,7 +461,7 @@ class GallerySearchView(
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.disposeOnDestroy(this)
+        }.autoDispose(this)
     }
 
     private fun closeConfigurationView() {

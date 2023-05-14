@@ -24,7 +24,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
@@ -185,78 +185,74 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun subscribeToEvents() {
-        viewModel.events
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { event ->
-                log.debug {
-                    "subscribeToEvents(): received_new_event:" +
-                            "\nevent=$event"
+        viewModel.events.subscribe { event ->
+            log.debug {
+                "subscribeToEvents(): received_new_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is GalleryViewModel.Event.OpenFileSelectionDialog ->
+                    openMediaFilesDialog(
+                        files = event.files,
+                    )
+                is GalleryViewModel.Event.ReturnDownloadedFile ->
+                    returnDownloadedFile(
+                        downloadedFile = event.downloadedFile,
+                        mimeType = event.mimeType,
+                        displayName = event.displayName,
+                    )
+
+                is GalleryViewModel.Event.OpenViewer ->
+                    openViewer(
+                        mediaIndex = event.mediaIndex,
+                        repositoryQuery = event.repositoryQuery,
+                        areActionsEnabled = event.areActionsEnabled,
+                    )
+
+                is GalleryViewModel.Event.ResetScroll -> {
+                    resetScroll()
                 }
 
-                when (event) {
-                    is GalleryViewModel.Event.OpenFileSelectionDialog ->
-                        openMediaFilesDialog(
-                            files = event.files,
-                        )
-                    is GalleryViewModel.Event.ReturnDownloadedFile ->
-                        returnDownloadedFile(
-                            downloadedFile = event.downloadedFile,
-                            mimeType = event.mimeType,
-                            displayName = event.displayName,
-                        )
-
-                    is GalleryViewModel.Event.OpenViewer ->
-                        openViewer(
-                            mediaIndex = event.mediaIndex,
-                            repositoryQuery = event.repositoryQuery,
-                            areActionsEnabled = event.areActionsEnabled,
-                        )
-
-                    is GalleryViewModel.Event.ResetScroll -> {
-                        resetScroll()
-                    }
-
-                    is GalleryViewModel.Event.ShowFloatingError -> {
-                        showFloatingError(event.error)
-                    }
-
-                    is GalleryViewModel.Event.OpenPreferences -> {
-                        openPreferences()
-                    }
+                is GalleryViewModel.Event.ShowFloatingError -> {
+                    showFloatingError(event.error)
                 }
 
-                log.debug {
-                    "subscribeToEvents(): handled_new_event:" +
-                            "\nevent=$event"
+                is GalleryViewModel.Event.OpenPreferences -> {
+                    openPreferences()
                 }
             }
-            .disposeOnDestroy(this)
+
+            log.debug {
+                "subscribeToEvents(): handled_new_event:" +
+                        "\nevent=$event"
+            }
+        }.autoDispose(this)
     }
 
     private fun subscribeToState() {
-        viewModel.state
-            .observe(this) { state ->
-                log.debug {
-                    "subscribeToState(): received_new_state:" +
-                            "\nstate=$state"
-                }
-
-                title = when (state) {
-                    is GalleryViewModel.State.Selecting ->
-                        getString(R.string.select_content)
-
-                    GalleryViewModel.State.Viewing ->
-                        getString(R.string.library)
-                }
-
-                view.selectContentTextView.isVisible =
-                    state is GalleryViewModel.State.Selecting
-
-                log.debug {
-                    "subscribeToState(): handled_new_state:" +
-                            "\nstate=$state"
-                }
+        viewModel.state.observe(this) { state ->
+            log.debug {
+                "subscribeToState(): received_new_state:" +
+                        "\nstate=$state"
             }
+
+            title = when (state) {
+                is GalleryViewModel.State.Selecting ->
+                    getString(R.string.select_content)
+
+                GalleryViewModel.State.Viewing ->
+                    getString(R.string.library)
+            }
+
+            view.selectContentTextView.isVisible =
+                state is GalleryViewModel.State.Selecting
+
+            log.debug {
+                "subscribeToState(): handled_new_state:" +
+                        "\nstate=$state"
+            }
+        }
     }
 
     private fun initList() {

@@ -45,7 +45,7 @@ class GalleryViewModel(
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
     private val eventsSubject: PublishSubject<Event> = PublishSubject.create()
-    val events: Observable<Event> = eventsSubject
+    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     val state: MutableLiveData<State> = MutableLiveData()
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
@@ -186,7 +186,7 @@ class GalleryViewModel(
                 "subscribeToSearch(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }.addToCloseables(this)
+        }.autoDispose(this)
     }
 
     private fun subscribeToFastScroll() {
@@ -241,7 +241,7 @@ class GalleryViewModel(
                 "subscribeToFastScroll(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.addToCloseables(this)
+        }.autoDispose(this)
     }
 
     private fun subscribeToRepositoryChanges() {
@@ -257,7 +257,7 @@ class GalleryViewModel(
                     fastScrollViewModel.setMediaRepository(change.repository)
                 }
             }
-            .addToCloseables(this)
+            .autoDispose(this)
     }
 
     private var repositorySubscriptionDisposable: CompositeDisposable? = null
@@ -320,7 +320,7 @@ class GalleryViewModel(
             }
             .addTo(disposable)
 
-        disposable.addToCloseables(this)
+        disposable.autoDispose(this)
     }
 
     private fun onNewGalleryMedia(
