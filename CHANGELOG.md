@@ -5,14 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-- Display of album name in the search bar when an album is selected
+## [1.7.1] - 2023-05-14
 
 ### Fixed
 - Laggy chronological scroll dragging
 - Not bringing the list to the top when scrolling to the current month
+
+### Added
+- Display of album name in the search bar when an album is selected
 
 ## [1.7.0] - 2023-05-09
 
@@ -127,7 +127,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...HEAD
+[1.7.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...1.7.1(14)
 [1.7.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.6.0(12)...1.7.0(13)
 [1.6.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2(11)...1.6.0(12)
 [1.5.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2-rc1(10)...1.5.2(11)
