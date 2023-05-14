@@ -16,7 +16,6 @@ import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.Predicate
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.disposeOnDestroy
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMonthScrollBubble
@@ -123,7 +122,6 @@ class GalleryFastScrollView(
             .build()
 
         subscribeToData()
-        subscribeToState()
     }
 
     private fun subscribeToData() {
@@ -134,50 +132,20 @@ class GalleryFastScrollView(
         }
     }
 
-    private fun subscribeToState() {
-        viewModel.state.subscribe { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
-            }
-
-            updateScrollRange()
-
-            when (state) {
-                GalleryFastScrollViewModel.State.Idle -> {
-                    scrollOffset = 0
-                    notifyFastScroller()
-                }
-                GalleryFastScrollViewModel.State.Loading -> {
-                    scrollOffset = 0
-                    notifyFastScroller()
-                }
-                is GalleryFastScrollViewModel.State.AtMonth -> {
-                }
-            }
-
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.disposeOnDestroy(this)
-    }
-
     private fun updateScrollRange() {
-        scrollRange = when (viewModel.state.value) {
-            is GalleryFastScrollViewModel.State.AtMonth,
-            GalleryFastScrollViewModel.State.Idle -> {
-                if (bubbles.size > 1)
-                // For the fast scroller to appear, the range
-                // must be greater than the view height.
-                    (fastScrollRecyclerView.height * 3)
-                        // To avoid doubles, the range must exceed the number of bubbles.
-                        .coerceAtLeast(bubbles.size * 2)
-                else
-                    0
-            }
-            GalleryFastScrollViewModel.State.Loading,
-            null -> 0
+        scrollRange =
+            if (bubbles.size > 1)
+            // For the fast scroller to appear, the range
+            // must be greater than the view height.
+                (fastScrollRecyclerView.height * 3)
+                    // To avoid doubles, the range must exceed the number of bubbles.
+                    .coerceAtLeast(bubbles.size * 2)
+            else
+                0
+
+        log.debug {
+            "updateScrollRange(): updated_scroll_range:" +
+                    "\nnew=$scrollRange"
         }
     }
 

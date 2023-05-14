@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
@@ -32,12 +33,14 @@ class GalleryViewModel(
     val fastScrollViewModel: GalleryFastScrollViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
-    private val currentMediaRepository: BehaviorSubject<SimpleGalleryMediaRepository> =
+    private val mediaRepositoryChanges: BehaviorSubject<MediaRepositoryChange> =
         BehaviorSubject.create()
 
     // Current search config regardless the fast scroll.
     private var currentSearchConfig: SearchConfig? = null
     private var isInitialized = false
+    private val currentMediaRepository: SimpleGalleryMediaRepository?
+        get() = mediaRepositoryChanges.value?.repository
 
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
@@ -129,15 +132,20 @@ class GalleryViewModel(
                 )
 
                 currentSearchConfig = searchConfig
-                currentMediaRepository.onNext(
-                    galleryMediaRepositoryFactory.getForSearch(
-                        searchConfig
+
+                mediaRepositoryChanges.onNext(
+                    MediaRepositoryChange.Other(
+                        galleryMediaRepositoryFactory.getForSearch(searchConfig),
                     )
                 )
             }
             State.Viewing -> {
                 currentSearchConfig = null
-                currentMediaRepository.onNext(galleryMediaRepositoryFactory.get(null))
+                mediaRepositoryChanges.onNext(
+                    MediaRepositoryChange.Other(
+                        galleryMediaRepositoryFactory.get(null),
+                    )
+                )
             }
         }
     }
@@ -157,8 +165,12 @@ class GalleryViewModel(
 
                     fastScrollViewModel.reset()
 
-                    if (searchMediaRepository != currentMediaRepository.value) {
-                        currentMediaRepository.onNext(searchMediaRepository)
+                    if (searchMediaRepository != mediaRepositoryChanges.value?.repository) {
+                        mediaRepositoryChanges.onNext(
+                            MediaRepositoryChange.Search(
+                                searchMediaRepository
+                            )
+                        )
                     }
                 }
                 GallerySearchViewModel.State.NoSearch -> {
@@ -178,54 +190,61 @@ class GalleryViewModel(
     }
 
     private fun subscribeToFastScroll() {
-        fastScrollViewModel.state.subscribe { state ->
+        fastScrollViewModel.events.subscribeBy { event ->
             log.debug {
-                "subscribeToFastScroll(): received_new_state:" +
-                        "\nstate=$state"
+                "subscribeToFastScroll(): received_new_event:" +
+                        "\nevent=$event"
             }
 
-            when (state) {
-                is GalleryFastScrollViewModel.State.AtMonth -> {
-                    if (state.monthBubble.source != null) {
+            when (event) {
+                is GalleryFastScrollViewModel.Event.DraggedToMonth -> {
+                    if (event.bubble.source != null) {
                         val searchConfigForMonth: SearchConfig? =
-                            if (state.isTopMonth)
+                            if (event.isTopMonth)
                                 currentSearchConfig
                             else
                                 (currentSearchConfig ?: SearchConfig.DEFAULT)
-                                    .copy(before = state.monthBubble.source.nextDayAfter)
+                                    .copy(before = event.bubble.source.nextDayAfter)
 
                         if (searchConfigForMonth != null) {
-                            currentMediaRepository.onNext(
+                            log.debug {
+                                "subscribeToFastScroll(): switching_to_month_search_config:" +
+                                        "\nconfig=$searchConfigForMonth"
+                            }
+
+                            val repositoryForMonth =
                                 galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+
+                            mediaRepositoryChanges.onNext(
+                                MediaRepositoryChange.FastScroll(
+                                    repositoryForMonth
+                                )
                             )
                         } else {
                             resetRepositoryToInitial()
                         }
                     }
                 }
-                GalleryFastScrollViewModel.State.Idle -> {
-                }
-                GalleryFastScrollViewModel.State.Loading -> {
-                }
             }
 
             log.debug {
-                "subscribeToFastScroll(): handled_new_state:" +
-                        "\nstate=$state"
+                "subscribeToFastScroll(): handled_new_event:" +
+                        "\nevent=$event"
             }
         }.addToCloseables(this)
     }
 
     private fun subscribeToRepositoryChanges() {
-        currentMediaRepository
+        mediaRepositoryChanges
             .distinctUntilChanged()
-            .subscribe { currentMediaRepository ->
+            .subscribe { change ->
                 subscribeToRepository()
                 update()
 
                 eventsSubject.onNext(Event.ResetScroll)
-                if (fastScrollViewModel.state.value !is GalleryFastScrollViewModel.State.AtMonth) {
-                    fastScrollViewModel.setMediaRepository(currentMediaRepository)
+
+                if (change !is MediaRepositoryChange.FastScroll) {
+                    fastScrollViewModel.setMediaRepository(change.repository)
                 }
             }
             .addToCloseables(this)
@@ -238,7 +257,7 @@ class GalleryViewModel(
         val disposable = CompositeDisposable()
         repositorySubscriptionDisposable = disposable
 
-        val currentMediaRepository = currentMediaRepository.value
+        val currentMediaRepository = this.currentMediaRepository
             ?: return
 
         log.debug {
@@ -367,8 +386,9 @@ class GalleryViewModel(
     }
 
     private fun update(force: Boolean = false) {
-        val currentMediaRepository = currentMediaRepository.value
+        val currentMediaRepository = this.currentMediaRepository
             ?: return
+
         if (!force) {
             currentMediaRepository.updateIfNotFresh()
         } else {
@@ -377,8 +397,9 @@ class GalleryViewModel(
     }
 
     fun loadMore() {
-        val currentMediaRepository = currentMediaRepository.value
+        val currentMediaRepository = this.currentMediaRepository
             ?: return
+
         if (!currentMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
             currentMediaRepository.loadMore()
@@ -474,8 +495,9 @@ class GalleryViewModel(
         media: GalleryMedia,
         areActionsEnabled: Boolean,
     ) {
-        val currentMediaRepository = currentMediaRepository.value
+        val currentMediaRepository = this.currentMediaRepository
             ?: return
+
         val index = currentMediaRepository.itemsList.indexOf(media)
         val repositoryQuery = currentMediaRepository.query
 
@@ -543,5 +565,40 @@ class GalleryViewModel(
         object LibraryNotAccessible : Error
         class LoadingFailed(val shortSummary: String) : Error
         object NoMediaFound : Error
+    }
+
+    private sealed class MediaRepositoryChange(
+        val repository: SimpleGalleryMediaRepository,
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is MediaRepositoryChange) return false
+
+            if (repository != other.repository) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return repository.hashCode()
+        }
+
+        /**
+         * Change caused by chronological fast scroll.
+         */
+        class FastScroll(repository: SimpleGalleryMediaRepository) :
+            MediaRepositoryChange(repository)
+
+        /**
+         * Change caused by applying search.
+         */
+        class Search(repository: SimpleGalleryMediaRepository) :
+            MediaRepositoryChange(repository)
+
+        /**
+         * Change caused by something else.
+         */
+        class Other(repository: SimpleGalleryMediaRepository) :
+            MediaRepositoryChange(repository)
     }
 }
