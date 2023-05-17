@@ -92,7 +92,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         log.debug {
             "onCreate(): creating:" +
                     "\naction=${intent.action}," +
-                    "\nextras=${intent.extras}," +
+                    "\nextras=${intent.extras?.keySet()?.joinToString()}," +
                     "\ntype=${intent.type}" +
                     "\nsavedInstanceState=$savedInstanceState"
         }
@@ -115,6 +115,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             viewModel.initSelectionOnce(
                 requestedMimeType = intent.type,
+                allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
         } else {
             if (tryOrNull { scope } == null) {

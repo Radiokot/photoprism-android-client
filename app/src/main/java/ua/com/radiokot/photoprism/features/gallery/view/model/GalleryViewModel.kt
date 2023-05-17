@@ -53,6 +53,7 @@ class GalleryViewModel(
 
     fun initSelectionOnce(
         requestedMimeType: String?,
+        allowMultiple: Boolean,
     ) {
         if (isInitialized) {
             log.debug {
@@ -87,6 +88,7 @@ class GalleryViewModel(
         log.debug {
             "initSelection(): initialized_selection:" +
                     "\nrequestedMimeType=$requestedMimeType," +
+                    "\nallowMultiple=$allowMultiple," +
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
