@@ -1,5 +1,4 @@
 # <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> PhotoPrism Gallery
-
 A native Android gallery and content provider for your [PhotoPrism library](https://www.photoprism.app/). 
 
 <p float="left">
@@ -47,6 +46,11 @@ When a new version of PhotoPrism comes out, the app may break.
 
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
+## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/52239579?s=100&v=4" alt="ippocratis" height=50 />](https://github.com/ippocratis)
+<br>
+*I am very grateful to everyone supporting this project ♥ To join the sponsors, [make a donation](https://radiokot.com.ua/tip) your preferred payment method and email me the transaction reference. &emsp;*
+
 ## Tech stack
 - Kotlin
 - RxJava
@@ -57,6 +61,3 @@ When a new version of PhotoPrism comes out, the app may break.
 - kotlin-logging with slf4j-handroid
 - ExoPlayer
 - FastAdapter
-
----
-🙌🏻 [Send me a tip](https://radiokot.com.ua/tip)&emsp;🏠 [Visit my homepage](https://radiokot.com.ua/tip)
