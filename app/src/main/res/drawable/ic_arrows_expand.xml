@@ -1,10 +1,11 @@
-<!-- drawable/arrow_expand.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="18dp"
-    android:height="18dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#000000"
-        android:pathData="M10,21V19H6.41L10.91,14.5L9.5,13.09L5,17.59V14H3V21H10M14.5,10.91L19,6.41V10H21V3H14V5H17.59L13.09,9.5L14.5,10.91Z" />
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M9.67,13.16a1.19,1.19 0,0 0,-0.82 0.34L3.08,19.28v-4.1a1.17,1.17 0,0 0,-1.75 -1,1.18 1.18,0 0,0 -0.58,1v6.91a1.16,1.16 0,0 0,1.16 1.16H8.82a1.17,1.17 0,1 0,0 -2.33H4.72l5.78,-5.77a1.16,1.16 0,0 0,0 -1.65,1.17 1.17,0 0,0 -0.82,-0.34ZM22.09,0.75H15.18a1.17,1.17 0,0 0,-1 1.75,1.18 1.18,0 0,0 1,0.58h4.1L13.5,8.85A1.18,1.18 0,0 0,13.2 10a1.16,1.16 0,0 0,0.83 0.83,1.18 1.18,0 0,0 1.12,-0.3l5.77,-5.78v4.1a1.17,1.17 0,1 0,2.33 0V1.91A1.16,1.16 0,0 0,22.09 0.75Z"
+      android:strokeWidth="1.12"
+      android:strokeColor="#000"/>
 </vector>

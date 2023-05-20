@@ -23,8 +23,7 @@
         android:id="@+id/media_type_image_view"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_margin="4dp"
         android:alpha="0.75"
         android:background="@drawable/media_type_background"
         android:padding="4dp"
@@ -36,17 +35,27 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_button"
         style="?materialIconButtonFilledTonalStyle"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:contentDescription="@string/view_media"
-        android:paddingStart="6dp"
-        android:paddingEnd="0dp"
+        android:layout_marginEnd="-7dp"
+        android:layout_marginBottom="-7dp"
+        android:scaleX=".55"
+        android:scaleY=".55"
         android:tooltipText="@string/view_media"
         app:icon="@drawable/ic_arrows_expand"
-        app:iconPadding="0dp"
-        app:iconSize="17dp"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
         app:layout_constraintEnd_toEndOf="@id/image_view"
         tools:targetApi="o" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/selection_check_box"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="4dp"
+        app:buttonCompat="@drawable/checkbox_circle"
+        app:buttonTint="?colorSecondaryContainer"
+        app:layout_constraintBottom_toBottomOf="@id/image_view"
+        app:layout_constraintStart_toStartOf="@id/image_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>

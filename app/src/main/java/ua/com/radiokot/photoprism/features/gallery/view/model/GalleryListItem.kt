@@ -88,7 +88,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 ColorUtils.setAlphaComponent(
                     MaterialColors.getColor(
                         view.imageView,
-                        com.google.android.material.R.attr.colorSecondaryContainer
+                        com.google.android.material.R.attr.colorSurfaceInverse
                     ),
                     150
                 )
@@ -96,6 +96,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             private val selectedImageViewShape = ShapeAppearanceModel.builder()
                 .setAllCornerSizes(RelativeCornerSize(0.1f))
                 .build()
+
+            init {
+                view.selectionCheckBox.setOnClickListener {
+                    view.root.callOnClick()
+                }
+            }
 
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
@@ -123,13 +129,20 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
 
                 view.viewButton.isVisible = item.isViewButtonVisible
+                view.selectionCheckBox.isVisible = item.isSelectionViewVisible
 
                 if (item.isSelectionViewVisible) {
+                    view.selectionCheckBox.isChecked = item.isMediaSelected
+
+                    view.imageView.shapeAppearanceModel =
+                        if (item.isMediaSelected)
+                            selectedImageViewShape
+                        else
+                            defaultImageViewShape
+
                     if (item.isMediaSelected) {
-                        view.imageView.shapeAppearanceModel = selectedImageViewShape
                         view.imageView.setColorFilter(selectedImageViewColorFilter)
                     } else {
-                        view.imageView.shapeAppearanceModel = defaultImageViewShape
                         view.imageView.clearColorFilter()
                     }
                 }
