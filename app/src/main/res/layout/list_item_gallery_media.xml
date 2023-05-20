@@ -8,7 +8,7 @@
     android:padding="@dimen/list_item_gallery_media_margin"
     tools:layout_width="160dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"

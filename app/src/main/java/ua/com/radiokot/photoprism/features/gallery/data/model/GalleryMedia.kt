@@ -180,10 +180,17 @@ class GalleryMedia(
     @Parcelize
     class File(
         val name: String,
+        /**
+         * Unique ID of the file.
+         */
         val uid: String,
+        /**
+         * Unique ID of the file's parent [GalleryMedia] (PhotoPrism "PhotoUID").
+         */
+        val mediaUid: String,
         val mimeType: String,
         val sizeBytes: Long,
-        val thumbnailUrlSmall: String,
+        val smallThumbnailUrl: String,
         val downloadUrl: String,
     ) : Parcelable {
         constructor(
@@ -193,9 +200,10 @@ class GalleryMedia(
         ) : this(
             name = source.name,
             uid = source.uid,
+            mediaUid = source.photoUid,
             mimeType = source.mime,
             sizeBytes = source.size,
-            thumbnailUrlSmall = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
+            smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
             downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
         )
 

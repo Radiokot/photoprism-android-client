@@ -8,8 +8,12 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.RelativeCornerSize
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
@@ -31,12 +35,16 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         @StringRes
         val mediaTypeName: Int?,
         val isViewButtonVisible: Boolean,
+        val isSelectionViewVisible: Boolean,
+        val isMediaSelected: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
 
         constructor(
             source: GalleryMedia,
             isViewButtonVisible: Boolean,
+            isSelectionViewVisible: Boolean,
+            isMediaSelected: Boolean,
         ) : this(
             thumbnailUrl = source.smallThumbnailUrl,
             name = source.name,
@@ -51,6 +59,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             else
                 null,
             isViewButtonVisible = isViewButtonVisible,
+            isSelectionViewVisible = isSelectionViewVisible,
+            isMediaSelected = isMediaSelected,
             source = source,
         )
 
@@ -74,6 +84,18 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             val view = ListItemGalleryMediaBinding.bind(itemView)
             private val picasso: Picasso by inject()
+            private val selectedImageViewColorFilter =
+                ColorUtils.setAlphaComponent(
+                    MaterialColors.getColor(
+                        view.imageView,
+                        com.google.android.material.R.attr.colorSecondaryContainer
+                    ),
+                    150
+                )
+            private val defaultImageViewShape = ShapeAppearanceModel.builder().build()
+            private val selectedImageViewShape = ShapeAppearanceModel.builder()
+                .setAllCornerSizes(RelativeCornerSize(0.1f))
+                .build()
 
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
@@ -101,6 +123,16 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
 
                 view.viewButton.isVisible = item.isViewButtonVisible
+
+                if (item.isSelectionViewVisible) {
+                    if (item.isMediaSelected) {
+                        view.imageView.shapeAppearanceModel = selectedImageViewShape
+                        view.imageView.setColorFilter(selectedImageViewColorFilter)
+                    } else {
+                        view.imageView.shapeAppearanceModel = defaultImageViewShape
+                        view.imageView.clearColorFilter()
+                    }
+                }
             }
 
             override fun unbindView(item: Media) {

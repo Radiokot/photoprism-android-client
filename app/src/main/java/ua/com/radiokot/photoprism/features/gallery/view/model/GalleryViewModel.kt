@@ -50,6 +50,7 @@ class GalleryViewModel(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
+    private val selectedFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
 
     fun initSelectionOnce(
         requestedMimeType: String?,
@@ -92,7 +93,12 @@ class GalleryViewModel(
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
-        stateSubject.onNext(State.Selecting(filterMediaTypes = filterMediaTypes))
+        stateSubject.onNext(
+            State.Selecting(
+                filterMediaTypes = filterMediaTypes,
+                allowMultiple = allowMultiple,
+            )
+        )
 
         initCommon()
 
@@ -279,12 +285,7 @@ class GalleryViewModel(
 
         currentMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                onNewGalleryMedia(
-                    galleryMediaList = it,
-                    repository = currentMediaRepository,
-                )
-            }
+            .subscribe { postGalleryItems() }
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -325,10 +326,12 @@ class GalleryViewModel(
         disposable.autoDispose(this)
     }
 
-    private fun onNewGalleryMedia(
-        galleryMediaList: List<GalleryMedia>,
-        repository: SimpleGalleryMediaRepository,
-    ) {
+    private fun postGalleryItems() {
+        val repository = currentMediaRepository.checkNotNull {
+            "There must be a media repository to post items from"
+        }
+        val galleryMediaList = repository.itemsList
+
         // Dismiss the main error when there are items.
         mainError.value =
             if (galleryMediaList.isEmpty() && !repository.isNeverUpdated)
@@ -337,7 +340,9 @@ class GalleryViewModel(
                 null
 
         val newListItems = mutableListOf<GalleryListItem>()
-        val areViewButtonsVisible = stateSubject.value is State.Selecting
+        val currentState = stateSubject.value
+        val areViewButtonsVisible = currentState is State.Selecting
+        val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
         // Add date headers.
         val today = Date()
@@ -390,6 +395,8 @@ class GalleryViewModel(
                     GalleryListItem.Media(
                         source = galleryMedia,
                         isViewButtonVisible = areViewButtonsVisible,
+                        isSelectionViewVisible = areSelectionViewsVisible,
+                        isMediaSelected = selectedFilesByMediaUid.containsKey(galleryMedia.uid),
                     )
                 )
             }
@@ -428,15 +435,21 @@ class GalleryViewModel(
             return
         }
 
-        when (stateSubject.value.checkNotNull()) {
+        when (val state = stateSubject.value.checkNotNull()) {
             is State.Selecting -> {
                 if (item.source != null) {
                     if (item.source.files.size > 1) {
                         openFileSelectionDialog(item.source.files)
                     } else {
-                        downloadAndReturnFile(item.source.files.firstOrNull().checkNotNull {
+                        val file = item.source.files.firstOrNull().checkNotNull {
                             "There must be at least one file in the gallery media object"
-                        })
+                        }
+
+                        if (state.allowMultiple) {
+                            toggleMediaFileSelection(file)
+                        } else {
+                            downloadAndReturnFile(file)
+                        }
                     }
                 }
             }
@@ -469,6 +482,36 @@ class GalleryViewModel(
         }
     }
 
+    private fun toggleMediaFileSelection(file: GalleryMedia.File) {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Media file selection can only be toggled in the multiple selection state"
+        }
+
+        log.debug {
+            "toggleMediaFileSelection(): toggling_file:" +
+                    "\nfile=$file"
+        }
+
+        if (selectedFilesByMediaUid.containsKey(file.mediaUid)) {
+            selectedFilesByMediaUid.remove(file.mediaUid)
+
+            log.debug {
+                "toggleMediaFileSelection(): file_unselected:" +
+                        "\nfile=$file"
+            }
+        } else {
+            selectedFilesByMediaUid[file.mediaUid] = file
+
+            log.debug {
+                "toggleMediaFileSelection(): file_selected:" +
+                        "\nfile=$file"
+            }
+        }
+
+        postGalleryItems()
+    }
+
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
         log.debug {
             "openFileSelectionDialog(): posting_open_event:" +
@@ -479,12 +522,21 @@ class GalleryViewModel(
     }
 
     fun onFileSelected(file: GalleryMedia.File) {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting) {
+            "Media files can only be selected in the selection state"
+        }
+
         log.debug {
             "onFileSelected(): file_selected:" +
                     "\nfile=$file"
         }
 
-        downloadAndReturnFile(file)
+        if (currentState.allowMultiple) {
+            toggleMediaFileSelection(file)
+        } else {
+            downloadAndReturnFile(file)
+        }
     }
 
     private fun downloadAndReturnFile(file: GalleryMedia.File) {
@@ -570,7 +622,10 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        class Selecting(val filterMediaTypes: Set<GalleryMedia.TypeName>) : State
+        class Selecting(
+            val filterMediaTypes: Set<GalleryMedia.TypeName>,
+            val allowMultiple: Boolean,
+        ) : State
     }
 
     sealed interface Error {
