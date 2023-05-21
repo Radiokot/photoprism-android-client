@@ -54,7 +54,10 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_margin="4dp"
-        app:buttonCompat="@drawable/checkbox_circle"
+        android:background="@drawable/checkbox_circle_background"
+        android:backgroundTint="?colorOnSecondaryContainer"
+        android:checked="true"
+        app:buttonCompat="@drawable/checkbox_circle_button"
         app:buttonTint="?colorSecondaryContainer"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
         app:layout_constraintStart_toStartOf="@id/image_view" />
