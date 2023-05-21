@@ -128,6 +128,7 @@ dependencies {
 
     implementation 'com.mikepenz:fastadapter:5.7.0'
     implementation 'com.mikepenz:fastadapter-extensions-scroll:5.7.0'
+    implementation 'com.mikepenz:fastadapter-extensions-diff:5.7.0'
 
     implementation 'com.squareup.picasso:picasso:2.8'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'

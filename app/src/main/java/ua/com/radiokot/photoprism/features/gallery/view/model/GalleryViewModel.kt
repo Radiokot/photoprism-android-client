@@ -40,7 +40,6 @@ class GalleryViewModel(
     private var isInitialized = false
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value?.repository
-
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()

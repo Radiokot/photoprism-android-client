@@ -109,7 +109,6 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
             }
 
-            // TODO: Use DiffUtil or something els to avoid re-binding everything on selection change.
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
 
@@ -147,16 +146,23 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                         else
                             defaultImageViewShape
 
-                    // TODO: Animate only on click.
                     if (item.isMediaSelected) {
                         view.imageView.setColorFilter(selectedImageViewColorFilter)
                         if (view.imageView.scaleX != selectedImageViewScale) {
-                            animateImageScale(selectedImageViewScale)
+                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                                animateImageScale(selectedImageViewScale)
+                            } else {
+                                setImageScale(selectedImageViewScale)
+                            }
                         }
                     } else {
                         view.imageView.clearColorFilter()
                         if (view.imageView.scaleX != 1f) {
-                            animateImageScale(1f)
+                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                                animateImageScale(1f)
+                            } else {
+                                setImageScale(1f)
+                            }
                         }
                     }
                 }
@@ -172,6 +178,15 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                     .setInterpolator(imageViewScaleAnimationInterpolator)
                     .setDuration(imageViewScaleAnimationDuration.toLong())
                     .start()
+            }
+
+            private fun setImageScale(target: Float) {
+                view.imageView.scaleX = target
+                view.imageView.scaleY = target
+            }
+
+            companion object {
+                const val PAYLOAD_ANIMATE_SELECTION = "animate"
             }
         }
     }

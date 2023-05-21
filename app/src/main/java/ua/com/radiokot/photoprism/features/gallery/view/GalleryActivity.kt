@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -85,6 +85,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             lifecycleOwner = this,
         )
     }
+    private var useDiffUtilOnNextItemsUpdate = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -156,9 +157,25 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             )
         }
 
-        viewModel.itemsList.observe(this) {
-            if (it != null) {
-                galleryItemsAdapter.setNewList(it)
+        val galleryItemsDiffCallback = GalleryListItemDiffCallback()
+        viewModel.itemsList.observe(this) { newItems ->
+            if (newItems != null) {
+                // Use DiffUtil only in particular cases to save performance:
+                // - When items selection state changes
+                if (galleryItemsAdapter.adapterItems.size == newItems.size
+                    && newItems.isNotEmpty()
+                ) {
+                    log.debug { "subscribeToData(): use_diff_util_for_new_gallery_items" }
+
+                    FastAdapterDiffUtil.set(
+                        adapter = galleryItemsAdapter,
+                        items = newItems,
+                        callback = galleryItemsDiffCallback,
+                        detectMoves = true,
+                    )
+                } else {
+                    galleryItemsAdapter.setNewList(newItems)
+                }
             }
         }
 
@@ -448,7 +465,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 )
             }
         )
-        setResult(Activity.RESULT_OK, resultIntent)
+        setResult(RESULT_OK, resultIntent)
 
         log.debug {
             "returnDownloadedFiles(): result_set_finishing:" +
