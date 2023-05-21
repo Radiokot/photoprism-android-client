@@ -85,7 +85,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             lifecycleOwner = this,
         )
     }
-    private var useDiffUtilOnNextItemsUpdate = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -208,7 +207,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     getString(R.string.select_content)
                 else
                     count.toString()
-            view.doneSelectingFab.isEnabled = count > 0
+            if (count > 0) {
+                view.doneSelectingFab.show()
+            } else {
+                view.doneSelectingFab.hide()
+            }
         }
     }
 
@@ -272,23 +275,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             view.selectionBottomAppBar.isVisible =
                 state is GalleryViewModel.State.Selecting
-            view.doneSelectingFab.isVisible =
-                state is GalleryViewModel.State.Selecting && state.allowMultiple
             view.selectionBottomAppBar.navigationIcon =
                 if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
                     ContextCompat.getDrawable(this, R.drawable.ic_close)
                 else
                     null
-
-            when (state) {
-                is GalleryViewModel.State.Selecting -> {
-                    // Direct .hide() call is required to remove appbar cutout.
-                    if (!state.allowMultiple) {
-                        view.doneSelectingFab.hide()
-                    }
-                }
-                GalleryViewModel.State.Viewing -> {}
-            }
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +

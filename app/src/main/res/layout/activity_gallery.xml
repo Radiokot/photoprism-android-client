@@ -80,10 +80,13 @@
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 
+    <!-- Invisible visibility is important for this FAB.
+    Without it there is no initial show animation-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/done_selecting_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:contentDescription="@string/done_selecting"
         android:tooltipText="@string/done_selecting"
         app:layout_anchor="@id/selection_bottom_app_bar"
