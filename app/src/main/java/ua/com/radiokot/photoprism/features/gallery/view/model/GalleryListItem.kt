@@ -109,6 +109,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
             }
 
+            // TODO: Use DiffUtil or something els to avoid re-binding everything on selection change.
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
 

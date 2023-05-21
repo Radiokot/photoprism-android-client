@@ -51,6 +51,7 @@ class GalleryViewModel(
     var canLoadMore = true
         private set
     private val multipleSelecionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
+    val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
 
     fun initSelectionOnce(
         requestedMimeType: String?,
@@ -508,6 +509,7 @@ class GalleryViewModel(
         }
 
         postGalleryItems()
+        postMultipleSelectionItemsCount()
     }
 
     private fun removeMediaFromMultipleSelection(mediaUid: String) {
@@ -524,6 +526,11 @@ class GalleryViewModel(
         }
 
         postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    private fun postMultipleSelectionItemsCount() {
+        multipleSelectionItemsCount.value = multipleSelecionFilesByMediaUid.keys.size
     }
 
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
@@ -610,6 +617,23 @@ class GalleryViewModel(
 
     fun onPreferencesButtonClicked() {
         eventsSubject.onNext(Event.OpenPreferences)
+    }
+
+    fun onClearMultipleSelectionClicked() {
+        log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
+
+        multipleSelecionFilesByMediaUid.clear()
+        postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    fun onDoneMultipleSelectionClicked() {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Done multiple selection button is only clickable in the corresponding state"
+        }
+
+        log.debug { "onDoneMultipleSelectionClicked(): clicked" }
     }
 
     sealed interface Event {

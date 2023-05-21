@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -141,6 +142,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initSearch()
         initErrorView()
+        initMultipleSelection()
     }
 
     private fun subscribeToData() {
@@ -182,6 +184,15 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             }
 
             view.errorView.showError(errorToShow)
+        }
+
+        viewModel.multipleSelectionItemsCount.observe(this) { count ->
+            view.selectionBottomAppBarTitleTextView.text =
+                if (count == 0)
+                    getString(R.string.select_content)
+                else
+                    count.toString()
+            view.doneSelectingFab.isEnabled = count > 0
         }
     }
 
@@ -246,8 +257,25 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     getString(R.string.library)
             }
 
-            view.selectContentTextView.isVisible =
+            view.selectionBottomAppBar.isVisible =
                 state is GalleryViewModel.State.Selecting
+            view.doneSelectingFab.isVisible =
+                state is GalleryViewModel.State.Selecting && state.allowMultiple
+            view.selectionBottomAppBar.navigationIcon =
+                if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
+                    ContextCompat.getDrawable(this, R.drawable.ic_close)
+                else
+                    null
+
+            when (state) {
+                is GalleryViewModel.State.Selecting -> {
+                    // Direct .hide() call is required to remove appbar cutout.
+                    if (!state.allowMultiple) {
+                        view.doneSelectingFab.hide()
+                    }
+                }
+                GalleryViewModel.State.Viewing -> {}
+            }
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +
@@ -389,6 +417,16 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun initErrorView() {
         view.errorView.replaces(view.galleryRecyclerView)
+    }
+
+    private fun initMultipleSelection() {
+        view.selectionBottomAppBar.setNavigationOnClickListener {
+            viewModel.onClearMultipleSelectionClicked()
+        }
+
+        view.doneSelectingFab.setOnClickListener {
+            viewModel.onDoneMultipleSelectionClicked()
+        }
     }
 
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {

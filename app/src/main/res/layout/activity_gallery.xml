@@ -55,17 +55,40 @@
             layout="@layout/view_gallery_search_configuration" />
     </com.google.android.material.search.SearchView>
 
-    <TextView
-        android:id="@+id/select_content_text_view"
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/selection_bottom_app_bar"
         android:layout_width="match_parent"
+        style="@style/Widget.Material3.BottomAppBar"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:alpha="0.9"
+        app:fabAnchorMode="cradle"
+        app:navigationContentDescription="@string/clear_selection"
+        app:navigationIcon="@drawable/ic_close">
+
+        <TextView
+            android:id="@+id/selection_bottom_app_bar_title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="72dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/select_content"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="?colorOnSecondaryContainer" />
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/done_selecting_fab"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0.85"
-        android:background="?colorPrimary"
-        android:gravity="center"
-        android:paddingVertical="4dp"
-        android:text="@string/select_content"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-        android:textColor="?colorOnPrimary"
-        app:layout_anchor="@id/gallery_recycler_view"
-        app:layout_anchorGravity="bottom" />
+        android:contentDescription="@string/done_selecting"
+        android:tooltipText="@string/done_selecting"
+        app:layout_anchor="@id/selection_bottom_app_bar"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+        app:srcCompat="@drawable/ic_done"
+        tools:targetApi="o" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
