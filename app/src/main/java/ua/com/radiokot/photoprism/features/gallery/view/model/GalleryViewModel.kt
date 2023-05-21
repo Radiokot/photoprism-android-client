@@ -576,6 +576,18 @@ class GalleryViewModel(
         )
     }
 
+    private fun downloadAndReturnMultipleSelectionFiles() {
+        downloadMediaFileViewModel.downloadFiles(
+            filesAndDestinations = multipleSelecionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
+                mediaFile to File(internalDownloadsDir, "downloaded_$i")
+            },
+            onSuccess = { destinationFiles ->
+                log.debug { "downloadAndReturnMultipleSelectionFiles(): download_completed" }
+                // TODO: Send the event.
+            }
+        )
+    }
+
     private fun openViewer(
         media: GalleryMedia,
         areActionsEnabled: Boolean,
@@ -633,7 +645,15 @@ class GalleryViewModel(
             "Done multiple selection button is only clickable in the corresponding state"
         }
 
-        log.debug { "onDoneMultipleSelectionClicked(): clicked" }
+        check(multipleSelecionFilesByMediaUid.isNotEmpty()) {
+            "Done multiple selection button is only clickable when something is selected"
+        }
+
+        log.debug {
+            "onDoneMultipleSelectionClicked(): start_downloading_multiple_selection_files"
+        }
+
+        downloadAndReturnMultipleSelectionFiles()
     }
 
     sealed interface Event {

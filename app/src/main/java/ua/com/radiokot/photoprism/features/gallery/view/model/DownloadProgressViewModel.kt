@@ -10,7 +10,11 @@ interface DownloadProgressViewModel {
 
     sealed interface State {
         object Idle : State
-        class Running(val percent: Double) : State
+        class Running(
+            val percent: Double,
+            val currentDownloadNumber: Int = 1,
+            val downloadsCount: Int = 1,
+        ) : State
     }
 
     sealed interface Event {

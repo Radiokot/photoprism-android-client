@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingStart="24dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp"
@@ -12,12 +13,22 @@
         android:id="@+id/title_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="4dp"
         android:text="@string/downloading_progress"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintEnd_toStartOf="@id/current_download_number_of_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/current_download_number_of_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintTop_toTopOf="@id/title_text_view"
+        tools:text="1 of 2" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/close_button"

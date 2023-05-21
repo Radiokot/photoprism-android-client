@@ -36,6 +36,8 @@ class DownloadProgressView(
                 is DownloadProgressViewModel.State.Running ->
                     showDownloadProgress(
                         percent = state.percent,
+                        currentDownloadNumber = state.currentDownloadNumber,
+                        downloadsCount = state.downloadsCount,
                     )
             }
 
@@ -65,7 +67,11 @@ class DownloadProgressView(
         }.autoDispose(this)
     }
 
-    private fun showDownloadProgress(percent: Double) {
+    private fun showDownloadProgress(
+        percent: Double,
+        currentDownloadNumber: Int = 1,
+        downloadsCount: Int = 1,
+    ) {
         val fragment =
             (fragmentManager.findFragmentByTag(DOWNLOAD_PROGRESS_DIALOG_TAG) as? DownloadProgressDialogFragment)
                 ?: DownloadProgressDialogFragment().apply {
@@ -78,7 +84,7 @@ class DownloadProgressView(
             fragment.showNow(fragmentManager, DOWNLOAD_PROGRESS_DIALOG_TAG)
         }
 
-        fragment.setProgress(percent)
+        fragment.setProgress(percent, currentDownloadNumber, downloadsCount)
     }
 
     private fun dismissDownloadProgress() {
