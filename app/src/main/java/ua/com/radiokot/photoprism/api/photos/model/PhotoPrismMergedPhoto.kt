@@ -28,6 +28,8 @@ constructor(
         val hash: String,
         @JsonProperty("UID")
         val uid: String,
+        @JsonProperty("PhotoUID")
+        val photoUid: String,
         @JsonProperty("Name")
         val name: String,
         @JsonProperty("Mime")

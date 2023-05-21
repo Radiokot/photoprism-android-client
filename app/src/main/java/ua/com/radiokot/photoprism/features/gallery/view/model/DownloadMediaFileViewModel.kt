@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -49,6 +50,7 @@ class DownloadMediaFileViewModel(
             onSuccess(alreadyDownloadedFile.destination)
             return
         }
+
 
         log.debug {
             "downloadFile(): start_downloading:" +
@@ -116,6 +118,101 @@ class DownloadMediaFileViewModel(
                     downloadStateSubject.onNext(DownloadProgressViewModel.State.Idle)
 
                     onSuccess(destination)
+                }
+            )
+            .autoDispose(this)
+    }
+
+    fun downloadFiles(
+        filesAndDestinations: List<Pair<GalleryMedia.File, File>>,
+        onSuccess: (destinationFiles: List<File>) -> Unit,
+    ) {
+        log.debug {
+            "downloadFiles(): start_downloading:" +
+                    "\nfilesCount=${filesAndDestinations.size}"
+        }
+
+        val destinations = filesAndDestinations.map(Pair<*, File>::second)
+
+        downloadDisposable?.dispose()
+        downloadDisposable = filesAndDestinations
+            .mapIndexed { currentDownloadIndex, (file, destination) ->
+                val downloadUrl = file.downloadUrl
+
+                downloadFileUseCaseFactory
+                    .get(
+                        url = downloadUrl,
+                        destination = destination,
+                    )
+                    .perform()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        log.debug {
+                            "downloadFiles(): file_download_started:" +
+                                    "\nurl=$downloadUrl" +
+                                    "\ncurrentDownloadIndex=$currentDownloadIndex"
+                        }
+
+                        downloadStateSubject.onNext(
+                            DownloadProgressViewModel.State.Running(
+                                percent = -1.0,
+                                currentDownloadNumber = currentDownloadIndex + 1,
+                                downloadsCount = filesAndDestinations.size,
+                            )
+                        )
+                    }
+                    .doOnNext { progress ->
+                        val percent = progress.percent
+
+                        log.debug {
+                            "downloadFiles(): file_download_in_progress:" +
+                                    "\nurl=$downloadUrl" +
+                                    "\nprogress=$percent," +
+                                    "\ncurrentDownloadIndex=$currentDownloadIndex"
+                        }
+
+                        downloadStateSubject.onNext(
+                            DownloadProgressViewModel.State.Running(
+                                percent = percent,
+                                currentDownloadNumber = currentDownloadIndex + 1,
+                                downloadsCount = filesAndDestinations.size,
+                            )
+                        )
+                    }
+                    .ignoreElements()
+            }
+            .let(Completable::concat)
+            .doOnDispose {
+                try {
+                    destinations.forEach(File::delete)
+                } catch (e: Exception) {
+                    log.error(e) { "downloadFiles(): failed_to_delete_destinations_on_dispose" }
+                }
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "downloadFiles(): error_occurred"
+                    }
+
+                    try {
+                        destinations.forEach(File::delete)
+                    } catch (e: Exception) {
+                        log.error(e) { "downloadFiles(): failed_to_delete_destinations_on_error" }
+                    }
+
+                    downloadEventsSubject.onNext(DownloadProgressViewModel.Event.DownloadFailed)
+                    downloadStateSubject.onNext(DownloadProgressViewModel.State.Idle)
+                },
+                onComplete = {
+                    log.debug {
+                        "downloadFiles(): download_complete"
+                    }
+
+                    downloadStateSubject.onNext(DownloadProgressViewModel.State.Idle)
+
+                    onSuccess(destinations)
                 }
             )
             .autoDispose(this)

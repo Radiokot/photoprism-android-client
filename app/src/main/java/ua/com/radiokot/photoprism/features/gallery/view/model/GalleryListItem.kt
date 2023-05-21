@@ -3,13 +3,18 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.RelativeCornerSize
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
@@ -31,12 +36,16 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         @StringRes
         val mediaTypeName: Int?,
         val isViewButtonVisible: Boolean,
+        val isSelectionViewVisible: Boolean,
+        val isMediaSelected: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
 
         constructor(
             source: GalleryMedia,
             isViewButtonVisible: Boolean,
+            isSelectionViewVisible: Boolean,
+            isMediaSelected: Boolean,
         ) : this(
             thumbnailUrl = source.smallThumbnailUrl,
             name = source.name,
@@ -51,6 +60,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             else
                 null,
             isViewButtonVisible = isViewButtonVisible,
+            isSelectionViewVisible = isSelectionViewVisible,
+            isMediaSelected = isMediaSelected,
             source = source,
         )
 
@@ -74,6 +85,29 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             val view = ListItemGalleryMediaBinding.bind(itemView)
             private val picasso: Picasso by inject()
+            private val selectedImageViewColorFilter =
+                ColorUtils.setAlphaComponent(
+                    MaterialColors.getColor(
+                        view.imageView,
+                        com.google.android.material.R.attr.colorSurfaceInverse
+                    ),
+                    150
+                )
+            private val defaultImageViewShape = ShapeAppearanceModel.builder().build()
+            private val selectedImageViewShape = ShapeAppearanceModel.builder()
+                .setAllCornerSizes(RelativeCornerSize(0.1f))
+                .build()
+            private val imageViewScaleAnimationDuration =
+                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
+            private val imageViewScaleAnimationInterpolator =
+                AccelerateDecelerateInterpolator()
+            private val selectedImageViewScale = 0.95f
+
+            init {
+                view.selectionCheckBox.setOnClickListener {
+                    view.root.callOnClick()
+                }
+            }
 
             override fun bindView(item: Media, payloads: List<Any>) {
                 view.imageView.contentDescription = item.name
@@ -101,10 +135,58 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
 
                 view.viewButton.isVisible = item.isViewButtonVisible
+                view.selectionCheckBox.isVisible = item.isSelectionViewVisible
+
+                if (item.isSelectionViewVisible) {
+                    view.selectionCheckBox.isChecked = item.isMediaSelected
+
+                    view.imageView.shapeAppearanceModel =
+                        if (item.isMediaSelected)
+                            selectedImageViewShape
+                        else
+                            defaultImageViewShape
+
+                    if (item.isMediaSelected) {
+                        view.imageView.setColorFilter(selectedImageViewColorFilter)
+                        if (view.imageView.scaleX != selectedImageViewScale) {
+                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                                animateImageScale(selectedImageViewScale)
+                            } else {
+                                setImageScale(selectedImageViewScale)
+                            }
+                        }
+                    } else {
+                        view.imageView.clearColorFilter()
+                        if (view.imageView.scaleX != 1f) {
+                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                                animateImageScale(1f)
+                            } else {
+                                setImageScale(1f)
+                            }
+                        }
+                    }
+                }
             }
 
             override fun unbindView(item: Media) {
                 picasso.cancelRequest(view.imageView)
+            }
+
+            private fun animateImageScale(target: Float) {
+                view.imageView.clearAnimation()
+                view.imageView.animate().scaleX(target).scaleY(target)
+                    .setInterpolator(imageViewScaleAnimationInterpolator)
+                    .setDuration(imageViewScaleAnimationDuration.toLong())
+                    .start()
+            }
+
+            private fun setImageScale(target: Float) {
+                view.imageView.scaleX = target
+                view.imageView.scaleY = target
+            }
+
+            companion object {
+                const val PAYLOAD_ANIMATE_SELECTION = "animate"
             }
         }
     }

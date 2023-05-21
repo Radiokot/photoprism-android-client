@@ -32,7 +32,7 @@ class MediaFileListItem(
         context: Context,
     ) : this(
         name = source.name,
-        thumbnailUrl = source.thumbnailUrlSmall,
+        thumbnailUrl = source.smallThumbnailUrl,
         mimeType = source.mimeType,
         size = Formatter.formatFileSize(context, source.sizeBytes),
         source = source,

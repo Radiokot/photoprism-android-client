@@ -5,13 +5,14 @@ import android.animation.AnimatorListenerAdapter
 import android.view.View
 
 fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime)) {
+    val targetAlpha = alpha
     alpha = 0f
     visibility = View.VISIBLE
 
     clearAnimation()
 
     animate()
-        .alpha(1f)
+        .alpha(targetAlpha)
         .setDuration(duration.toLong())
         .setListener(null)
 }

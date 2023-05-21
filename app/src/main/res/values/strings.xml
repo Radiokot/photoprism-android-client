@@ -112,4 +112,7 @@
     <string name="loading_albums_progress">Loading albums…</string>
     <string name="reload_albums">Reload albums</string>
     <string name="no_albums_found">No albums found</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="done_selecting">Done</string>
+    <string name="template_current_of">%1$d of %2$d</string>
 </resources>

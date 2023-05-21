@@ -1,9 +1,9 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -37,7 +38,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.view.ErrorView
-import java.io.File
 
 
 class GalleryActivity : BaseActivity(), AndroidScopeComponent {
@@ -92,7 +92,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         log.debug {
             "onCreate(): creating:" +
                     "\naction=${intent.action}," +
-                    "\nextras=${intent.extras}," +
+                    "\nextras=${intent.extras?.keySet()?.joinToString()}," +
                     "\ntype=${intent.type}" +
                     "\nsavedInstanceState=$savedInstanceState"
         }
@@ -115,6 +115,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             viewModel.initSelectionOnce(
                 requestedMimeType = intent.type,
+                allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
         } else {
             if (tryOrNull { scope } == null) {
@@ -140,6 +141,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initSearch()
         initErrorView()
+        initMultipleSelection()
     }
 
     private fun subscribeToData() {
@@ -154,9 +156,25 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             )
         }
 
-        viewModel.itemsList.observe(this) {
-            if (it != null) {
-                galleryItemsAdapter.setNewList(it)
+        val galleryItemsDiffCallback = GalleryListItemDiffCallback()
+        viewModel.itemsList.observe(this) { newItems ->
+            if (newItems != null) {
+                // Use DiffUtil only in particular cases to save performance:
+                // - When items selection state changes
+                if (galleryItemsAdapter.adapterItems.size == newItems.size
+                    && newItems.isNotEmpty()
+                ) {
+                    log.debug { "subscribeToData(): use_diff_util_for_new_gallery_items" }
+
+                    FastAdapterDiffUtil.set(
+                        adapter = galleryItemsAdapter,
+                        items = newItems,
+                        callback = galleryItemsDiffCallback,
+                        detectMoves = true,
+                    )
+                } else {
+                    galleryItemsAdapter.setNewList(newItems)
+                }
             }
         }
 
@@ -182,6 +200,19 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             view.errorView.showError(errorToShow)
         }
+
+        viewModel.multipleSelectionItemsCount.observe(this) { count ->
+            view.selectionBottomAppBarTitleTextView.text =
+                if (count == 0)
+                    getString(R.string.select_content)
+                else
+                    count.toString()
+            if (count > 0) {
+                view.doneSelectingFab.show()
+            } else {
+                view.doneSelectingFab.hide()
+            }
+        }
     }
 
     private fun subscribeToEvents() {
@@ -196,12 +227,9 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     openMediaFilesDialog(
                         files = event.files,
                     )
-                is GalleryViewModel.Event.ReturnDownloadedFile ->
-                    returnDownloadedFile(
-                        downloadedFile = event.downloadedFile,
-                        mimeType = event.mimeType,
-                        displayName = event.displayName,
-                    )
+
+                is GalleryViewModel.Event.ReturnDownloadedFiles ->
+                    returnDownloadedFiles(event.files)
 
                 is GalleryViewModel.Event.OpenViewer ->
                     openViewer(
@@ -245,8 +273,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     getString(R.string.library)
             }
 
-            view.selectContentTextView.isVisible =
+            view.selectionBottomAppBar.isVisible =
                 state is GalleryViewModel.State.Selecting
+            view.selectionBottomAppBar.navigationIcon =
+                if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
+                    ContextCompat.getDrawable(this, R.drawable.ic_close)
+                else
+                    null
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +
@@ -390,6 +423,16 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         view.errorView.replaces(view.galleryRecyclerView)
     }
 
+    private fun initMultipleSelection() {
+        view.selectionBottomAppBar.setNavigationOnClickListener {
+            viewModel.onClearMultipleSelectionClicked()
+        }
+
+        view.doneSelectingFab.setOnClickListener {
+            viewModel.onDoneMultipleSelectionClicked()
+        }
+    }
+
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
         mediaFileSelectionView.openMediaFileSelectionDialog(
             fileItems = files.map {
@@ -401,22 +444,24 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         )
     }
 
-    private fun returnDownloadedFile(
-        downloadedFile: File,
-        mimeType: String,
-        displayName: String,
+    private fun returnDownloadedFiles(
+        filesToReturn: List<GalleryViewModel.Event.ReturnDownloadedFiles.FileToReturn>,
     ) {
         val resultIntent = fileReturnIntentCreator.createIntent(
-            fileToReturn = downloadedFile,
-            mimeType = mimeType,
-            displayName = displayName,
+            filesToReturn.map { fileToReturn ->
+                FileReturnIntentCreator.FileToReturn(
+                    file = fileToReturn.downloadedFile,
+                    mimeType = fileToReturn.mimeType,
+                    displayName = fileToReturn.displayName,
+                )
+            }
         )
-        setResult(Activity.RESULT_OK, resultIntent)
+        setResult(RESULT_OK, resultIntent)
 
         log.debug {
-            "returnDownloadedFile(): result_set_finishing:" +
+            "returnDownloadedFiles(): result_set_finishing:" +
                     "\nintent=$resultIntent," +
-                    "\ndownloadedFile=$downloadedFile"
+                    "\nfilesToReturnCount=${filesToReturn.size}"
         }
 
         finish()

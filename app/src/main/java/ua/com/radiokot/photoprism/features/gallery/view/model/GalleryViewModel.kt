@@ -40,7 +40,6 @@ class GalleryViewModel(
     private var isInitialized = false
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value?.repository
-
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
@@ -50,9 +49,12 @@ class GalleryViewModel(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
+    private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
+    val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
 
     fun initSelectionOnce(
         requestedMimeType: String?,
+        allowMultiple: Boolean,
     ) {
         if (isInitialized) {
             log.debug {
@@ -87,10 +89,16 @@ class GalleryViewModel(
         log.debug {
             "initSelection(): initialized_selection:" +
                     "\nrequestedMimeType=$requestedMimeType," +
+                    "\nallowMultiple=$allowMultiple," +
                     "\nmatchedFilterMediaTypes=$filterMediaTypes"
         }
 
-        stateSubject.onNext(State.Selecting(filterMediaTypes = filterMediaTypes))
+        stateSubject.onNext(
+            State.Selecting(
+                filterMediaTypes = filterMediaTypes,
+                allowMultiple = allowMultiple,
+            )
+        )
 
         initCommon()
 
@@ -277,12 +285,7 @@ class GalleryViewModel(
 
         currentMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                onNewGalleryMedia(
-                    galleryMediaList = it,
-                    repository = currentMediaRepository,
-                )
-            }
+            .subscribe { postGalleryItems() }
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -323,10 +326,12 @@ class GalleryViewModel(
         disposable.autoDispose(this)
     }
 
-    private fun onNewGalleryMedia(
-        galleryMediaList: List<GalleryMedia>,
-        repository: SimpleGalleryMediaRepository,
-    ) {
+    private fun postGalleryItems() {
+        val repository = currentMediaRepository.checkNotNull {
+            "There must be a media repository to post items from"
+        }
+        val galleryMediaList = repository.itemsList
+
         // Dismiss the main error when there are items.
         mainError.value =
             if (galleryMediaList.isEmpty() && !repository.isNeverUpdated)
@@ -335,7 +340,9 @@ class GalleryViewModel(
                 null
 
         val newListItems = mutableListOf<GalleryListItem>()
-        val areViewButtonsVisible = stateSubject.value is State.Selecting
+        val currentState = stateSubject.value
+        val areViewButtonsVisible = currentState is State.Selecting
+        val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
         // Add date headers.
         val today = Date()
@@ -388,6 +395,8 @@ class GalleryViewModel(
                     GalleryListItem.Media(
                         source = galleryMedia,
                         isViewButtonVisible = areViewButtonsVisible,
+                        isSelectionViewVisible = areSelectionViewsVisible,
+                        isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
                     )
                 )
             }
@@ -426,13 +435,30 @@ class GalleryViewModel(
             return
         }
 
-        when (stateSubject.value.checkNotNull()) {
+        when (val state = stateSubject.value.checkNotNull()) {
             is State.Selecting -> {
-                if (item.source != null) {
-                    if (item.source.files.size > 1) {
-                        openFileSelectionDialog(item.source.files)
+                val media = item.source
+                    ?: return
+
+                if (state.allowMultiple) {
+                    if (multipleSelectionFilesByMediaUid.containsKey(media.uid)) {
+                        // When clicking currently selected media in the multiple selection state,
+                        // just unselect it.
+                        removeMediaFromMultipleSelection(media.uid)
                     } else {
-                        downloadAndReturnFile(item.source.files.firstOrNull().checkNotNull {
+                        if (media.files.size > 1) {
+                            openFileSelectionDialog(media.files)
+                        } else {
+                            addFileToMultipleSelection(media.files.firstOrNull().checkNotNull {
+                                "There must be at least one file in the gallery media object"
+                            })
+                        }
+                    }
+                } else {
+                    if (media.files.size > 1) {
+                        openFileSelectionDialog(media.files)
+                    } else {
+                        downloadAndReturnFile(media.files.firstOrNull().checkNotNull {
                             "There must be at least one file in the gallery media object"
                         })
                     }
@@ -467,6 +493,45 @@ class GalleryViewModel(
         }
     }
 
+    private fun addFileToMultipleSelection(file: GalleryMedia.File) {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Media file can only be added to the multiple selection in the corresponding state"
+        }
+
+        multipleSelectionFilesByMediaUid[file.mediaUid] = file
+
+        log.debug {
+            "addFileToMultipleSelection(): file_added:" +
+                    "\nfile=$file," +
+                    "\nmediaUid=${file.mediaUid}"
+        }
+
+        postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    private fun removeMediaFromMultipleSelection(mediaUid: String) {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Media can only be removed from the multiple selection in the corresponding state"
+        }
+
+        multipleSelectionFilesByMediaUid.remove(mediaUid)
+
+        log.debug {
+            "removeMediaFromMultipleSelection(): media_removed:" +
+                    "\nmediaUid=$mediaUid"
+        }
+
+        postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    private fun postMultipleSelectionItemsCount() {
+        multipleSelectionItemsCount.value = multipleSelectionFilesByMediaUid.keys.size
+    }
+
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
         log.debug {
             "openFileSelectionDialog(): posting_open_event:" +
@@ -477,12 +542,21 @@ class GalleryViewModel(
     }
 
     fun onFileSelected(file: GalleryMedia.File) {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting) {
+            "Media files can only be selected in the selection state"
+        }
+
         log.debug {
             "onFileSelected(): file_selected:" +
                     "\nfile=$file"
         }
 
-        downloadAndReturnFile(file)
+        if (currentState.allowMultiple) {
+            addFileToMultipleSelection(file)
+        } else {
+            downloadAndReturnFile(file)
+        }
     }
 
     private fun downloadAndReturnFile(file: GalleryMedia.File) {
@@ -491,10 +565,38 @@ class GalleryViewModel(
             destination = File(internalDownloadsDir, "downloaded"),
             onSuccess = { destinationFile ->
                 eventsSubject.onNext(
-                    Event.ReturnDownloadedFile(
-                        downloadedFile = destinationFile,
-                        mimeType = file.mimeType,
-                        displayName = File(file.name).name
+                    Event.ReturnDownloadedFiles(
+                        Event.ReturnDownloadedFiles.FileToReturn(
+                            downloadedFile = destinationFile,
+                            mimeType = file.mimeType,
+                            displayName = File(file.name).name
+                        )
+                    )
+                )
+            }
+        )
+    }
+
+    private fun downloadAndReturnMultipleSelectionFiles() {
+        val filesAndDestinations =
+            multipleSelectionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
+                mediaFile to File(internalDownloadsDir, "downloaded_$i")
+            }
+
+        downloadMediaFileViewModel.downloadFiles(
+            filesAndDestinations = filesAndDestinations,
+            onSuccess = {
+                log.debug { "downloadAndReturnMultipleSelectionFiles(): download_completed" }
+
+                eventsSubject.onNext(
+                    Event.ReturnDownloadedFiles(
+                        filesAndDestinations.map { (mediaFile, destination) ->
+                            Event.ReturnDownloadedFiles.FileToReturn(
+                                downloadedFile = destination,
+                                mimeType = mediaFile.mimeType,
+                                displayName = File(mediaFile.name).name
+                            )
+                        }
                     )
                 )
             }
@@ -544,14 +646,45 @@ class GalleryViewModel(
         eventsSubject.onNext(Event.OpenPreferences)
     }
 
+    fun onClearMultipleSelectionClicked() {
+        log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
+
+        multipleSelectionFilesByMediaUid.clear()
+        postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    fun onDoneMultipleSelectionClicked() {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Done multiple selection button is only clickable in the corresponding state"
+        }
+
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+            "Done multiple selection button is only clickable when something is selected"
+        }
+
+        log.debug {
+            "onDoneMultipleSelectionClicked(): start_downloading_multiple_selection_files"
+        }
+
+        downloadAndReturnMultipleSelectionFiles()
+    }
+
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
-        class ReturnDownloadedFile(
-            val downloadedFile: File,
-            val mimeType: String,
-            val displayName: String,
-        ) : Event
+        class ReturnDownloadedFiles(
+            val files: List<FileToReturn>,
+        ) : Event {
+            constructor(fileToReturn: FileToReturn) : this(listOf(fileToReturn))
+
+            data class FileToReturn(
+                val downloadedFile: File,
+                val mimeType: String,
+                val displayName: String,
+            )
+        }
 
         class OpenViewer(
             val mediaIndex: Int,
@@ -568,7 +701,10 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        class Selecting(val filterMediaTypes: Set<GalleryMedia.TypeName>) : State
+        class Selecting(
+            val filterMediaTypes: Set<GalleryMedia.TypeName>,
+            val allowMultiple: Boolean,
+        ) : State
     }
 
     sealed interface Error {
