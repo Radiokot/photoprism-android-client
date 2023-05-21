@@ -40,6 +40,22 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Invisible visibility is important for this FAB.
+    Without it there is no initial show animation.
+    It also must be placed before the SearchView -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/done_selecting_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/done_selecting"
+        android:tooltipText="@string/done_selecting"
+        android:visibility="invisible"
+        app:layout_anchor="@id/selection_bottom_app_bar"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+        app:srcCompat="@drawable/ic_done"
+        tools:targetApi="o"
+        tools:visibility="visible" />
+
     <com.google.android.material.search.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
@@ -79,19 +95,5 @@
             android:textColor="?colorOnSecondaryContainer" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
-
-    <!-- Invisible visibility is important for this FAB.
-    Without it there is no initial show animation-->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/done_selecting_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:contentDescription="@string/done_selecting"
-        android:tooltipText="@string/done_selecting"
-        app:layout_anchor="@id/selection_bottom_app_bar"
-        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-        app:srcCompat="@drawable/ic_done"
-        tools:targetApi="o" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
