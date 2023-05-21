@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -96,6 +97,11 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             private val selectedImageViewShape = ShapeAppearanceModel.builder()
                 .setAllCornerSizes(RelativeCornerSize(0.1f))
                 .build()
+            private val imageViewScaleAnimationDuration =
+                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
+            private val imageViewScaleAnimationInterpolator =
+                AccelerateDecelerateInterpolator()
+            private val selectedImageViewScale = 0.95f
 
             init {
                 view.selectionCheckBox.setOnClickListener {
@@ -140,16 +146,31 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                         else
                             defaultImageViewShape
 
+                    // TODO: Animate only on click.
                     if (item.isMediaSelected) {
                         view.imageView.setColorFilter(selectedImageViewColorFilter)
+                        if (view.imageView.scaleX != selectedImageViewScale) {
+                            animateImageScale(selectedImageViewScale)
+                        }
                     } else {
                         view.imageView.clearColorFilter()
+                        if (view.imageView.scaleX != 1f) {
+                            animateImageScale(1f)
+                        }
                     }
                 }
             }
 
             override fun unbindView(item: Media) {
                 picasso.cancelRequest(view.imageView)
+            }
+
+            private fun animateImageScale(target: Float) {
+                view.imageView.clearAnimation()
+                view.imageView.animate().scaleX(target).scaleY(target)
+                    .setInterpolator(imageViewScaleAnimationInterpolator)
+                    .setDuration(imageViewScaleAnimationDuration.toLong())
+                    .start()
             }
         }
     }
