@@ -38,7 +38,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.view.ErrorView
-import java.io.File
 
 
 class GalleryActivity : BaseActivity(), AndroidScopeComponent {
@@ -208,12 +207,9 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     openMediaFilesDialog(
                         files = event.files,
                     )
-                is GalleryViewModel.Event.ReturnDownloadedFile ->
-                    returnDownloadedFile(
-                        downloadedFile = event.downloadedFile,
-                        mimeType = event.mimeType,
-                        displayName = event.displayName,
-                    )
+
+                is GalleryViewModel.Event.ReturnDownloadedFiles ->
+                    returnDownloadedFiles(event.files)
 
                 is GalleryViewModel.Event.OpenViewer ->
                     openViewer(
@@ -440,22 +436,24 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         )
     }
 
-    private fun returnDownloadedFile(
-        downloadedFile: File,
-        mimeType: String,
-        displayName: String,
+    private fun returnDownloadedFiles(
+        filesToReturn: List<GalleryViewModel.Event.ReturnDownloadedFiles.FileToReturn>,
     ) {
         val resultIntent = fileReturnIntentCreator.createIntent(
-            fileToReturn = downloadedFile,
-            mimeType = mimeType,
-            displayName = displayName,
+            filesToReturn.map { fileToReturn ->
+                FileReturnIntentCreator.FileToReturn(
+                    file = fileToReturn.downloadedFile,
+                    mimeType = fileToReturn.mimeType,
+                    displayName = fileToReturn.displayName,
+                )
+            }
         )
         setResult(Activity.RESULT_OK, resultIntent)
 
         log.debug {
-            "returnDownloadedFile(): result_set_finishing:" +
+            "returnDownloadedFiles(): result_set_finishing:" +
                     "\nintent=$resultIntent," +
-                    "\ndownloadedFile=$downloadedFile"
+                    "\nfilesToReturnCount=${filesToReturn.size}"
         }
 
         finish()

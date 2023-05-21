@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         app:layout_constraintEnd_toStartOf="@id/close_button"
+        android:layout_marginEnd="12dp"
         app:layout_constraintTop_toTopOf="@id/title_text_view"
         tools:text="1 of 2" />
 

@@ -50,7 +50,7 @@ class GalleryViewModel(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
-    private val multipleSelecionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
+    private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
     val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
 
     fun initSelectionOnce(
@@ -397,7 +397,7 @@ class GalleryViewModel(
                         source = galleryMedia,
                         isViewButtonVisible = areViewButtonsVisible,
                         isSelectionViewVisible = areSelectionViewsVisible,
-                        isMediaSelected = multipleSelecionFilesByMediaUid.containsKey(galleryMedia.uid),
+                        isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
                     )
                 )
             }
@@ -442,7 +442,7 @@ class GalleryViewModel(
                     ?: return
 
                 if (state.allowMultiple) {
-                    if (multipleSelecionFilesByMediaUid.containsKey(media.uid)) {
+                    if (multipleSelectionFilesByMediaUid.containsKey(media.uid)) {
                         // When clicking currently selected media in the multiple selection state,
                         // just unselect it.
                         removeMediaFromMultipleSelection(media.uid)
@@ -500,7 +500,7 @@ class GalleryViewModel(
             "Media file can only be added to the multiple selection in the corresponding state"
         }
 
-        multipleSelecionFilesByMediaUid[file.mediaUid] = file
+        multipleSelectionFilesByMediaUid[file.mediaUid] = file
 
         log.debug {
             "addFileToMultipleSelection(): file_added:" +
@@ -515,10 +515,10 @@ class GalleryViewModel(
     private fun removeMediaFromMultipleSelection(mediaUid: String) {
         val currentState = stateSubject.value
         check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Media can only be removed from the multiple selection in the corrresponding state"
+            "Media can only be removed from the multiple selection in the corresponding state"
         }
 
-        multipleSelecionFilesByMediaUid.remove(mediaUid)
+        multipleSelectionFilesByMediaUid.remove(mediaUid)
 
         log.debug {
             "removeMediaFromMultipleSelection(): media_removed:" +
@@ -530,7 +530,7 @@ class GalleryViewModel(
     }
 
     private fun postMultipleSelectionItemsCount() {
-        multipleSelectionItemsCount.value = multipleSelecionFilesByMediaUid.keys.size
+        multipleSelectionItemsCount.value = multipleSelectionFilesByMediaUid.keys.size
     }
 
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
@@ -566,10 +566,12 @@ class GalleryViewModel(
             destination = File(internalDownloadsDir, "downloaded"),
             onSuccess = { destinationFile ->
                 eventsSubject.onNext(
-                    Event.ReturnDownloadedFile(
-                        downloadedFile = destinationFile,
-                        mimeType = file.mimeType,
-                        displayName = File(file.name).name
+                    Event.ReturnDownloadedFiles(
+                        Event.ReturnDownloadedFiles.FileToReturn(
+                            downloadedFile = destinationFile,
+                            mimeType = file.mimeType,
+                            displayName = File(file.name).name
+                        )
                     )
                 )
             }
@@ -577,13 +579,27 @@ class GalleryViewModel(
     }
 
     private fun downloadAndReturnMultipleSelectionFiles() {
-        downloadMediaFileViewModel.downloadFiles(
-            filesAndDestinations = multipleSelecionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
+        val filesAndDestinations =
+            multipleSelectionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
                 mediaFile to File(internalDownloadsDir, "downloaded_$i")
-            },
-            onSuccess = { destinationFiles ->
+            }
+
+        downloadMediaFileViewModel.downloadFiles(
+            filesAndDestinations = filesAndDestinations,
+            onSuccess = {
                 log.debug { "downloadAndReturnMultipleSelectionFiles(): download_completed" }
-                // TODO: Send the event.
+
+                eventsSubject.onNext(
+                    Event.ReturnDownloadedFiles(
+                        filesAndDestinations.map { (mediaFile, destination) ->
+                            Event.ReturnDownloadedFiles.FileToReturn(
+                                downloadedFile = destination,
+                                mimeType = mediaFile.mimeType,
+                                displayName = File(mediaFile.name).name
+                            )
+                        }
+                    )
+                )
             }
         )
     }
@@ -634,7 +650,7 @@ class GalleryViewModel(
     fun onClearMultipleSelectionClicked() {
         log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
 
-        multipleSelecionFilesByMediaUid.clear()
+        multipleSelectionFilesByMediaUid.clear()
         postGalleryItems()
         postMultipleSelectionItemsCount()
     }
@@ -645,7 +661,7 @@ class GalleryViewModel(
             "Done multiple selection button is only clickable in the corresponding state"
         }
 
-        check(multipleSelecionFilesByMediaUid.isNotEmpty()) {
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
             "Done multiple selection button is only clickable when something is selected"
         }
 
@@ -659,11 +675,17 @@ class GalleryViewModel(
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
-        class ReturnDownloadedFile(
-            val downloadedFile: File,
-            val mimeType: String,
-            val displayName: String,
-        ) : Event
+        class ReturnDownloadedFiles(
+            val files: List<FileToReturn>,
+        ) : Event {
+            constructor(fileToReturn: FileToReturn) : this(listOf(fileToReturn))
+
+            data class FileToReturn(
+                val downloadedFile: File,
+                val mimeType: String,
+                val displayName: String,
+            )
+        }
 
         class OpenViewer(
             val mediaIndex: Int,
