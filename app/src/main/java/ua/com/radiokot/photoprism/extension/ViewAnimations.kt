@@ -3,9 +3,15 @@ package ua.com.radiokot.photoprism.extension
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.view.View
+import androidx.core.view.isVisible
 
 fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime)) {
-    val targetAlpha = alpha
+    val targetAlpha =
+        if (!isVisible && alpha != 0f)
+            alpha
+        else
+            1f
+
     alpha = 0f
     visibility = View.VISIBLE
 
