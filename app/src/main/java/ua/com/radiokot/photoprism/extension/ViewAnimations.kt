@@ -3,7 +3,10 @@ package ua.com.radiokot.photoprism.extension
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.view.isVisible
+
+private val fadeInterpolator = AccelerateDecelerateInterpolator()
 
 fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime)) {
     val targetAlpha =
@@ -16,8 +19,8 @@ fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.c
     visibility = View.VISIBLE
 
     clearAnimation()
-
     animate()
+        .setInterpolator(fadeInterpolator)
         .alpha(targetAlpha)
         .setDuration(duration.toLong())
         .setListener(null)
@@ -26,6 +29,7 @@ fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.c
 fun View.fadeOut(duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime)) {
     clearAnimation()
     animate()
+        .setInterpolator(fadeInterpolator)
         .alpha(0f)
         .setDuration(duration.toLong())
         .setListener(object : AnimatorListenerAdapter() {
