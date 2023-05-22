@@ -45,7 +45,14 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import kotlin.math.roundToInt
 
-
+/**
+ * View for configuring and applying gallery search.
+ *
+ * To enable back navigation button behavior, add its pressed callbacks.
+ *
+ * @see closeConfigurationBackPressedCallback
+ * @see searchResetBackPressedCallback
+ */
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
     private val fragmentManager: FragmentManager,
@@ -63,9 +70,14 @@ class GallerySearchView(
     private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
 
-    val backPressedCallback = object : OnBackPressedCallback(false) {
+    val closeConfigurationBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             searchView.hide()
+        }
+    }
+    val searchResetBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            viewModel.onResetClicked()
         }
     }
 
@@ -118,7 +130,7 @@ class GallerySearchView(
                 else -> {}
             }
 
-            backPressedCallback.isEnabled = newState in setOf(
+            closeConfigurationBackPressedCallback.isEnabled = newState in setOf(
                 SearchView.TransitionState.SHOWING,
                 SearchView.TransitionState.SHOWN
             )
@@ -421,6 +433,9 @@ class GallerySearchView(
                             && state.search is AppliedGallerySearch.Bookmarked
                 }
             }
+
+            searchResetBackPressedCallback.isEnabled =
+                state is GallerySearchViewModel.State.AppliedSearch
 
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch ->
