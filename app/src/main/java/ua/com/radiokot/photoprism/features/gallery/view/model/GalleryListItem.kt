@@ -174,10 +174,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             private fun animateImageScale(target: Float) {
                 view.imageView.clearAnimation()
-                view.imageView.animate().scaleX(target).scaleY(target)
-                    .setInterpolator(imageViewScaleAnimationInterpolator)
+                view.imageView.animate()
+                    .scaleX(target)
+                    .scaleY(target)
                     .setDuration(imageViewScaleAnimationDuration.toLong())
-                    .start()
+                    .setInterpolator(imageViewScaleAnimationInterpolator)
+                    .setListener(null)
             }
 
             private fun setImageScale(target: Float) {
