@@ -15,6 +15,7 @@
         tools:listitem="@layout/list_item_gallery_media"
         android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
         android:paddingTop="?actionBarSize"
+        android:paddingBottom="@dimen/selection_bottom_app_bar_height"
         app:layout_behavior="@string/searchbar_scrolling_view_behavior"
         tools:ignore="PrivateResource" />
 
@@ -77,7 +78,7 @@
         android:id="@+id/selection_bottom_app_bar"
         android:layout_width="match_parent"
         style="@style/Widget.Material3.BottomAppBar"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/selection_bottom_app_bar_height"
         android:layout_gravity="bottom"
         android:alpha="0.9"
         app:fabAnchorMode="cradle"

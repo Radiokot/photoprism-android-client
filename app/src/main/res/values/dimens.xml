@@ -15,4 +15,5 @@
     <dimen name="media_viewer_buttons_horizontal_spacing">0dp</dimen>
     <dimen name="media_viewer_buttons_layout_horizontal_spacing">0dp</dimen>
     <dimen name="list_item_album_width">16mm</dimen>
+    <dimen name="selection_bottom_app_bar_height">56dp</dimen>
 </resources>
