@@ -95,7 +95,11 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 )
             private val defaultImageViewShape = ShapeAppearanceModel.builder().build()
             private val selectedImageViewShape = ShapeAppearanceModel.builder()
-                .setAllCornerSizes(RelativeCornerSize(0.1f))
+                .setAllCornerSizes(
+                    itemView.context.resources
+                        .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
+                        .toFloat()
+                )
                 .build()
             private val imageViewScaleAnimationDuration =
                 itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
