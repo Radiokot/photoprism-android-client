@@ -27,6 +27,7 @@
     <string name="failed_to_load_the_thumbnail">Failed to load the thumbnail</string>
     <string name="today">Today</string>
     <string name="search_the_library">Search the library</string>
+    <string name="enter_the_query">Enter the query</string>
     <string name="media_type">Type</string>
     <string name="apply_search">Apply</string>
     <string name="reset_search">Reset</string>

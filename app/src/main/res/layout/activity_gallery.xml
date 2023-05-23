@@ -10,14 +10,14 @@
         android:id="@+id/gallery_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         android:clipToPadding="false"
-        tools:listitem="@layout/list_item_gallery_media"
         android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
         android:paddingTop="?actionBarSize"
         android:paddingBottom="@dimen/selection_bottom_app_bar_height"
         app:layout_behavior="@string/searchbar_scrolling_view_behavior"
-        tools:ignore="PrivateResource" />
+        tools:ignore="PrivateResource"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:listitem="@layout/list_item_gallery_media" />
 
     <ua.com.radiokot.photoprism.view.ErrorView
         android:id="@+id/error_view"
@@ -63,7 +63,8 @@
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="@string/search_the_library"
+        android:hint="@string/enter_the_query"
+        app:autoShowKeyboard="false"
         app:layout_anchor="@id/search_bar">
 
         <!-- It is important for this view to be in a ConstraintLayout
@@ -76,8 +77,8 @@
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/selection_bottom_app_bar"
-        android:layout_width="match_parent"
         style="@style/Widget.Material3.BottomAppBar"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/selection_bottom_app_bar_height"
         android:layout_gravity="bottom"
         android:alpha="0.9"
