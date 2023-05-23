@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
@@ -283,8 +284,10 @@ class GalleryViewModel(
                     "\nrepository=$currentMediaRepository"
         }
 
+        // Do not observe items on the main thread,
+        // item preparation should not block the UI.
         currentMediaRepository.items
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe { postGalleryItems() }
             .addTo(disposable)
 
@@ -333,11 +336,12 @@ class GalleryViewModel(
         val galleryMediaList = repository.itemsList
 
         // Dismiss the main error when there are items.
-        mainError.value =
+        mainError.postValue(
             if (galleryMediaList.isEmpty() && !repository.isNeverUpdated)
                 Error.NoMediaFound
             else
                 null
+        )
 
         val newListItems = mutableListOf<GalleryListItem>()
         val currentState = stateSubject.value
@@ -401,7 +405,7 @@ class GalleryViewModel(
                 )
             }
 
-        itemsList.value = newListItems
+        itemsList.postValue(newListItems)
     }
 
     private fun update(force: Boolean = false) {

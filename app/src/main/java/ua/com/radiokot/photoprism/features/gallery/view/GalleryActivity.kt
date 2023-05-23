@@ -2,7 +2,10 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater.OnInflateFinishedListener
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -159,21 +162,17 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         val galleryItemsDiffCallback = GalleryListItemDiffCallback()
         viewModel.itemsList.observe(this) { newItems ->
             if (newItems != null) {
-                // Use DiffUtil only in particular cases to save performance:
-                // - When items selection state changes
-                if (galleryItemsAdapter.adapterItems.size == newItems.size
-                    && newItems.isNotEmpty()
-                ) {
-                    log.debug { "subscribeToData(): use_diff_util_for_new_gallery_items" }
-
+                if (galleryItemsAdapter.adapterItemCount == 0) {
+                    // Do not use DiffUtil to replace an empty list,
+                    // as it causes scrolling to the bottom.
+                    galleryItemsAdapter.setNewList(newItems)
+                } else {
                     FastAdapterDiffUtil.set(
                         adapter = galleryItemsAdapter,
                         items = newItems,
                         callback = galleryItemsDiffCallback,
                         detectMoves = true,
                     )
-                } else {
-                    galleryItemsAdapter.setNewList(newItems)
                 }
             }
         }
@@ -395,6 +394,25 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         fastScrollView.init(
             fastScrollRecyclerView = view.galleryRecyclerView,
         )
+
+        initListItemsCache()
+    }
+
+    private fun initListItemsCache() {
+        // Crazy or really smart?
+        //
+        // list_item_gallery_media is heavy.
+        // Asynchronously inflate enough views so when the first ViewHolder is created,
+        // it won't require inflation in the UI thread.
+        val parent = FrameLayout(this)
+        val inflater = AsyncLayoutInflater(this)
+        val listener = OnInflateFinishedListener { view, _, _ ->
+            // TODO: Do not store the cache in static field, will leak the activity
+            GalleryListItem.Media.viewsCache.add(view)
+        }
+        repeat(30) {
+            inflater.inflate(R.layout.list_item_gallery_media, parent, listener)
+        }
     }
 
     private fun initMediaFileSelection() {

@@ -6,14 +6,18 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 class GalleryListItemDiffCallback : DiffCallback<GalleryListItem> {
     override fun areItemsTheSame(oldItem: GalleryListItem, newItem: GalleryListItem): Boolean =
         oldItem.identifier == newItem.identifier
+                && (oldItem is GalleryListItem.Media && newItem is GalleryListItem.Media
+                || oldItem is GalleryListItem.Header && newItem is GalleryListItem.Header)
 
     override fun areContentsTheSame(oldItem: GalleryListItem, newItem: GalleryListItem): Boolean =
-        if (oldItem is GalleryListItem.Media && newItem is GalleryListItem.Media)
-            oldItem.isMediaSelected == newItem.isMediaSelected
-                    && oldItem.isSelectionViewVisible == newItem.isSelectionViewVisible
-                    && oldItem.isViewButtonVisible == newItem.isViewButtonVisible
-        else
-            true
+        when {
+            oldItem is GalleryListItem.Media && newItem is GalleryListItem.Media ->
+                oldItem.isMediaSelected == newItem.isMediaSelected
+                        && oldItem.isSelectionViewVisible == newItem.isSelectionViewVisible
+                        && oldItem.isViewButtonVisible == newItem.isViewButtonVisible
+            else ->
+                true
+        }
 
     override fun getChangePayload(
         oldItem: GalleryListItem,

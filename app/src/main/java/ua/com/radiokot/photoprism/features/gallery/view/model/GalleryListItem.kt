@@ -1,9 +1,12 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Interpolator
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -13,7 +16,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.shape.RelativeCornerSize
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -26,6 +28,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import java.util.*
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -74,6 +77,9 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         override val layoutRes: Int
             get() = R.layout.list_item_gallery_media
 
+        override fun createView(ctx: Context, parent: ViewGroup?): View {
+            return viewsCache.poll() ?: super.createView(ctx, parent)
+        }
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
@@ -85,7 +91,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             val view = ListItemGalleryMediaBinding.bind(itemView)
             private val picasso: Picasso by inject()
-            private val selectedImageViewColorFilter =
+            private val selectedImageViewColorFilter: Int by lazy {
                 ColorUtils.setAlphaComponent(
                     MaterialColors.getColor(
                         view.imageView,
@@ -93,18 +99,24 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                     ),
                     150
                 )
-            private val defaultImageViewShape = ShapeAppearanceModel.builder().build()
-            private val selectedImageViewShape = ShapeAppearanceModel.builder()
-                .setAllCornerSizes(
-                    itemView.context.resources
-                        .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
-                        .toFloat()
-                )
-                .build()
-            private val imageViewScaleAnimationDuration =
+            }
+            private val defaultImageViewShape: ShapeAppearanceModel by lazy {
+                ShapeAppearanceModel.builder().build()
+            }
+            private val selectedImageViewShape: ShapeAppearanceModel by lazy {
+                ShapeAppearanceModel.builder()
+                    .setAllCornerSizes(
+                        itemView.context.resources
+                            .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
+                            .toFloat()
+                    )
+                    .build()
+            }
+            private val imageViewScaleAnimationDuration: Int by lazy {
                 itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
-            private val imageViewScaleAnimationInterpolator =
-                AccelerateDecelerateInterpolator()
+            }
+            private val imageViewScaleAnimationInterpolator: Interpolator
+                    by lazy(::AccelerateDecelerateInterpolator)
             private val selectedImageViewScale = 0.95f
 
             init {
@@ -194,6 +206,10 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             companion object {
                 const val PAYLOAD_ANIMATE_SELECTION = "animate"
             }
+        }
+
+        companion object {
+            val viewsCache = LinkedList<View>()
         }
     }
 
