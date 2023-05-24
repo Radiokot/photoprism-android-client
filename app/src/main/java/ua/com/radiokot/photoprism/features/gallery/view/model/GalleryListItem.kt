@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.Interpolator
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -28,7 +27,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import java.util.*
+import ua.com.radiokot.photoprism.features.gallery.view.AsyncGalleryListItemViewCache
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -43,6 +42,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val isMediaSelected: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
+        var viewCache: AsyncGalleryListItemViewCache? = null
 
         constructor(
             source: GalleryMedia,
@@ -78,46 +78,21 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             get() = R.layout.list_item_gallery_media
 
         override fun createView(ctx: Context, parent: ViewGroup?): View {
-            return viewsCache.poll() ?: super.createView(ctx, parent)
+            return viewCache.checkNotNull { "The cache must be set up at this moment" }
+                .getView(ctx, parent)
         }
-        override fun getViewHolder(v: View): ViewHolder =
-            ViewHolder(v)
+
+        override fun getViewHolder(v: View) = ViewHolder(v)
 
         class ViewHolder(
-            itemView: View,
-        ) : FastAdapter.ViewHolder<Media>(itemView), KoinScopeComponent {
+            taggedView: View,
+        ) : FastAdapter.ViewHolder<Media>(taggedView), KoinScopeComponent {
             override val scope: Scope
                 get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-            val view = ListItemGalleryMediaBinding.bind(itemView)
+            private val viewAttributes = taggedView.tag as ViewAttributes
+            val view: ListItemGalleryMediaBinding = viewAttributes.viewBinding
             private val picasso: Picasso by inject()
-            private val selectedImageViewColorFilter: Int by lazy {
-                ColorUtils.setAlphaComponent(
-                    MaterialColors.getColor(
-                        view.imageView,
-                        com.google.android.material.R.attr.colorSurfaceInverse
-                    ),
-                    150
-                )
-            }
-            private val defaultImageViewShape: ShapeAppearanceModel by lazy {
-                ShapeAppearanceModel.builder().build()
-            }
-            private val selectedImageViewShape: ShapeAppearanceModel by lazy {
-                ShapeAppearanceModel.builder()
-                    .setAllCornerSizes(
-                        itemView.context.resources
-                            .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
-                            .toFloat()
-                    )
-                    .build()
-            }
-            private val imageViewScaleAnimationDuration: Int by lazy {
-                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
-            }
-            private val imageViewScaleAnimationInterpolator: Interpolator
-                    by lazy(::AccelerateDecelerateInterpolator)
-            private val selectedImageViewScale = 0.95f
 
             init {
                 view.selectionCheckBox.setOnClickListener {
@@ -130,7 +105,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
                 picasso
                     .load(item.thumbnailUrl)
-                    .placeholder(ColorDrawable(Color.LTGRAY))
+                    .placeholder(viewAttributes.imageLoadingPlaceholder)
                     .fit()
                     .centerCrop()
                     .into(view.imageView)
@@ -158,17 +133,17 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
                     view.imageView.shapeAppearanceModel =
                         if (item.isMediaSelected)
-                            selectedImageViewShape
+                            viewAttributes.selectedImageViewShape
                         else
-                            defaultImageViewShape
+                            viewAttributes.defaultImageViewShape
 
                     if (item.isMediaSelected) {
-                        view.imageView.setColorFilter(selectedImageViewColorFilter)
-                        if (view.imageView.scaleX != selectedImageViewScale) {
+                        view.imageView.setColorFilter(viewAttributes.selectedImageViewColorFilter)
+                        if (view.imageView.scaleX != viewAttributes.selectedImageViewScale) {
                             if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
-                                animateImageScale(selectedImageViewScale)
+                                animateImageScale(viewAttributes.selectedImageViewScale)
                             } else {
-                                setImageScale(selectedImageViewScale)
+                                setImageScale(viewAttributes.selectedImageViewScale)
                             }
                         }
                     } else {
@@ -193,8 +168,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.imageView.animate()
                     .scaleX(target)
                     .scaleY(target)
-                    .setDuration(imageViewScaleAnimationDuration.toLong())
-                    .setInterpolator(imageViewScaleAnimationInterpolator)
+                    .setDuration(viewAttributes.imageViewScaleAnimationDuration)
+                    .setInterpolator(viewAttributes.imageViewScaleAnimationInterpolator)
                     .setListener(null)
             }
 
@@ -203,13 +178,39 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.imageView.scaleY = target
             }
 
+            class ViewAttributes(
+                view: View,
+            ) {
+                val viewBinding = ListItemGalleryMediaBinding.bind(view)
+                val imageLoadingPlaceholder = ColorDrawable(Color.LTGRAY)
+                val selectedImageViewColorFilter: Int =
+                    ColorUtils.setAlphaComponent(
+                        MaterialColors.getColor(
+                            viewBinding.imageView,
+                            com.google.android.material.R.attr.colorSurfaceInverse
+                        ),
+                        150
+                    )
+                val defaultImageViewShape =
+                    ShapeAppearanceModel.builder().build()
+                val selectedImageViewShape =
+                    ShapeAppearanceModel.builder()
+                        .setAllCornerSizes(
+                            view.context.resources
+                                .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
+                                .toFloat()
+                        )
+                        .build()
+                val imageViewScaleAnimationDuration: Long =
+                    view.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2L
+                val imageViewScaleAnimationInterpolator =
+                    AccelerateDecelerateInterpolator()
+                val selectedImageViewScale = 0.95f
+            }
+
             companion object {
                 const val PAYLOAD_ANIMATE_SELECTION = "animate"
             }
-        }
-
-        companion object {
-            val viewsCache = LinkedList<View>()
         }
     }
 

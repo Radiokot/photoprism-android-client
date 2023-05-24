@@ -2,10 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater.OnInflateFinishedListener
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -57,6 +54,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
+    private val galleryListItemViewCache = AsyncGalleryListItemViewCache()
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
@@ -162,6 +160,12 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         val galleryItemsDiffCallback = GalleryListItemDiffCallback()
         viewModel.itemsList.observe(this) { newItems ->
             if (newItems != null) {
+                newItems.forEach {
+                    if (it is GalleryListItem.Media) {
+                        it.viewCache = galleryListItemViewCache
+                    }
+                }
+
                 if (galleryItemsAdapter.adapterItemCount == 0) {
                     // Do not use DiffUtil to replace an empty list,
                     // as it causes scrolling to the bottom.
@@ -395,24 +399,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             fastScrollRecyclerView = view.galleryRecyclerView,
         )
 
-        initListItemsCache()
-    }
-
-    private fun initListItemsCache() {
-        // Crazy or really smart?
-        //
-        // list_item_gallery_media is heavy.
-        // Asynchronously inflate enough views so when the first ViewHolder is created,
-        // it won't require inflation in the UI thread.
-        val parent = FrameLayout(this)
-        val inflater = AsyncLayoutInflater(this)
-        val listener = OnInflateFinishedListener { view, _, _ ->
-            // TODO: Do not store the cache in static field, will leak the activity
-            GalleryListItem.Media.viewsCache.add(view)
-        }
-        repeat(30) {
-            inflater.inflate(R.layout.list_item_gallery_media, parent, listener)
-        }
+        galleryListItemViewCache.populateCache(this, view.galleryRecyclerView)
     }
 
     private fun initMediaFileSelection() {
