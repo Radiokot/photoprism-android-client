@@ -37,9 +37,8 @@ class AsyncListItemViewCache(
     fun populateCache(
         context: Context,
         parent: ViewGroup?,
+        count: Int,
     ) {
-        val count = 30
-
         log.debug {
             "populateCache(): starting:" +
                     "\ncount=$count"
@@ -81,10 +80,17 @@ class AsyncListItemViewCache(
         context: Context,
         parent: ViewGroup?,
     ): View =
-        if (parent != null)
-            generateView(context, parent)
-        else
-            generateView(context)
+        try {
+            if (parent != null)
+                generateView(context, parent)
+            else
+                generateView(context)
+        } catch (e: Exception) {
+            log.error(e) {
+                "createView(): failed_to_create_view"
+            }
+            throw e
+        }
 
     override fun generateView(ctx: Context): View =
         factory(ctx, null)

@@ -57,11 +57,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fadingEdge="horizontal"
-                tools:layoutManager="LinearLayoutManager"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="horizontal"
                 tools:listitem="@layout/list_item_album"
                 android:fadingEdgeLength="6dp"
-                android:requiresFadingEdge="horizontal"
-                tools:orientation="horizontal" />
+                android:requiresFadingEdge="horizontal" />
 
             <TextView
                 android:id="@+id/loading_albums_text_view"

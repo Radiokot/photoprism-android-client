@@ -26,7 +26,6 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
@@ -42,6 +41,7 @@ import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import kotlin.math.roundToInt
 
@@ -69,6 +69,7 @@ class GallerySearchView(
         get() = searchBar.context
     private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
+    private val albumListItemViewCache = AsyncListItemViewCache(AlbumListItem.viewFactory)
 
     val closeConfigurationBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -94,7 +95,13 @@ class GallerySearchView(
         initBookmarksDrag()
         initCustomTabs()
         initMenus()
-        // Albums list is initialized on config view opening.
+        // Albums list is initialized on config view opening,
+        // while the async view cache is populated instantly.
+        albumListItemViewCache.populateCache(
+            context = context,
+            parent = configurationView.albumsRecyclerView,
+            count = 10,
+        )
 
         subscribeToData()
         subscribeToState()
@@ -239,7 +246,7 @@ class GallerySearchView(
 
         with(configurationView.albumsRecyclerView) {
             adapter = listAdapter
-            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            // Layout manager is set in XML.
         }
 
         configurationView.reloadAlbumsButton.setOnClickListener {
@@ -368,8 +375,12 @@ class GallerySearchView(
 
             albumsAdapter.setNewList(
                 when (state) {
-                    is GallerySearchAlbumsViewModel.State.Ready -> state.albums
-                    else -> emptyList()
+                    is GallerySearchAlbumsViewModel.State.Ready ->
+                        state.albums.onEach {
+                            it.viewCache = albumListItemViewCache
+                        }
+                    else ->
+                        emptyList()
                 }
             )
 

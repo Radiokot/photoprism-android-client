@@ -401,7 +401,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             fastScrollRecyclerView = view.galleryRecyclerView,
         )
 
-        galleryMediaListItemViewCache.populateCache(this, view.galleryRecyclerView)
+        galleryMediaListItemViewCache.populateCache(
+            context = this,
+            parent = view.galleryRecyclerView,
+            count = 30,
+        )
     }
 
     private fun initMediaFileSelection() {
