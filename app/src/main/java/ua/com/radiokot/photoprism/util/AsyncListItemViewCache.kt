@@ -1,17 +1,19 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.util
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import ua.com.radiokot.photoprism.R
+import com.mikepenz.fastadapter.IItemViewGenerator
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.Executors
 
-// TODO: Make reusable
+typealias ListItemViewFactory = (
+    context: Context,
+    parent: ViewGroup?
+) -> View
+
 /**
  * A cache for heavy ViewHolders views.
  * It asynchronously inflates some amount of views in advance,
@@ -20,10 +22,12 @@ import java.util.concurrent.Executors
  * @see populateCache
  * @see getView
  */
-class AsyncGalleryListItemViewCache {
-    private val log = kLogger("AsyncViewCache")
-    private val executor = Executors.newFixedThreadPool(4) { runnable ->
-        Thread(runnable).apply { name = "AsyncViewCacheInitThread" }
+class AsyncListItemViewCache(
+    private val factory: ListItemViewFactory,
+) : IItemViewGenerator {
+    private val log = kLogger("AsyncListItemViewCache")
+    private val executor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable).apply { name = "AsyncListItemViewCacheExecutor" }
     }
     private val cache = LinkedList<WeakReference<View>>()
 
@@ -76,10 +80,15 @@ class AsyncGalleryListItemViewCache {
     private fun createView(
         context: Context,
         parent: ViewGroup?,
-    ): View {
-        val view = LayoutInflater.from(context)
-            .inflate(R.layout.list_item_gallery_media, parent, false)
-        view.tag = GalleryListItem.Media.ViewHolder.ViewAttributes(view)
-        return view
-    }
+    ): View =
+        if (parent != null)
+            generateView(context, parent)
+        else
+            generateView(context)
+
+    override fun generateView(ctx: Context): View =
+        factory(ctx, null)
+
+    override fun generateView(ctx: Context, parent: ViewGroup): View =
+        factory(ctx, parent)
 }

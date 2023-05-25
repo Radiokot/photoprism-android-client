@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -27,7 +28,8 @@ import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.view.AsyncGalleryListItemViewCache
+import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
+import ua.com.radiokot.photoprism.util.ListItemViewFactory
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -42,7 +44,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val isMediaSelected: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
-        var viewCache: AsyncGalleryListItemViewCache? = null
+        var viewCache: AsyncListItemViewCache? = null
 
         constructor(
             source: GalleryMedia,
@@ -78,7 +80,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             get() = R.layout.list_item_gallery_media
 
         override fun createView(ctx: Context, parent: ViewGroup?): View {
-            return viewCache.checkNotNull { "The cache must be set up at this moment" }
+            return viewCache
+                .checkNotNull { "The cache must be set up at this moment" }
                 .getView(ctx, parent)
         }
 
@@ -210,6 +213,16 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             companion object {
                 const val PAYLOAD_ANIMATE_SELECTION = "animate"
+            }
+        }
+
+        companion object {
+            val viewFactory: ListItemViewFactory = { context, parent ->
+                LayoutInflater.from(context)
+                    .inflate(R.layout.list_item_gallery_media, parent, false)
+                    .apply {
+                        tag = ViewHolder.ViewAttributes(this)
+                    }
             }
         }
     }

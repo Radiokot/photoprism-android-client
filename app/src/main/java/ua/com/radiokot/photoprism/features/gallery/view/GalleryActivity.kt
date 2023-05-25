@@ -37,6 +37,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
 import ua.com.radiokot.photoprism.view.ErrorView
 
 
@@ -54,7 +55,8 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
-    private val galleryListItemViewCache = AsyncGalleryListItemViewCache()
+    private val galleryMediaListItemViewCache =
+        AsyncListItemViewCache(GalleryListItem.Media.viewFactory)
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
@@ -162,7 +164,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             if (newItems != null) {
                 newItems.forEach {
                     if (it is GalleryListItem.Media) {
-                        it.viewCache = galleryListItemViewCache
+                        it.viewCache = galleryMediaListItemViewCache
                     }
                 }
 
@@ -399,7 +401,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             fastScrollRecyclerView = view.galleryRecyclerView,
         )
 
-        galleryListItemViewCache.populateCache(this, view.galleryRecyclerView)
+        galleryMediaListItemViewCache.populateCache(this, view.galleryRecyclerView)
     }
 
     private fun initMediaFileSelection() {
