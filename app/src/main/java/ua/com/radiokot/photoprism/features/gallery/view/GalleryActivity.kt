@@ -168,9 +168,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     }
                 }
 
-                if (galleryItemsAdapter.adapterItemCount == 0) {
+                if (galleryItemsAdapter.adapterItemCount == 0 || newItems.isEmpty()) {
                     // Do not use DiffUtil to replace an empty list,
                     // as it causes scrolling to the bottom.
+                    // Do not use it to set an empty list either,
+                    // as it causes an unnecessary "delete" animation.
                     galleryItemsAdapter.setNewList(newItems)
                 } else {
                     FastAdapterDiffUtil.set(
