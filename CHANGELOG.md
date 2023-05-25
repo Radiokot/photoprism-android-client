@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.8.0] - 2023-05-25
 
 ### Added
 - Ability to select multiple items in the selection mode, e.g. when attaching files to Gmail
 
 ### Changed
 - Press of the "Back" navigation button resets the search if it is applied
+- The keyboard is no more shown automatically when opening the search screen
 
 ## [1.7.1] - 2023-05-14
 
@@ -135,7 +136,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.0(15)...HEAD
+[1.8.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...1.8.0(15)
 [1.7.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...1.7.1(14)
 [1.7.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.6.0(12)...1.7.0(13)
 [1.6.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2(11)...1.6.0(12)

@@ -1,0 +1,6 @@
+Added:
+- Ability to select multiple items in the selection mode, e.g. when attaching files to Gmail
+
+Changed:
+- Press of the "Back" navigation button resets the search if it is applied
+- The keyboard is no more shown automatically when opening the search screen
