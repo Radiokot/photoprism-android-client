@@ -116,4 +116,5 @@
     <string name="clear_selection">Clear selection</string>
     <string name="done_selecting">Done</string>
     <string name="template_current_of">%1$d of %2$d</string>
+    <string name="search_doesnt_fit_allowed_types">Search query doesn\'t fit the allowed types</string>
 </resources>

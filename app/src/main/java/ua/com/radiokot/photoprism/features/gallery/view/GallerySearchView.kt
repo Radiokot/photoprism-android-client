@@ -313,7 +313,7 @@ class GallerySearchView(
             viewModel.selectedMediaTypes.observe(this@GallerySearchView) { selectedTypes ->
                 forEach { chip ->
                     with(chip as Chip) {
-                        isChecked = selectedTypes.contains(tag)
+                        isChecked = selectedTypes?.contains(tag) == true
                         isCheckedIconVisible = isChecked
                         isChipIconVisible = !isChecked
                     }
@@ -529,7 +529,7 @@ class GallerySearchView(
 
         val spannableString = SpannableStringBuilder()
             .apply {
-                search.config.mediaTypes.forEach { mediaType ->
+                search.config.mediaTypes?.forEach { mediaType ->
                     appendIcon(GalleryMediaTypeResources.getIcon(mediaType))
                 }
 

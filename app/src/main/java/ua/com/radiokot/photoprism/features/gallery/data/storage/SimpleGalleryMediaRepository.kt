@@ -223,12 +223,18 @@ class SimpleGalleryMediaRepository(
             // User query goes first, hence all the other params override the input.
             queryBuilder.append(" ${config.userQuery}")
 
-            if (config.mediaTypes.isNotEmpty()) {
-                queryBuilder.append(
-                    " type:${
-                        config.mediaTypes.joinToString("|") { it.value }
-                    }"
-                )
+            // If mediaTypes are not specified, all the types are allowed and no filter is added.
+            // If they are empty, nothing is allowed (empty search results).
+            if (config.mediaTypes != null) {
+                if (config.mediaTypes.isEmpty()) {
+                    queryBuilder.append(" type:nothing")
+                } else {
+                    queryBuilder.append(
+                        " type:${
+                            config.mediaTypes.joinToString("|") { it.value }
+                        }"
+                    )
+                }
             }
 
             if (config.before != null) {

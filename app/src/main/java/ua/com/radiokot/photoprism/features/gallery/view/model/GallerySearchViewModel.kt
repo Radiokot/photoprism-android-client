@@ -48,7 +48,11 @@ class GallerySearchViewModel(
 
     // Current search configuration values.
     // Values are set to searchDefaults values in onConfigurationViewOpening()
-    val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>>()
+
+    /**
+     * Set of the selected media types, or **null** if nothing is selected.
+     */
+    val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>?>()
     val userQuery = MutableLiveData<String>()
     val includePrivateContent = MutableLiveData<Boolean>()
     private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
@@ -97,6 +101,14 @@ class GallerySearchViewModel(
                 onBookmarksUpdated(bookmarks)
             }
             .autoDispose(this)
+
+        bookmarksRepository.errors
+            .subscribe {
+                log.error(it) {
+                    "subscribeToBookmarks(): received_error"
+                }
+            }
+            .autoDispose(this)
     }
 
     private fun onBookmarksUpdated(newBookmarks: List<SearchBookmark>) {
@@ -128,7 +140,8 @@ class GallerySearchViewModel(
                 "onAvailableMediaTypeClicked(): unselect:" +
                         "\ntypeName=$typeName"
             }
-            selectedMediaTypes.value = currentlySelected - typeName
+            selectedMediaTypes.value = (currentlySelected - typeName)
+                .takeUnless(Set<*>::isEmpty)
         } else {
             log.debug {
                 "onAvailableMediaTypeClicked(): select:" +
@@ -220,7 +233,7 @@ class GallerySearchViewModel(
         }
 
         val config = SearchConfig(
-            mediaTypes = selectedMediaTypes.value ?: emptySet(),
+            mediaTypes = selectedMediaTypes.value,
             userQuery = userQuery.value!!.trim(),
             albumUid = selectedAlbumUid.value,
             before = null,
@@ -311,7 +324,7 @@ class GallerySearchViewModel(
         selectedMediaTypes.value = bookmark.searchConfig.mediaTypes
             // A bookmark may have more media types than allowed now
             // (due to the intent filter).
-            .intersect(availableMediaTypes.value!!)
+            ?.intersect(availableMediaTypes.value!!)
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
         selectedAlbumUid.value = bookmark.searchConfig.albumUid

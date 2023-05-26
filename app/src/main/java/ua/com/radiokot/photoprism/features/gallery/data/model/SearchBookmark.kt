@@ -16,8 +16,8 @@ data class SearchBookmark(
         position = dbEntity.position,
         searchConfig = SearchConfig(
             mediaTypes = dbEntity.mediaTypes
-                .map { GalleryMedia.TypeName.valueOf(it) }
-                .toSet(),
+                ?.map { GalleryMedia.TypeName.valueOf(it) }
+                ?.toSet(),
             albumUid = dbEntity.albumUid,
             before = null,
             userQuery = dbEntity.userQuery ?: "",
@@ -30,7 +30,7 @@ data class SearchBookmark(
         name = name,
         position = position,
         userQuery = searchConfig.userQuery,
-        mediaTypes = searchConfig.mediaTypes.map(GalleryMedia.TypeName::toString),
+        mediaTypes = searchConfig.mediaTypes?.map(GalleryMedia.TypeName::toString),
         includePrivate = searchConfig.includePrivate,
         albumUid = searchConfig.albumUid,
     )

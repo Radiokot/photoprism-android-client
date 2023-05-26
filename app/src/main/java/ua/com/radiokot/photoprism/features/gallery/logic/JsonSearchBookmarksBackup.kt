@@ -36,12 +36,14 @@ class JsonSearchBookmarksBackup(
         val backup: BookmarksBackup =
             jsonObjectMapper.readValue(input, BookmarksBackup::class.java)
 
-        val data = when (val version = backup.version) {
-            1 -> readBackupData(backup.data)
-            else -> throw UnsupportedVersionException(version)
+        return when (val version = backup.version) {
+            VERSION ->
+                readBackupData(backup.data).bookmarks.map(BackupData.Bookmark::toSource)
+            1 ->
+                readBackupDataV1(backup.data).bookmarks.map(BackupDataV1.Bookmark::toSource)
+            else ->
+                throw UnsupportedVersionException(version)
         }
-
-        return data.bookmarks.map(BackupData.Bookmark::toSource)
     }
 
     private fun createBackupData(bookmarks: List<SearchBookmark>) = BackupData(
@@ -50,6 +52,9 @@ class JsonSearchBookmarksBackup(
 
     private fun readBackupData(dataTree: JsonNode): BackupData =
         jsonObjectMapper.treeToValue(dataTree, BackupData::class.java)
+
+    private fun readBackupDataV1(dataTree: JsonNode): BackupDataV1 =
+        jsonObjectMapper.treeToValue(dataTree, BackupDataV1::class.java)
 
     private class BookmarksBackup
     @JsonCreator
@@ -61,6 +66,58 @@ class JsonSearchBookmarksBackup(
     )
 
     class BackupData
+    @JsonCreator
+    constructor(
+        @JsonProperty("b")
+        val bookmarks: List<Bookmark>,
+    ) {
+        class Bookmark
+        @JsonCreator
+        constructor(
+            @JsonProperty("id")
+            val id: Long,
+            @JsonProperty("p")
+            val position: Double,
+            @JsonProperty("n")
+            val name: String,
+            @JsonProperty("q")
+            val userQuery: String,
+            @JsonProperty("mt")
+            val mediaTypes: List<String>?,
+            @JsonProperty("ip")
+            val includePrivate: Boolean,
+            @JsonProperty("a")
+            val albumUid: String?,
+        ) {
+            constructor(source: SearchBookmark) : this(
+                id = source.id,
+                position = source.position,
+                name = source.name,
+                userQuery = source.searchConfig.userQuery,
+                mediaTypes = source.searchConfig.mediaTypes
+                    ?.map(GalleryMedia.TypeName::toString),
+                includePrivate = source.searchConfig.includePrivate,
+                albumUid = source.searchConfig.albumUid,
+            )
+
+            fun toSource() = SearchBookmark(
+                id = id,
+                name = name,
+                position = position,
+                searchConfig = SearchConfig(
+                    userQuery = userQuery,
+                    mediaTypes = mediaTypes
+                        ?.map { GalleryMedia.TypeName.valueOf(it) }
+                        ?.toSet(),
+                    includePrivate = includePrivate,
+                    before = null,
+                    albumUid = albumUid,
+                )
+            )
+        }
+    }
+
+    class BackupDataV1
     @JsonCreator
     constructor(
         @JsonProperty("b")
@@ -84,17 +141,6 @@ class JsonSearchBookmarksBackup(
             @JsonProperty("a")
             val albumUid: String?,
         ) {
-            constructor(source: SearchBookmark) : this(
-                id = source.id,
-                position = source.position,
-                name = source.name,
-                userQuery = source.searchConfig.userQuery,
-                mediaTypes = source.searchConfig.mediaTypes
-                    .map(GalleryMedia.TypeName::toString),
-                includePrivate = source.searchConfig.includePrivate,
-                albumUid = source.searchConfig.albumUid,
-            )
-
             fun toSource() = SearchBookmark(
                 id = id,
                 name = name,
@@ -102,8 +148,9 @@ class JsonSearchBookmarksBackup(
                 searchConfig = SearchConfig(
                     userQuery = userQuery,
                     mediaTypes = mediaTypes
-                        .map { GalleryMedia.TypeName.valueOf(it) }
-                        .toSet(),
+                        .takeUnless(List<*>::isEmpty)
+                        ?.map { GalleryMedia.TypeName.valueOf(it) }
+                        ?.toSet(),
                     includePrivate = includePrivate,
                     before = null,
                     albumUid = albumUid,
@@ -113,6 +160,6 @@ class JsonSearchBookmarksBackup(
     }
 
     private companion object {
-        private const val VERSION = 1
+        private const val VERSION = 2
     }
 }

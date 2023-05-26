@@ -197,6 +197,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         messageRes = R.string.no_media_found,
                         context = this,
                     )
+                GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
+                    ErrorView.Error.EmptyView(
+                        messageRes = R.string.search_doesnt_fit_allowed_types,
+                        context = this,
+                    )
                 else ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,
@@ -539,5 +544,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 )
             GalleryViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
+            GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
+                getString(R.string.search_doesnt_fit_allowed_types)
         }
 }

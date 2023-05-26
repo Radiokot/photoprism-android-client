@@ -65,9 +65,9 @@ class GalleryViewModel(
             return
         }
 
-        val filterMediaTypes: Set<GalleryMedia.TypeName> = when {
+        val allowedMediaTypes: Set<GalleryMedia.TypeName>? = when {
             requestedMimeType == null ->
-                emptySet()
+                null
             requestedMimeType.startsWith("image/") ->
                 setOf(
                     GalleryMedia.TypeName.IMAGE,
@@ -80,23 +80,23 @@ class GalleryViewModel(
                     GalleryMedia.TypeName.LIVE,
                 )
             else ->
-                emptySet()
+                null
         }
 
-        if (filterMediaTypes.isNotEmpty()) {
-            searchViewModel.availableMediaTypes.value = filterMediaTypes
+        if (allowedMediaTypes != null) {
+            searchViewModel.availableMediaTypes.value = allowedMediaTypes
         }
 
         log.debug {
             "initSelection(): initialized_selection:" +
                     "\nrequestedMimeType=$requestedMimeType," +
                     "\nallowMultiple=$allowMultiple," +
-                    "\nmatchedFilterMediaTypes=$filterMediaTypes"
+                    "\nallowedMediaTypes=$allowedMediaTypes"
         }
 
         stateSubject.onNext(
             State.Selecting(
-                filterMediaTypes = filterMediaTypes,
+                allowedMediaTypes = allowedMediaTypes,
                 allowMultiple = allowMultiple,
             )
         )
@@ -136,9 +136,9 @@ class GalleryViewModel(
     private fun resetRepositoryToInitial() {
         when (val state = stateSubject.value!!) {
             is State.Selecting -> {
-                val searchConfig = SearchConfig.DEFAULT.copy(
-                    mediaTypes = state.filterMediaTypes,
-                )
+                val searchConfig =
+                    SearchConfig.DEFAULT
+                        .withOnlyAllowedMediaTypes(state.allowedMediaTypes)
 
                 currentSearchConfig = searchConfig
 
@@ -168,9 +168,21 @@ class GalleryViewModel(
 
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch -> {
-                    currentSearchConfig = state.search.config
+                    val currentState = stateSubject.value
+                    val searchConfigToApply: SearchConfig =
+                        if (currentState is State.Selecting) {
+                            // If we are selecting the content,
+                            // make sure we do not apply search that overcomes the allowed media types.
+                            state.search.config.withOnlyAllowedMediaTypes(
+                                allowedMediaTypes = currentState.allowedMediaTypes,
+                            )
+                        } else {
+                            state.search.config
+                        }
+                    currentSearchConfig = searchConfigToApply
+
                     val searchMediaRepository = galleryMediaRepositoryFactory
-                        .getForSearch(state.search.config)
+                        .getForSearch(searchConfigToApply)
 
                     fastScrollViewModel.reset()
 
@@ -335,12 +347,16 @@ class GalleryViewModel(
         }
         val galleryMediaList = repository.itemsList
 
-        // Dismiss the main error when there are items.
         mainError.postValue(
-            if (galleryMediaList.isEmpty() && !repository.isNeverUpdated)
-                Error.NoMediaFound
-            else
-                null
+            when {
+                galleryMediaList.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
+                    Error.SearchDoesntFitAllowedTypes
+                galleryMediaList.isEmpty() && !repository.isNeverUpdated ->
+                    Error.NoMediaFound
+                else ->
+                    // Dismiss the main error when there are items.
+                    null
+            }
         )
 
         val newListItems = mutableListOf<GalleryListItem>()
@@ -706,15 +722,28 @@ class GalleryViewModel(
     sealed interface State {
         object Viewing : State
         class Selecting(
-            val filterMediaTypes: Set<GalleryMedia.TypeName>,
+            /**
+             * Non-empty optional set of allowed media types (e.g. only images)
+             */
+            val allowedMediaTypes: Set<GalleryMedia.TypeName>?,
+            /**
+             * Whether selection of multiple items is allowed or not.
+             */
             val allowMultiple: Boolean,
-        ) : State
+        ) : State {
+            init {
+                require(allowedMediaTypes == null || allowedMediaTypes.isNotEmpty()) {
+                    "The set of allowed types must either be null or not empty"
+                }
+            }
+        }
     }
 
     sealed interface Error {
         object LibraryNotAccessible : Error
         class LoadingFailed(val shortSummary: String) : Error
         object NoMediaFound : Error
+        object SearchDoesntFitAllowedTypes : Error
     }
 
     private sealed class MediaRepositoryChange(
