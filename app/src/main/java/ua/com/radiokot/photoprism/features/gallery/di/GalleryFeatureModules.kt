@@ -101,7 +101,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     thumbnailUrlFactory = get(),
                     downloadUrlFactory = get(),
                     webUrlFactory = get(),
-                    pageLimit = 50,
+                    pageLimit = 40,
                 )
             } bind SimpleGalleryMediaRepository.Factory::class
 

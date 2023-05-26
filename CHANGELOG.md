@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - A bookmark overcoming allowed media types when selecting content
 
+### Changed
+- Speed up pages loading
+
 ## [1.8.0] - 2023-05-25
 
 ### Added

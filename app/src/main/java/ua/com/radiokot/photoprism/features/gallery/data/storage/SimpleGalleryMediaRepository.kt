@@ -20,6 +20,10 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import java.util.*
 
+/**
+ * @param pageLimit target limit setting the minimum number of items in the page.
+ * The actual pages are bigger due to the PhotoPrism pagination workaround.
+ */
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     private val thumbnailUrlFactory: MediaPreviewUrlFactory,
@@ -49,17 +53,24 @@ class SimpleGalleryMediaRepository(
         var offset = 0
         var pageIsLast = false
 
+        // Lookahead limit is set to be greater than the actual limit
+        // assuming we'll always have some merged items with multiple files.
+        // In this case, increased limit helps avoiding the second network call
+        // and leads to a faster loading.
+        val lookaheadLimit = limit * 2
+
         val loadPage = {
             offset = nextCursor?.toInt() ?: 0
 
             log.debug {
                 "getPage(): loading_page:" +
                         "\noffset=$offset," +
-                        "\blimit=$pageLimit"
+                        "\nlimit=$limit," +
+                        "\nlookaheadLimit=$lookaheadLimit"
             }
 
             photoPrismPhotosService.getMergedPhotos(
-                count = pageLimit,
+                count = lookaheadLimit,
                 offset = offset,
                 q = query,
                 order = when (pagingOrder) {
@@ -71,7 +82,7 @@ class SimpleGalleryMediaRepository(
             .toSingle()
             .map { photoPrismPhotos ->
                 val filesCount = photoPrismPhotos.sumOf { it.files.size }
-                pageIsLast = filesCount < limit
+                pageIsLast = filesCount < lookaheadLimit
 
                 log.debug {
                     "getPage(): raw_page_loaded:" +
@@ -92,17 +103,20 @@ class SimpleGalleryMediaRepository(
                 collectedGalleryMediaItems.addAll(successfullyLoadedItems)
 
                 // Load extra data to fulfill the requested page limit.
-                nextCursor = (limit + offset).toString()
+                // The limit is set for the items, but PhotoPrism counts files.
+                // Merged items break limits.
+                // See .addNewPageItems for more.
+                nextCursor = (lookaheadLimit + offset).toString()
 
                 log.debug {
                     "getPage(): page_loaded:" +
                             "\nsuccessfullyLoadedItemsCount=${successfullyLoadedItems.size}," +
-                            "\nexpectedCount=$pageLimit"
+                            "\nexpectedCount=$limit"
                 }
             }
 
         return loadPage
-            .repeatUntil { pageIsLast || collectedGalleryMediaItems.size >= pageLimit }
+            .repeatUntil { pageIsLast || collectedGalleryMediaItems.size >= limit }
             .ignoreElements()
             .toSingle {
                 log.debug {
