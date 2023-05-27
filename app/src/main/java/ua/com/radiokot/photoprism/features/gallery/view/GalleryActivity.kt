@@ -176,12 +176,24 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     // as it causes an unnecessary "delete" animation.
                     galleryItemsAdapter.setNewList(newItems)
                 } else {
+                    // Saving the layout manager state apparently prevents
+                    // DiffUtil-induced weird scrolling when items are inserted
+                    // outside the viewable area.
+                    val savedRecyclerState =
+                        view.galleryRecyclerView.layoutManager?.onSaveInstanceState()
+
                     FastAdapterDiffUtil.set(
                         adapter = galleryItemsAdapter,
                         items = newItems,
                         callback = galleryItemsDiffCallback,
-                        detectMoves = true,
+                        detectMoves = false,
                     )
+
+                    if (savedRecyclerState != null) {
+                        view.galleryRecyclerView.layoutManager?.onRestoreInstanceState(
+                            savedRecyclerState
+                        )
+                    }
                 }
             }
         }
