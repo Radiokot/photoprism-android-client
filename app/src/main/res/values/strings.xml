@@ -93,7 +93,6 @@
     <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
     <string name="export_bookmarks">Export bookmarks</string>
-    <string name="save_exported_file">Save exported file</string>
     <string name="import_bookmarks">Import bookmarks</string>
     <string name="template_error_failed_to_import_bookmarks">Failed to import bookmarks: %1$s</string>
     <string name="template_successfully_imported_bookmarks_plural">Successfully imported %1$d %2$s</string>
@@ -117,4 +116,6 @@
     <string name="done_selecting">Done</string>
     <string name="template_current_of">%1$d of %2$d</string>
     <string name="search_doesnt_fit_allowed_types">Search query doesn\'t fit the allowed types</string>
+    <string name="save_file_to_the_storage">Save the file to the storage</string>
+    <string name="share_the_file">Share the file</string>
 </resources>

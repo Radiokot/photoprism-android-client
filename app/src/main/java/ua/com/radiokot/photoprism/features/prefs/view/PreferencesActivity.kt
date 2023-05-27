@@ -27,10 +27,12 @@ class PreferencesActivity : BaseActivity(), AndroidScopeComponent {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, PreferencesFragment())
-            .disallowAddToBackStack()
-            .commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, PreferencesFragment())
+                .disallowAddToBackStack()
+                .commit()
+        }
     }
 }

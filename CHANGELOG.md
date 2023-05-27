@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When scrolling to a specific month, its last day content is not shown sometimes
 - Weird scroll changes when changing the gallery content (apparently)
 
+### Added
+- Ability to save the bookmarks export file to the storage
+
 ### Changed
 - Speed up pages loading
 

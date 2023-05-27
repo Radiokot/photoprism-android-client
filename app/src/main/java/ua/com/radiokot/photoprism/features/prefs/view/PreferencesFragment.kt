@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.prefs.view
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,8 +13,12 @@ import androidx.preference.PreferenceScreen
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okio.buffer
+import okio.sink
+import okio.source
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -25,7 +30,11 @@ import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
@@ -49,16 +58,67 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             this::importBookmarksFromFile
         )
     private val session: EnvSession by inject()
+    private var bookmarksExportResultIntent: Intent? = null
+    private val bookmarksExportSaveDialogLauncher = registerForActivityResult(
+        object : ActivityResultContracts.CreateDocument("*/*") {
+            override fun createIntent(context: Context, input: String): Intent {
+                return super.createIntent(context, input).apply {
+                    // Can't obtain the type during the initialization,
+                    // have to set it here.
+                    type = bookmarksBackup.fileMimeType
+                }
+            }
+        },
+        this::writeBookmarksExportToFile
+    )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
+        log.debug {
+            "onCreatePreferences(): start_init:" +
+                    "\nsavedInstanceState=$savedInstanceState"
+        }
+
+        @Suppress("DEPRECATION")
+        bookmarksExportResultIntent = savedInstanceState?.getParcelable(BOOKMARKS_EXPORT_INTENT_KEY)
+
         initCustomTabs()
+        initBookmarksExportOptionsDialog()
         initPreferences()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // VIEWMODEL IS NOT ALWAYS A MUST. VIEWMODEL IS NOT ALWAYS A MUST. VIEWMODEL IS NOT ALWAYS A MUST.
+        // VIEWMODEL IS NOT ALWAYS A MUST. VIEWMODEL IS NOT ALWAYS A MUST. VIEWMODEL IS NOT ALWAYS A MUST.
+        // 👁_👁
+        outState.putParcelable(BOOKMARKS_EXPORT_INTENT_KEY, bookmarksExportResultIntent)
     }
 
     private fun initCustomTabs() {
         CustomTabsHelper.safelyConnectAndInitialize(requireContext())
+    }
+
+    private fun initBookmarksExportOptionsDialog() {
+        childFragmentManager.setFragmentResultListener(
+            BookmarksExportOptionsDialogFragment.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            when (val optionId = BookmarksExportOptionsDialogFragment.getResult(bundle)) {
+                R.id.share_button ->
+                    shareBookmarksExport()
+
+                R.id.save_button ->
+                    openBookmarksExportSaveDialog()
+
+                else ->
+                    log.debug {
+                        "initBookmarksExportOptionsDialog(): got_unknown_option_id:" +
+                                "\noptionId=$optionId"
+                    }
+            }
+        }
     }
 
     private fun initPreferences() = preferenceScreen.apply {
@@ -136,16 +196,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             .subscribeBy(
                 onSuccess = { intent ->
                     log.debug {
-                        "exportBookmarks(): successfully_exported:" +
+                        "exportBookmarks(): asking_for_the_option:" +
                                 "\nintent=$intent"
                     }
 
-                    startActivity(
-                        Intent.createChooser(
-                            intent,
-                            getString(R.string.save_exported_file)
-                        )
-                    )
+                    bookmarksExportResultIntent = intent
+
+                    openBookmarksExportOptionsDialog()
                 },
                 onError = { error ->
                     log.error(error) {
@@ -163,6 +220,81 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             .autoDispose(viewLifecycleOwner)
     }
 
+    private fun openBookmarksExportOptionsDialog() {
+        // Activity fragment manager is used to keep the dialog opened
+        // on activity re-creation.
+        val fragment =
+            (childFragmentManager.findFragmentByTag(BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG) as? BookmarksExportOptionsDialogFragment)
+                ?: BookmarksExportOptionsDialogFragment()
+
+        if (!fragment.isAdded || !fragment.showsDialog) {
+            fragment.showNow(childFragmentManager, BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG)
+        }
+    }
+
+    private fun shareBookmarksExport() {
+        log.debug {
+            "shareBookmarksExport(): starting_sharing_chooser"
+        }
+
+        startActivity(
+            Intent.createChooser(
+                bookmarksExportResultIntent,
+                getString(R.string.share_the_file)
+            )
+        )
+    }
+
+    private fun openBookmarksExportSaveDialog() {
+        log.debug {
+            "openBookmarksExportSaveDialog(): starting_create_document_intent"
+        }
+
+        bookmarksExportSaveDialogLauncher.launch(
+            bookmarksExportResultIntent!!.getStringExtra(Intent.EXTRA_TITLE).checkNotNull {
+                "The bookmarks export result intent is expected to have the title extra"
+            }
+        )
+    }
+
+    private fun writeBookmarksExportToFile(outputFileUri: Uri?) {
+        if (outputFileUri == null) {
+            // The dialog has been cancelled.
+            return
+        }
+
+        val contentResolver = requireContext().contentResolver
+        val exportFileUri = bookmarksExportResultIntent!!.data.checkNotNull {
+            "The bookmarks export result intent is expected to have the data URI"
+        }
+
+        log.debug {
+            "writeBookmarksExportToFile(): start_writing:" +
+                    "\noutputFileUri=$outputFileUri," +
+                    "\nexportFileUri=$exportFileUri"
+        }
+
+        Completable.defer {
+            contentResolver.openOutputStream(outputFileUri)?.use { outputStream ->
+                contentResolver.openInputStream(exportFileUri)?.use { inputStream ->
+                    inputStream.source().buffer().readAll(outputStream.sink())
+                } ?: log.error {
+                    "writeBookmarksExportToFile(): failed_to_open_input_stream"
+                }
+            } ?: log.error {
+                "writeBookmarksExportToFile(): failed_to_open_output_stream"
+            }
+            Completable.complete()
+        }
+            .subscribeOn(Schedulers.io())
+            .subscribeBy {
+                log.debug {
+                    "writeBookmarksExportToFile(): successfully_written"
+                }
+            }
+            .autoDispose(viewLifecycleOwner)
+    }
+
     private fun importBookmarks() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.import_bookmarks)
@@ -177,7 +309,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
     private fun importBookmarksFromFile(fileUri: Uri?) {
         if (fileUri == null) {
-            log.error { "importBookmarksFromFile(): no_file_uri_provided" }
+            // The dialog has been cancelled.
             return
         }
 
@@ -271,5 +403,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         return findPreference<Preference>(key).checkNotNull {
             "Required preference '$key' not found"
         }
+    }
+
+    private companion object {
+        private const val BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG = "beo"
+        private const val BOOKMARKS_EXPORT_INTENT_KEY = "beo-intent"
     }
 }

@@ -93,6 +93,7 @@ class FileReturnIntentCreator(
             if (filesToReturn.size == 1) {
                 setDataAndType(firstUri, filesToReturn.first().mimeType)
                 putExtra(Intent.EXTRA_STREAM, firstUri)
+                putExtra(Intent.EXTRA_TITLE, filesToReturn.first().displayName)
             }
 
             // For multiple selection – ClipData.
