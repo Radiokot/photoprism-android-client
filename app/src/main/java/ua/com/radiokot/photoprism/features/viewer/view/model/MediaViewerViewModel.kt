@@ -44,7 +44,7 @@ class MediaViewerViewModel(
 
     fun initOnce(
         downloadViewModel: DownloadMediaFileViewModel,
-        repositoryQuery: String?,
+        repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
         if (isInitialized) {
@@ -57,7 +57,7 @@ class MediaViewerViewModel(
 
         downloadMediaFileViewModel = downloadViewModel
 
-        galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryQuery)
+        galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
             .checkNotNull {
                 "The repository must be created beforehand"
             }
@@ -68,7 +68,7 @@ class MediaViewerViewModel(
 
         log.debug {
             "init(): initialized:" +
-                    "\nrepositoryQuery=$repositoryQuery"
+                    "\nrepositoryParam=$repositoryParams"
         }
 
         update()

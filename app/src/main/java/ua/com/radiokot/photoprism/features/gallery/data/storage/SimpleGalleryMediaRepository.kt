@@ -1,16 +1,22 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
+import android.os.Parcelable
 import androidx.collection.LruCache
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.mapSuccessful
+import ua.com.radiokot.photoprism.extension.toMaybe
+import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.formatPhotoPrismDate
@@ -18,7 +24,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDat
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
-import java.util.*
+import java.util.Date
 
 /**
  * @param pageLimit target limit setting the minimum number of items in the page.
@@ -29,7 +35,7 @@ class SimpleGalleryMediaRepository(
     private val thumbnailUrlFactory: MediaPreviewUrlFactory,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
     private val webUrlFactory: MediaWebUrlFactory,
-    val query: String?,
+    val params: Params,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
@@ -72,7 +78,7 @@ class SimpleGalleryMediaRepository(
             photoPrismPhotosService.getMergedPhotos(
                 count = lookaheadLimit,
                 offset = offset,
-                q = query,
+                q = params.query,
                 order = when (pagingOrder) {
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
                     PagingOrder.ASC -> PhotoPrismOrder.OLDEST
@@ -146,7 +152,7 @@ class SimpleGalleryMediaRepository(
             photoPrismPhotosService.getMergedPhotos(
                 count = 1,
                 offset = 0,
-                q = query,
+                q = params.query,
                 order = PhotoPrismOrder.NEWEST
             )
                 .firstOrNull()
@@ -158,7 +164,7 @@ class SimpleGalleryMediaRepository(
             photoPrismPhotosService.getMergedPhotos(
                 count = 1,
                 offset = 0,
-                q = query,
+                q = params.query,
                 order = PhotoPrismOrder.OLDEST
             )
                 .firstOrNull()
@@ -177,6 +183,12 @@ class SimpleGalleryMediaRepository(
 
     override fun addNewPageItems(page: DataPage<GalleryMedia>) {
         page.items.forEach { item ->
+            // Precise post filter by the "before" date, workaround for PhotoPrism filtering.
+            // Do not add items, taken at or after the specified time.
+            if (params.postFilterBefore != null && item.takenAt >= params.postFilterBefore) {
+                return@forEach
+            }
+
             if (itemsByUid.containsKey(item.uid)) {
                 // If this item is already loaded, just merge the files. Why?
                 // Scenario:
@@ -219,8 +231,19 @@ class SimpleGalleryMediaRepository(
     }
 
     override fun toString(): String {
-        return "SimpleGalleryMediaRepository(query=$query)"
+        return "SimpleGalleryMediaRepository(params=$params)"
     }
+
+    /**
+     * @param query user query
+     * @param postFilterBefore time to apply post filtering of the items,
+     * as PhotoPrism is incapable of time filtering.
+     */
+    @Parcelize
+    data class Params(
+        val query: String? = null,
+        val postFilterBefore: Date? = null,
+    ) : Parcelable
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
@@ -252,7 +275,21 @@ class SimpleGalleryMediaRepository(
             }
 
             if (config.before != null) {
-                queryBuilder.append(" before:\"${formatPhotoPrismDate(config.before)}\"")
+                val timeToNextDay = DAY_MS - config.before.time % DAY_MS
+                // PhotoPrism "before" filter does not take into account the time.
+                // "before:2023-04-30T22:57:32Z" is treated like "2023-04-30T00:00:00Z".
+                // Redundancy is needed whenever the requested before date is in between UTC midnights,
+                // so 2023-04-30T22:57:32Z is mapped to 2023-05-01T00:00:00Z
+                // hence all the photos taken on 04.30 will be returned.
+
+                // When using the redundancy workaround, the post filtering is needed.
+                // See below.
+                val redundantBefore =
+                    if (timeToNextDay != DAY_MS)
+                        Date(config.before.time + timeToNextDay)
+                    else
+                        config.before
+                queryBuilder.append(" before:\"${formatPhotoPrismDate(redundantBefore)}\"")
             }
 
             queryBuilder.append(" public:${!config.includePrivate}")
@@ -261,15 +298,18 @@ class SimpleGalleryMediaRepository(
                 queryBuilder.append(" album:${config.albumUid}")
             }
 
-            val query = queryBuilder.toString()
-                .trim()
-                .takeUnless(String::isNullOrBlank)
+            val params = Params(
+                query = queryBuilder.toString()
+                    .trim()
+                    .takeUnless(String::isNullOrBlank),
+                postFilterBefore = config.before,
+            )
 
-            return get(query)
+            return get(params)
         }
 
-        fun get(query: String?): SimpleGalleryMediaRepository {
-            val key = "q:$query"
+        fun get(params: Params = Params()): SimpleGalleryMediaRepository {
+            val key = params.toString()
 
             return cache[key]
                 ?: SimpleGalleryMediaRepository(
@@ -277,11 +317,15 @@ class SimpleGalleryMediaRepository(
                     thumbnailUrlFactory = thumbnailUrlFactory,
                     downloadUrlFactory = downloadUrlFactory,
                     webUrlFactory = webUrlFactory,
-                    query = query,
+                    params = params,
                     pageLimit = pageLimit,
                 ).also {
                     cache.put(key, it)
                 }
+        }
+
+        private companion object {
+            private const val DAY_MS = 86400000L
         }
     }
 }

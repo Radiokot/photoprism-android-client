@@ -30,6 +30,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
@@ -92,20 +93,24 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 "Missing media index"
             }
 
-        val repositoryQuery = intent.getStringExtra(REPO_QUERY_KEY)
+        @Suppress("DEPRECATION")
+        val repositoryParams: SimpleGalleryMediaRepository.Params =
+            requireNotNull(intent.getParcelableExtra(REPO_PARAMS_KEY)) {
+                "No repository params specified"
+            }
         val areActionsEnabled = intent.getBooleanExtra(ACTIONS_ENABLED_KEY, true)
 
         log.debug {
             "onCreate(): creating:" +
                     "\nmediaIndex=$mediaIndex," +
-                    "\nrepositoryQuery=$repositoryQuery," +
+                    "\nrepositoryParams=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
         viewModel.initOnce(
             downloadViewModel = downloadViewModel,
-            repositoryQuery = repositoryQuery,
+            repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
         )
 
@@ -148,8 +153,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                         when (viewHolder) {
                             is ImageViewerPage.ViewHolder ->
                                 viewHolder.view.photoView
+
                             is VideoViewerPage.ViewHolder ->
                                 viewHolder.view.videoView
+
                             else ->
                                 viewHolder.itemView
                         }
@@ -522,16 +529,16 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     companion object {
         private const val MEDIA_INDEX_KEY = "media-index"
-        private const val REPO_QUERY_KEY = "repo-query"
+        private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
 
         fun getBundle(
             mediaIndex: Int,
-            repositoryQuery: String?,
+            repositoryParams: SimpleGalleryMediaRepository.Params,
             areActionsEnabled: Boolean,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
-            putString(REPO_QUERY_KEY, repositoryQuery)
+            putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
         }
     }

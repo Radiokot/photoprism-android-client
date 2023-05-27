@@ -11,7 +11,14 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.isSameDayAs
+import ua.com.radiokot.photoprism.extension.isSameMonthAs
+import ua.com.radiokot.photoprism.extension.isSameYearAs
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -20,7 +27,8 @@ import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -152,7 +160,7 @@ class GalleryViewModel(
                 currentSearchConfig = null
                 mediaRepositoryChanges.onNext(
                     MediaRepositoryChange.Other(
-                        galleryMediaRepositoryFactory.get(null),
+                        galleryMediaRepositoryFactory.get(),
                     )
                 )
             }
@@ -631,20 +639,20 @@ class GalleryViewModel(
             ?: return
 
         val index = currentMediaRepository.itemsList.indexOf(media)
-        val repositoryQuery = currentMediaRepository.query
+        val repositoryParams = currentMediaRepository.params
 
         log.debug {
             "openViewer(): opening_viewer:" +
                     "\nmedia=$media," +
                     "\nindex=$index," +
-                    "\nrepositoryQuery=$repositoryQuery," +
+                    "\nrepositoryParams=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled"
         }
 
         eventsSubject.onNext(
             Event.OpenViewer(
                 mediaIndex = index,
-                repositoryQuery = repositoryQuery,
+                repositoryParams = repositoryParams,
                 areActionsEnabled = areActionsEnabled,
             )
         )
@@ -708,7 +716,7 @@ class GalleryViewModel(
 
         class OpenViewer(
             val mediaIndex: Int,
-            val repositoryQuery: String?,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
             val areActionsEnabled: Boolean,
         ) : Event
 

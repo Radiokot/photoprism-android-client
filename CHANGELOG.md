@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - A bookmark overcoming allowed media types when selecting content
+- When scrolling to a specific month, its last day content is not shown sometimes
 
 ### Changed
 - Speed up pages loading

@@ -30,6 +30,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
@@ -197,11 +198,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         messageRes = R.string.no_media_found,
                         context = this,
                     )
+
                 GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
                     ErrorView.Error.EmptyView(
                         messageRes = R.string.search_doesnt_fit_allowed_types,
                         context = this,
                     )
+
                 else ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,
@@ -246,7 +249,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 is GalleryViewModel.Event.OpenViewer ->
                     openViewer(
                         mediaIndex = event.mediaIndex,
-                        repositoryQuery = event.repositoryQuery,
+                        repositoryParams = event.repositoryParams,
                         areActionsEnabled = event.areActionsEnabled,
                     )
 
@@ -315,8 +318,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     when (viewHolder) {
                         is GalleryLoadingFooterListItem.ViewHolder ->
                             listOf(viewHolder.view.loadMoreButton)
+
                         is GalleryListItem.Media.ViewHolder ->
                             listOf(viewHolder.itemView, viewHolder.view.viewButton)
+
                         else ->
                             listOf(viewHolder.itemView)
                     }
@@ -327,9 +332,11 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                             when (view.id) {
                                 R.id.view_button ->
                                     viewModel.onItemViewButtonClicked(item)
+
                                 else ->
                                     viewModel.onItemClicked(item)
                             }
+
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
                     }
@@ -488,7 +495,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun openViewer(
         mediaIndex: Int,
-        repositoryQuery: String?,
+        repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
         startActivity(
@@ -496,7 +503,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 .putExtras(
                     MediaViewerActivity.getBundle(
                         mediaIndex = mediaIndex,
-                        repositoryQuery = repositoryQuery,
+                        repositoryParams = repositoryParams,
                         areActionsEnabled = areActionsEnabled,
                     )
                 )
@@ -537,13 +544,16 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         get() = when (this) {
             GalleryViewModel.Error.LibraryNotAccessible ->
                 getString(R.string.error_library_not_accessible_try_again)
+
             is GalleryViewModel.Error.LoadingFailed ->
                 getString(
                     R.string.template_error_failed_to_load_content,
                     shortSummary,
                 )
+
             GalleryViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
+
             GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
         }

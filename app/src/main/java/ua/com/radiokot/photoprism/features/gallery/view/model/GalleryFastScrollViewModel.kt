@@ -8,12 +8,16 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.filterIsInstance
+import ua.com.radiokot.photoprism.extension.isSameYearAs
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
 import java.text.DateFormat
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class GalleryFastScrollViewModel(
