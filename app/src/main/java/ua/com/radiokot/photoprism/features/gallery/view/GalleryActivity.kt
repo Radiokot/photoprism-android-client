@@ -38,8 +38,9 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
-import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
+import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
+import kotlin.math.roundToInt
 
 
 class GalleryActivity : BaseActivity(), AndroidScopeComponent {
@@ -56,8 +57,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
-    private val galleryMediaListItemViewCache =
-        AsyncListItemViewCache(GalleryListItem.Media.viewFactory)
 
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
@@ -140,12 +139,14 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         subscribeToEvents()
         subscribeToState()
 
-        view.galleryRecyclerView.post(::initList)
         initMediaFileSelection()
         downloadProgressView.init()
         initSearch()
         initErrorView()
         initMultipleSelection()
+        view.galleryRecyclerView.post {
+            initList(savedInstanceState)
+        }
     }
 
     private fun subscribeToData() {
@@ -163,12 +164,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         val galleryItemsDiffCallback = GalleryListItemDiffCallback()
         viewModel.itemsList.observe(this) { newItems ->
             if (newItems != null) {
-                newItems.forEach {
-                    if (it is GalleryListItem.Media) {
-                        it.viewCache = galleryMediaListItemViewCache
-                    }
-                }
-
                 if (galleryItemsAdapter.adapterItemCount == 0 || newItems.isEmpty()) {
                     // Do not use DiffUtil to replace an empty list,
                     // as it causes scrolling to the bottom.
@@ -315,7 +310,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }.autoDispose(this)
     }
 
-    private fun initList() {
+    private fun initList(savedInstanceState: Bundle?) {
         val galleryAdapter = FastAdapter.with(
             listOf(
                 galleryItemsAdapter,
@@ -366,14 +361,18 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             val minItemWidthPx =
                 resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
-            val rowWidth = measuredWidth
-            val spanCount = (rowWidth / minItemWidthPx).coerceAtLeast(1)
+            val spanCount = (measuredWidth / minItemWidthPx).coerceAtLeast(1)
+            val cellSize = measuredWidth / spanCount.toFloat()
+            val maxVisibleRowCount = (measuredHeight / cellSize).roundToInt()
+            val maxRecycledMediaViewCount = maxVisibleRowCount * spanCount * 2
 
             log.debug {
-                "initList(): calculated_span_count:" +
+                "initList(): calculated_grid:" +
                         "\nspanCount=$spanCount," +
-                        "\nrowWidth=$rowWidth," +
-                        "\nminItemWidthPx=$minItemWidthPx"
+                        "\nrowWidth=$measuredWidth," +
+                        "\nminItemWidthPx=$minItemWidthPx," +
+                        "\nmaxVisibleRowCount=$maxVisibleRowCount," +
+                        "\nmaxRecycledMediaViewCount=$maxRecycledMediaViewCount"
             }
 
             // Make items of particular types fill the grid row.
@@ -421,16 +420,28 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 }
             }
             addOnScrollListener(endlessScrollListener)
+
+            // Set the RV pool size and initialize it in background.
+            recycledViewPool.setMaxRecycledViews(
+                R.id.list_item_gallery_media,
+                maxRecycledMediaViewCount
+            )
+            if (savedInstanceState == null) {
+                AsyncRecycledViewPoolInitializer(
+                    fastAdapter = galleryAdapter,
+                    itemViewType = R.id.list_item_gallery_media,
+                    itemViewFactory = GalleryListItem.Media.itemViewFactory,
+                    itemViewHolderFactory = GalleryListItem.Media.itemViewHolderFactory,
+                )
+                    .initPool(
+                        recyclerView = view.galleryRecyclerView,
+                        count = maxRecycledMediaViewCount,
+                    )
+            }
         }
 
         fastScrollView.init(
             fastScrollRecyclerView = view.galleryRecyclerView,
-        )
-
-        galleryMediaListItemViewCache.populateCache(
-            context = this,
-            parent = view.galleryRecyclerView,
-            count = 30,
         )
     }
 

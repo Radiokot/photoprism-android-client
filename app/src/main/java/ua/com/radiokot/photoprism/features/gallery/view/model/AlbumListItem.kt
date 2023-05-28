@@ -17,10 +17,9 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
-import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
-import ua.com.radiokot.photoprism.util.ListItemViewFactory
+import ua.com.radiokot.photoprism.util.ItemViewFactory
+import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
 
 data class AlbumListItem(
     val title: String,
@@ -28,8 +27,6 @@ data class AlbumListItem(
     val isAlbumSelected: Boolean,
     val source: Album?,
 ) : AbstractItem<AlbumListItem.ViewHolder>() {
-    var viewCache: AsyncListItemViewCache? = null
-
     override val layoutRes: Int =
         R.layout.list_item_album
 
@@ -49,22 +46,25 @@ data class AlbumListItem(
         source = source,
     )
 
-    override fun createView(ctx: Context, parent: ViewGroup?): View {
-        return viewCache
-            .checkNotNull { "The cache must be set up at this moment" }
-            .getView(ctx, parent)
-    }
+    override fun createView(ctx: Context, parent: ViewGroup?): View =
+        itemViewFactory.invoke(ctx, parent)
 
     override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(v)
+        itemVHFactory.invoke(v)
 
-    class ViewHolder(taggedView: View) :
-        FastAdapter.ViewHolder<AlbumListItem>(taggedView), KoinScopeComponent {
+    class ViewHolder(itemView: View) :
+        FastAdapter.ViewHolder<AlbumListItem>(itemView), KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val viewAttributes = taggedView.tag as ViewAttributes
-        val view = viewAttributes.viewBinding
+        private val view = ListItemAlbumBinding.bind(itemView)
+        private val selectedCardBackgroundTint = ColorStateList.valueOf(
+            MaterialColors.getColor(
+                view.listItemAlbum,
+                com.google.android.material.R.attr.colorSecondaryContainer,
+            )
+        )
+        private val unselectedCardStrokeWidth = view.listItemAlbum.strokeWidth
         private val picasso: Picasso by inject()
 
         override fun bindView(item: AlbumListItem, payloads: List<Any>) {
@@ -82,7 +82,7 @@ data class AlbumListItem(
             with(view.listItemAlbum) {
                 backgroundTintList =
                     if (item.isAlbumSelected)
-                        viewAttributes.selectedCardBackgroundTint
+                        selectedCardBackgroundTint
                     else
                         null
 
@@ -90,35 +90,20 @@ data class AlbumListItem(
                     if (item.isAlbumSelected)
                         0
                     else
-                        viewAttributes.unselectedCardStrokeWidth
+                        unselectedCardStrokeWidth
             }
         }
 
         override fun unbindView(item: AlbumListItem) {
             picasso.cancelRequest(view.imageView)
         }
-
-        class ViewAttributes(
-            view: View,
-        ) {
-            val viewBinding = ListItemAlbumBinding.bind(view)
-            val selectedCardBackgroundTint = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    viewBinding.listItemAlbum,
-                    com.google.android.material.R.attr.colorSecondaryContainer,
-                )
-            )
-            val unselectedCardStrokeWidth = viewBinding.listItemAlbum.strokeWidth
-        }
     }
 
     companion object {
-        val viewFactory: ListItemViewFactory = { context, parent ->
-            LayoutInflater.from(context)
+        val itemViewFactory: ItemViewFactory = { ctx: Context, parent: ViewGroup? ->
+            LayoutInflater.from(ctx)
                 .inflate(R.layout.list_item_album, parent, false)
-                .apply {
-                    tag = ViewHolder.ViewAttributes(this)
-                }
         }
+        val itemVHFactory: ItemViewHolderFactory<ViewHolder> = ::ViewHolder
     }
 }

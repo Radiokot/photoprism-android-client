@@ -28,8 +28,8 @@ import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
-import ua.com.radiokot.photoprism.util.ListItemViewFactory
+import ua.com.radiokot.photoprism.util.ItemViewFactory
+import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -44,8 +44,6 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val isMediaSelected: Boolean,
         val source: GalleryMedia?,
     ) : GalleryListItem() {
-        var viewCache: AsyncListItemViewCache? = null
-
         constructor(
             source: GalleryMedia,
             isViewButtonVisible: Boolean,
@@ -79,22 +77,43 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         override val layoutRes: Int
             get() = R.layout.list_item_gallery_media
 
-        override fun createView(ctx: Context, parent: ViewGroup?): View {
-            return viewCache
-                .checkNotNull { "The cache must be set up at this moment" }
-                .getView(ctx, parent)
-        }
+        override fun createView(ctx: Context, parent: ViewGroup?): View =
+            itemViewFactory.invoke(ctx, parent)
 
-        override fun getViewHolder(v: View) = ViewHolder(v)
+        override fun getViewHolder(v: View): ViewHolder =
+            itemViewHolderFactory.invoke(v)
 
-        class ViewHolder(
-            taggedView: View,
-        ) : FastAdapter.ViewHolder<Media>(taggedView), KoinScopeComponent {
+        class ViewHolder(itemView: View) : FastAdapter.ViewHolder<Media>(itemView),
+            KoinScopeComponent {
             override val scope: Scope
                 get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-            private val viewAttributes = taggedView.tag as ViewAttributes
-            val view: ListItemGalleryMediaBinding = viewAttributes.viewBinding
+            val view = ListItemGalleryMediaBinding.bind(itemView)
+            private val imageLoadingPlaceholder = ColorDrawable(Color.LTGRAY)
+            private val selectedImageViewColorFilter: Int =
+                ColorUtils.setAlphaComponent(
+                    MaterialColors.getColor(
+                        view.imageView,
+                        com.google.android.material.R.attr.colorSurfaceInverse
+                    ),
+                    150
+                )
+            private val defaultImageViewShape =
+                ShapeAppearanceModel.builder().build()
+            private val selectedImageViewShape =
+                ShapeAppearanceModel.builder()
+                    .setAllCornerSizes(
+                        itemView.context.resources
+                            .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
+                            .toFloat()
+                    )
+                    .build()
+            private val imageViewScaleAnimationDuration: Long =
+                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2L
+            private val imageViewScaleAnimationInterpolator =
+                AccelerateDecelerateInterpolator()
+            private val selectedImageViewScale = 0.95f
+
             private val picasso: Picasso by inject()
 
             init {
@@ -108,7 +127,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
                 picasso
                     .load(item.thumbnailUrl)
-                    .placeholder(viewAttributes.imageLoadingPlaceholder)
+                    .placeholder(imageLoadingPlaceholder)
                     .fit()
                     .centerCrop()
                     .into(view.imageView)
@@ -136,17 +155,17 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
                     view.imageView.shapeAppearanceModel =
                         if (item.isMediaSelected)
-                            viewAttributes.selectedImageViewShape
+                            selectedImageViewShape
                         else
-                            viewAttributes.defaultImageViewShape
+                            defaultImageViewShape
 
                     if (item.isMediaSelected) {
-                        view.imageView.setColorFilter(viewAttributes.selectedImageViewColorFilter)
-                        if (view.imageView.scaleX != viewAttributes.selectedImageViewScale) {
+                        view.imageView.setColorFilter(selectedImageViewColorFilter)
+                        if (view.imageView.scaleX != selectedImageViewScale) {
                             if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
-                                animateImageScale(viewAttributes.selectedImageViewScale)
+                                animateImageScale(selectedImageViewScale)
                             } else {
-                                setImageScale(viewAttributes.selectedImageViewScale)
+                                setImageScale(selectedImageViewScale)
                             }
                         }
                     } else {
@@ -171,8 +190,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.imageView.animate()
                     .scaleX(target)
                     .scaleY(target)
-                    .setDuration(viewAttributes.imageViewScaleAnimationDuration)
-                    .setInterpolator(viewAttributes.imageViewScaleAnimationInterpolator)
+                    .setDuration(imageViewScaleAnimationDuration)
+                    .setInterpolator(imageViewScaleAnimationInterpolator)
                     .setListener(null)
             }
 
@@ -181,49 +200,17 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.imageView.scaleY = target
             }
 
-            class ViewAttributes(
-                view: View,
-            ) {
-                val viewBinding = ListItemGalleryMediaBinding.bind(view)
-                val imageLoadingPlaceholder = ColorDrawable(Color.LTGRAY)
-                val selectedImageViewColorFilter: Int =
-                    ColorUtils.setAlphaComponent(
-                        MaterialColors.getColor(
-                            viewBinding.imageView,
-                            com.google.android.material.R.attr.colorSurfaceInverse
-                        ),
-                        150
-                    )
-                val defaultImageViewShape =
-                    ShapeAppearanceModel.builder().build()
-                val selectedImageViewShape =
-                    ShapeAppearanceModel.builder()
-                        .setAllCornerSizes(
-                            view.context.resources
-                                .getDimensionPixelSize(R.dimen.selected_gallery_item_corner_radius)
-                                .toFloat()
-                        )
-                        .build()
-                val imageViewScaleAnimationDuration: Long =
-                    view.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2L
-                val imageViewScaleAnimationInterpolator =
-                    AccelerateDecelerateInterpolator()
-                val selectedImageViewScale = 0.95f
-            }
-
             companion object {
                 const val PAYLOAD_ANIMATE_SELECTION = "animate"
             }
         }
 
         companion object {
-            val viewFactory: ListItemViewFactory = { context, parent ->
-                LayoutInflater.from(context)
+            val itemViewFactory: ItemViewFactory = { ctx: Context, parent: ViewGroup? ->
+                LayoutInflater.from(ctx)
                     .inflate(R.layout.list_item_gallery_media, parent, false)
-                    .apply {
-                        tag = ViewHolder.ViewAttributes(this)
-                    }
             }
+            val itemViewHolderFactory: ItemViewHolderFactory<ViewHolder> = ::ViewHolder
         }
     }
 

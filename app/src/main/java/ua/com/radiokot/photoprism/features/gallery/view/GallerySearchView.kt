@@ -41,7 +41,6 @@ import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
-import ua.com.radiokot.photoprism.util.AsyncListItemViewCache
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import kotlin.math.roundToInt
 
@@ -69,7 +68,6 @@ class GallerySearchView(
         get() = searchBar.context
     private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
-    private val albumListItemViewCache = AsyncListItemViewCache(AlbumListItem.viewFactory)
 
     val closeConfigurationBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -95,13 +93,6 @@ class GallerySearchView(
         initBookmarksDrag()
         initCustomTabs()
         initMenus()
-        // Albums list is initialized on config view opening,
-        // while the async view cache is populated instantly.
-        albumListItemViewCache.populateCache(
-            context = context,
-            parent = configurationView.albumsRecyclerView,
-            count = 10,
-        )
 
         subscribeToData()
         subscribeToState()
@@ -376,9 +367,7 @@ class GallerySearchView(
             albumsAdapter.setNewList(
                 when (state) {
                     is GallerySearchAlbumsViewModel.State.Ready ->
-                        state.albums.onEach {
-                            it.viewCache = albumListItemViewCache
-                        }
+                        state.albums
                     else ->
                         emptyList()
                 }
