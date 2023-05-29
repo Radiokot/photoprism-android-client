@@ -76,17 +76,20 @@ class GalleryViewModel(
         val allowedMediaTypes: Set<GalleryMedia.TypeName>? = when {
             requestedMimeType == null ->
                 null
+
             requestedMimeType.startsWith("image/") ->
                 setOf(
                     GalleryMedia.TypeName.IMAGE,
                     GalleryMedia.TypeName.ANIMATED,
                     GalleryMedia.TypeName.VECTOR
                 )
+
             requestedMimeType.startsWith("video/") ->
                 setOf(
                     GalleryMedia.TypeName.VIDEO,
                     GalleryMedia.TypeName.LIVE,
                 )
+
             else ->
                 null
         }
@@ -156,6 +159,7 @@ class GalleryViewModel(
                     )
                 )
             }
+
             State.Viewing -> {
                 currentSearchConfig = null
                 mediaRepositoryChanges.onNext(
@@ -202,10 +206,12 @@ class GalleryViewModel(
                         )
                     }
                 }
+
                 GallerySearchViewModel.State.NoSearch -> {
                     fastScrollViewModel.reset()
                     resetRepositoryToInitial()
                 }
+
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
                     // Nothing to change.
                 }
@@ -334,6 +340,7 @@ class GalleryViewModel(
                     is NoRouteToHostException,
                     is SocketTimeoutException ->
                         Error.LibraryNotAccessible
+
                     else ->
                         Error.LoadingFailed(error.shortSummary)
                 }
@@ -359,8 +366,10 @@ class GalleryViewModel(
             when {
                 galleryMediaList.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
                     Error.SearchDoesntFitAllowedTypes
+
                 galleryMediaList.isEmpty() && !repository.isNeverUpdated ->
                     Error.NoMediaFound
+
                 else ->
                     // Dismiss the main error when there are items.
                     null
@@ -658,6 +667,43 @@ class GalleryViewModel(
         )
     }
 
+    fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int) {
+        // Find the media list item index considering there are other item types.
+        var mediaListItemIndex = -1
+        var listItemIndex = 0
+        var mediaItemsCounter = 0
+        for (item in itemsList.value ?: emptyList()) {
+            if (item is GalleryListItem.Media) {
+                mediaItemsCounter++
+            }
+            if (mediaItemsCounter == lastViewedMediaIndex + 1) {
+                mediaListItemIndex = listItemIndex
+                break
+            }
+            listItemIndex++
+        }
+
+        // Ensure that the last viewed media is visible in the gallery list.
+        if (mediaListItemIndex >= 0) {
+            log.debug {
+                "onViewerReturnedLastViewedMediaIndex(): ensuring_media_list_item_visibility:" +
+                        "\nmediaIndex=$lastViewedMediaIndex" +
+                        "\nmediaListItemIndex=$mediaListItemIndex"
+            }
+
+            eventsSubject.onNext(
+                Event.EnsureListItemVisible(
+                    listItemIndex = mediaListItemIndex,
+                )
+            )
+        } else {
+            log.error {
+                "onViewerReturnedLastViewedMediaIndex(): cant_find_media_list_item_index:" +
+                        "\nmediaIndex=$lastViewedMediaIndex"
+            }
+        }
+    }
+
     fun onMainErrorRetryClicked() {
         update()
     }
@@ -725,6 +771,8 @@ class GalleryViewModel(
         class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event
+
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 
     sealed interface State {
