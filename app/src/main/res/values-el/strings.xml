@@ -1,0 +1,239 @@
+<resources>
+
+    <string name="app_name">PhotoPrism Gallery</string>
+
+    <string name="language_code">el</string>
+
+    <string name="media_type_image">εικόνα</string>
+
+    <string name="media_type_raw">RAW</string>
+
+    <string name="media_type_animated">κινούμενη εικόνα</string>
+
+    <string name="media_type_live">ζωντανή φωτογραφία</string>
+
+    <string name="media_type_video">βίντεο</string>
+
+    <string name="media_type_vector">γραφικά</string>
+
+    <string name="media_type_sidecar">συνδεδεμένα αρχεία</string>
+
+    <string name="media_type_text">κείμενο</string>
+
+    <string name="media_type_other">λοιπά αρχεία</string>
+
+    <string name="media_type_unknown">άγνωστος τύπος αρχείου</string>
+
+    <string name="select_media_file">επιλογή τύπου αρχείου</string>
+
+    <string name="file_thumbnail">εικονίδιο αρχείου</string>
+
+    <string name="downloading_progress">λήψη…</string>
+
+    <string name="cancel">ακύρωση</string>
+
+    <string name="failed_to_download_file">αδυναμία λήψης αρχείου</string>
+
+    <string name="select_content">επιλογή περιεχομένου</string>
+
+    <string name="library">βιβλιοθήκη</string>
+
+    <string name="preview_is_not_available">η προεπισκόπηση δεν ειναι διαθέσιμη</string>
+
+    <string name="share">κοινοποίηση</string>
+
+    <string name="download">λήψη</string>
+
+    <string name="open_with">άνοιγμα μέ</string>
+
+    <string name="failed_to_load_the_preview">αδυναμία λήψης προεπισκόπησης</string>
+
+    <string name="failed_to_load_the_thumbnail">αδυναμία φόρτωσης προεπισκόπησης</string>
+
+    <string name="today">σήμερα</string>
+
+    <string name="search_the_library">αναζήτηση στη βιβλιοθήκη</string>
+
+    <string name="enter_the_query">εισαγωγή όρου αναζήτησης</string>
+
+    <string name="media_type">τύπος</string>
+
+    <string name="apply_search">εφαρμογή</string>
+
+    <string name="reset_search">επαναφορά</string>
+
+    <string name="error_you_have_to_connect_to_library">πρεπει να συνδεθείτε σε μια βιβλιοθήκη πρώτα</string>
+
+    <string name="library_root_url">αρχικό  URL βιβλιοθήκης</string>
+
+    <string name="username_optional">όνομα χρήστη (προαιρετικό)</string>
+
+    <string name="password_optional">κωδικός πρόσβασης (προαιρετικό )</string>
+
+    <string name="connect_to_a_library">σύνδεση σε βιβλιοθήκη</string>
+
+    <string name="connect">σύνδεση</string>
+
+    <string name="auth_public">δημόσιο</string>
+
+    <string name="auth_private">ιδιωτικό</string>
+
+    <string name="template_error_inaccessible_library_url">η βιβλιοθήκη δεν ειναι προσβάσιμη::: %1$s</string>
+
+    <string name="error_invalid_library_url_format">η μορφή του URL δεν ειναι έγκυρη. βεβαιώθητε οτι περιεχει το πρωτόκολλο</string>
+
+    <string name="error_library_requires_credentials">η βιβλιοθήκη απαιτεί στοιχεία πρόσβασης</string>
+
+    <string name="error_invalid_password">λάθος κωδικός πρόσβασης</string>
+
+    <string name="template_error_failed_to_load_content">αδυναμια φόρτωσης περιεχομένου:: %1$s</string>
+
+    <string name="error_library_not_accessible_try_again">η βιβλιοθήκη δεν ειναι προσβάσιμη.έλεγξε την σύνδεση και προσπάθησε ξανά</string>
+
+    <string name="try_again">προσπάθησε ξανά</string>
+
+    <string name="load_more">φόρτωση περισσότερων</string>
+
+    <string name="template_successfully_downloaded_file">το αρχείο αποθηκεύτηκε στις λήψεις: %1$s</string>
+
+    <string name="error_storage_permission_is_required">απαιτείται πρόσβαση στον αποθηκευτικό χώρο</string>
+
+    <string name="add_search_bookmark">προσθήκη σελιδοδείκτη</string>
+
+    <string name="edit_search_bookmark">επεξεργασία σελιδοδείκτη</string>
+
+    <string name="search_bookmark_name">όνομα</string>
+
+    <string name="save">αποθήκευση</string>
+
+    <string name="delete">διαγραφή</string>
+
+    <string name="search_bookmarks">σελιδοδείκτες</string>
+
+    <string name="template_error_failed_to_add_bookmark">αδυναμία δημιουργίας σελιδοδείκτη: %1$s</string>
+
+    <string name="template_error_failed_to_edit_bookmark">αποτυχία επεξεργασίας σελιδοδείκτη: %1$s</string>
+
+    <string name="template_error_failed_to_delete_bookmark">αποτυχία διαγραφής σελιδοδείκτη: %1$s</string>
+
+    <string name="using_search_filters">χρηση φίλτρων αναζήτησης</string>
+
+    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
+
+    <string-array name="μήνες">
+
+        <item name="january">Ιανουάριος</item>
+
+        <item name="february">Φεβρουάριος</item>
+
+        <item name="march">Μάρτιος</item>
+
+        <item name="april">Απρίλιος</item>
+
+        <item name="may">Μάιος</item>
+
+        <item name="june">Ιούνιος</item>
+
+        <item name="july">Ιούλιος</item>
+
+        <item name="august">Αύγουστος</item>
+
+        <item name="september">Σεπτέμβριος</item>
+
+        <item name="october">Οκτώβριος</item>
+
+        <item name="november">Νοέμβριος</item>
+
+        <item name="december">Δεκέμβριος</item>
+
+    </string-array>
+
+    <string name="some_types_are_not_available_when_selecting">Διατίθενται μόνο τύποι που υποστηρίζονται από την αιτούσα εφαρμογή</string>
+
+    <string name="include_private_content">συμπερίληψη ιδιωτικού περιεχομένου</string>
+
+    <string name="client_certificate_optional">πιστοποιητικό χρήστη (προαιρετικό)</string>
+
+    <string name="clear">καθαρισμός</string>
+
+    <string name="how_to_use_client_certificate">πως να χρησιμοποιήσετε τα πιστοποιητικά χρήστη</string>
+
+    <string name="p12_certificate_guide">
+
+        1. αποθήκευσε το PKCS12 (.p12) πιστοποιητικό στη συσκευή;\n\n
+
+        2. εγκατέστησε το πιστοποιητικό χρησιμοποιώντας εναν περιηγητή αρχείων. επέλεξε τον τύπο \"VPN and apps\";\n\n
+
+        3. επέστρεψε στην εφαρμογή και επέλεξε το εγκατεστημένο πιστοποιητικό.</string>
+
+    <string name="ok">OK</string>
+
+    <string name="learn_more">μάθε περισσότερα</string>
+
+    <string name="preferences">προτιμήσεις</string>
+
+    <string name="library_preferences">@string/library</string>
+
+    <string name="about">πληροφορίες</string>
+
+    <string name="app_version">έκδοση</string>
+
+    <string name="report_an_issue">αναφορά σφάλματος</string>
+
+    <string name="template_error_failed_to_export_bookmarks">αδυναμια εξαγωγής σελιδοδεικτών:: %1$s</string>
+
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+
+    <string name="export_bookmarks">εξαγωγή σελιδοδείκτών</string>
+
+    <string name="import_bookmarks">εισαγωγή σελιδοδειτών</string>
+
+    <string name="template_error_failed_to_import_bookmarks">αδυναμία εισαγωγής σελιδοδεικτών:: %1$s</string>
+
+    <string name="template_successfully_imported_bookmarks_plural">επιτυχείς εισαγωγή %1$d %2$s</string>
+
+    <string name="replace_current_bookmarks_with_saved">αντικατασταση των υπαρχουσών σελιδοδεικτών με τους αποθηκευμένους</string>
+
+    <string name="save_bookmarks_to_file">αποθήκευση σελιδοδεικτών σε αρχείο</string>
+
+    <string name="your_bookmarks_will_be_replaced">οι υπάρχων σελιδοδείκτες θα αντικατασταθούν. συνέχεια?</string>
+
+    <string name="ccontinue">συνέχεια</string>
+
+    <string name="disconnect_from_library">αποσύνδεση</string>
+
+    <string name="your_bookmarks_will_be_kept">οινσελδοδεικτες σου θα διατηρηθούν</string>
+
+    <string name="template_error_failed_to_disconnect">αποτυχία αποσύνδεσης: %1$s</string>
+
+    <string name="play_video">αναπαραγωγή</string>
+
+    <string name="pause_video">παύση</string>
+
+    <string name="no_media_found">δε βρέθηκαν πολυμέσα</string>
+
+    <string name="view_media">προβολή</string>
+
+    <string name="open_in_web_viewer">άνοιγμα σε περιηγητή</string>
+
+    <string name="albums">άλμπουμ</string>
+
+    <string name="loading_albums_progress">φόρτωση άλμπουμ…</string>
+
+    <string name="reload_albums">επαναφόρτωση άλμπουμ</string>
+
+    <string name="no_albums_found">δε βρέθηκαν άλμπουμ</string>
+
+    <string name="clear_selection">καθαρισμος επιλογής</string>
+
+    <string name="done_selecting">ολοκλήρωση</string>
+
+    <string name="template_current_of">%1$d of %2$d</string>
+
+    <string name="search_doesnt_fit_allowed_types">ο όρος αναζήτησης δεν ταυτίζεται με τους επιτρεπόμενους τύπους</string>
+
+    <string name="save_file_to_the_storage">αποθήκευση αρχείου στο δίσκο</string>
+
+    <string name="share_the_file">κοινοποίηση αρχείου</string>
+
+</resources>
