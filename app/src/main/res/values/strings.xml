@@ -7,7 +7,7 @@
     <string name="media_type_animated">κινούμενη εικόνα</string>
     <string name="media_type_live">ζωντανή φωτογραφία</string>
     <string name="media_type_video">βίντεο</string>
-    <string name="media_type_vector">διανυσματικά γραφικά</string>
+    <string name="media_type_vector">γραφικά</string>
     <string name="media_type_sidecar">συνδεδεμένα αρχεία</string>
     <string name="media_type_text">κείμενο</string>
     <string name="media_type_other">λοιπά αρχεία</string>
