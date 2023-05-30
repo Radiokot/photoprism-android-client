@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Monochrome icon for Android 13 and higher
 - The gallery now scrolls as you swipe content in the viewer. 
 Once you returned, the last viewed media is visible in the list
+- Turkish translation
 
 ## [1.8.1] - 2023-05-28
 
