@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
+
     <plurals name="search_bookmarks">
+
         <item quantity="zero">bookmarks</item>
+
         <item quantity="one">bookmark</item>
+
         <item quantity="other">bookmarks</item>
+
     </plurals>
+
 </resources>
