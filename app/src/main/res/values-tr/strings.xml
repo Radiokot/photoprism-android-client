@@ -14,7 +14,7 @@
     <string name="media_type_unknown">Bilinmeyen dosya türü</string>
     <string name="select_media_file">Medya dosyası seç</string>
     <string name="file_thumbnail">Dosya küçük resmi</string>
-    <string name="downloading_progress">İndiriliyor...</string>
+    <string name="downloading_progress">İndiriliyor…</string>
     <string name="cancel">İptal et</string>
     <string name="failed_to_download_file">Dosya indirilemedi</string>
     <string name="select_content">İçerik seç</string>
@@ -32,7 +32,7 @@
     <string name="apply_search">Uygula</string>
     <string name="reset_search">Sıfırla</string>
     <string name="error_you_have_to_connect_to_library">Önce bir kitaplığa bağlanmalısınız</string>
-    <string name="library_root_url">Kitaplık kök URL'si</string>
+    <string name="library_root_url">Kitaplık kök URL\'si</string>
     <string name="username_optional">Kullanıcı adı (isteğe bağlı)</string>
     <string name="password_optional">Şifre (isteğe bağlı)</string>
     <string name="connect_to_a_library">Kitaplığa bağlan</string>
@@ -80,7 +80,7 @@
     <string name="clear">Temizle</string>
     <string name="how_to_use_client_certificate">İstemci sertifikaları nasıl kullanılır</string>
     <string name="p12_certificate_guide">
-        1. DPKCS12(.p12)'yi cihaza indir;\n\n
+        1. DPKCS12(.p12)\'yi cihaza indir;\n\n
         2. Paketi bir dosya gezgininden açarak kur. \"VPN ve uygulamalar\" kullan type;\n\n
         3. Galeriye geri dön ve inen sertifikayı seç.</string>
     <string name="ok">Tamam</string>
@@ -109,12 +109,12 @@
     <string name="view_media">Görüntüle</string>
     <string name="open_in_web_viewer">Web görüntüleyicide aç</string>
     <string name="albums">Albümler</string>
-    <string name="loading_albums_progress">Albümler yükleniyor...</string>
+    <string name="loading_albums_progress">Albümler yükleniyor…</string>
     <string name="reload_albums">Albümleri yeniden yükle</string>
     <string name="no_albums_found">Albüm bulunamadı</string>
     <string name="clear_selection">Seçimi temizle</string>
     <string name="done_selecting">Tamam</string>
-    <string name="template_current_of">%2$d 'de %1$d </string>
+    <string name="template_current_of">%2$d \'de %1$d </string>
     <string name="search_doesnt_fit_allowed_types">Arama sorgusu, izin verilen türlere uymuyor</string>
     <string name="save_file_to_the_storage">Dosyayı cihaz hafızasına kaydet</string>
     <string name="share_the_file">Dosyayı paylaş</string>
