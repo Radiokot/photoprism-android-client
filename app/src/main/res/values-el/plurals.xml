@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-
     <plurals name="search_bookmarks">
-
-        <item quantity="zero">σελιδοδείκτες</item>
-
         <item quantity="one">σελιδοδείκτης</item>
-
         <item quantity="other">σελιδοδείκτες</item>
-
     </plurals>
-
 </resources>
