@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="search_bookmarks">
-        <item quantity="zero">书签</item>
-        <item quantity="one">书签</item>
         <item quantity="other">书签</item>
     </plurals>
 </resources>
