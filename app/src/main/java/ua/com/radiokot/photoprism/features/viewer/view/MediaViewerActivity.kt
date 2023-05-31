@@ -1,11 +1,13 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.browser.customtabs.CustomTabsIntent
@@ -527,11 +529,24 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         )
     }
 
+    override fun finish() {
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
+        )
+        super.finish()
+    }
+
     companion object {
         private const val MEDIA_INDEX_KEY = "media-index"
         private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
 
+        /**
+         * @param mediaIndex index of the media to start from
+         * @param repositoryParams params of the media repository to view
+         * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not.
+         */
         fun getBundle(
             mediaIndex: Int,
             repositoryParams: SimpleGalleryMediaRepository.Params,
@@ -541,5 +556,15 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
         }
+
+        /**
+         * @return last viewed media index, if there was one.
+         */
+        fun getResult(result: ActivityResult): Int? =
+            result
+                .takeIf { it.resultCode == Activity.RESULT_OK }
+                ?.data
+                ?.getIntExtra(MEDIA_INDEX_KEY, -1)
+                ?.takeIf { it >= 0 }
     }
 }

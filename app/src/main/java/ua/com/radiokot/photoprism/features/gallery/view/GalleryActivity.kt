@@ -3,10 +3,13 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
@@ -26,6 +29,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
@@ -88,6 +92,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             lifecycleOwner = this,
         )
     }
+    private val viewerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onViewerResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -270,6 +278,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
                 is GalleryViewModel.Event.OpenPreferences -> {
                     openPreferences()
+                }
+
+                is GalleryViewModel.Event.EnsureListItemVisible -> {
+                    ensureGalleryListItemVisibility(event.listItemIndex)
                 }
             }
 
@@ -521,7 +533,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
-        startActivity(
+        viewerLauncher.launch(
             Intent(this, MediaViewerActivity::class.java)
                 .putExtras(
                     MediaViewerActivity.getBundle(
@@ -531,6 +543,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     )
                 )
         )
+    }
+
+    private fun onViewerResult(result: ActivityResult) {
+        val lastViewedMediaIndex = MediaViewerActivity.getResult(result)
+            ?: return
+
+        viewModel.onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex)
     }
 
     private fun openPreferences() {
@@ -545,6 +564,34 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         with(view.galleryRecyclerView) {
             scrollToPosition(0)
             endlessScrollListener.resetPageCount(0)
+        }
+    }
+
+    private fun ensureGalleryListItemVisibility(galleryListItemIndex: Int) {
+        val itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(galleryListItemIndex)
+
+        val layoutManager = (view.galleryRecyclerView.layoutManager as? LinearLayoutManager)
+            .checkNotNull {
+                "The recycler must have a layout manager at this moment"
+            }
+
+        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+
+        if (itemGlobalPosition !in firstVisibleItemPosition..lastVisibleItemPosition) {
+            log.debug {
+                "ensureGalleryListItemVisibility(): scrolling_to_make_visible:" +
+                        "\ngalleryListItemIndex=$galleryListItemIndex," +
+                        "\nitemGlobalPosition=$itemGlobalPosition"
+            }
+
+            view.galleryRecyclerView.scrollToPosition(itemGlobalPosition)
+        } else {
+            log.debug {
+                "ensureGalleryListItemVisibility(): item_is_already_visible:" +
+                        "\ngalleryListItemIndex=$galleryListItemIndex," +
+                        "\nitemGlobalPosition=$itemGlobalPosition"
+            }
         }
     }
 
