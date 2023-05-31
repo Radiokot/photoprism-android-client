@@ -24,7 +24,7 @@ android {
         versionCode 16
         versionName "1.8.1"
 
-        resConfigs "en", "tr", "el"
+        resConfigs "en", "tr", "el", "it"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
