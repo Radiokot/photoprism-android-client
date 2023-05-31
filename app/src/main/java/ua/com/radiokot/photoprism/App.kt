@@ -26,6 +26,7 @@ import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.File
 import java.io.IOException
+import java.util.Locale
 import kotlin.concurrent.thread
 
 class App : Application() {
@@ -92,10 +93,12 @@ class App : Application() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        val stringsLocale = LocalizationHelper.getLocaleOfStrings(newBase.resources)
+        Locale.setDefault(stringsLocale)
         super.attachBaseContext(
             LocalizationHelper.getLocalizedConfigurationContext(
                 context = newBase,
-                locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
+                locale = stringsLocale,
             )
         )
     }

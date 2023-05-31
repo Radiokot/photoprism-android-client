@@ -4,13 +4,16 @@ import android.content.Context
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import ua.com.radiokot.photoprism.util.LocalizationHelper
+import java.util.Locale
 
 abstract class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
+        val stringsLocale = LocalizationHelper.getLocaleOfStrings(newBase.resources)
+        Locale.setDefault(stringsLocale)
         super.attachBaseContext(
             LocalizationHelper.getLocalizedConfigurationContext(
                 context = newBase,
-                locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
+                locale = stringsLocale,
             )
         )
     }
