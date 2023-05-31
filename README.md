@@ -1,4 +1,9 @@
 # <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> PhotoPrism Gallery
+
+![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square) 
+![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square) 
+![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=2&color=e2e0f6&style=flat-square)
+
 A native Android gallery and content provider for your [PhotoPrism library](https://www.photoprism.app/). 
 
 <p float="left">
@@ -24,13 +29,12 @@ you can use your favorite image editor or video player instead of web viewer
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
 
-## Content sync
 The gallery is not intended to sync content with the library. 
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from 
-[May 2, 2023](https://github.com/photoprism/photoprism/releases/tag/230502-c405f6eff) 
+[May 13, 2023](https://github.com/photoprism/photoprism/releases/tag/230513-0b780defb) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
 The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), 
