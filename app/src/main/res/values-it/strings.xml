@@ -3,7 +3,6 @@
     <string name="language_code">it</string>
 
     <string name="media_type_image">Immagine</string>
-    <string name="media_type_raw">RAW</string>
     <string name="media_type_animated">Animazione</string>
     <string name="media_type_live">Foto live</string>
     <string name="media_type_video">Video</string>
@@ -57,21 +56,6 @@
     <string name="template_error_failed_to_edit_bookmark">Impossibile modificare un segnalibro: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Impossibile eliminare un segnalibro: %1$s</string>
     <string name="using_search_filters">Usa filtri di ricerca</string>
-    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
-    <string-array name="months">
-        <item name="january">Gennaio</item>
-        <item name="february">Febraio</item>
-        <item name="march">Marzo</item>
-        <item name="april">Aprile</item>
-        <item name="may">Maggio</item>
-        <item name="june">Giugno</item>
-        <item name="july">Luglio</item>
-        <item name="august">Agosto</item>
-        <item name="september">Settembre</item>
-        <item name="october">Ottobre</item>
-        <item name="november">Novembre</item>
-        <item name="december">Dicembre</item>
-    </string-array>
     <string name="some_types_are_not_available_when_selecting">Solo i tipi supportati dall\'app sono disponibili</string>
     <string name="include_private_content">Includi contenuti privati</string>
     <string name="client_certificate_optional">Certificato client (opzionale)</string>

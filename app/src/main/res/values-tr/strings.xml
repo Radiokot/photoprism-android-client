@@ -3,7 +3,6 @@
     <string name="language_code">tr</string>
 
     <string name="media_type_image">Resim</string>
-    <string name="media_type_raw">RAW</string>
     <string name="media_type_animated">Animasyon</string>
     <string name="media_type_live">Canlı Fotoğraf</string>
     <string name="media_type_video">Video</string>
