@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -133,9 +134,9 @@ class GalleryFastScrollViewModel(
                     GalleryMonthScrollBubble(
                         name =
                         if (month.firstDay.isSameYearAs(today))
-                            bubbleMonthDateFormat.format(month.firstDay)
+                            bubbleMonthDateFormat.format(month.firstDay).capitalized()
                         else
-                            bubbleMonthYearDateFormat.format(month.firstDay),
+                            bubbleMonthYearDateFormat.format(month.firstDay).capitalized(),
                         source = month
                     )
                 }

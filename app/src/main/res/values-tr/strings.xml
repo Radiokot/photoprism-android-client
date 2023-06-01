@@ -37,8 +37,6 @@
     <string name="password_optional">Şifre (isteğe bağlı)</string>
     <string name="connect_to_a_library">Kitaplığa bağlan</string>
     <string name="connect">Bağlan</string>
-    <string name="auth_public">Herkese açık</string>
-    <string name="auth_private">Özel</string>
     <string name="template_error_inaccessible_library_url">Kitaplık erişilebilir değil: %1$s</string>
     <string name="error_invalid_library_url_format">URL biçimi yanlış. Protokol içerdiğinden emin ol</string>
     <string name="error_library_requires_credentials">Library requires credentials</string>
@@ -59,21 +57,6 @@
     <string name="template_error_failed_to_edit_bookmark">Yer imi düzenlenemedi: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Yer imi silinemedi: %1$s</string>
     <string name="using_search_filters">Arama filtrelerini kullanmak</string>
-    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
-    <string-array name="months">
-        <item name="january">Ocak</item>
-        <item name="february">Şubat</item>
-        <item name="march">Mart</item>
-        <item name="april">Nisan</item>
-        <item name="may">Mayıs</item>
-        <item name="june">Haziran</item>
-        <item name="july">Temmuz</item>
-        <item name="august">Ağustos</item>
-        <item name="september">Eylül</item>
-        <item name="october">Ekim</item>
-        <item name="november">Kasım</item>
-        <item name="december">Aralık</item>
-    </string-array>
     <string name="some_types_are_not_available_when_selecting">Yalnızca istekte bulunan uygulama tarafından desteklenen türler mevcuttur</string>
     <string name="include_private_content">Gizli içeriği dahil et</string>
     <string name="client_certificate_optional">İstemci sertifikası (isteğe bağlı)</string>
@@ -92,14 +75,16 @@
     <string name="report_an_issue">Sorun bildir</string>
     <string name="template_error_failed_to_export_bookmarks">Yer imleri dışa aktarılamadı: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Dışa aktar</string>
     <string name="export_bookmarks">Yer imlerini dışa aktar</string>
+    <string name="importt">Içeri aktar</string>
     <string name="import_bookmarks">Yer imlerini içeri aktar</string>
     <string name="template_error_failed_to_import_bookmarks">Yer imleri içeri aktarılamadı: %1$s</string>
-    <string name="template_successfully_imported_bookmarks_plural">Başarıyla içeri aktarıldı %1$d %2$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Başarıyla %1$s</string>
     <string name="replace_current_bookmarks_with_saved">Mevcut yer imlerini kaydedilenlerle değiştir</string>
-    <string name="save_bookmarks_to_file">Yer imlerini dosyaya kaydet</string>
+    <string name="save_current_bookmarks_to_file">Yer imlerini dosyaya kaydet</string>
     <string name="your_bookmarks_will_be_replaced">Mevcut yer imlerin değiştirilecek. Devam?</string>
-    <string name="ccontinue">Devam et</string>
+    <string name="continuee">Devam et</string>
     <string name="disconnect_from_library">Bağlantıyı kes</string>
     <string name="your_bookmarks_will_be_kept">Yer imlerin korunacak</string>
     <string name="template_error_failed_to_disconnect">Bağlantı kesilemedi: %1$s</string>

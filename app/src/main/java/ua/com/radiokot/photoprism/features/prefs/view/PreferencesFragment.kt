@@ -299,7 +299,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.import_bookmarks)
             .setMessage(R.string.your_bookmarks_will_be_replaced)
-            .setPositiveButton(R.string.ccontinue) { _, _ ->
+            .setPositiveButton(R.string.continuee) { _, _ ->
                 bookmarksBackupFileOpeningLauncher
                     .launch(arrayOf(bookmarksBackup.fileMimeType))
             }
@@ -338,9 +338,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                     Snackbar.make(
                         listView,
                         getString(
-                            R.string.template_successfully_imported_bookmarks_plural,
-                            count,
-                            resources.getQuantityString(R.plurals.search_bookmarks, count)
+                            R.string.template_successfully_imported_search_bookmarks,
+                            resources.getQuantityString(R.plurals.imported_search_bookmarks, count, count)
                         ),
                         Snackbar.LENGTH_LONG,
                     ).show()

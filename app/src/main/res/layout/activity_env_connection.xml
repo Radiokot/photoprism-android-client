@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:layout_marginTop="8dp"
                 android:text="@string/connect_to_a_library"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 

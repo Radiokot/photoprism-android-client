@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="search_bookmarks">
-        <item quantity="one">σελιδοδείκτης</item>
-        <item quantity="other">σελιδοδείκτες</item>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="one">εισαγωγή %1$d σελιδοδείκτης</item>
+        <item quantity="other">εισαγωγή %1$d σελιδοδείκτες</item>
     </plurals>
 </resources>

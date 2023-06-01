@@ -11,19 +11,39 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
-import ua.com.radiokot.photoprism.di.*
+import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
+import ua.com.radiokot.photoprism.di.SelfParameterHolder
+import ua.com.radiokot.photoprism.di.dbModules
+import ua.com.radiokot.photoprism.di.envModules
+import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.useMonthsFromResources
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.*
-import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
+import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.JsonSearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaDownloadUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchAlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 private const val MONTH_DATE_FORMAT = "month"
 private const val MONTH_YEAR_DATE_FORMAT = "month-year"
@@ -39,15 +59,17 @@ val galleryFeatureModules: List<Module> = listOf(
         factory { Locale.getDefault() }
 
         factory(named(MONTH_DATE_FORMAT)) {
-            SimpleDateFormat("MMMM", get<Locale>())
-                .useMonthsFromResources(get())
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "MMMM"),
+                get<Locale>()
+            )
         } bind java.text.DateFormat::class
 
         factory(named(MONTH_YEAR_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
                 get<Locale>()
-            ).useMonthsFromResources(get())
+            )
         } bind java.text.DateFormat::class
 
         factory(named(DAY_DATE_FORMAT)) {

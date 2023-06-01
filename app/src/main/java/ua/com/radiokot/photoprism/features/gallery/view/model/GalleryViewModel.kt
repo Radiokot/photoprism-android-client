@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.isSameDayAs
 import ua.com.radiokot.photoprism.extension.isSameMonthAs
@@ -29,7 +30,6 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
 import java.util.Date
-import java.util.Locale
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -422,7 +422,7 @@ class GalleryViewModel(
 
                     newListItems.add(
                         GalleryListItem.Header.month(
-                            text = formattedMonth,
+                            text = formattedMonth.capitalized(),
                         )
                     )
                 }
@@ -441,12 +441,7 @@ class GalleryViewModel(
                                     dateHeaderDayYearDateFormat.format(takenAt)
 
                             GalleryListItem.Header.day(
-                                text = formattedDate.replaceFirstChar {
-                                    if (it.isLowerCase())
-                                        it.titlecase(Locale.getDefault())
-                                    else
-                                        it.toString()
-                                },
+                                text = formattedDate.capitalized(),
                             )
                         }
                     )

@@ -37,8 +37,6 @@
     <string name="password_optional">Password (optional)</string>
     <string name="connect_to_a_library">Connect to a library</string>
     <string name="connect">Connect</string>
-    <string name="auth_public">Public</string>
-    <string name="auth_private">Private</string>
     <string name="template_error_inaccessible_library_url">Library is not accessible: %1$s</string>
     <string name="error_invalid_library_url_format">URL format is incorrect. Make sure it contains the protocol</string>
     <string name="error_library_requires_credentials">Library requires credentials</string>
@@ -59,21 +57,6 @@
     <string name="template_error_failed_to_edit_bookmark">Failed to edit the bookmark: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Failed to delete the bookmark: %1$s</string>
     <string name="using_search_filters">Using Search Filters</string>
-    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
-    <string-array name="months">
-        <item name="january">January</item>
-        <item name="february">February</item>
-        <item name="march">March</item>
-        <item name="april">April</item>
-        <item name="may">May</item>
-        <item name="june">June</item>
-        <item name="july">July</item>
-        <item name="august">August</item>
-        <item name="september">September</item>
-        <item name="october">October</item>
-        <item name="november">November</item>
-        <item name="december">December</item>
-    </string-array>
     <string name="some_types_are_not_available_when_selecting">Only types supported by the requesting app are available</string>
     <string name="include_private_content">Include private content</string>
     <string name="client_certificate_optional">Client certificate (optional)</string>
@@ -92,14 +75,16 @@
     <string name="report_an_issue">Report an issue</string>
     <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Export</string>
     <string name="export_bookmarks">Export bookmarks</string>
+    <string name="importt">Import</string>
     <string name="import_bookmarks">Import bookmarks</string>
     <string name="template_error_failed_to_import_bookmarks">Failed to import bookmarks: %1$s</string>
-    <string name="template_successfully_imported_bookmarks_plural">Successfully imported %1$d %2$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Successfully %1$s</string>
     <string name="replace_current_bookmarks_with_saved">Replace current bookmarks with saved ones</string>
-    <string name="save_bookmarks_to_file">Save your bookmarks to a file</string>
+    <string name="save_current_bookmarks_to_file">Save current bookmarks to a file</string>
     <string name="your_bookmarks_will_be_replaced">Your current bookmarks will be replaced. Continue?</string>
-    <string name="ccontinue">Continue</string>
+    <string name="continuee">Continue</string>
     <string name="disconnect_from_library">Disconnect</string>
     <string name="your_bookmarks_will_be_kept">Your bookmarks will be kept</string>
     <string name="template_error_failed_to_disconnect">Failed to disconnect: %1$s</string>
