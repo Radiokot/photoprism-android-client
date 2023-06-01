@@ -147,10 +147,19 @@ class GalleryFastScrollViewModel(
                 }
     }
 
-    fun reset() {
-        log.debug { "reset(): resetting_to_idle" }
+    /**
+     * Reset of the month drag and the scroll (goes back to the top).
+     *
+     * @see Event.Reset
+     */
+    fun reset(isInitiatedByUser: Boolean) {
+        log.debug {
+            "reset(): resetting_drag_and_scroll:" +
+                    "\nisInitiatedByUser=$isInitiatedByUser"
+        }
 
         monthsDragResetSubject.onNext(Unit)
+        eventsSubject.onNext(Event.Reset(isInitiatedByUser))
     }
 
     fun onDragging(monthBubble: GalleryMonthScrollBubble) {
@@ -162,10 +171,15 @@ class GalleryFastScrollViewModel(
     }
 
     sealed interface Event {
-        class DraggingAtMonth(
+        data class DraggingAtMonth(
             val month: GalleryMonth,
             val isTopMonth: Boolean,
         ) : Event
+
+        /**
+         * Reset of the month drag and the scroll (goes back to the top).
+         */
+        data class Reset(val isInitiatedByUser: Boolean) : Event
     }
 
     private companion object {

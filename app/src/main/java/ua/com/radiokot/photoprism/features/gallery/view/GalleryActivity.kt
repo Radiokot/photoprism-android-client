@@ -473,6 +473,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         )
 
         onBackPressedDispatcher.addCallback(this, searchView.searchResetBackPressedCallback)
+        onBackPressedDispatcher.addCallback(this, fastScrollView.scrollResetBackPressedCallback)
         onBackPressedDispatcher.addCallback(this, searchView.closeConfigurationBackPressedCallback)
 
         view.searchBar.setNavigationOnClickListener {

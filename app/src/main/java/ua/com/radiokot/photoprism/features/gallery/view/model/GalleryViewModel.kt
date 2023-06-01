@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.io.File
@@ -196,7 +197,7 @@ class GalleryViewModel(
                     val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(searchConfigToApply)
 
-                    fastScrollViewModel.reset()
+                    fastScrollViewModel.reset(isInitiatedByUser = false)
 
                     if (searchMediaRepository != mediaRepositoryChanges.value?.repository) {
                         mediaRepositoryChanges.onNext(
@@ -208,7 +209,7 @@ class GalleryViewModel(
                 }
 
                 GallerySearchViewModel.State.NoSearch -> {
-                    fastScrollViewModel.reset()
+                    fastScrollViewModel.reset(isInitiatedByUser = false)
                     resetRepositoryToInitial()
                 }
 
@@ -233,41 +234,18 @@ class GalleryViewModel(
 
             when (event) {
                 is GalleryFastScrollViewModel.Event.DraggingAtMonth -> {
-                    val searchConfigForMonth: SearchConfig? =
-                        if (event.isTopMonth)
-                        // For top month we don't need to alter the "before" date,
-                        // if altered the result is the same as if the date is not set at all.
-                            currentSearchConfig
-                        else
-                            (currentSearchConfig ?: SearchConfig.DEFAULT)
-                                .copy(before = event.month.nextDayAfter)
+                    handleFastScroll(
+                        month = event.month,
+                        isScrolledToTheTop = event.isTopMonth,
+                    )
+                }
 
-                    // Always reset the scroll.
-                    // If the list is scrolled manually, setting fast scroll to the same month
-                    // must bring it back to the top.
-                    eventsSubject.onNext(Event.ResetScroll)
-
-                    // We need to change the repo if scrolled to the top month
-                    // (return to initial state before scrolling)
-                    // or if the search config for the month differs from the current.
-                    if (event.isTopMonth || searchConfigForMonth != currentSearchConfig) {
-                        log.debug {
-                            "subscribeToFastScroll(): switching_to_month_search_config:" +
-                                    "\nconfig=$searchConfigForMonth"
-                        }
-
-                        if (searchConfigForMonth != null) {
-                            val repositoryForMonth =
-                                galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
-
-                            mediaRepositoryChanges.onNext(
-                                MediaRepositoryChange.FastScroll(
-                                    repositoryForMonth
-                                )
-                            )
-                        } else {
-                            resetRepositoryToInitial()
-                        }
+                is GalleryFastScrollViewModel.Event.Reset -> {
+                    if (event.isInitiatedByUser) {
+                        handleFastScroll(
+                            month = null,
+                            isScrolledToTheTop = true,
+                        )
                     }
                 }
             }
@@ -277,6 +255,52 @@ class GalleryViewModel(
                         "\nevent=$event"
             }
         }.autoDispose(this)
+    }
+
+    /**
+     * @param month current month the fast scroll is staying, if any
+     * @param isScrolledToTheTop whether the fast scroll is at the top
+     */
+    private fun handleFastScroll(
+        month: GalleryMonth?,
+        isScrolledToTheTop: Boolean,
+    ) {
+        val searchConfigForMonth: SearchConfig? =
+            if (isScrolledToTheTop || month == null)
+            // For top month we don't need to alter the "before" date,
+            // if altered the result is the same as if the date is not set at all.
+                currentSearchConfig
+            else
+                (currentSearchConfig ?: SearchConfig.DEFAULT)
+                    .copy(before = month.nextDayAfter)
+
+        // Always reset the scroll.
+        // If the list is scrolled manually, setting fast scroll to the same month
+        // must bring it back to the top.
+        eventsSubject.onNext(Event.ResetScroll)
+
+        // We need to change the repo if scrolled to the top month
+        // (return to initial state before scrolling)
+        // or if the search config for the month differs from the current.
+        if (isScrolledToTheTop || searchConfigForMonth != currentSearchConfig) {
+            log.debug {
+                "subscribeToFastScroll(): switching_to_month_search_config:" +
+                        "\nconfig=$searchConfigForMonth"
+            }
+
+            if (searchConfigForMonth != null) {
+                val repositoryForMonth =
+                    galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+
+                mediaRepositoryChanges.onNext(
+                    MediaRepositoryChange.FastScroll(
+                        repositoryForMonth
+                    )
+                )
+            } else {
+                resetRepositoryToInitial()
+            }
+        }
     }
 
     private fun subscribeToRepositoryChanges() {

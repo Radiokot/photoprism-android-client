@@ -6,16 +6,19 @@ import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.Predicate
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMonthScrollBubble
@@ -83,6 +86,7 @@ class GalleryFastScrollView(
                         when (e.action) {
                             MotionEvent.ACTION_MOVE ->
                                 onDragging()
+
                             MotionEvent.ACTION_UP ->
                                 onDragEnded()
                         }
@@ -101,11 +105,18 @@ class GalleryFastScrollView(
             override fun scrollTo(offset: Int) {
                 this@GalleryFastScrollView.scrollOffset = offset
                 fastScrollRecyclerView.invalidateItemDecorations()
+                scrollResetBackPressedCallback.isEnabled = offset != 0
                 notifyFastScroller()
             }
 
             override fun getPopupText(): CharSequence? =
                 getCurrentBubble()?.name
+        }
+    }
+
+    val scrollResetBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            viewModel.reset(isInitiatedByUser = true)
         }
     }
 
@@ -122,6 +133,7 @@ class GalleryFastScrollView(
             .build()
 
         subscribeToData()
+        subscribeToViewEvents()
     }
 
     private fun subscribeToData() {
@@ -130,6 +142,43 @@ class GalleryFastScrollView(
             updateScrollRange()
             notifyFastScroller()
         }
+    }
+
+    private fun subscribeToViewEvents() {
+        viewModel.events
+            .subscribeBy { event ->
+                log.debug {
+                    "subscribeToViewEvents(): received_new_event:" +
+                            "\nevent=$event"
+                }
+
+                when (event) {
+                    is GalleryFastScrollViewModel.Event.Reset -> {
+                        resetScroll()
+                    }
+
+                    else -> {
+                        "subscribeToFastScroll(): skipped_new_event:" +
+                                "\nevent=$event"
+
+                        return@subscribeBy
+                    }
+                }
+
+                log.debug {
+                    "subscribeToFastScroll(): handled_new_event:" +
+                            "\nevent=$event"
+                }
+            }
+            .autoDispose(this)
+    }
+
+    private fun resetScroll() {
+        log.debug {
+            "resetScroll(): resetting"
+        }
+
+        fastScrollViewHelper.scrollTo(0)
     }
 
     private fun updateScrollRange() {

@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Once you returned, the last viewed media is visible in the list
 - Turkish, Greek, Italian and Chinese translations
 
+### Changed
+- Press of the "Back" navigation button resets the chronological scroll if it is scrolled somewhere
+
 ## [1.8.1] - 2023-05-28
 
 ### Fixed
