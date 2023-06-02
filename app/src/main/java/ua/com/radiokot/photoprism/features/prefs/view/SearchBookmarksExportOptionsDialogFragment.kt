@@ -7,15 +7,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
-import ua.com.radiokot.photoprism.databinding.DialogBookmarksExportOptionsBinding
+import ua.com.radiokot.photoprism.databinding.DialogSearchBookmarksExportOptionsBinding
 
-class BookmarksExportOptionsDialogFragment :
-    BaseMaterialDialogFragment(R.layout.dialog_bookmarks_export_options) {
+class SearchBookmarksExportOptionsDialogFragment :
+    BaseMaterialDialogFragment(R.layout.dialog_search_bookmarks_export_options) {
 
-    private lateinit var viewBinding: DialogBookmarksExportOptionsBinding
+    private lateinit var viewBinding: DialogSearchBookmarksExportOptionsBinding
 
     override fun onDialogViewCreated(dialogView: View, savedInstanceState: Bundle?) {
-        viewBinding = DialogBookmarksExportOptionsBinding.bind(dialogView)
+        viewBinding = DialogSearchBookmarksExportOptionsBinding.bind(dialogView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

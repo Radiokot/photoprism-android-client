@@ -102,10 +102,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
     private fun initBookmarksExportOptionsDialog() {
         childFragmentManager.setFragmentResultListener(
-            BookmarksExportOptionsDialogFragment.REQUEST_KEY,
+            SearchBookmarksExportOptionsDialogFragment.REQUEST_KEY,
             this
         ) { _, bundle ->
-            when (val optionId = BookmarksExportOptionsDialogFragment.getResult(bundle)) {
+            when (val optionId = SearchBookmarksExportOptionsDialogFragment.getResult(bundle)) {
                 R.id.share_button ->
                     shareBookmarksExport()
 
@@ -224,8 +224,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         // Activity fragment manager is used to keep the dialog opened
         // on activity re-creation.
         val fragment =
-            (childFragmentManager.findFragmentByTag(BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG) as? BookmarksExportOptionsDialogFragment)
-                ?: BookmarksExportOptionsDialogFragment()
+            (childFragmentManager.findFragmentByTag(BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG) as? SearchBookmarksExportOptionsDialogFragment)
+                ?: SearchBookmarksExportOptionsDialogFragment()
 
         if (!fragment.isAdded || !fragment.showsDialog) {
             fragment.showNow(childFragmentManager, BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG)

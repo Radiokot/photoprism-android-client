@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="24dp">
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="16dp">
 
     <TextView
         android:id="@+id/title_text_view"
