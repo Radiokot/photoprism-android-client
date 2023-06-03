@@ -13,7 +13,7 @@ A native Android gallery and content provider for your [PhotoPrism library](http
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width=200 />
 </p>
 
-The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and has other drawbacks.
+The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and has [other drawbacks](https://blog.perryizgr8.com/photos/2023/03/20/google-photos-alt.html#photoprism).
 This app does not (and probably will not) support all the web-client features, but nevertheless it can:
 - Provide the library content to other Android apps – 
 you can select PhotoPrism Gallery among other galleries when picking a photo or video
