@@ -46,8 +46,8 @@
     <string name="load_more">Завантажити більше</string>
     <string name="template_successfully_downloaded_file">Файл було збережено в Завантаження: %1$s</string>
     <string name="error_storage_permission_is_required">Потрібен доступ до сховища</string>
-    <string name="add_search_bookmark">Додати закладку</string>
-    <string name="edit_search_bookmark">Змінити закладку</string>
+    <string name="add_search_bookmark">Нова закладка</string>
+    <string name="edit_search_bookmark">Закладка</string>
     <string name="search_bookmark_name">Ім\'я</string>
     <string name="save">Зберегти</string>
     <string name="delete">Видалити</string>
