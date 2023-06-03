@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.9.0] - 2023-06-03
 
 ### Added
 - Monochrome icon for Android 13 and higher
@@ -15,6 +15,9 @@ Once you returned, the last viewed media is visible in the list
 
 ### Changed
 - Press of the "Back" navigation button resets the chronological scroll if it is scrolled somewhere
+
+### Fixed
+- Inconsistent paddings in the dialogs 
 
 ## [1.8.1] - 2023-05-28
 
@@ -160,7 +163,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.1(16)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.9.0(17)...HEAD
+[1.9.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.1(16)...1.9.0(17)
 [1.8.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.0(15)...1.8.1(16)
 [1.8.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...1.8.0(15)
 [1.7.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...1.7.1(14)
