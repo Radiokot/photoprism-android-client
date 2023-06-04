@@ -785,12 +785,18 @@ class GalleryViewModel(
             val areActionsEnabled: Boolean,
         ) : Event
 
+        /**
+         * Reset the scroll (to the top) and the infinite scrolling.
+         */
         object ResetScroll : Event
 
         class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event
 
+        /**
+         * Ensure that the given item of the [itemsList] is visible on the screen.
+         */
         class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 
@@ -799,8 +805,14 @@ class GalleryViewModel(
             "onScreenResumedAfterMovedBackWithBackButton(): invalidate_all_cached_repos"
         }
 
+        // When resuming from the background, invalidate all the cached repos
+        // to load the fresh data.
         galleryMediaRepositoryFactory.invalidateAllCached()
         update()
+
+        // Reset the scroll and, more importantly, pagination
+        // as the number of list items may decrease.
+        eventsSubject.onNext(Event.ResetScroll)
     }
 
     sealed interface State {
