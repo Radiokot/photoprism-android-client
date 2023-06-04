@@ -1,8 +1,8 @@
 # <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> PhotoPrism Gallery
 
-![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square) 
-![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square) 
-![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=2&color=e2e0f6&style=flat-square)
+[![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
+[![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=2&color=e2e0f6&style=flat-square)](#sponsors) 
 
 A native Android gallery and content provider for your [PhotoPrism library](https://www.photoprism.app/). 
 
