@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,7 +19,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -44,6 +48,7 @@ import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 
@@ -57,12 +62,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
+    private var isBackButtonJustPressed = false
+    private var isMovedBackByBackButton = false
+    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
-
-    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
     private val mediaFileSelectionView: MediaFileSelectionView by lazy {
         MediaFileSelectionView(
@@ -609,6 +615,31 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
+    }
+
+    private var backPressResetDisposable: Disposable? = null
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            backPressResetDisposable?.dispose()
+            backPressResetDisposable = Single.timer(400, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .doOnSubscribe { isBackButtonJustPressed = true }
+                .subscribeBy { isBackButtonJustPressed = false }
+                .autoDispose(this)
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isMovedBackByBackButton = !isFinishing && isBackButtonJustPressed
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isMovedBackByBackButton) {
+            viewModel.onScreenResumedAfterMovedBackWithBackButton()
+        }
     }
 
     private val GalleryViewModel.Error.localizedMessage: String

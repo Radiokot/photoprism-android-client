@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Inability to refresh the gallery when re-opening the app after it has been moved to the background 
+by pressing the "Back" navigation button. The data is now updated automatically in this case
+
 ## [1.9.0] - 2023-06-03
 
 ### Added

@@ -794,6 +794,15 @@ class GalleryViewModel(
         class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 
+    fun onScreenResumedAfterMovedBackWithBackButton() {
+        log.debug {
+            "onScreenResumedAfterMovedBackWithBackButton(): invalidate_all_cached_repos"
+        }
+
+        galleryMediaRepositoryFactory.invalidateAllCached()
+        update()
+    }
+
     sealed interface State {
         object Viewing : State
         class Selecting(

@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
+import ua.com.radiokot.photoprism.base.data.storage.Repository
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -322,6 +323,13 @@ class SimpleGalleryMediaRepository(
                 ).also {
                     cache.put(key, it)
                 }
+        }
+
+        /**
+         * Invalidates all the cached repositories.
+         */
+        fun invalidateAllCached() {
+            cache.snapshot().values.onEach(Repository::invalidate)
         }
 
         private companion object {
