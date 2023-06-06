@@ -11,7 +11,11 @@ import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.di.*
+import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.EnvHttpClientParams
+import ua.com.radiokot.photoprism.di.HttpClient
+import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.view.DefaultVideoPlayerFactory
@@ -43,7 +47,9 @@ val mediaViewerFeatureModules: List<Module> = listOf(
                 MediaViewerViewModel(
                     galleryMediaRepositoryFactory = get(),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
-                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY))
+                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
+                    downloadMediaFileViewModel = get(),
+                    application = get(),
                 ) { path, mimeType ->
                     MediaScannerConnection.scanFile(
                         get(),

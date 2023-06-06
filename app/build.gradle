@@ -146,6 +146,9 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.6'
     implementation 'com.google.android.exoplayer:extension-okhttp:2.18.6'
 
+    implementation "androidx.work:work-runtime:$work_version"
+    implementation "androidx.work:work-rxjava3:$work_version"
+
     testImplementation 'junit:junit:4.13.2'
 
     testImplementation "io.insert-koin:koin-test:$koin_version"

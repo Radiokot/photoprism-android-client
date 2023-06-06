@@ -1,8 +1,12 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import android.app.Application
 import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -14,6 +18,7 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.viewer.logic.DownloadMediaFileWorker
 import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
 
@@ -21,8 +26,11 @@ class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
+    val downloadMediaFileViewModel: DownloadMediaFileViewModel,
+    // TODO: get rid of it
+    private val application: Application,
     private val mediaScannerConnection: WrappedMediaScannerConnection?,
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
@@ -40,10 +48,7 @@ class MediaViewerViewModel(
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
-
     fun initOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
@@ -54,8 +59,6 @@ class MediaViewerViewModel(
 
             return
         }
-
-        downloadMediaFileViewModel = downloadViewModel
 
         galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
             .checkNotNull {
@@ -343,6 +346,17 @@ class MediaViewerViewModel(
                     "\nfile=$file"
         }
 
+        WorkManager.getInstance(application)
+            .beginUniqueWork(
+                "download-$file",
+                ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequest.Companion.from(DownloadMediaFileWorker::class.java)
+            )
+            .enqueue()
+            .also {
+                println("OOLEG enqueued $it")
+            }
+        return
         downloadMediaFileViewModel.downloadFile(
             file = file,
             destination = File(externalDownloadsDir, File(file.name).name),

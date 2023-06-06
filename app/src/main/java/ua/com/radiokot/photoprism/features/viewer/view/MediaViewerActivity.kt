@@ -36,7 +36,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
@@ -52,7 +51,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
-    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
@@ -68,7 +66,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = downloadViewModel,
+            viewModel = viewModel.downloadMediaFileViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.viewPager,
             lifecycleOwner = this
@@ -111,7 +109,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewModel.initOnce(
-            downloadViewModel = downloadViewModel,
             repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
         )
