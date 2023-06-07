@@ -59,7 +59,11 @@ class DownloadFileWorker(
                 setProgressAsync(getProgressData(-1.0))
             }
             .concatMapCompletable { progress ->
-                setCompletableProgress(getProgressData(progress.percent))
+                setCompletableProgress(
+                    getProgressData(
+                        percent = progress.percent
+                    )
+                )
             }
             .toSingleDefault(Result.success())
             .doOnSuccess {
@@ -74,6 +78,10 @@ class DownloadFileWorker(
         private const val DESTINATION_PATH_KEY = "destination_path"
         private const val PROGRESS_PERCENT_KEY = "progress"
 
+        /**
+         * @param url URL of the remote file
+         * @param destination local destination for the download
+         */
         fun getInputData(
             url: String,
             destination: File,

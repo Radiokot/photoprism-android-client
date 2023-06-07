@@ -20,7 +20,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileV
 import ua.com.radiokot.photoprism.features.viewer.logic.DownloadFileWorker
 import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
-import java.util.UUID
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -350,8 +349,6 @@ class MediaViewerViewModel(
                     "\nfile=$file"
         }
 
-        val uuid = UUID.randomUUID()
-
         WorkManager.getInstance(application)
             .beginWith(
                 OneTimeWorkRequest.Builder(DownloadFileWorker::class.java)
@@ -361,13 +358,16 @@ class MediaViewerViewModel(
                             destination = File(externalDownloadsDir, File(file.name).name),
                         )
                     )
-                    .setId(uuid)
+                    .addTag(file.downloadUrl)
                     .build()
             )
             .enqueue()
             .also {
-                WorkManager.getInstance(application).getWorkInfoByIdLiveData(uuid)
-                    .observeForever { workInfo ->
+
+                WorkManager.getInstance(application).getWorkInfosByTagLiveData(file.downloadUrl)
+                    .observeForever { workInfos ->
+                        val workInfo = workInfos.firstOrNull()
+                            ?: return@observeForever
                         println(
                             "OOLEG state: ${workInfo.state} progress: ${
                                 DownloadFileWorker.getProgressPercent(
