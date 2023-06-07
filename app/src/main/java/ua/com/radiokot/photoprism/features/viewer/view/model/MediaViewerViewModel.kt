@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -18,9 +17,10 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.viewer.logic.DownloadMediaFileWorker
+import ua.com.radiokot.photoprism.features.viewer.logic.DownloadFileWorker
 import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
+import java.util.UUID
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -246,6 +246,7 @@ class MediaViewerViewModel(
                     stateSubject.onNext(State.Idle)
                     eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
                 }
+
             else ->
                 error("Can't handle storage permission in $state state")
         }
@@ -269,10 +270,13 @@ class MediaViewerViewModel(
         when (stateSubject.value.checkNotNull()) {
             State.Sharing ->
                 downloadAndShareFile(file)
+
             State.OpeningIn ->
                 downloadAndOpenFile(file)
+
             is State.DownloadingToExternalStorage ->
                 downloadFileToExternalStorage(file)
+
             else ->
                 error("Can't select files in ${stateSubject.value} state")
         }
@@ -346,14 +350,32 @@ class MediaViewerViewModel(
                     "\nfile=$file"
         }
 
+        val uuid = UUID.randomUUID()
+
         WorkManager.getInstance(application)
-            .beginUniqueWork(
-                "download-$file",
-                ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequest.Companion.from(DownloadMediaFileWorker::class.java)
+            .beginWith(
+                OneTimeWorkRequest.Builder(DownloadFileWorker::class.java)
+                    .setInputData(
+                        DownloadFileWorker.getInputData(
+                            url = file.downloadUrl,
+                            destination = File(externalDownloadsDir, File(file.name).name),
+                        )
+                    )
+                    .setId(uuid)
+                    .build()
             )
             .enqueue()
             .also {
+                WorkManager.getInstance(application).getWorkInfoByIdLiveData(uuid)
+                    .observeForever { workInfo ->
+                        println(
+                            "OOLEG state: ${workInfo.state} progress: ${
+                                DownloadFileWorker.getProgressPercent(
+                                    workInfo.progress
+                                )
+                            }"
+                        )
+                    }
                 println("OOLEG enqueued $it")
             }
         return
