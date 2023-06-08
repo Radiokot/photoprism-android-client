@@ -67,7 +67,8 @@ class BackgroundMediaFileDownloadManager(
                     liveData.removeObserver(this)
                     emitter.onComplete()
                 } else {
-                    val workInfo = workInfoList.first()
+                    // TODO: bug when there are lot of previously completed works.
+                    val workInfo = workInfoList.last()
                     when (workInfo.state) {
                         State.ENQUEUED,
                         State.BLOCKED ->

@@ -520,30 +520,29 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun showSuccessfulDownloadMessage(destinationFileName: String) {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(
                 R.string.template_successfully_downloaded_file,
                 destinationFileName
             ),
-            Snackbar.LENGTH_LONG,
+            Snackbar.LENGTH_SHORT,
         ).show()
     }
 
     private fun showStartedDownloadMessage(destinationFileName: String) {
-        // TODO: Show snackbar above the buttons
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(
                 R.string.template_started_download_file,
                 destinationFileName
             ),
-            Snackbar.LENGTH_LONG,
+            Snackbar.LENGTH_SHORT,
         ).show()
     }
 
     private fun showMissingStoragePermissionMessage() {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(R.string.error_storage_permission_is_required),
             Snackbar.LENGTH_SHORT,
         ).show()
