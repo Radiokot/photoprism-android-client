@@ -45,7 +45,6 @@
     <string name="error_library_not_accessible_try_again">Library is not accessible. Check the connection and try again</string>
     <string name="try_again">Try again</string>
     <string name="load_more">Load more</string>
-    <string name="template_successfully_downloaded_file">File has been saved to the Downloads: %1$s</string>
     <string name="template_started_download_file">File will be saved to the Downloads: %1$s</string>
     <string name="error_storage_permission_is_required">Storage access permission is required</string>
     <string name="add_search_bookmark">Add a bookmark</string>

@@ -44,7 +44,7 @@
     <string name="error_library_not_accessible_try_again">Бібліотека недоступна. Перевірте підключення та спробуйте ще раз</string>
     <string name="try_again">Повторити</string>
     <string name="load_more">Завантажити більше</string>
-    <string name="template_successfully_downloaded_file">Файл було збережено в Завантаження: %1$s</string>
+    <string name="template_started_download_file">Файл було збережено в Завантаження: %1$s</string>
     <string name="error_storage_permission_is_required">Потрібен доступ до сховища</string>
     <string name="add_search_bookmark">Нова закладка</string>
     <string name="edit_search_bookmark">Закладка</string>

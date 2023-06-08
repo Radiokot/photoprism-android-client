@@ -421,11 +421,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 is MediaViewerViewModel.Event.CheckStoragePermission ->
                     checkStoragePermission()
 
-                is MediaViewerViewModel.Event.ShowSuccessfulDownloadMessage ->
-                    showSuccessfulDownloadMessage(
-                        destinationFileName = event.destinationFileName,
-                    )
-
                 is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
                     showStartedDownloadMessage(
                         destinationFileName = event.destinationFileName,
@@ -516,17 +511,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun onStoragePermissionResult(isGranted: Boolean) {
         viewModel.onStoragePermissionResult(isGranted)
-    }
-
-    private fun showSuccessfulDownloadMessage(destinationFileName: String) {
-        Snackbar.make(
-            view.snackbarArea,
-            getString(
-                R.string.template_successfully_downloaded_file,
-                destinationFileName
-            ),
-            Snackbar.LENGTH_SHORT,
-        ).show()
     }
 
     private fun showStartedDownloadMessage(destinationFileName: String) {

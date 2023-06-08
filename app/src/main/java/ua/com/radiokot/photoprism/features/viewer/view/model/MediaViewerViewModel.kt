@@ -436,7 +436,6 @@ class MediaViewerViewModel(
 
         object CheckStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
-        class ShowSuccessfulDownloadMessage(val destinationFileName: String) : Event
         class ShowStartedDownloadMessage(val destinationFileName: String) : Event
         class OpenUrl(val url: String) : Event
     }

@@ -44,7 +44,6 @@
     <string name="error_library_not_accessible_try_again">La libreria non è accessibile. Controlla la connessione e riprova</string>
     <string name="try_again">Riprova</string>
     <string name="load_more">Carica altro</string>
-    <string name="template_successfully_downloaded_file">Il file è stato salvato nei download: %1$s</string>
     <string name="error_storage_permission_is_required">È richiesta l\'autorizzazione di accesso alla memoria</string>
     <string name="add_search_bookmark">Aggiungi segnalibro</string>
     <string name="edit_search_bookmark">Modifica segnalibro</string>
