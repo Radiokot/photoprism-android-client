@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.di
 
-import androidx.work.WorkManager
 import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
@@ -20,6 +19,7 @@ import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.view.DefaultVideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
@@ -46,8 +46,10 @@ val mediaViewerFeatureModules: List<Module> = listOf(
 
         scope<EnvSession> {
             scoped {
-                BackgroundMediaFileDownloadManager(
-                    WorkManager.getInstance(androidApplication())
+                ThreadPoolBackgroundMediaFileDownloadManager(
+                    downloadFileUseCaseFactory = get(),
+                    context = androidApplication(),
+                    poolSize = 6,
                 )
             } bind BackgroundMediaFileDownloadManager::class
 
