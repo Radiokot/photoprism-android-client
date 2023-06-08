@@ -1,13 +1,12 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
-import android.app.Application
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -17,19 +16,19 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.viewer.logic.DownloadFileWorker
+import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
+import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
-    // TODO: get rid of it
-    private val application: Application,
+    private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val mediaScannerConnection: WrappedMediaScannerConnection?,
-) : AndroidViewModel(application) {
+) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
@@ -46,6 +45,17 @@ class MediaViewerViewModel(
     val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadButtonProgressVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadButtonClickable: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    // From 0 to 100, negative for indeterminate.
+    val downloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
+
+    init {
+        isDownloadButtonProgressVisible.observeForever { isProgressVisible ->
+            isDownloadButtonClickable.value = !isProgressVisible
+        }
+    }
 
     fun initOnce(
         repositoryParams: SimpleGalleryMediaRepository.Params,
@@ -344,60 +354,67 @@ class MediaViewerViewModel(
     }
 
     private fun downloadFileToExternalStorage(file: GalleryMedia.File) {
+        val destinationFile = File(externalDownloadsDir, File(file.name).name)
+
+        val progressObservable = backgroundMediaFileDownloadManager.enqueue(
+            file = file,
+            destination = destinationFile,
+        )
+
         log.debug {
-            "downloadFileToExternalStorage(): start_downloading:" +
-                    "\nfile=$file"
+            "downloadFileToExternalStorage(): enqueued_download:" +
+                    "\nfile=$file," +
+                    "\ndestination=$destinationFile"
         }
 
-        WorkManager.getInstance(application)
-            .beginWith(
-                OneTimeWorkRequest.Builder(DownloadFileWorker::class.java)
-                    .setInputData(
-                        DownloadFileWorker.getInputData(
-                            url = file.downloadUrl,
-                            destination = File(externalDownloadsDir, File(file.name).name),
-                        )
-                    )
-                    .addTag(file.downloadUrl)
-                    .build()
+        subscribeToMediaBackgroundDownloadProgress(progressObservable)
+
+        stateSubject.onNext(State.Idle)
+        eventsSubject.onNext(
+            Event.ShowStartedDownloadMessage(
+                destinationFileName = destinationFile.name,
             )
-            .enqueue()
-            .also {
-
-                WorkManager.getInstance(application).getWorkInfosByTagLiveData(file.downloadUrl)
-                    .observeForever { workInfos ->
-                        val workInfo = workInfos.firstOrNull()
-                            ?: return@observeForever
-                        println(
-                            "OOLEG state: ${workInfo.state} progress: ${
-                                DownloadFileWorker.getProgressPercent(
-                                    workInfo.progress
-                                )
-                            }"
-                        )
-                    }
-                println("OOLEG enqueued $it")
-            }
-        return
-        downloadMediaFileViewModel.downloadFile(
-            file = file,
-            destination = File(externalDownloadsDir, File(file.name).name),
-            onSuccess = { destinationFile ->
-                stateSubject.onNext(State.Idle)
-                eventsSubject.onNext(
-                    Event.ShowSuccessfulDownloadMessage(
-                        fileName = destinationFile.name,
-                    )
-                )
-
-                mediaScannerConnection?.scanFile(
-                    destinationFile.path,
-                    file.mimeType,
-                )?.also {
-                    log.debug { "downloadFileToExternalStorage(): notified_media_scanner" }
-                }
-            }
         )
+    }
+
+    fun onPageChanged(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onPageChanged(): page_changed:" +
+                    "\nitem=$item"
+        }
+
+        subscribeToMediaBackgroundDownloadProgress(
+            progressObservable = backgroundMediaFileDownloadManager.getProgress(item.uid)
+        )
+    }
+
+    private var backgroundDownloadProgressDisposable: Disposable? = null
+    private fun subscribeToMediaBackgroundDownloadProgress(
+        progressObservable: Observable<BackgroundMediaFileDownloadManager.Progress>,
+    ) {
+        backgroundDownloadProgressDisposable?.dispose()
+        backgroundDownloadProgressDisposable = progressObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                isDownloadButtonProgressVisible.value = false
+            }
+            .subscribeBy(
+                onNext = { progress ->
+                    isDownloadButtonProgressVisible.value = true
+                    downloadButtonProgressPercent.value = progress.percent.roundToInt()
+                },
+                onComplete = {
+                    isDownloadButtonProgressVisible.value = false
+                },
+                onError = {
+                    log.error(it) {
+                        "subscribeToMediaBackgroundDownloadProgress(): error_occurred"
+                    }
+                }
+            )
+            .autoDispose(this)
     }
 
     sealed interface Event {
@@ -417,7 +434,8 @@ class MediaViewerViewModel(
 
         object CheckStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
-        class ShowSuccessfulDownloadMessage(val fileName: String) : Event
+        class ShowSuccessfulDownloadMessage(val destinationFileName: String) : Event
+        class ShowStartedDownloadMessage(val destinationFileName: String) : Event
         class OpenUrl(val url: String) : Event
     }
 

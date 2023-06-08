@@ -14,6 +14,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter
@@ -208,6 +209,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 }
             }
             recyclerView.addOnScrollListener(endlessScrollListener)
+
+            registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    viewModel.onPageChanged(position)
+                }
+            })
         }
     }
 
@@ -346,6 +353,21 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 log.debug { "initData(): disabled_full_screen" }
             }
         }
+
+        viewModel.isDownloadButtonProgressVisible.observe(this) { isProgressVisible ->
+            if (isProgressVisible) {
+                view.downloadButtonProgress.show()
+            } else {
+                view.downloadButtonProgress.hide()
+            }
+        }
+
+        viewModel.downloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
+            view.downloadButtonProgress.progress = downloadProgressPercent
+            view.downloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
+        }
+
+        viewModel.isDownloadButtonClickable.observe(this, view.downloadButton::setClickable)
     }
 
     @Suppress("DEPRECATION")
@@ -401,7 +423,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
                 is MediaViewerViewModel.Event.ShowSuccessfulDownloadMessage ->
                     showSuccessfulDownloadMessage(
-                        fileName = event.fileName,
+                        destinationFileName = event.destinationFileName,
+                    )
+
+                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                    showStartedDownloadMessage(
+                        destinationFileName = event.destinationFileName,
                     )
 
                 is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
@@ -491,12 +518,24 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private fun showSuccessfulDownloadMessage(fileName: String) {
+    private fun showSuccessfulDownloadMessage(destinationFileName: String) {
         Snackbar.make(
             view.viewPager,
             getString(
                 R.string.template_successfully_downloaded_file,
-                fileName
+                destinationFileName
+            ),
+            Snackbar.LENGTH_LONG,
+        ).show()
+    }
+
+    private fun showStartedDownloadMessage(destinationFileName: String) {
+        // TODO: Show snackbar above the buttons
+        Snackbar.make(
+            view.viewPager,
+            getString(
+                R.string.template_started_download_file,
+                destinationFileName
             ),
             Snackbar.LENGTH_LONG,
         ).show()
