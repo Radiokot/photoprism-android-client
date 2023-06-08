@@ -17,7 +17,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -27,7 +26,6 @@ class MediaViewerViewModel(
     private val externalDownloadsDir: File,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
-    private val mediaScannerConnection: WrappedMediaScannerConnection?,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -186,6 +184,10 @@ class MediaViewerViewModel(
     }
 
     fun onDownloadClicked(position: Int) {
+        check(isDownloadButtonClickable.value == true) {
+            "The button can't be clicked while it is unclickable"
+        }
+
         val item = galleryMediaRepository.itemsList[position]
 
         log.debug {

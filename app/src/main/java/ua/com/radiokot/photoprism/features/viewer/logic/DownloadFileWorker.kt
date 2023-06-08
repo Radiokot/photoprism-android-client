@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.viewer.logic
 
 import android.content.Context
+import android.media.MediaScannerConnection
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
@@ -38,6 +39,8 @@ class DownloadFileWorker(
             "The destination path must be specified"
         }
     )
+    private val mimeType =
+        workerParams.inputData.getString(MIME_TYPE_KEY)?.takeIf(String::isNotEmpty)
 
     override fun createWork(): Single<Result> =
         downloadFileUseCaseFactory
@@ -53,7 +56,10 @@ class DownloadFileWorker(
             }
             .doOnSubscribe {
                 log.debug {
-                    "createWork(): subscribed"
+                    "createWork(): started:" +
+                            "\nurl=$url," +
+                            "\ndestination=$destination," +
+                            "\nmimeType=$mimeType"
                 }
 
                 setProgressAsync(getProgressData(-1.0))
@@ -67,6 +73,19 @@ class DownloadFileWorker(
             }
             .toSingleDefault(Result.success())
             .doOnSuccess {
+                if (mimeType != null) {
+                    MediaScannerConnection.scanFile(
+                        applicationContext,
+                        arrayOf(destination.path),
+                        arrayOf(mimeType),
+                        null,
+                    )
+
+                    log.debug {
+                        "createWork(): notified_media_scanner"
+                    }
+                }
+
                 log.debug {
                     "createWork(): successfully_done"
                 }
@@ -77,18 +96,22 @@ class DownloadFileWorker(
         private const val URL_KEY = "url"
         private const val DESTINATION_PATH_KEY = "destination_path"
         private const val PROGRESS_PERCENT_KEY = "progress"
+        private const val MIME_TYPE_KEY = "mime_type"
 
         /**
          * @param url URL of the remote file
+         * @param mimeType optional, to be passed to MediaScanner
          * @param destination local destination for the download
          */
         fun getInputData(
             url: String,
+            mimeType: String?,
             destination: File,
         ): Data =
             Data.Builder()
                 .putString(URL_KEY, url)
                 .putString(DESTINATION_PATH_KEY, destination.path)
+                .putString(MIME_TYPE_KEY, mimeType)
                 .build()
 
         private fun getProgressData(percent: Double): Data =

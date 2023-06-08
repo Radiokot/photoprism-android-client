@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.di
 
-import android.media.MediaScannerConnection
 import androidx.work.WorkManager
 import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.Cache
@@ -46,23 +45,20 @@ val mediaViewerFeatureModules: List<Module> = listOf(
         } bind Cache::class
 
         scope<EnvSession> {
+            scoped {
+                BackgroundMediaFileDownloadManager(
+                    WorkManager.getInstance(androidApplication())
+                )
+            } bind BackgroundMediaFileDownloadManager::class
+
             viewModel {
                 MediaViewerViewModel(
                     galleryMediaRepositoryFactory = get(),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                     externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                     downloadMediaFileViewModel = get(),
-                    backgroundMediaFileDownloadManager = BackgroundMediaFileDownloadManager(
-                        WorkManager.getInstance(androidApplication())
-                    ),
-                ) { path, mimeType ->
-                    MediaScannerConnection.scanFile(
-                        get(),
-                        arrayOf(path),
-                        arrayOf(mimeType),
-                        null,
-                    )
-                }
+                    backgroundMediaFileDownloadManager = get(),
+                )
             }
 
             scoped {
