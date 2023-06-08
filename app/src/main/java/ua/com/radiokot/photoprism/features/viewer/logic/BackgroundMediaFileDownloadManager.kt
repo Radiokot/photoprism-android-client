@@ -23,7 +23,7 @@ interface BackgroundMediaFileDownloadManager {
      */
     fun getProgress(
         mediaUid: String,
-    ): Observable<BackgroundMediaFileDownloadManager.Progress>
+    ): Observable<Progress>
 
     class Progress(
         val percent: Double,
