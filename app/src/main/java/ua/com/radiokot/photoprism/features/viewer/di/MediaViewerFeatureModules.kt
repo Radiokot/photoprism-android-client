@@ -1,19 +1,25 @@
 package ua.com.radiokot.photoprism.features.viewer.di
 
-import android.media.MediaScannerConnection
 import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.di.*
+import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.EnvHttpClientParams
+import ua.com.radiokot.photoprism.di.HttpClient
+import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
+import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.view.DefaultVideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
@@ -39,19 +45,22 @@ val mediaViewerFeatureModules: List<Module> = listOf(
         } bind Cache::class
 
         scope<EnvSession> {
+            scoped {
+                ThreadPoolBackgroundMediaFileDownloadManager(
+                    downloadFileUseCaseFactory = get(),
+                    context = androidApplication(),
+                    poolSize = 6,
+                )
+            } bind BackgroundMediaFileDownloadManager::class
+
             viewModel {
                 MediaViewerViewModel(
                     galleryMediaRepositoryFactory = get(),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
-                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY))
-                ) { path, mimeType ->
-                    MediaScannerConnection.scanFile(
-                        get(),
-                        arrayOf(path),
-                        arrayOf(mimeType),
-                        null,
-                    )
-                }
+                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
+                    downloadMediaFileViewModel = get(),
+                    backgroundMediaFileDownloadManager = get(),
+                )
             }
 
             scoped {

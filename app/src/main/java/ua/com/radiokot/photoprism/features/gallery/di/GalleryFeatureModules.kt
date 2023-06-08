@@ -118,6 +118,12 @@ val galleryFeatureModules: List<Module> = listOf(
             } bind MediaWebUrlFactory::class
 
             scoped {
+                DownloadFileUseCase.Factory(
+                    observableDownloader = get(),
+                )
+            } bind DownloadFileUseCase.Factory::class
+
+            scoped {
                 SimpleGalleryMediaRepository.Factory(
                     photoPrismPhotosService = get(),
                     thumbnailUrlFactory = get(),
@@ -139,9 +145,7 @@ val galleryFeatureModules: List<Module> = listOf(
 
             viewModel {
                 DownloadMediaFileViewModel(
-                    downloadFileUseCaseFactory = DownloadFileUseCase.Factory(
-                        observableDownloader = get(),
-                    )
+                    downloadFileUseCaseFactory = get(),
                 )
             }
 

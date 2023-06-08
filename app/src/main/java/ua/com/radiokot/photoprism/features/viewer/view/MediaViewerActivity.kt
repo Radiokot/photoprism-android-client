@@ -14,6 +14,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter
@@ -36,7 +37,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
@@ -52,7 +52,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
-    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
@@ -68,7 +67,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = downloadViewModel,
+            viewModel = viewModel.downloadMediaFileViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.viewPager,
             lifecycleOwner = this
@@ -111,7 +110,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewModel.initOnce(
-            downloadViewModel = downloadViewModel,
             repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
         )
@@ -211,6 +209,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 }
             }
             recyclerView.addOnScrollListener(endlessScrollListener)
+
+            registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    viewModel.onPageChanged(position)
+                }
+            })
         }
     }
 
@@ -349,6 +353,21 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 log.debug { "initData(): disabled_full_screen" }
             }
         }
+
+        viewModel.isDownloadButtonProgressVisible.observe(this) { isProgressVisible ->
+            if (isProgressVisible) {
+                view.downloadButtonProgress.show()
+            } else {
+                view.downloadButtonProgress.hide()
+            }
+        }
+
+        viewModel.downloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
+            view.downloadButtonProgress.progress = downloadProgressPercent
+            view.downloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
+        }
+
+        viewModel.isDownloadButtonClickable.observe(this, view.downloadButton::setClickable)
     }
 
     @Suppress("DEPRECATION")
@@ -402,9 +421,9 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 is MediaViewerViewModel.Event.CheckStoragePermission ->
                     checkStoragePermission()
 
-                is MediaViewerViewModel.Event.ShowSuccessfulDownloadMessage ->
-                    showSuccessfulDownloadMessage(
-                        fileName = event.fileName,
+                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                    showStartedDownloadMessage(
+                        destinationFileName = event.destinationFileName,
                     )
 
                 is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
@@ -494,20 +513,20 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private fun showSuccessfulDownloadMessage(fileName: String) {
+    private fun showStartedDownloadMessage(destinationFileName: String) {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(
-                R.string.template_successfully_downloaded_file,
-                fileName
+                R.string.template_started_download_file,
+                destinationFileName
             ),
-            Snackbar.LENGTH_LONG,
+            Snackbar.LENGTH_SHORT,
         ).show()
     }
 
     private fun showMissingStoragePermissionMessage() {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(R.string.error_storage_permission_is_required),
             Snackbar.LENGTH_SHORT,
         ).show()
