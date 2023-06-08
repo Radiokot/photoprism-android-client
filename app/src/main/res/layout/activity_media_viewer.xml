@@ -30,16 +30,28 @@
         app:justifyContent="center"
         tools:ignore="MissingConstraints">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/download_button"
-            style="?materialIconButtonFilledTonalStyle"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
-            android:contentDescription="@string/download"
-            android:tooltipText="@string/download"
-            app:icon="@drawable/ic_download"
-            tools:targetApi="o" />
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/download_button"
+                style="?materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/download"
+                android:tooltipText="@string/download"
+                app:icon="@drawable/ic_download"
+                tools:targetApi="o" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/download_button_progress"
+                style="@style/Widget.Material3.CircularProgressIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:trackThickness="2dp" />
+        </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_button"
