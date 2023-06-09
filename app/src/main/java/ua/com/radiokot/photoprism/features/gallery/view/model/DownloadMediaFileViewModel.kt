@@ -64,6 +64,7 @@ class DownloadMediaFileViewModel(
             .get(
                 url = file.downloadUrl,
                 destination = destination,
+                mimeType = file.mimeType,
             )
             .perform()
             .subscribeOn(Schedulers.io())
@@ -94,12 +95,6 @@ class DownloadMediaFileViewModel(
                     log.error(error) {
                         "downloadFile(): error_occurred:" +
                                 "\nurl=$downloadUrl"
-                    }
-
-                    try {
-                        destination.delete()
-                    } catch (e: Exception) {
-                        log.error(e) { "downloadFile(): failed_to_delete_destination_on_error" }
                     }
 
                     downloadEventsSubject.onNext(DownloadProgressViewModel.Event.DownloadFailed)
@@ -143,6 +138,7 @@ class DownloadMediaFileViewModel(
                     .get(
                         url = downloadUrl,
                         destination = destination,
+                        mimeType = file.mimeType,
                     )
                     .perform()
                     .subscribeOn(Schedulers.io())

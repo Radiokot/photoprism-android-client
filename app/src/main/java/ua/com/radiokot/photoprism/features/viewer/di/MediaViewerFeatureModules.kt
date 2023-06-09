@@ -4,7 +4,6 @@ import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
@@ -48,7 +47,6 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             scoped {
                 ThreadPoolBackgroundMediaFileDownloadManager(
                     downloadFileUseCaseFactory = get(),
-                    context = androidApplication(),
                     poolSize = 6,
                 )
             } bind BackgroundMediaFileDownloadManager::class

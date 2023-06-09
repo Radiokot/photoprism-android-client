@@ -120,6 +120,7 @@ val galleryFeatureModules: List<Module> = listOf(
             scoped {
                 DownloadFileUseCase.Factory(
                     observableDownloader = get(),
+                    context = get(),
                 )
             } bind DownloadFileUseCase.Factory::class
 

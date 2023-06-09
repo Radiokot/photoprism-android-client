@@ -1,7 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.logic
 
-import android.content.Context
-import android.media.MediaScannerConnection
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -13,12 +11,9 @@ import java.util.concurrent.Executors
 
 /**
  * A [BackgroundMediaFileDownloadManager] which utilizes a fixed thread pool.
- *
- * @param context required to notify MediaScanner
  */
 class ThreadPoolBackgroundMediaFileDownloadManager(
     private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
-    private val context: Context?,
     poolSize: Int,
 ) : BackgroundMediaFileDownloadManager {
     private val log = kLogger("RxBackgroundMFDownloadManager")
@@ -43,6 +38,7 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                     .get(
                         url = file.downloadUrl,
                         destination = destination,
+                        mimeType = file.mimeType
                     )
                     .perform()
                     .subscribeOn(scheduler)
@@ -56,36 +52,10 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                 log.error(it) {
                     "enqueue(): download_error_occurred"
                 }
-
-                try {
-                    destination.delete()
-                } catch (e: Exception) {
-                    log.error(e) { "enqueue(): failed_to_delete_destination_on_error" }
-                }
-            }
-            .doOnDispose {
-                try {
-                    destination.delete()
-                } catch (e: Exception) {
-                    log.error(e) { "enqueue(): failed_to_delete_destination_on_dispose" }
-                }
             }
             .doOnComplete {
                 log.debug {
                     "enqueue(): download_complete"
-                }
-
-                if (context != null && destination.exists()) {
-                    MediaScannerConnection.scanFile(
-                        context,
-                        arrayOf(destination.path),
-                        arrayOf(file.mimeType),
-                        null,
-                    )
-
-                    log.debug {
-                        "enqueue(): notified_media_scanner"
-                    }
                 }
 
                 downloads.remove(key)
