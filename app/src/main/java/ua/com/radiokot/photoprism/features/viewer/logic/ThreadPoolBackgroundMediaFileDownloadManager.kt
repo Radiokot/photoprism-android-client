@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.viewer.logic
 import android.content.Context
 import android.media.MediaScannerConnection
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -22,7 +23,7 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
 ) : BackgroundMediaFileDownloadManager {
     private val log = kLogger("RxBackgroundMFDownloadManager")
     private val downloads =
-        mutableMapOf<String, Observable<BackgroundMediaFileDownloadManager.Progress>>()
+        mutableMapOf<String, Pair<Observable<BackgroundMediaFileDownloadManager.Progress>, Disposable>>()
     private val scheduler = Schedulers.from(Executors.newFixedThreadPool(poolSize))
 
     override fun enqueue(
@@ -55,6 +56,19 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                 log.error(it) {
                     "enqueue(): download_error_occurred"
                 }
+
+                try {
+                    destination.delete()
+                } catch (e: Exception) {
+                    log.error(e) { "enqueue(): failed_to_delete_destination_on_error" }
+                }
+            }
+            .doOnDispose {
+                try {
+                    destination.delete()
+                } catch (e: Exception) {
+                    log.error(e) { "enqueue(): failed_to_delete_destination_on_dispose" }
+                }
             }
             .doOnComplete {
                 log.debug {
@@ -82,10 +96,8 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
             // so the UI can set the latest state immediately.
             .replay(1)
             .also {
-                downloads[key] = it
-
                 // Start now, making the observable hot.
-                it.connect()
+                downloads[key] = it to it.connect()
 
                 log.debug {
                     "enqueue(): enqueued:" +
@@ -95,8 +107,36 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
             }
     }
 
+    override fun cancel(mediaUid: String) {
+        val disposable = downloads[mediaUid]?.second
+
+        if (disposable == null) {
+            log.debug {
+                "cancel(): download_not_found:" +
+                        "\nmediaUid=$mediaUid"
+            }
+            return
+        }
+
+        if (disposable.isDisposed) {
+            log.debug {
+                "cancel(): download_already_ended:" +
+                        "\nmediaUid=$mediaUid"
+            }
+            return
+        }
+
+        disposable.dispose()
+
+        log.debug {
+            "cancel(): download_canceled:" +
+                    "\nmediaUid=$mediaUid"
+        }
+    }
+
     override fun getProgress(mediaUid: String): Observable<BackgroundMediaFileDownloadManager.Progress> {
         return downloads[mediaUid]
+            ?.first
             ?: Observable.empty()
     }
 }

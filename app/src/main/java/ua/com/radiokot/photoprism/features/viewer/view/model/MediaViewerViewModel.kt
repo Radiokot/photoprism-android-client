@@ -43,15 +43,16 @@ class MediaViewerViewModel(
     val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDownloadButtonProgressVisible: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDownloadButtonClickable: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isCancelDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // From 0 to 100, negative for indeterminate.
-    val downloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
+    val cancelDownloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
 
     init {
-        isDownloadButtonProgressVisible.observeForever { isProgressVisible ->
-            isDownloadButtonClickable.value = !isProgressVisible
+        // Make download button visibility opposite to the cancel download button.
+        isCancelDownloadButtonVisible.observeForever { isCancelDownloadButtonVisible ->
+            isDownloadButtonVisible.value = !isCancelDownloadButtonVisible
         }
     }
 
@@ -184,8 +185,8 @@ class MediaViewerViewModel(
     }
 
     fun onDownloadClicked(position: Int) {
-        check(isDownloadButtonClickable.value == true) {
-            "The button can't be clicked while it is unclickable"
+        check(isDownloadButtonVisible.value == true) {
+            "The button can't be clicked while it is not visible"
         }
 
         val item = galleryMediaRepository.itemsList[position]
@@ -196,6 +197,21 @@ class MediaViewerViewModel(
         }
 
         startDownloadToExternalStorage(item)
+    }
+
+    fun onCancelDownloadClicked(position: Int) {
+        check(isCancelDownloadButtonVisible.value == true) {
+            "The button can't be clicked while it is not visible"
+        }
+
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onCancelDownloadClicked(): canceling_download"
+        }
+
+        backgroundMediaFileDownloadManager.cancel(item.uid)
+        unsubscribeFromDownloadProgress()
     }
 
     fun onPageClicked() {
@@ -400,15 +416,18 @@ class MediaViewerViewModel(
         backgroundDownloadProgressDisposable = progressObservable
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                isDownloadButtonProgressVisible.value = false
+                isCancelDownloadButtonVisible.value = false
+            }
+            .doOnTerminate {
+                isCancelDownloadButtonVisible.value = false
+            }
+            .doOnDispose {
+                isCancelDownloadButtonVisible.value = false
             }
             .subscribeBy(
                 onNext = { progress ->
-                    isDownloadButtonProgressVisible.value = true
-                    downloadButtonProgressPercent.value = progress.percent.roundToInt()
-                },
-                onComplete = {
-                    isDownloadButtonProgressVisible.value = false
+                    isCancelDownloadButtonVisible.value = true
+                    cancelDownloadButtonProgressPercent.value = progress.percent.roundToInt()
                 },
                 onError = {
                     log.error(it) {
@@ -417,6 +436,10 @@ class MediaViewerViewModel(
                 }
             )
             .autoDispose(this)
+    }
+
+    private fun unsubscribeFromDownloadProgress() {
+        backgroundDownloadProgressDisposable?.dispose()
     }
 
     sealed interface Event {

@@ -25,6 +25,13 @@ interface BackgroundMediaFileDownloadManager {
         mediaUid: String,
     ): Observable<Progress>
 
+    /**
+     * Cancels the active download by [mediaUid], if there is one.
+     */
+    fun cancel(
+        mediaUid: String,
+    )
+
     class Progress(
         val percent: Double,
     ) {

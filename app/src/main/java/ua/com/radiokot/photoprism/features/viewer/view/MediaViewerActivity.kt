@@ -237,6 +237,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             )
         }
 
+        view.cancelDownloadButton.setOnClickListener {
+            viewModel.onCancelDownloadClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
+
         view.openInWebViewerButton.setOnClickListener {
             viewModel.onOpenInWebViewerClicked(
                 position = view.viewPager.currentItem,
@@ -354,20 +360,22 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
         }
 
-        viewModel.isDownloadButtonProgressVisible.observe(this) { isProgressVisible ->
-            if (isProgressVisible) {
-                view.downloadButtonProgress.show()
+        viewModel.cancelDownloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
+            view.cancelDownloadButtonProgress.progress = downloadProgressPercent
+            view.cancelDownloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
+        }
+
+        viewModel.isCancelDownloadButtonVisible.observe(this) { isVisible ->
+            if (isVisible) {
+                view.cancelDownloadButtonLayout.isVisible = true
+                view.cancelDownloadButtonProgress.show()
             } else {
-                view.downloadButtonProgress.hide()
+                view.cancelDownloadButtonLayout.isVisible = false
+                view.cancelDownloadButtonProgress.hide()
             }
         }
 
-        viewModel.downloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
-            view.downloadButtonProgress.progress = downloadProgressPercent
-            view.downloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
-        }
-
-        viewModel.isDownloadButtonClickable.observe(this, view.downloadButton::setClickable)
+        viewModel.isDownloadButtonVisible.observe(this, view.downloadButton::isVisible::set)
     }
 
     @Suppress("DEPRECATION")
