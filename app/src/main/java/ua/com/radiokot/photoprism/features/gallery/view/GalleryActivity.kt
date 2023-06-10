@@ -287,7 +287,9 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 }
 
                 is GalleryViewModel.Event.EnsureListItemVisible -> {
-                    ensureGalleryListItemVisibility(event.listItemIndex)
+                    view.galleryRecyclerView.post {
+                        ensureGalleryListItemVisibility(event.listItemIndex)
+                    }
                 }
             }
 
