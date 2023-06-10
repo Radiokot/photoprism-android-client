@@ -43,6 +43,7 @@
     <string name="error_library_not_accessible_try_again">η βιβλιοθήκη δεν ειναι προσβάσιμη.έλεγξε την σύνδεση και προσπάθησε ξανά</string>
     <string name="try_again">προσπάθησε ξανά</string>
     <string name="load_more">φόρτωση περισσότερων</string>
+    <string name="template_started_download_file">το αρχείο θα αποθηκευθεί στις λήψεις: %1$s</string>
     <string name="error_storage_permission_is_required">απαιτείται πρόσβαση στον αποθηκευτικό χώρο</string>
     <string name="add_search_bookmark">προσθήκη σελιδοδείκτη</string>
     <string name="edit_search_bookmark">επεξεργασία σελιδοδείκτη</string>

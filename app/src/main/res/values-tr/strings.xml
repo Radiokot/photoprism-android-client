@@ -44,6 +44,7 @@
     <string name="error_library_not_accessible_try_again">Kitaplık erişilebilir değil. İnternetini kontrol et ve tekrar dene</string>
     <string name="try_again">Tekrar dene</string>
     <string name="load_more">Daha fazla yükle</string>
+    <string name="template_started_download_file">Dosya indirme dosyalarına kaydedilecektir: %1$s</string>
     <string name="error_storage_permission_is_required">Depolama erişim izni gerekli</string>
     <string name="add_search_bookmark">Yer imi ekle</string>
     <string name="edit_search_bookmark">Yer imini düzenle</string>
