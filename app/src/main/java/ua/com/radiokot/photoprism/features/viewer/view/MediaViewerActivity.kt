@@ -528,7 +528,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 R.string.template_started_download_file,
                 destinationFileName
             ),
-            Snackbar.LENGTH_SHORT,
+            1000,
         ).show()
     }
 
