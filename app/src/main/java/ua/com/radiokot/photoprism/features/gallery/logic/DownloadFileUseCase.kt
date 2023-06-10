@@ -2,6 +2,8 @@ package ua.com.radiokot.photoprism.features.gallery.logic
 
 import android.content.Context
 import android.media.MediaScannerConnection
+import androidx.exifinterface.media.ExifInterface
+import com.google.android.exoplayer2.util.MimeTypes
 import io.reactivex.rxjava3.core.Observable
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
@@ -43,7 +45,21 @@ class DownloadFileUseCase(
                 }
             }
             .doOnComplete {
+                // Notify MediaScanner for the content to immediately appear in galleries.
                 if (mimeType != null && context != null && destination.exists()) {
+                    if (mimeType == MimeTypes.IMAGE_JPEG) {
+                        // MediaScanner uses buggy ExifInterface implementation
+                        // to determine JPEGs orientation, which fails.
+                        // But! If you create (just create!) an androidx ExifInterface instance
+                        // for your file which reads all the attributes correctly,
+                        // it somehow gets cached and helps MediaScanner 🤡
+                        ExifInterface(destination.path)
+
+                        log.debug {
+                            "perform(): created_fixed_exif_interface"
+                        }
+                    }
+
                     MediaScannerConnection.scanFile(
                         context,
                         arrayOf(destination.path),

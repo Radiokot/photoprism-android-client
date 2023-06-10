@@ -21,27 +21,32 @@ class OkHttpObservableDownloader(
             .addNetworkInterceptor { chain ->
                 val emitterKey = chain.request().tag() as Int
                 val originalResponse = chain.proceed(chain.request())
+                val originalBody = originalResponse.body
+                    .checkNotNull {
+                        "The request must have a body, otherwise there is nothing to download"
+                    }
                 originalResponse
                     .newBuilder()
                     .body(
                         ProgressResponseBody(
-                            originalResponse.body
-                                .checkNotNull {
-                                    "The request must have a body, otherwise there is nothing to download"
-                                }
-                        ) { bytesRead, contentLength, isDone ->
-                            val emitter = emittersMap.getValue(emitterKey)
-                            if (isDone) {
-                                emitter.onComplete()
-                            } else {
+                            observingBody = originalBody,
+                            progressListener = { bytesRead, contentLength ->
+                                val emitter = emittersMap.getValue(emitterKey)
                                 emitter.onNext(
                                     ObservableDownloader.Progress(
                                         bytesRead = bytesRead,
                                         contentLength = contentLength,
                                     )
                                 )
+                            },
+                            closedListener = {
+                                // Emit the completion when the body is closed,
+                                // not when read bytes count matches content length.
+                                // In the second case, the output is not yet fully written.
+                                val emitter = emittersMap.getValue(emitterKey)
+                                emitter.onComplete()
                             }
-                        }
+                        )
                     )
                     .build()
             }
