@@ -9,13 +9,15 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:focusable="true" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_indicator"
         style="@style/Widget.Material3.LinearProgressIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:indeterminate="true"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,6 +25,7 @@
         android:id="@+id/snackbar_area"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:focusable="false"
         app:layout_constraintBottom_toTopOf="@id/buttons_layout"
         app:layout_constraintTop_toTopOf="parent" />
     <!-- Margins are programmatically extended with insets -->
@@ -32,6 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/media_viewer_buttons_layout_horizontal_spacing"
         android:layout_marginBottom="24dp"
+        android:focusable="false"
         app:flexWrap="wrap"
         app:justifyContent="center"
         app:layout_constraintBottom_toBottomOf="parent"
