@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Inability to refresh the gallery when re-opening the app after it has been moved to the background 
 by pressing the "Back" navigation button. The data is now updated automatically in this case
+- Incorrect orientation of some downloaded JPEGs
+
+### Changed
+- Made downloads initiated from the viewer run in background. 
+Click the "Download" button and continue swiping, no more need to wait for completion
 
 ## [1.9.0] - 2023-06-03
 
