@@ -103,4 +103,5 @@
     <string name="search_doesnt_fit_allowed_types">Search query doesn\'t fit the allowed types</string>
     <string name="save_file_to_the_storage">Save the file to the storage</string>
     <string name="share_the_file">Share the file</string>
+    <string name="download_is_completed">Download is completed</string>
 </resources>

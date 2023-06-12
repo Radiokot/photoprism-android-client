@@ -66,16 +66,34 @@
                 app:trackThickness="2dp" />
         </FrameLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/download_button"
-            style="?materialIconButtonFilledTonalStyle"
+        <FrameLayout
+            android:id="@+id/download_button_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
-            android:contentDescription="@string/download"
-            android:tooltipText="@string/download"
-            app:icon="@drawable/ic_download"
-            tools:targetApi="o" />
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/download_button"
+                style="?materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/download"
+                android:tooltipText="@string/download"
+                app:icon="@drawable/ic_download"
+                tools:targetApi="o" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/download_completed_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="2dp"
+                android:clickable="false"
+                android:contentDescription="@string/download_is_completed"
+                android:focusable="false"
+                app:srcCompat="@drawable/ic_checkbox_circle_checked"
+                app:tint="?colorAccent" />
+        </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_button"

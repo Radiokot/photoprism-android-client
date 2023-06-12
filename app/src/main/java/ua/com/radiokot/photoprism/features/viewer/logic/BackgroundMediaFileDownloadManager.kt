@@ -8,22 +8,25 @@ interface BackgroundMediaFileDownloadManager {
     /**
      * Enqueues a background download task which will be executed ASAP.
      *
-     * @return hot progress observable. It completes if the download is ended and doesn't emit errors.
+     * @return hot status observable.
      *
-     * @see getProgress
+     * @see getStatus
      */
     fun enqueue(
         file: GalleryMedia.File,
         destination: File,
-    ): Observable<Progress>
+    ): Observable<out Status>
 
     /**
-     * @return hot progress observable for the file download of the media with the given UID.
-     * It completes if the download is ended or not found, it doesn't emit errors.
+     * @return hot status observable for the file download of the media with the given UID.
+     * For a new subscriber, it replays the last status
+     * or simply completes if there is no such download.
+     *
+     * It does not emit errors on purpose.
      */
-    fun getProgress(
+    fun getStatus(
         mediaUid: String,
-    ): Observable<Progress>
+    ): Observable<out Status>
 
     /**
      * Cancels the active download by [mediaUid], if there is one.
@@ -32,11 +35,18 @@ interface BackgroundMediaFileDownloadManager {
         mediaUid: String,
     )
 
-    class Progress(
-        val percent: Double,
-    ) {
-        companion object {
-            val INDETERMINATE = Progress(percent = -1.0)
+    sealed interface Status {
+        class InProgress(
+            val percent: Double,
+        ): Status {
+            companion object {
+                val INDETERMINATE = InProgress(percent = -1.0)
+            }
+        }
+
+        sealed interface Ended: Status {
+            object Completed : Ended
+            object Failed : Ended
         }
     }
 }

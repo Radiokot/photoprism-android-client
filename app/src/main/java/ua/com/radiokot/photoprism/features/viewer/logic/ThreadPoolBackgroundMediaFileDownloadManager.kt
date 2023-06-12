@@ -17,20 +17,24 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
     poolSize: Int,
 ) : BackgroundMediaFileDownloadManager {
     private val log = kLogger("RxBackgroundMFDownloadManager")
-    private val downloads =
-        mutableMapOf<String, Pair<Observable<BackgroundMediaFileDownloadManager.Progress>, Disposable>>()
+    private val downloadsInProgress =
+        mutableMapOf<String, Pair<Observable<BackgroundMediaFileDownloadManager.Status>, Disposable>>()
+    private val endedDownloadStatuses =
+        mutableMapOf<String, BackgroundMediaFileDownloadManager.Status.Ended>()
     private val scheduler = Schedulers.from(Executors.newFixedThreadPool(poolSize))
 
     override fun enqueue(
         file: GalleryMedia.File,
         destination: File
-    ): Observable<BackgroundMediaFileDownloadManager.Progress> {
+    ): Observable<out BackgroundMediaFileDownloadManager.Status> {
         val key = file.mediaUid
 
         return Observable
             // At first, publish the indeterminate progress,
             // without waiting for a free thread from the pool.
-            .just(BackgroundMediaFileDownloadManager.Progress.INDETERMINATE)
+            .just<BackgroundMediaFileDownloadManager.Status>(
+                BackgroundMediaFileDownloadManager.Status.InProgress.INDETERMINATE
+            )
             .mergeWith(
                 // Then merge it with the actual download progress,
                 // which execution may be delayed.
@@ -43,42 +47,58 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                     .perform()
                     .subscribeOn(scheduler)
                     .map { progress ->
-                        BackgroundMediaFileDownloadManager.Progress(
+                        BackgroundMediaFileDownloadManager.Status.InProgress(
                             percent = progress.percent,
                         )
                     }
             )
+            .concatWith(Observable.just(BackgroundMediaFileDownloadManager.Status.Ended.Completed))
             .doOnError {
                 log.error(it) {
-                    "enqueue(): download_error_occurred"
+                    "enqueue(): download_error_occurred:" +
+                            "\nkey=$key"
                 }
             }
             .doOnComplete {
                 log.debug {
-                    "enqueue(): download_complete"
+                    "enqueue(): download_complete:" +
+                            "\nkey=$key"
                 }
-
-                downloads.remove(key)
             }
             // Ignore errors to comply with the interface contract.
-            .onErrorComplete()
+            .onErrorReturnItem(BackgroundMediaFileDownloadManager.Status.Ended.Failed)
+            // Save ended status to the separate map.
+            .doOnNext { status ->
+                if (status is BackgroundMediaFileDownloadManager.Status.Ended) {
+                    endedDownloadStatuses[key] = status
+
+                    log.debug {
+                        "enqueue(): saved_ended_status:" +
+                                "\nkey=$key," +
+                                "\nstatus=$status"
+                    }
+
+                    downloadsInProgress.remove(key)
+                }
+            }
             // Replay the last progress update for all new subscribers,
             // so the UI can set the latest state immediately.
             .replay(1)
             .also {
                 // Start now, making the observable hot.
-                downloads[key] = it to it.connect()
+                downloadsInProgress[key] = it to it.connect()
 
                 log.debug {
                     "enqueue(): enqueued:" +
                             "\nfile=$file," +
-                            "\ndestination=$destination"
+                            "\ndestination=$destination," +
+                            "\nkey=$key"
                 }
             }
     }
 
     override fun cancel(mediaUid: String) {
-        val disposable = downloads[mediaUid]?.second
+        val disposable = downloadsInProgress[mediaUid]?.second
 
         if (disposable == null) {
             log.debug {
@@ -104,9 +124,10 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
         }
     }
 
-    override fun getProgress(mediaUid: String): Observable<BackgroundMediaFileDownloadManager.Progress> {
-        return downloads[mediaUid]
+    override fun getStatus(mediaUid: String): Observable<out BackgroundMediaFileDownloadManager.Status> {
+        return downloadsInProgress[mediaUid]
             ?.first
+            ?: endedDownloadStatuses[mediaUid]?.let { Observable.just(it) }
             ?: Observable.empty()
     }
 }

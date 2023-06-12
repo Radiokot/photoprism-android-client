@@ -375,7 +375,15 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             }
         }
 
-        viewModel.isDownloadButtonVisible.observe(this, view.downloadButton::isVisible::set)
+        viewModel.isDownloadButtonVisible.observe(
+            this,
+            view.downloadButtonLayout::isVisible::set
+        )
+
+        viewModel.isDownloadCompletedIconVisible.observe(
+            this,
+            view.downloadCompletedIcon::isVisible::set
+        )
     }
 
     @Suppress("DEPRECATION")

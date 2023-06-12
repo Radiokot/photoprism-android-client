@@ -45,6 +45,7 @@ class MediaViewerViewModel(
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isCancelDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadCompletedIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // From 0 to 100, negative for indeterminate.
     val cancelDownloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
@@ -385,7 +386,7 @@ class MediaViewerViewModel(
                     "\ndestination=$destinationFile"
         }
 
-        subscribeToMediaBackgroundDownloadProgress(progressObservable)
+        subscribeToMediaBackgroundDownloadStatus(progressObservable)
 
         stateSubject.onNext(State.Idle)
         eventsSubject.onNext(
@@ -403,35 +404,32 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        subscribeToMediaBackgroundDownloadProgress(
-            progressObservable = backgroundMediaFileDownloadManager.getProgress(item.uid)
+        subscribeToMediaBackgroundDownloadStatus(
+            statusObservable = backgroundMediaFileDownloadManager.getStatus(item.uid)
         )
     }
 
     private var backgroundDownloadProgressDisposable: Disposable? = null
-    private fun subscribeToMediaBackgroundDownloadProgress(
-        progressObservable: Observable<BackgroundMediaFileDownloadManager.Progress>,
+    private fun subscribeToMediaBackgroundDownloadStatus(
+        statusObservable: Observable<out BackgroundMediaFileDownloadManager.Status>,
     ) {
         backgroundDownloadProgressDisposable?.dispose()
-        backgroundDownloadProgressDisposable = progressObservable
+        backgroundDownloadProgressDisposable = statusObservable
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
+                // Default state.
                 isCancelDownloadButtonVisible.value = false
-            }
-            .doOnTerminate {
-                isCancelDownloadButtonVisible.value = false
-            }
-            .doOnDispose {
-                isCancelDownloadButtonVisible.value = false
+                isDownloadCompletedIconVisible.value = false
             }
             .subscribeBy(
-                onNext = { progress ->
-                    isCancelDownloadButtonVisible.value = true
-                    cancelDownloadButtonProgressPercent.value = progress.percent.roundToInt()
-                },
-                onError = {
-                    log.error(it) {
-                        "subscribeToMediaBackgroundDownloadProgress(): error_occurred"
+                onNext = { status ->
+                    isCancelDownloadButtonVisible.value =
+                        status is BackgroundMediaFileDownloadManager.Status.InProgress
+                    isDownloadCompletedIconVisible.value =
+                        status is BackgroundMediaFileDownloadManager.Status.Ended.Completed
+
+                    if (status is BackgroundMediaFileDownloadManager.Status.InProgress) {
+                        cancelDownloadButtonProgressPercent.value = status.percent.roundToInt()
                     }
                 }
             )
