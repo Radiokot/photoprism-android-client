@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_item_gallery_media_min_size">160dp</dimen>
+    <dimen name="list_item_album_width">160dp</dimen>
+</resources>
