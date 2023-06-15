@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.ActivityResult
@@ -215,6 +216,53 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     viewModel.onPageChanged(position)
                 }
             })
+        }
+
+        // Keyboard navigation.
+        with(view.viewPager.recyclerView) {
+            // This ID is set as "nextFocusUp" for all the buttons in the screen XML.
+            // It is required for the correct up-down focus change by arrow keys.
+            id = R.id.view_pager_recycler_view
+
+            nextFocusDownId = R.id.download_button
+
+            setOnKeyListener { _, keyCode, event ->
+                if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
+                    return@setOnKeyListener false
+                }
+
+                // Swipe pages when pressing left and right arrow buttons.
+                return@setOnKeyListener when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        log.debug {
+                            "initPager(): swipe_page_by_key:" +
+                                    "\nkey=right"
+                        }
+
+                        view.viewPager.setCurrentItem(
+                            view.viewPager.currentItem + 1,
+                            true
+                        )
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        log.debug {
+                            "initPager(): swipe_page_by_key:" +
+                                    "\nkey=left"
+                        }
+
+                        view.viewPager.setCurrentItem(
+                            view.viewPager.currentItem - 1,
+                            true
+                        )
+                        true
+                    }
+
+                    else ->
+                        false
+                }
+            }
         }
     }
 

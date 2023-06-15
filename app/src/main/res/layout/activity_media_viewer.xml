@@ -9,8 +9,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="true" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_indicator"
@@ -35,7 +34,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/media_viewer_buttons_layout_horizontal_spacing"
         android:layout_marginBottom="24dp"
-        android:focusable="false"
         app:flexWrap="wrap"
         app:justifyContent="center"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,6 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/cancel"
+                android:nextFocusUp="@+id/view_pager_recycler_view"
                 android:tooltipText="@string/cancel"
                 app:icon="@drawable/ic_close"
                 tools:targetApi="o" />
@@ -78,6 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/download"
+                android:nextFocusUp="@+id/view_pager_recycler_view"
                 android:tooltipText="@string/download"
                 app:icon="@drawable/ic_download"
                 tools:targetApi="o" />
@@ -102,6 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/share"
+            android:nextFocusUp="@+id/view_pager_recycler_view"
             android:tooltipText="@string/share"
             app:icon="@drawable/ic_share"
             tools:targetApi="o" />
@@ -113,6 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/open_with"
+            android:nextFocusUp="@+id/view_pager_recycler_view"
             android:tooltipText="@string/open_with"
             app:icon="@drawable/ic_open_in"
             tools:targetApi="o" />
@@ -124,6 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
             android:contentDescription="@string/open_in_web_viewer"
+            android:nextFocusUp="@+id/view_pager_recycler_view"
             android:tooltipText="@string/open_in_web_viewer"
             app:icon="@drawable/ic_web"
             tools:targetApi="o" />
