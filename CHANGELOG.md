@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Display of completed download icon in the viewer
+- Display of the app in the Android TV launcher
 
 ### Changed
 - Now the file for sharing or opening is not being re-downloaded 
