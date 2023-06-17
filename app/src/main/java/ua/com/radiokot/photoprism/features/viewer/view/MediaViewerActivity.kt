@@ -126,148 +126,107 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initFullScreenToggle()
         initCustomTabs()
+        initArrowKeysSwipes()
     }
 
     private fun initPager(
         startIndex: Int,
         savedInstanceState: Bundle?,
-    ) {
-        with(view.viewPager) {
-            val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
-                stateRestorationPolicy =
-                    RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    ) = with(view.viewPager) {
+        val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
+            stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-                // Set the required index once, after the data is set.
-                if (savedInstanceState == null) {
-                    registerAdapterDataObserver(object : AdapterDataObserver() {
-                        override fun onChanged() {
-                            post {
-                                setCurrentItem(startIndex, false)
-                            }
-                            unregisterAdapterDataObserver(this)
+            // Set the required index once, after the data is set.
+            if (savedInstanceState == null) {
+                registerAdapterDataObserver(object : AdapterDataObserver() {
+                    override fun onChanged() {
+                        post {
+                            setCurrentItem(startIndex, false)
                         }
-                    })
-                }
-
-                addClickListener(
-                    resolveView = { viewHolder: RecyclerView.ViewHolder ->
-                        when (viewHolder) {
-                            is ImageViewerPage.ViewHolder ->
-                                viewHolder.view.photoView
-
-                            is VideoViewerPage.ViewHolder ->
-                                viewHolder.view.videoView
-
-                            else ->
-                                viewHolder.itemView
-                        }
-                    },
-                    onClick = { _, _, _, _ ->
-                        viewModel.onPageClicked()
-                    }
-                )
-
-                addEventHook(object : EventHook<MediaViewerPage> {
-                    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-                        if (viewHolder !is VideoViewerPage.ViewHolder) {
-                            return null
-                        }
-
-                        setUpVideoViewer(viewHolder)
-
-                        return null
+                        unregisterAdapterDataObserver(this)
                     }
                 })
             }
 
-            adapter = fastAdapter
+            addClickListener(
+                resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                    when (viewHolder) {
+                        is ImageViewerPage.ViewHolder ->
+                            viewHolder.view.photoView
 
-            val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
-                footerAdapter = GenericItemAdapter(),
-                layoutManager = recyclerView.layoutManager.checkNotNull {
-                    "There must be a layout manager at this point"
+                        is VideoViewerPage.ViewHolder ->
+                            viewHolder.view.videoView
+
+                        else ->
+                            viewHolder.itemView
+                    }
                 },
-                visibleThreshold = 6
-            ) {
-                override fun onLoadMore(currentPage: Int) {
-                    if (currentPage == 0) {
-                        // Filter out false-triggering.
-                        return
-                    }
-
-                    log.debug {
-                        "onLoadMore(): load_more:" +
-                                "\npage=$currentPage"
-                    }
-                    viewModel.loadMore()
+                onClick = { _, _, _, _ ->
+                    viewModel.onPageClicked()
                 }
-            }
-            viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
-                if (isLoading) {
-                    endlessScrollListener.disable()
-                } else {
-                    endlessScrollListener.enable()
-                }
-            }
-            recyclerView.addOnScrollListener(endlessScrollListener)
+            )
 
-            registerOnPageChangeCallback(object : OnPageChangeCallback() {
-                private var prevSelectedPagePosition = -1
-
-                override fun onPageSelected(position: Int) {
-                    if (position != prevSelectedPagePosition) {
-                        prevSelectedPagePosition = position
-                        viewModel.onPageChanged(position)
+            addEventHook(object : EventHook<MediaViewerPage> {
+                override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+                    if (viewHolder !is VideoViewerPage.ViewHolder) {
+                        return null
                     }
+
+                    setUpVideoViewer(viewHolder)
+
+                    return null
                 }
             })
         }
 
-        // Keyboard navigation.
-        with(view.viewPager.recyclerView) {
-            // This ID is set as "nextFocusUp" for all the buttons in the screen XML.
-            // It is required for the correct up-down focus change by arrow keys.
-            id = R.id.view_pager_recycler_view
+        adapter = fastAdapter
 
-            nextFocusDownId = R.id.download_button
-
-            setOnKeyListener { _, keyCode, event ->
-                if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
-                    return@setOnKeyListener false
+        val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
+            footerAdapter = GenericItemAdapter(),
+            layoutManager = recyclerView.layoutManager.checkNotNull {
+                "There must be a layout manager at this point"
+            },
+            visibleThreshold = 6
+        ) {
+            override fun onLoadMore(currentPage: Int) {
+                if (currentPage == 0) {
+                    // Filter out false-triggering.
+                    return
                 }
 
-                // Swipe pages when pressing left and right arrow buttons.
-                return@setOnKeyListener when (keyCode) {
-                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                        log.debug {
-                            "initPager(): swipe_page_by_key:" +
-                                    "\nkey=right"
-                        }
+                log.debug {
+                    "onLoadMore(): load_more:" +
+                            "\npage=$currentPage"
+                }
+                viewModel.loadMore()
+            }
+        }
+        viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
+            if (isLoading) {
+                endlessScrollListener.disable()
+            } else {
+                endlessScrollListener.enable()
+            }
+        }
+        recyclerView.addOnScrollListener(endlessScrollListener)
 
-                        view.viewPager.setCurrentItem(
-                            view.viewPager.currentItem + 1,
-                            true
-                        )
-                        true
-                    }
+        registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            private var prevSelectedPagePosition = -1
 
-                    KeyEvent.KEYCODE_DPAD_LEFT -> {
-                        log.debug {
-                            "initPager(): swipe_page_by_key:" +
-                                    "\nkey=left"
-                        }
-
-                        view.viewPager.setCurrentItem(
-                            view.viewPager.currentItem - 1,
-                            true
-                        )
-                        true
-                    }
-
-                    else ->
-                        false
+            override fun onPageSelected(position: Int) {
+                if (position != prevSelectedPagePosition) {
+                    prevSelectedPagePosition = position
+                    viewModel.onPageChanged(position)
                 }
             }
+        })
+
+        // Disable focusability of the inner RecyclerView
+        // so it doesn't mess with the arrow keys swipes.
+        with(recyclerView) {
+            isFocusable = false
+            isFocusableInTouchMode = false
         }
     }
 
@@ -332,6 +291,61 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     private fun initCustomTabs() {
         CustomTabsHelper.safelyConnectAndInitialize(this)
+    }
+
+    private fun initArrowKeysSwipes() = with(view.arrowKeysSwipesFocusView) {
+        setOnKeyListener { _, keyCode, event ->
+            log.debug {
+                "initArrowKeysSwipes(): key_pressed:" +
+                        "\ncode=$keyCode," +
+                        "\naction=${event.action}"
+            }
+
+            // Ignore all the irrelevant keys.
+            if (keyCode != KeyEvent.KEYCODE_DPAD_RIGHT && keyCode != KeyEvent.KEYCODE_DPAD_LEFT) {
+                return@setOnKeyListener false
+            }
+
+            // Ignore all the irrelevant events, but return true to avoid focus loss.
+            if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
+                return@setOnKeyListener true
+            }
+
+            // Swipe pages when pressing left and right arrow buttons.
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    log.debug {
+                        "initArrowKeysSwipes(): swipe_page_by_key:" +
+                                "\nkey=right"
+                    }
+
+                    view.viewPager.setCurrentItem(
+                        view.viewPager.currentItem + 1,
+                        true
+                    )
+                }
+
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    log.debug {
+                        "initArrowKeysSwipes(): swipe_page_by_key:" +
+                                "\nkey=left"
+                    }
+
+                    view.viewPager.setCurrentItem(
+                        view.viewPager.currentItem - 1,
+                        true
+                    )
+                }
+            }
+
+            return@setOnKeyListener true
+        }
+
+        setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                log.debug { "initArrowKeysSwipes(): focus_view_got_focus" }
+            }
+        }
     }
 
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {

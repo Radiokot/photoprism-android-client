@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:contentDescription="@string/play_video"
+        android:nextFocusDown="@id/exo_progress"
         app:backgroundTint="@color/black_overlay"
         app:icon="@drawable/ic_play" />
 
@@ -23,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:contentDescription="@string/pause_video"
+        android:nextFocusDown="@id/exo_progress"
         app:backgroundTint="@color/black_overlay"
         app:icon="@drawable/ic_pause" />
 
