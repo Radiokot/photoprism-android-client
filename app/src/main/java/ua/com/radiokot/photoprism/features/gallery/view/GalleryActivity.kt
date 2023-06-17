@@ -602,6 +602,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         "\nitemGlobalPosition=$itemGlobalPosition"
             }
         }
+
+        // Move the focus to the corresponding item.
+        // It only does this when another item was focused before,
+        // e.g. when navigating using a keyboard.
+        view.galleryRecyclerView.post {
+            layoutManager.findViewByPosition(itemGlobalPosition)?.requestFocus()
+        }
     }
 
     private fun goToEnvConnection() {
