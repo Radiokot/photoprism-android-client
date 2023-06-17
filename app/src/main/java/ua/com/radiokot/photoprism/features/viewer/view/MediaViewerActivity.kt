@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -293,53 +294,55 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         CustomTabsHelper.safelyConnectAndInitialize(this)
     }
 
-    private fun initArrowKeysSwipes() = with(view.arrowKeysSwipesFocusView) {
-        setOnKeyListener { _, keyCode, event ->
-            log.debug {
-                "initArrowKeysSwipes(): key_pressed:" +
-                        "\ncode=$keyCode," +
-                        "\naction=${event.action}"
-            }
-
-            // Ignore all the irrelevant keys.
-            if (keyCode != KeyEvent.KEYCODE_DPAD_RIGHT && keyCode != KeyEvent.KEYCODE_DPAD_LEFT) {
-                return@setOnKeyListener false
-            }
-
-            // Ignore all the irrelevant events, but return true to avoid focus loss.
-            if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
-                return@setOnKeyListener true
-            }
-
-            // Swipe pages when pressing left and right arrow buttons.
-            when (keyCode) {
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    log.debug {
-                        "initArrowKeysSwipes(): swipe_page_by_key:" +
-                                "\nkey=right"
-                    }
-
-                    view.viewPager.setCurrentItem(
-                        view.viewPager.currentItem + 1,
-                        true
-                    )
-                }
-
-                KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    log.debug {
-                        "initArrowKeysSwipes(): swipe_page_by_key:" +
-                                "\nkey=left"
-                    }
-
-                    view.viewPager.setCurrentItem(
-                        view.viewPager.currentItem - 1,
-                        true
-                    )
-                }
-            }
-
-            return@setOnKeyListener true
+    private val arrowKeysSwipesKeyListener = OnKeyListener { _, keyCode, event ->
+        log.debug {
+            "initArrowKeysSwipes(): key_pressed:" +
+                    "\ncode=$keyCode," +
+                    "\naction=${event.action}"
         }
+
+        // Ignore all the irrelevant keys.
+        if (keyCode != KeyEvent.KEYCODE_DPAD_RIGHT && keyCode != KeyEvent.KEYCODE_DPAD_LEFT) {
+            return@OnKeyListener false
+        }
+
+        // Ignore all the irrelevant events, but return true to avoid focus loss.
+        if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
+            return@OnKeyListener true
+        }
+
+        // Swipe pages when pressing left and right arrow buttons.
+        when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                log.debug {
+                    "initArrowKeysSwipes(): swipe_page_by_key:" +
+                            "\nkey=right"
+                }
+
+                view.viewPager.setCurrentItem(
+                    view.viewPager.currentItem + 1,
+                    true
+                )
+            }
+
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                log.debug {
+                    "initArrowKeysSwipes(): swipe_page_by_key:" +
+                            "\nkey=left"
+                }
+
+                view.viewPager.setCurrentItem(
+                    view.viewPager.currentItem - 1,
+                    true
+                )
+            }
+        }
+
+        return@OnKeyListener true
+    }
+
+    private fun initArrowKeysSwipes() = with(view.arrowKeysSwipesFocusView) {
+        setOnKeyListener(arrowKeysSwipesKeyListener)
 
         setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -353,17 +356,17 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewHolder.bindToLifecycle(this.lifecycle)
 
         val view = viewHolder.view
-        val playerControlsLayout = viewHolder.playerControlsLayout
+        val playerControlsView = viewHolder.playerControlsView
 
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            playerControlsLayout.fadeVisibility(isVisible = areActionsVisible)
+            playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
         }
         if (viewModel.areActionsVisible.value == true) {
             view.videoView.showController()
         } else {
             view.videoView.hideController()
         }
-        playerControlsLayout.clearAnimation()
+        playerControlsView.root.clearAnimation()
 
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +
@@ -391,6 +394,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
+
+        // Make arrow keys swipes work when play/pause buttons are in focus.
+        playerControlsView.exoPlay.setOnKeyListener(arrowKeysSwipesKeyListener)
+        playerControlsView.exoPause.setOnKeyListener(arrowKeysSwipesKeyListener)
     }
 
     private fun subscribeToData() {
