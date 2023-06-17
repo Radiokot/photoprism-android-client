@@ -651,6 +651,21 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // Hope it works for TV remotes, I can't test it.
+        if (keyCode in setOf(
+                KeyEvent.KEYCODE_SETTINGS,
+                KeyEvent.KEYCODE_MENU,
+                KeyEvent.KEYCODE_BOOKMARK
+            )
+        ) {
+            viewModel.onPreferencesButtonClicked()
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
+    }
+
     private val GalleryViewModel.Error.localizedMessage: String
         get() = when (this) {
             GalleryViewModel.Error.LibraryNotAccessible ->
