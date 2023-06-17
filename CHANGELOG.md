@@ -10,10 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Display of completed download icon in the viewer
 - Display of the app in the Android TV launcher
+- Ability to browse the gallery with a keyboard (or remote control).
+The search remains inaccessible without a mouse for now
 
 ### Changed
 - Now the file for sharing or opening is not being re-downloaded 
 if it already exists in the external downloads directory
+- Size of gallery items and albums is adapted for large screens
+- Environment connection screen is adapted for large screens
 
 ## [1.10.0] - 2023-06-11
 
