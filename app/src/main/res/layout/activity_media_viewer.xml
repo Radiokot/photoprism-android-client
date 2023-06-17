@@ -12,7 +12,7 @@
         android:layout_height="match_parent" />
 
     <View
-        android:id="@+id/arrow_keys_swipes_focus_view"
+        android:id="@+id/keyboard_navigation_focus_view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:focusable="true"

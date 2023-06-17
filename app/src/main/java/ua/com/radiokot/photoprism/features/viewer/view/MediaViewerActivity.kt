@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
@@ -127,7 +128,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initFullScreenToggle()
         initCustomTabs()
-        initArrowKeysSwipes()
+        initKeyboardNavigation()
     }
 
     private fun initPager(
@@ -294,15 +295,21 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         CustomTabsHelper.safelyConnectAndInitialize(this)
     }
 
-    private val arrowKeysSwipesKeyListener = OnKeyListener { _, keyCode, event ->
+    private val keyboardNavigationKeyListener = OnKeyListener { parentView, keyCode, event ->
         log.debug {
-            "initArrowKeysSwipes(): key_pressed:" +
+            "initKeyboardNavigation(): key_pressed:" +
                     "\ncode=$keyCode," +
                     "\naction=${event.action}"
         }
 
         // Ignore all the irrelevant keys.
-        if (keyCode != KeyEvent.KEYCODE_DPAD_RIGHT && keyCode != KeyEvent.KEYCODE_DPAD_LEFT) {
+        // Do not intercept Enter on buttons.
+        if (keyCode !in setOf(
+                KeyEvent.KEYCODE_DPAD_RIGHT,
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_ENTER
+            ) || keyCode == KeyEvent.KEYCODE_ENTER && parentView is Button
+        ) {
             return@OnKeyListener false
         }
 
@@ -312,10 +319,11 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         // Swipe pages when pressing left and right arrow buttons.
+        // Call page click by pressing Enter (OK).
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 log.debug {
-                    "initArrowKeysSwipes(): swipe_page_by_key:" +
+                    "initKeyboardNavigation(): swipe_page_by_key:" +
                             "\nkey=right"
                 }
 
@@ -327,7 +335,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 log.debug {
-                    "initArrowKeysSwipes(): swipe_page_by_key:" +
+                    "initKeyboardNavigation(): swipe_page_by_key:" +
                             "\nkey=left"
                 }
 
@@ -336,17 +344,25 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     true
                 )
             }
+
+            KeyEvent.KEYCODE_ENTER -> {
+                log.debug {
+                    "initKeyboardNavigation(): click_page_by_enter"
+                }
+
+                viewModel.onPageClicked()
+            }
         }
 
         return@OnKeyListener true
     }
 
-    private fun initArrowKeysSwipes() = with(view.arrowKeysSwipesFocusView) {
-        setOnKeyListener(arrowKeysSwipesKeyListener)
+    private fun initKeyboardNavigation() = with(view.keyboardNavigationFocusView) {
+        setOnKeyListener(keyboardNavigationKeyListener)
 
         setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                log.debug { "initArrowKeysSwipes(): focus_view_got_focus" }
+                log.debug { "initKeyboardNavigation(): focus_view_got_focus" }
             }
         }
     }
@@ -396,8 +412,8 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
 
         // Make arrow keys swipes work when play/pause buttons are in focus.
-        playerControlsView.exoPlay.setOnKeyListener(arrowKeysSwipesKeyListener)
-        playerControlsView.exoPause.setOnKeyListener(arrowKeysSwipesKeyListener)
+        playerControlsView.exoPlay.setOnKeyListener(keyboardNavigationKeyListener)
+        playerControlsView.exoPause.setOnKeyListener(keyboardNavigationKeyListener)
     }
 
     private fun subscribeToData() {
