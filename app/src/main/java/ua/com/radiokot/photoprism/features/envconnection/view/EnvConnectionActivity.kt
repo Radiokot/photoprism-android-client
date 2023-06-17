@@ -15,6 +15,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
+import ua.com.radiokot.photoprism.databinding.IncludeEnvConnectionFieldsBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -27,12 +28,14 @@ class EnvConnectionActivity : BaseActivity() {
     private val log = kLogger("EEnvConnectionActivity")
 
     private lateinit var view: ActivityEnvConnectionBinding
+    private lateinit var fields: IncludeEnvConnectionFieldsBinding
     private val viewModel: EnvConnectionViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         view = ActivityEnvConnectionBinding.inflate(layoutInflater)
+        fields = IncludeEnvConnectionFieldsBinding.bind(view.root)
         setContentView(view.root)
 
         initFields()
@@ -43,8 +46,8 @@ class EnvConnectionActivity : BaseActivity() {
         subscribeToEvents()
     }
 
-    private fun initFields() {
-        with(view.rootUrlTextInput) {
+    private fun initFields() = with(fields) {
+        with(rootUrlTextInput) {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
             viewModel.rootUrlError.observe(this@EnvConnectionActivity) { rootUrlError ->
@@ -56,14 +59,17 @@ class EnvConnectionActivity : BaseActivity() {
                             rootUrlError.shortSummary,
                         )
                     }
+
                     EnvConnectionViewModel.RootUrlError.InvalidFormat -> {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_library_url_format)
                     }
+
                     EnvConnectionViewModel.RootUrlError.RequiresCredentials -> {
                         isErrorEnabled = true
                         error = getString(R.string.error_library_requires_credentials)
                     }
+
                     null -> {
                         isErrorEnabled = false
                         error = null
@@ -76,11 +82,11 @@ class EnvConnectionActivity : BaseActivity() {
             }
         }
 
-        with(view.usernameTextInput) {
+        with(usernameTextInput) {
             editText!!.bindTextTwoWay(viewModel.username)
         }
 
-        with(view.passwordTextInput) {
+        with(passwordTextInput) {
             editText!!.bindTextTwoWay(viewModel.password)
 
             editText!!.setOnEditorActionListener { _, actionId, _ ->
@@ -97,6 +103,7 @@ class EnvConnectionActivity : BaseActivity() {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_password)
                     }
+
                     null -> {
                         isErrorEnabled = false
                         error = null
@@ -105,7 +112,7 @@ class EnvConnectionActivity : BaseActivity() {
             }
         }
 
-        with(view.certificateTextInput) {
+        with(certificateTextInput) {
             isVisible = viewModel.isClientCertificateSelectionAvailable
 
             setOnClickListener {
@@ -150,6 +157,7 @@ class EnvConnectionActivity : BaseActivity() {
             view.progressIndicator.visibility = when (state) {
                 EnvConnectionViewModel.State.Connecting ->
                     View.VISIBLE
+
                 EnvConnectionViewModel.State.Idle ->
                     View.GONE
             }
@@ -157,6 +165,7 @@ class EnvConnectionActivity : BaseActivity() {
             view.connectButton.visibility = when (state) {
                 EnvConnectionViewModel.State.Connecting ->
                     View.GONE
+
                 EnvConnectionViewModel.State.Idle ->
                     View.VISIBLE
             }
@@ -165,6 +174,7 @@ class EnvConnectionActivity : BaseActivity() {
                 EnvConnectionViewModel.State.Connecting -> {
                     SoftInputUtil.hideSoftInput(window)
                 }
+
                 EnvConnectionViewModel.State.Idle -> {
                 }
             }
@@ -186,10 +196,13 @@ class EnvConnectionActivity : BaseActivity() {
             when (event) {
                 EnvConnectionViewModel.Event.GoToGallery ->
                     goToGallery()
+
                 EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
                     chooseClientCertificateAlias()
+
                 EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
                     showMissingClientCertificatesNotice()
+
                 is EnvConnectionViewModel.Event.OpenUrl ->
                     openUrl(url = event.url)
             }

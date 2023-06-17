@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,106 +28,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
                 android:text="@string/connect_to_a_library"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/root_url_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="@string/library_root_url"
-                app:endIconContentDescription="@string/learn_more"
-                app:endIconDrawable="@drawable/ic_lightbulb"
-                app:endIconMode="custom"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_server">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textUri|textNoSuggestions"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck">
-
-                    <requestFocus />
-                </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/username_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:autofillHints="username"
-                android:hint="@string/username_optional"
-                app:endIconDrawable="@drawable/ic_close"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_account">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="username"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/password_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:autofillHints="password"
-                android:hint="@string/password_optional"
-                app:passwordToggleEnabled="true"
-                app:startIconDrawable="@drawable/ic_lock">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="password"
-                    android:imeOptions="actionGo"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/certificate_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/client_certificate_optional"
-                android:importantForAutofill="no"
-                app:endIconContentDescription="@string/clear"
-                app:endIconDrawable="@drawable/ic_close"
-                app:endIconMode="custom"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_certificate">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:importantForAutofill="no"
-                    android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <include layout="@layout/include_env_connection_fields" />
 
             <Space
                 android:layout_width="0dp"
