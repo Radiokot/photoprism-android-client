@@ -212,8 +212,13 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             recyclerView.addOnScrollListener(endlessScrollListener)
 
             registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                private var prevSelectedPagePosition = -1
+
                 override fun onPageSelected(position: Int) {
-                    viewModel.onPageChanged(position)
+                    if (position != prevSelectedPagePosition) {
+                        prevSelectedPagePosition = position
+                        viewModel.onPageChanged(position)
+                    }
                 }
             })
         }
