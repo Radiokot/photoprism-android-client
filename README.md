@@ -54,7 +54,7 @@ When a new version of PhotoPrism comes out, the app may break.
 [<img src="https://avatars.githubusercontent.com/u/111684368?s=100&v=4" alt="C-Iaens" height=50 />](https://github.com/C-Iaens)
 [<img src="https://avatars.githubusercontent.com/u/52239579?s=100&v=4" alt="ippocratis" height=50 />](https://github.com/ippocratis)
 <br>
-*I am very grateful to everyone supporting this project ♥ To join the sponsors, [make a donation](https://radiokot.com.ua/tip) with your preferred payment method and email me the transaction reference. &emsp;*
+*I am very grateful to everyone supporting this project ♥ To join this public sponsors list, [make a donation](https://radiokot.com.ua/tip) with your preferred payment method and email me the transaction reference. &emsp;*
 
 ## Tech stack
 - Kotlin
