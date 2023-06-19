@@ -155,6 +155,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
+// Make the built APKs have a release-style name.
+android.applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        outputFileName = "${variant.applicationId}-${variant.versionName}.apk"
+    }
+}
+
 // F-Droid reproducible builds fix: https://gist.github.com/obfusk/61046e09cee352ae6dd109911534b12e
 // Android Studio can't find the imports; this does not affect the actual build
 // since Gradle can find them just fine.
