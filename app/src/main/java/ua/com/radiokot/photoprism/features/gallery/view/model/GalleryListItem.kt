@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -123,14 +124,25 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             override fun bindView(item: Media, payloads: List<Any>) {
-                view.imageView.contentDescription = item.name
+                with(view.imageView) {
+                    contentDescription = item.name
 
-                picasso
-                    .load(item.thumbnailUrl)
-                    .placeholder(imageLoadingPlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .into(view.imageView)
+                    picasso
+                        .load(item.thumbnailUrl)
+                        .apply {
+                            if (isBonded) {
+                                noFade()
+                                noPlaceholder()
+                            } else {
+                                placeholder(imageLoadingPlaceholder)
+                            }
+                        }
+                        .fit()
+                        .centerCrop()
+                        .into(this)
+
+                    isBonded = true
+                }
 
                 with(view.mediaTypeImageView) {
                     if (item.mediaTypeIcon != null) {
@@ -182,7 +194,11 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             override fun unbindView(item: Media) {
-                picasso.cancelRequest(view.imageView)
+                with(view.imageView) {
+                    picasso.cancelRequest(this)
+                    setImageDrawable(null)
+                    isBonded = false
+                }
             }
 
             private fun animateImageScale(target: Float) {
@@ -199,6 +215,18 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.imageView.scaleX = target
                 view.imageView.scaleY = target
             }
+
+            private var ImageView.isBonded: Boolean
+                get() = getTag(R.id.thumbnail_image_view) != null
+                set(value) {
+                    setTag(
+                        R.id.thumbnail_image_view,
+                        if (value)
+                            true
+                        else
+                            null
+                    )
+                }
 
             companion object {
                 const val PAYLOAD_ANIMATE_SELECTION = "animate"
