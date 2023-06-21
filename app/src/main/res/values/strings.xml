@@ -104,4 +104,5 @@
     <string name="save_file_to_the_storage">Save the file to the storage</string>
     <string name="share_the_file">Share the file</string>
     <string name="download_is_completed">Download is completed</string>
+    <string name="photoprism_web" translatable="false">PhotoPrism Web</string>
 </resources>

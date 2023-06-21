@@ -42,6 +42,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
@@ -639,6 +640,15 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun openUrl(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.photoprism_web,
+                )
+            )
+        )
+        return
         val uri = Uri.parse(url)
 
         CustomTabsHelper.safelyLaunchUrl(

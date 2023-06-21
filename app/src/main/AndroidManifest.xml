@@ -71,6 +71,10 @@
             android:exported="false"
             android:label="@string/preferences" />
 
+        <activity
+            android:name=".features.webview.view.WebViewActivity"
+            android:exported="false" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"
