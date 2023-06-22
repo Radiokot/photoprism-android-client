@@ -30,7 +30,7 @@ import java.io.IOException
 import java.util.Locale
 import kotlin.concurrent.thread
 
-class App : Application() {
+class PhotoPrismGallery : Application() {
     private val log = kLogger("App")
 
     override fun onCreate() {
@@ -38,7 +38,7 @@ class App : Application() {
 
         startKoin {
             androidLogger()
-            androidContext(this@App)
+            androidContext(this@PhotoPrismGallery)
             modules(
                 retrofitApiModules
                         + dbModules
