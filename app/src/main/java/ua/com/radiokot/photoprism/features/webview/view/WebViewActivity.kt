@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.webkit.ClientCertRequest
+import android.webkit.HttpAuthHandler
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -28,6 +29,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
 
 class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -40,6 +42,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
 
     private val session: EnvSession by inject()
     private val webViewClientCertRequestHandler: WebViewClientCertRequestHandler by inject()
+    private val webViewHttpAuthRequestHandler: WebViewHttpAuthRequestHandler by inject()
 
     private lateinit var view: ActivityWebViewBinding
     private val webView: WebView
@@ -128,6 +131,21 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                 }
 
                 handleClientCertRequest(view, request)
+            }
+
+            override fun onReceivedHttpAuthRequest(
+                view: WebView,
+                handler: HttpAuthHandler,
+                host: String,
+                realm: String
+            ) {
+                log.debug {
+                    "onReceivedHttpAuthRequest(): handling_http_auth_request:" +
+                            "\nhost=$host," +
+                            "\nhandler=$webViewHttpAuthRequestHandler"
+                }
+
+                webViewHttpAuthRequestHandler.handleHttpAuthRequest(view, host, handler)
             }
         }
     }

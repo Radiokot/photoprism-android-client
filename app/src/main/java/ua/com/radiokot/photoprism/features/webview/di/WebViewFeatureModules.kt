@@ -7,7 +7,9 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.webview.logic.SessionCertWebViewClientCertRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.SessionRootUrlWebViewHttpAuthRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
 
 val webViewFeatureModules: List<Module> = listOf(
     module {
@@ -22,6 +24,14 @@ val webViewFeatureModules: List<Module> = listOf(
                     context = androidApplication(),
                 )
             } bind WebViewClientCertRequestHandler::class
+
+            scoped {
+                val session = get<EnvSession>()
+
+                SessionRootUrlWebViewHttpAuthRequestHandler(
+                    envRootUrl = session.envConnectionParams.rootUrl,
+                )
+            } bind WebViewHttpAuthRequestHandler::class
         }
     }
 )

@@ -9,10 +9,12 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -185,7 +187,13 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        eventsSubject.onNext(Event.OpenUrl(url = item.webViewUrl))
+        // Do not pass HTTP credentials to the web viewer,
+        // as it may be logger there.
+        val safeWebViewUrl = item.webViewUrl.toHttpUrl()
+            .withMaskedCredentials(placeholder = "")
+            .toString()
+
+        eventsSubject.onNext(Event.OpenUrl(url = safeWebViewUrl))
     }
 
     fun onDownloadClicked(position: Int) {
