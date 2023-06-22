@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.webview.view
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.webkit.ClientCertRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -10,6 +11,11 @@ import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.kotlin.toCompletable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
@@ -18,7 +24,10 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityWebViewBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
 
 class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -30,6 +39,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     private val log = kLogger("WebViewActivity")
 
     private val session: EnvSession by inject()
+    private val webViewClientCertRequestHandler: WebViewClientCertRequestHandler by inject()
 
     private lateinit var view: ActivityWebViewBinding
     private val webView: WebView
@@ -51,7 +61,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
 
         log.debug {
             "onCreate(): creating:" +
-                    "\nuri=$url," +
+                    "\nurl=${url.toHttpUrl().withMaskedCredentials()}," +
                     "\ntitle=${getString(titleRes)}," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
@@ -109,6 +119,16 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                 injectScriptOnce()
                 backPressedCallback.isEnabled = canGoBack()
             }
+
+            override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest) {
+                log.debug {
+                    "onReceivedClientCertRequest(): handling_cert_request:" +
+                            "\nhost=${request.host}," +
+                            "\nhandler=$webViewClientCertRequestHandler"
+                }
+
+                handleClientCertRequest(view, request)
+            }
         }
     }
 
@@ -154,7 +174,22 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                 """.trimIndent(), null
         )
 
+        isScriptInjected = true
+
         log.debug { "injectScriptOnce(): script_injected" }
+    }
+
+    private var clientCertRequestHandlingDisposable: Disposable? = null
+    private fun handleClientCertRequest(view: WebView, request: ClientCertRequest) {
+        clientCertRequestHandlingDisposable?.dispose()
+        clientCertRequestHandlingDisposable = {
+            // This needs to be done in a non-main thread.
+            webViewClientCertRequestHandler.handleClientCertRequest(view, request)
+        }
+            .toCompletable()
+            .subscribeOn(Schedulers.io())
+            .subscribeBy()
+            .autoDispose(this)
     }
 
     private fun navigate(url: String) {

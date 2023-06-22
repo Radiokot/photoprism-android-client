@@ -23,6 +23,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
+import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.File
 import java.io.IOException
@@ -44,6 +45,7 @@ class App : Application() {
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
                         + envConnectionFeatureModules
+                        + webViewFeatureModules
             )
             androidFileProperties("app.properties")
         }
