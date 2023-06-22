@@ -121,6 +121,8 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 evaluateJavascript("""
+                    localStorage.setItem('session_id', '${session.id}')
+                    localStorage.setItem('user','{"ID":42}')
                     function WebSocket() {}
                 """.trimIndent(), null)
             }
@@ -176,14 +178,14 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
 
         webView.evaluateJavascript(
             """
-                    localStorage.setItem('session_id', '${session.id}')
-                    localStorage.setItem('user','{"ID":42}')
-                    
                     const immersiveCss = `
                         <style type="text/css">
                             .v-content__wrap {
-                                padding-top: 0px !important;
+                                padding: 0px !important;
                                 background: $backgroundColorRgb !important;
+                            }
+                            .v-content {
+                                padding: 0px !important;
                             }
                             .v-toolbar__content {
                                 display: none !important;
@@ -191,6 +193,9 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                             .p-page-photos .container {
                                 background: $backgroundColorRgb !important;
                                 min-height: 100vh !important;    
+                            }
+                            #p-navigation {
+                                display: none;
                             }
                         </style>
                     `
