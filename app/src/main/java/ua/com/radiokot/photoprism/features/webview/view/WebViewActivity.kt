@@ -31,6 +31,8 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     private val session: EnvSession by inject()
 
     private lateinit var view: ActivityWebViewBinding
+    private val webView: WebView
+        get() = view.webViewFragment.getFragment<WebViewFragment>().webView
 
     private val url: String by lazy {
         requireNotNull(intent.getStringExtra(URL_EXTRA)) {
@@ -57,9 +59,9 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         setContentView(view.root)
 
         initToolbar()
-        initWebView()
 
         if (savedInstanceState == null) {
+            initWebView()
             navigate(url)
         }
     }
@@ -70,7 +72,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         setTitle(titleRes)
     }
 
-    private fun initWebView() = with(view.webView) {
+    private fun initWebView() = with(webView) {
         settings.apply {
             @SuppressLint("SetJavaScriptEnabled")
             javaScriptEnabled = true
@@ -118,7 +120,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             })"
 
 
-        view.webView.evaluateJavascript(
+        webView.evaluateJavascript(
             """
                     localStorage.setItem('session_id', '${session.id}')
                     localStorage.setItem('user','{"ID":42}')
@@ -147,7 +149,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun navigate(url: String) {
-        view.webView.loadUrl(url)
+        webView.loadUrl(url)
 
         log.debug {
             "navigate(): loading_url:" +

@@ -14,8 +14,9 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/learn_more" />
 
-    <WebView
-        android:id="@+id/web_view"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/web_view_fragment"
+        android:name="ua.com.radiokot.photoprism.features.webview.view.WebViewFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,6 +30,7 @@
         android:focusable="false"
         android:indeterminate="false"
         android:max="100"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
