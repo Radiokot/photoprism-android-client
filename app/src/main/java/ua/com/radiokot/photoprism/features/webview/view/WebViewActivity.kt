@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.webview.view
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.webkit.ClientCertRequest
@@ -117,6 +118,12 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                evaluateJavascript("""
+                    function WebSocket() {}
+                """.trimIndent(), null)
+            }
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 injectScriptOnce()
