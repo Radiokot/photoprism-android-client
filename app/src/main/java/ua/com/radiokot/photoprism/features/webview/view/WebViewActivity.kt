@@ -7,6 +7,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
 import org.koin.android.ext.android.inject
@@ -73,6 +74,13 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     }
 
     private fun initWebView() = with(webView) {
+        val backPressedCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                goBack()
+            }
+        }
+        onBackPressedDispatcher.addCallback(backPressedCallback)
+
         settings.apply {
             @SuppressLint("SetJavaScriptEnabled")
             javaScriptEnabled = true
@@ -99,6 +107,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 injectScriptOnce()
+                backPressedCallback.isEnabled = canGoBack()
             }
         }
     }
