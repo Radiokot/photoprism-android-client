@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SoftInputUtil
 
@@ -259,7 +260,9 @@ class EnvConnectionActivity : BaseActivity() {
                 WebViewActivity.getBundle(
                     url = url,
                     titleRes = R.string.library_root_url,
-                    // TODO: remove github header script
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                    ),
                 )
             )
         )
@@ -271,7 +274,9 @@ class EnvConnectionActivity : BaseActivity() {
                 WebViewActivity.getBundle(
                     url = url,
                     titleRes = R.string.how_to_use_client_certificate,
-                    // TODO: remove github header script
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                    ),
                 )
             )
         )

@@ -41,15 +41,23 @@ import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptF
 class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
         createActivityScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
+            // This allows running the viewer without the session.
+            getKoin().getScopeOrNull(DI_SCOPE_SESSION)
+                ?.also { linkTo(it) }
         }
     }
 
     private val log = kLogger("WebViewActivity")
 
-    private val session: EnvSession by inject()
-    private val webViewClientCertRequestHandler: WebViewClientCertRequestHandler by inject()
-    private val webViewHttpAuthRequestHandler: WebViewHttpAuthRequestHandler by inject()
+    private val session: EnvSession? by lazy {
+        scope.getOrNull()
+    }
+    private val webViewClientCertRequestHandler: WebViewClientCertRequestHandler? by lazy {
+        scope.getOrNull()
+    }
+    private val webViewHttpAuthRequestHandler: WebViewHttpAuthRequestHandler? by lazy {
+        scope.getOrNull()
+    }
     private val webViewInjectionScriptFactory: WebViewInjectionScriptFactory by inject()
 
     private lateinit var view: ActivityWebViewBinding
@@ -172,7 +180,9 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                             "\nhandler=$webViewHttpAuthRequestHandler"
                 }
 
-                webViewHttpAuthRequestHandler.handleHttpAuthRequest(view, host, handler)
+                webViewHttpAuthRequestHandler
+                    ?.handleHttpAuthRequest(view, host, handler)
+                    ?: handler.cancel()
             }
         }
     }
@@ -192,11 +202,22 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         val scriptJs = when (script) {
             WebViewInjectionScriptFactory.Script.PHOTOPRISM_AUTO_LOGIN ->
                 webViewInjectionScriptFactory.getPhotoPrismAutoLoginScript(
-                    sessionId = session.id,
+                    sessionId = checkNotNull(session) {
+                        "There must be a session to inject this script"
+                    }.id,
                 )
 
             WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE ->
                 webViewInjectionScriptFactory.getPhotoPrismImmersiveScript(
+                    windowBackgroundColor = MaterialColors.getColor(
+                        this,
+                        android.R.attr.colorBackground,
+                        Color.RED
+                    ),
+                )
+
+            WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE ->
+                webViewInjectionScriptFactory.getGitHubWikiImmersiveScript(
                     windowBackgroundColor = MaterialColors.getColor(
                         this,
                         android.R.attr.colorBackground,
@@ -220,7 +241,9 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         clientCertRequestHandlingDisposable?.dispose()
         clientCertRequestHandlingDisposable = {
             // This needs to be done in a non-main thread.
-            webViewClientCertRequestHandler.handleClientCertRequest(view, request)
+            webViewClientCertRequestHandler
+                ?.handleClientCertRequest(view, request)
+                ?: request.cancel()
         }
             .toCompletable()
             .subscribeOn(Schedulers.io())

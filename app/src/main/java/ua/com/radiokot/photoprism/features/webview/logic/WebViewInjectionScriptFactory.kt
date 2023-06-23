@@ -20,9 +20,7 @@ class WebViewInjectionScriptFactory() {
         """.trimIndent()
 
     fun getPhotoPrismImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
-        val windowBackgroundColorRgb = windowBackgroundColor.let {
-            "rgb(${Color.red(it)},${Color.green(it)},${Color.blue(it)})"
-        }
+        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
 
         return """
             const immersiveCss = `
@@ -62,9 +60,45 @@ class WebViewInjectionScriptFactory() {
         """.trimIndent()
     }
 
+    fun getGitHubWikiImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
+        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
+
+        return """
+            function injectImmersiveCss() {
+                var immersiveCss = `
+                    <style type="text/css">
+                        /* Hide toolbar, sidebar, wiki page header */
+                        .AppHeader, .Layout-sidebar, .js-header-wrapper, 
+                        #repository-container-header, .gh-header, .gh-header-meta {
+                            display: none !important;
+                        }
+                        
+                        /* Remove content extra spacing */
+                        .mt-4 {
+                            margin-top: 0px !important;
+                            padding-top: 4px !important;
+                        }
+                        
+                        /* Make the background match window color */
+                        body {
+                            background: $windowBackgroundColorRgb !important;
+                        }
+                    </style>
+                `
+                document.head.insertAdjacentHTML('beforeend', immersiveCss)
+            }
+            
+            addEventListener("DOMContentLoaded", injectImmersiveCss)
+        """.trimIndent()
+    }
+
+    private fun Int.toCssRgb(): String =
+        "rgb(${Color.red(this)},${Color.green(this)},${Color.blue(this)})"
+
     enum class Script {
         PHOTOPRISM_AUTO_LOGIN,
         PHOTOPRISM_IMMERSIVE,
+        GITHUB_WIKI_IMMERSIVE,
         ;
     }
 }
