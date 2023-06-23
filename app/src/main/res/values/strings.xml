@@ -105,4 +105,5 @@
     <string name="share_the_file">Share the file</string>
     <string name="download_is_completed">Download is completed</string>
     <string name="photoprism_web" translatable="false">PhotoPrism Web</string>
+    <string name="open_in_browser" translatable="false">@string/fallback_menu_item_open_in_browser</string>
 </resources>

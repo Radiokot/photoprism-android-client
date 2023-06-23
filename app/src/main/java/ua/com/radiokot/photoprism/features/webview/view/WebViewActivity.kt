@@ -1,9 +1,13 @@
 package ua.com.radiokot.photoprism.features.webview.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.webkit.ClientCertRequest
 import android.webkit.HttpAuthHandler
 import android.webkit.WebChromeClient
@@ -22,6 +26,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.createActivityScope
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityWebViewBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -230,6 +235,39 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             "navigate(): loading_url:" +
                     "\nurl=$url"
         }
+    }
+
+    private fun goToBrowserAndFinish() {
+        val url = webView.url ?: url
+
+        log.debug {
+            "goToBrowserAndFinish(): opening_url:" +
+                    "\nurl=$url"
+        }
+
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)))
+            finish()
+
+            log.debug {
+                "goToBrowserAndFinish(): finishing"
+            }
+        } catch (e: Exception) {
+            log.error(e) { "goToBrowserAndFinish(): opening_failed" }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.web_view, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.open_in_browser ->
+                goToBrowserAndFinish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {
