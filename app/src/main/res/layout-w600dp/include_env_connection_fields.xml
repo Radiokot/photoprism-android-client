@@ -13,6 +13,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/root_url_text_input"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
@@ -40,6 +41,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_text_input"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
@@ -64,6 +66,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/certificate_text_input"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
@@ -95,6 +98,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_text_input"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
             android:layout_columnWeight="1"
