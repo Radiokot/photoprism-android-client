@@ -42,6 +42,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
@@ -645,6 +646,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 WebViewActivity.getBundle(
                     url = url,
                     titleRes = R.string.photoprism_web,
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_AUTO_LOGIN,
+                    ),
+                    pageFinishedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE,
+                    )
                 )
             )
         )

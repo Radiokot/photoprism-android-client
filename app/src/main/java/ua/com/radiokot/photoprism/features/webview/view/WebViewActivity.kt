@@ -31,6 +31,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 
 class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -44,10 +45,12 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     private val session: EnvSession by inject()
     private val webViewClientCertRequestHandler: WebViewClientCertRequestHandler by inject()
     private val webViewHttpAuthRequestHandler: WebViewHttpAuthRequestHandler by inject()
+    private val webViewInjectionScriptFactory: WebViewInjectionScriptFactory by inject()
 
     private lateinit var view: ActivityWebViewBinding
     private val webView: WebView
         get() = view.webViewFragment.getFragment<WebViewFragment>().webView
+    private var injectedScripts = mutableSetOf<WebViewInjectionScriptFactory.Script>()
 
     private val url: String by lazy {
         requireNotNull(intent.getStringExtra(URL_EXTRA)) {
@@ -59,6 +62,18 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             "No title resource specified"
         }
     }
+    private val pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> by lazy {
+        intent.getIntArrayExtra(PAGE_STARTED_SCRIPTS_EXTRA)
+            ?.map(WebViewInjectionScriptFactory.Script.values()::get)
+            ?.toSet()
+            ?: emptySet()
+    }
+    private val pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> by lazy {
+        intent.getIntArrayExtra(PAGE_FINISHED_SCRIPTS_EXTRA)
+            ?.map(WebViewInjectionScriptFactory.Script.values()::get)
+            ?.toSet()
+            ?: emptySet()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +82,8 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             "onCreate(): creating:" +
                     "\nurl=${url.toHttpUrl().withMaskedCredentials()}," +
                     "\ntitle=${getString(titleRes)}," +
+                    "\npageStartedInjectionScripts=${pageStartedInjectionScripts.size}," +
+                    "\npageFinishedInjectionScripts=${pageFinishedInjectionScripts.size}," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
@@ -120,15 +137,11 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
 
         webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                evaluateJavascript("""
-                    localStorage.setItem('session_id', '${session.id}')
-                    localStorage.setItem('user','{"ID":42,"UID":""}')
-                """.trimIndent(), null)
+                injectScriptsOnce(pageStartedInjectionScripts)
             }
+
             override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                injectScriptOnce()
+                injectScriptsOnce(pageFinishedInjectionScripts)
                 backPressedCallback.isEnabled = canGoBack()
             }
 
@@ -159,54 +172,42 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
-    private var isScriptInjected = false
-    private fun injectScriptOnce() {
-        if (isScriptInjected) {
-            return
+    private fun injectScriptsOnce(
+        scripts: Set<WebViewInjectionScriptFactory.Script>
+    ) = scripts.forEach { script ->
+        if (injectedScripts.contains(script)) {
+            return@forEach
         }
 
-        val backgroundColor = MaterialColors.getColor(
-            this,
-            android.R.attr.colorBackground,
-            Color.RED
-        )
-        val backgroundColorRgb =
-            "rgb(${Color.red(backgroundColor)},${Color.green(backgroundColor)},${
-                Color.blue(backgroundColor)
-            })"
+        log.debug {
+            "injectScriptsOnce(): injecting:" +
+                    "\nscript=$script"
+        }
 
+        val scriptJs = when (script) {
+            WebViewInjectionScriptFactory.Script.PHOTOPRISM_AUTO_LOGIN ->
+                webViewInjectionScriptFactory.getPhotoPrismAutoLoginScript(
+                    sessionId = session.id,
+                )
 
-        webView.evaluateJavascript(
-            """
-                    const immersiveCss = `
-                        <style type="text/css">
-                            .v-content__wrap {
-                                padding: 0px !important;
-                                background: $backgroundColorRgb !important;
-                            }
-                            .v-content {
-                                padding: 0px !important;
-                            }
-                            .v-toolbar__content {
-                                display: none !important;
-                            }
-                            .p-page-photos .container {
-                                background: $backgroundColorRgb !important;
-                                min-height: 100vh !important;    
-                            }
-                            #p-navigation {
-                                display: none;
-                            }
-                        </style>
-                    `
-                    
-                    document.head.insertAdjacentHTML('beforeend', immersiveCss)
-                """.trimIndent(), null
-        )
+            WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE ->
+                webViewInjectionScriptFactory.getPhotoPrismImmersiveScript(
+                    windowBackgroundColor = MaterialColors.getColor(
+                        this,
+                        android.R.attr.colorBackground,
+                        Color.RED
+                    ),
+                )
+        }
 
-        isScriptInjected = true
+        webView.evaluateJavascript(scriptJs, null)
 
-        log.debug { "injectScriptOnce(): script_injected" }
+        log.debug {
+            "injectScriptsOnce(): injected:" +
+                    "\nscript=$script"
+        }
+
+        injectedScripts.add(script)
     }
 
     private var clientCertRequestHandlingDisposable: Disposable? = null
@@ -234,18 +235,36 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     companion object {
         private const val URL_EXTRA = "url"
         private const val TITLE_RES_EXTRA = "title_res"
+        private const val PAGE_STARTED_SCRIPTS_EXTRA = "page_started_scripts"
+        private const val PAGE_FINISHED_SCRIPTS_EXTRA = "page_finished_scripts"
 
         /**
          * @param url URL to load
          * @param titleRes string resource for the title
+         * @param pageStartedInjectionScripts scripts to inject on page start
+         * @param pageFinishedInjectionScripts scripts to inject on page finish
          */
         fun getBundle(
             url: String,
             @StringRes
             titleRes: Int,
+            pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> = emptySet(),
+            pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> = emptySet(),
         ) = Bundle().apply {
             putString(URL_EXTRA, url)
             putInt(TITLE_RES_EXTRA, titleRes)
+            putIntArray(
+                PAGE_STARTED_SCRIPTS_EXTRA,
+                pageStartedInjectionScripts
+                    .map(WebViewInjectionScriptFactory.Script::ordinal)
+                    .toIntArray()
+            )
+            putIntArray(
+                PAGE_FINISHED_SCRIPTS_EXTRA,
+                pageFinishedInjectionScripts
+                    .map(WebViewInjectionScriptFactory.Script::ordinal)
+                    .toIntArray()
+            )
         }
     }
 }

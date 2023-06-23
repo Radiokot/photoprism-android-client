@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.features.webview.logic.SessionCertWebViewClien
 import ua.com.radiokot.photoprism.features.webview.logic.SessionRootUrlWebViewHttpAuthRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 
 val webViewFeatureModules: List<Module> = listOf(
     module {
@@ -33,5 +34,9 @@ val webViewFeatureModules: List<Module> = listOf(
                 )
             } bind WebViewHttpAuthRequestHandler::class
         }
+
+        single {
+            WebViewInjectionScriptFactory()
+        } bind WebViewInjectionScriptFactory::class
     }
 )
