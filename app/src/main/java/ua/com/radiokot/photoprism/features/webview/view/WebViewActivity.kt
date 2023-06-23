@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.webview.view
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -16,7 +15,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
-import com.google.android.material.color.MaterialColors
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.kotlin.toCompletable
@@ -209,20 +207,17 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
 
             WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE ->
                 webViewInjectionScriptFactory.getPhotoPrismImmersiveScript(
-                    windowBackgroundColor = MaterialColors.getColor(
-                        this,
-                        android.R.attr.colorBackground,
-                        Color.RED
-                    ),
+                    windowBackgroundColor = windowBackgroundColor,
                 )
 
             WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE ->
                 webViewInjectionScriptFactory.getGitHubWikiImmersiveScript(
-                    windowBackgroundColor = MaterialColors.getColor(
-                        this,
-                        android.R.attr.colorBackground,
-                        Color.RED
-                    ),
+                    windowBackgroundColor = windowBackgroundColor,
+                )
+
+            WebViewInjectionScriptFactory.Script.PHOTOPRISM_HELP_IMMERSIVE ->
+                webViewInjectionScriptFactory.getPhotoPrismHelpImmersiveScript(
+                    windowBackgroundColor = windowBackgroundColor,
                 )
         }
 

@@ -92,6 +92,37 @@ class WebViewInjectionScriptFactory() {
         """.trimIndent()
     }
 
+    fun getPhotoPrismHelpImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
+        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
+
+        return """
+            function injectImmersiveCss() {
+                var immersiveCss = `
+                    <style type="text/css">
+                        /* Hide toolbar, page header */
+                        .md-header, #using-search-filters  {
+                            display: none !important;
+                        }
+                        
+                        /* Remove content extra spacing */
+                        article, .md-main__inner {
+                            margin-top: 0px !important;
+                            padding-top: 0px !important;
+                        }
+                        
+                        /* Make the background match window color */
+                        body {
+                            background: $windowBackgroundColorRgb !important;
+                        }
+                    </style>
+                `
+                document.head.insertAdjacentHTML('beforeend', immersiveCss)
+            }
+            
+            addEventListener("DOMContentLoaded", injectImmersiveCss)
+        """.trimIndent()
+    }
+
     private fun Int.toCssRgb(): String =
         "rgb(${Color.red(this)},${Color.green(this)},${Color.blue(this)})"
 
@@ -99,6 +130,7 @@ class WebViewInjectionScriptFactory() {
         PHOTOPRISM_AUTO_LOGIN,
         PHOTOPRISM_IMMERSIVE,
         GITHUB_WIKI_IMMERSIVE,
+        PHOTOPRISM_HELP_IMMERSIVE,
         ;
     }
 }

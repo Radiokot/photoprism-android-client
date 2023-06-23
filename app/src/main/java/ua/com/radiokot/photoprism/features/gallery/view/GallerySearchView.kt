@@ -40,6 +40,7 @@ import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import kotlin.math.roundToInt
 
@@ -120,9 +121,11 @@ class GallerySearchView(
 
                     initAlbumsListOnce()
                 }
+
                 SearchView.TransitionState.HIDING -> {
                     viewModel.onConfigurationViewClosing()
                 }
+
                 else -> {}
             }
 
@@ -362,6 +365,7 @@ class GallerySearchView(
                 when (state) {
                     is GallerySearchAlbumsViewModel.State.Ready ->
                         state.albums
+
                     else ->
                         emptyList()
                 }
@@ -399,6 +403,7 @@ class GallerySearchView(
                                 search = state.search,
                                 textView = searchBar.textView,
                             )
+
                         is GallerySearchViewModel.State.ConfiguringSearch ->
                             if (state.alreadyAppliedSearch != null)
                                 getSearchBarText(
@@ -407,6 +412,7 @@ class GallerySearchView(
                                 )
                             else
                                 null
+
                         GallerySearchViewModel.State.NoSearch ->
                             null
                     }
@@ -602,8 +608,10 @@ class GallerySearchView(
             Intent(context, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
                     url = url,
-                    titleRes = R.string.how_to_use_client_certificate,
-                    // TODO: header removal script
+                    titleRes = R.string.using_search_filters,
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_HELP_IMMERSIVE,
+                    ),
                 )
             )
         )
