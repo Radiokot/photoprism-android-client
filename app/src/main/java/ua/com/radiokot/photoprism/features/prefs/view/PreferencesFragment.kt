@@ -339,7 +339,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                         listView,
                         getString(
                             R.string.template_successfully_imported_search_bookmarks,
-                            resources.getQuantityString(R.plurals.imported_search_bookmarks, count, count)
+                            resources.getQuantityString(
+                                R.plurals.imported_search_bookmarks,
+                                count,
+                                count
+                            )
                         ),
                         Snackbar.LENGTH_LONG,
                     ).show()
@@ -369,22 +373,25 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun openIssueReport() {
-        openUrl(
+        openIssueReportUrl(
             url = getKoin().getProperty("issueReportingUrl")!!
         )
     }
 
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-        CustomTabsHelper.safelyLaunchUrl(
-            requireContext(),
-            CustomTabsIntent.Builder()
+    private fun openIssueReportUrl(url: String) {
+        // Custom tabs are preferred here,
+        // as the user may be already logged into GitHub
+        // and so won't have to log in again.
+        CustomTabsHelper.launchWithFallback(
+            context = requireContext(),
+            intent = CustomTabsIntent.Builder()
                 .setShowTitle(false)
                 .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                 .setUrlBarHidingEnabled(true)
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
-            uri
+            url = url,
+            titleRes = R.string.report_an_issue
         )
     }
 

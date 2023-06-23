@@ -193,7 +193,7 @@ class MediaViewerViewModel(
             .withMaskedCredentials(placeholder = "")
             .toString()
 
-        eventsSubject.onNext(Event.OpenUrl(url = safeWebViewUrl))
+        eventsSubject.onNext(Event.OpenWebViewer(url = safeWebViewUrl))
     }
 
     fun onDownloadClicked(position: Int) {
@@ -500,7 +500,7 @@ class MediaViewerViewModel(
         object CheckStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
         class ShowStartedDownloadMessage(val destinationFileName: String) : Event
-        class OpenUrl(val url: String) : Event
+        class OpenWebViewer(val url: String) : Event
     }
 
     sealed interface State {

@@ -14,6 +14,13 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <queries>
+        <!-- Required for the Custom Tabs fallback -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
     <application
         android:name=".PhotoPrismGallery"
         android:allowBackup="false"

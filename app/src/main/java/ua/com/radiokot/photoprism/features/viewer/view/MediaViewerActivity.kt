@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.viewer.view
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -13,7 +12,6 @@ import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -537,8 +535,8 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showMissingStoragePermissionMessage()
 
-                is MediaViewerViewModel.Event.OpenUrl ->
-                    openUrl(
+                is MediaViewerViewModel.Event.OpenWebViewer ->
+                    openWebViewer(
                         url = event.url,
                     )
             }
@@ -640,7 +638,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         ).show()
     }
 
-    private fun openUrl(url: String) {
+    private fun openWebViewer(url: String) {
         startActivity(
             Intent(this, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
@@ -654,20 +652,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                     )
                 )
             )
-        )
-        return
-        val uri = Uri.parse(url)
-
-        CustomTabsHelper.safelyLaunchUrl(
-            this,
-            CustomTabsIntent.Builder()
-                .setShowTitle(false)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setUrlBarHidingEnabled(true)
-                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                .setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK)
-                .build(),
-            uri
         )
     }
 

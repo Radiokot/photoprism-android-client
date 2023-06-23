@@ -1,13 +1,11 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyChain
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -21,7 +19,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
-import ua.com.radiokot.photoprism.util.CustomTabsHelper
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SoftInputUtil
 
 class EnvConnectionActivity : BaseActivity() {
@@ -40,7 +38,6 @@ class EnvConnectionActivity : BaseActivity() {
 
         initFields()
         initButtons()
-        initCustomTabs()
 
         subscribeToState()
         subscribeToEvents()
@@ -118,7 +115,9 @@ class EnvConnectionActivity : BaseActivity() {
             setOnClickListener {
                 viewModel.onCertificateFieldClicked()
             }
-            editText!!.setOnClickListener { viewModel.onCertificateFieldClicked() }
+            editText!!.setOnClickListener {
+                viewModel.onCertificateFieldClicked()
+            }
 
             viewModel.clientCertificateAlias.observe(this@EnvConnectionActivity) { alias ->
                 editText?.setText(alias ?: "")
@@ -141,10 +140,6 @@ class EnvConnectionActivity : BaseActivity() {
                 viewModel.onConnectButtonClicked()
             }
         }
-    }
-
-    private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(this)
     }
 
     private fun subscribeToState() {
@@ -203,8 +198,11 @@ class EnvConnectionActivity : BaseActivity() {
                 EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
                     showMissingClientCertificatesNotice()
 
-                is EnvConnectionViewModel.Event.OpenUrl ->
-                    openUrl(url = event.url)
+                is EnvConnectionViewModel.Event.OpenRootUrlGuide ->
+                    openRootUrlGuide(url = event.url)
+
+                is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
+                    openClientCertificateGuide(url = event.url)
             }
 
             log.debug {
@@ -255,17 +253,27 @@ class EnvConnectionActivity : BaseActivity() {
             .show()
     }
 
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-        CustomTabsHelper.safelyLaunchUrl(
-            this,
-            CustomTabsIntent.Builder()
-                .setShowTitle(false)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setUrlBarHidingEnabled(true)
-                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                .build(),
-            uri
+    private fun openRootUrlGuide(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.library_root_url,
+                    // TODO: remove github header script
+                )
+            )
+        )
+    }
+
+    private fun openClientCertificateGuide(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.how_to_use_client_certificate,
+                    // TODO: remove github header script
+                )
+            )
         )
     }
 

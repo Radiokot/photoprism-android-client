@@ -2,8 +2,8 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
-import android.net.Uri
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -18,7 +18,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.SupportMenuInflater
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
@@ -41,7 +40,7 @@ import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
-import ua.com.radiokot.photoprism.util.CustomTabsHelper
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import kotlin.math.roundToInt
 
 /**
@@ -91,7 +90,6 @@ class GallerySearchView(
 
         initSearchBarAndView()
         initBookmarksDrag()
-        initCustomTabs()
         initMenus()
 
         subscribeToData()
@@ -171,10 +169,6 @@ class GallerySearchView(
         }
 
         searchBar.textView.ellipsize = TextUtils.TruncateAt.END
-    }
-
-    private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(context)
     }
 
     private fun initMenus() {
@@ -469,8 +463,8 @@ class GallerySearchView(
                         existingBookmark = event.existingBookmark,
                     )
 
-                is GallerySearchViewModel.Event.OpenUrl ->
-                    openUrl(url = event.url)
+                is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
+                    openSearchFiltersGuide(url = event.url)
             }
 
             log.debug {
@@ -603,17 +597,15 @@ class GallerySearchView(
         }
     }
 
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-        CustomTabsHelper.safelyLaunchUrl(
-            context,
-            CustomTabsIntent.Builder()
-                .setShowTitle(false)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setUrlBarHidingEnabled(true)
-                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                .build(),
-            uri
+    private fun openSearchFiltersGuide(url: String) {
+        context.startActivity(
+            Intent(context, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.how_to_use_client_certificate,
+                    // TODO: header removal script
+                )
+            )
         )
     }
 

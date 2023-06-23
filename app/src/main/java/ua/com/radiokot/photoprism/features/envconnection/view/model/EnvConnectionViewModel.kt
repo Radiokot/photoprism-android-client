@@ -135,7 +135,7 @@ class EnvConnectionViewModel(
 
     fun onCertificateLearnMoreButtonClicked() {
         eventsSubject.onNext(
-            Event.OpenUrl(
+            Event.OpenClientCertificateGuide(
                 url = clientCertificatesGuideUrl,
             )
         )
@@ -143,7 +143,7 @@ class EnvConnectionViewModel(
 
     fun onRootUrlGuideButtonClicked() {
         eventsSubject.onNext(
-            Event.OpenUrl(
+            Event.OpenRootUrlGuide(
                 url = rootUrlGuideUrl,
             )
         )
@@ -243,6 +243,7 @@ class EnvConnectionViewModel(
         object GoToGallery : Event
         object ChooseClientCertificateAlias : Event
         object ShowMissingClientCertificatesNotice : Event
-        class OpenUrl(val url: String) : Event
+        class OpenRootUrlGuide(val url: String) : Event
+        class OpenClientCertificateGuide(val url: String) : Event
     }
 }
