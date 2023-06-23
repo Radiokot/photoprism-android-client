@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Occasional blinking of gallery items while loading a new page
+- Occasional incorrect width of the connection screen fields
+
+### Changed
+- PhotoPrism web viewer is now opened internally and has auto-login
 
 ## [1.11.0] - 2023-06-18
 
