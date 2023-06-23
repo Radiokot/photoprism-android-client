@@ -103,6 +103,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             domStorageEnabled = true
             userAgentString =
                 "Mozilla/5.0 (Linux; Android 10; Google Pixel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 EdgA/114.0.1823.43"
+            databaseEnabled = true
         }
 
         webChromeClient = object : WebChromeClient() {
@@ -122,8 +123,7 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                 super.onPageStarted(view, url, favicon)
                 evaluateJavascript("""
                     localStorage.setItem('session_id', '${session.id}')
-                    localStorage.setItem('user','{"ID":42}')
-                    function WebSocket() {}
+                    localStorage.setItem('user','{"ID":42,"UID":""}')
                 """.trimIndent(), null)
             }
             override fun onPageFinished(view: WebView?, url: String?) {
