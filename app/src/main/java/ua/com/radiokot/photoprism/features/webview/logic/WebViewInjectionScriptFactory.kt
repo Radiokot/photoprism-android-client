@@ -9,7 +9,7 @@ import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptF
  *
  * @see Script
  */
-class WebViewInjectionScriptFactory() {
+class WebViewInjectionScriptFactory {
 
     fun getPhotoPrismAutoLoginScript(sessionId: String): String =
         """
@@ -23,7 +23,7 @@ class WebViewInjectionScriptFactory() {
         val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
 
         return """
-            const immersiveCss = `
+            var immersiveCss = `
                 <style type="text/css">
                     /* Make the content background match window color and remove
                        navigation paddings

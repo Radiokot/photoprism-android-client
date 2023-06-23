@@ -61,7 +61,6 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     private lateinit var view: ActivityWebViewBinding
     private val webView: WebView
         get() = view.webViewFragment.getFragment<WebViewFragment>().webView
-    private var injectedScripts = mutableSetOf<WebViewInjectionScriptFactory.Script>()
 
     private val url: String by lazy {
         requireNotNull(intent.getStringExtra(URL_EXTRA)) {
@@ -147,12 +146,12 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                injectScriptsOnce(pageStartedInjectionScripts)
+            override fun onPageStarted(view: WebView?, url: String, favicon: Bitmap?) {
+                injectScripts(pageStartedInjectionScripts)
             }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                injectScriptsOnce(pageFinishedInjectionScripts)
+            override fun onPageFinished(view: WebView?, url: String) {
+                injectScripts(pageFinishedInjectionScripts)
                 backPressedCallback.isEnabled = canGoBack()
             }
 
@@ -185,15 +184,11 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
-    private fun injectScriptsOnce(
+    private fun injectScripts(
         scripts: Set<WebViewInjectionScriptFactory.Script>
     ) = scripts.forEach { script ->
-        if (injectedScripts.contains(script)) {
-            return@forEach
-        }
-
         log.debug {
-            "injectScriptsOnce(): injecting:" +
+            "injectScripts(): injecting:" +
                     "\nscript=$script"
         }
 
@@ -224,11 +219,9 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
         webView.evaluateJavascript(scriptJs, null)
 
         log.debug {
-            "injectScriptsOnce(): injected:" +
+            "injectScripts(): injected:" +
                     "\nscript=$script"
         }
-
-        injectedScripts.add(script)
     }
 
     private var clientCertRequestHandlingDisposable: Disposable? = null
