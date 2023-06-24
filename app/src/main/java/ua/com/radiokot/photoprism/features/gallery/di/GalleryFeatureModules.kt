@@ -15,9 +15,9 @@ import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dbModules
-import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
@@ -88,7 +88,7 @@ val galleryFeatureModules: List<Module> = listOf(
     },
 
     module {
-        includes(envModules)
+        includes(envConnectionFeatureModules)
 
         scope<EnvSession> {
             scoped {
@@ -182,6 +182,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     downloadMediaFileViewModel = get(),
                     searchViewModel = get(),
                     fastScrollViewModel = get(),
+                    disconnectFromEnvUseCase = get(),
                 )
             }
         }

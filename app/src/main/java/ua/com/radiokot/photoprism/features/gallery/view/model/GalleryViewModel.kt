@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -20,6 +21,7 @@ import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
@@ -30,6 +32,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
 import java.util.Date
+import kotlin.collections.set
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -38,6 +41,7 @@ class GalleryViewModel(
     private val dateHeaderMonthYearDateFormat: DateFormat,
     private val dateHeaderMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
+    private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -364,6 +368,9 @@ class GalleryViewModel(
                     is NoRouteToHostException,
                     is SocketTimeoutException ->
                         Error.LibraryNotAccessible
+
+                    is InvalidCredentialsException ->
+                        Error.CredentialsHaveBeenChanged
 
                     else ->
                         Error.LoadingFailed(error.shortSummary)
@@ -798,6 +805,8 @@ class GalleryViewModel(
          * Ensure that the given item of the [itemsList] is visible on the screen.
          */
         class EnsureListItemVisible(val listItemIndex: Int) : Event
+
+        object GoToEnvConnection : Event
     }
 
     fun onScreenResumedAfterMovedBackWithBackButton() {
@@ -813,6 +822,34 @@ class GalleryViewModel(
         // Reset the scroll and, more importantly, pagination
         // as the number of list items may decrease.
         eventsSubject.onNext(Event.ResetScroll)
+    }
+
+    fun onErrorDisconnectClicked() {
+        log.debug { "onErrorDisconnectClicked(): begin_disconnect" }
+
+        disconnectFromEnvUseCase
+            .perform()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onComplete = {
+                    eventsSubject.onNext(Event.GoToEnvConnection)
+                },
+                onError = { error ->
+                    log.error(error) {
+                        "disconnect(): error_occurred"
+                    }
+
+                    eventsSubject.onNext(
+                        Event.ShowFloatingError(
+                            Error.LoadingFailed(
+                                shortSummary = error.shortSummary
+                            )
+                        )
+                    )
+                }
+            )
+            .autoDispose(this)
     }
 
     sealed interface State {
@@ -840,6 +877,7 @@ class GalleryViewModel(
         class LoadingFailed(val shortSummary: String) : Error
         object NoMediaFound : Error
         object SearchDoesntFitAllowedTypes : Error
+        object CredentialsHaveBeenChanged : Error
     }
 
     private sealed class MediaRepositoryChange(

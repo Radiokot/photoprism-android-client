@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Splash screen for old Android versions
+- Disconnect suggestion when the gallery credentials have been changed
 
 ### Fixed
 - Occasional blinking of gallery items while loading a new page

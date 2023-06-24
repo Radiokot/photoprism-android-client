@@ -205,6 +205,13 @@ class GalleryActivity : BaseActivity() {
                         context = this,
                     )
 
+                GalleryViewModel.Error.CredentialsHaveBeenChanged ->
+                    ErrorView.Error.General(
+                        message = error.localizedMessage,
+                        retryButtonText = getString(R.string.disconnect_from_library),
+                        retryButtonClickListener = viewModel::onErrorDisconnectClicked
+                    )
+
                 else ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,
@@ -269,6 +276,10 @@ class GalleryActivity : BaseActivity() {
                     view.galleryRecyclerView.post {
                         ensureGalleryListItemVisibility(event.listItemIndex)
                     }
+                }
+
+                is GalleryViewModel.Event.GoToEnvConnection -> {
+                    goToEnvConnection()
                 }
             }
 
@@ -652,5 +663,8 @@ class GalleryActivity : BaseActivity() {
 
             GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
+
+            GalleryViewModel.Error.CredentialsHaveBeenChanged ->
+                getString(R.string.error_invalid_password)
         }
 }
