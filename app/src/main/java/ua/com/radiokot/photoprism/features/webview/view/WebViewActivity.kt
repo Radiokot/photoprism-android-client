@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.ClientCertRequest
@@ -17,10 +18,6 @@ import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.kotlin.toCompletable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -31,12 +28,12 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityWebViewBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import kotlin.concurrent.thread
 
 class WebViewActivity : BaseActivity(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -164,7 +161,19 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
                             "\nhandler=$webViewClientCertRequestHandler"
                 }
 
-                handleClientCertRequest(view, request)
+                val doHandle = {
+                    // The handler must be called from a non-main thread.
+                    webViewClientCertRequestHandler
+                        ?.handleClientCertRequest(view, request)
+                        ?: request.cancel()
+                }
+
+                // Sometimes it is, sometimes it is not.
+                if (Thread.currentThread() == Looper.getMainLooper().thread) {
+                    thread(block = doHandle)
+                } else {
+                    doHandle()
+                }
             }
 
             override fun onReceivedHttpAuthRequest(
@@ -229,21 +238,6 @@ class WebViewActivity : BaseActivity(), AndroidScopeComponent {
             "injectScripts(): injected:" +
                     "\nscript=$script"
         }
-    }
-
-    private var clientCertRequestHandlingDisposable: Disposable? = null
-    private fun handleClientCertRequest(view: WebView, request: ClientCertRequest) {
-        clientCertRequestHandlingDisposable?.dispose()
-        clientCertRequestHandlingDisposable = {
-            // This needs to be done in a non-main thread.
-            webViewClientCertRequestHandler
-                ?.handleClientCertRequest(view, request)
-                ?: request.cancel()
-        }
-            .toCompletable()
-            .subscribeOn(Schedulers.io())
-            .subscribeBy()
-            .autoDispose(this)
     }
 
     private fun navigate(url: String) {
