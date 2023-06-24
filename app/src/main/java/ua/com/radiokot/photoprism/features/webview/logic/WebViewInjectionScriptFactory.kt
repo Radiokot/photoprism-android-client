@@ -19,10 +19,8 @@ class WebViewInjectionScriptFactory {
             localStorage.setItem('user','{"ID":42,"UID":""}')
         """.trimIndent()
 
-    fun getPhotoPrismImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
-        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
-
-        return """
+    fun getPhotoPrismImmersiveScript(@ColorInt windowBackgroundColor: Int): String =
+        """
             var immersiveCss = `
                 <style type="text/css">
                     /* Make the content background match window color and remove
@@ -30,7 +28,7 @@ class WebViewInjectionScriptFactory {
                     */
                     .v-content__wrap {
                         padding: 0px !important;
-                        background: $windowBackgroundColorRgb !important;
+                        background: ${windowBackgroundColor.toCssRgb()} !important;
                     }
                     
                     /* Remove navigation paddings from the content */
@@ -45,7 +43,7 @@ class WebViewInjectionScriptFactory {
                     
                     /* Make the content container background match window color and fill the height*/
                     .p-page-photos .container {
-                        background: $windowBackgroundColorRgb !important;
+                        background: ${windowBackgroundColor.toCssRgb()} !important;
                         min-height: 100vh !important;    
                     }
                     
@@ -58,12 +56,9 @@ class WebViewInjectionScriptFactory {
             
             document.head.insertAdjacentHTML('beforeend', immersiveCss)
         """.trimIndent()
-    }
 
-    fun getGitHubWikiImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
-        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
-
-        return """
+    fun getGitHubWikiImmersiveScript(@ColorInt windowBackgroundColor: Int): String =
+        """
             function injectImmersiveCss() {
                 var immersiveCss = `
                     <style type="text/css">
@@ -81,7 +76,7 @@ class WebViewInjectionScriptFactory {
                         
                         /* Make the background match window color */
                         body {
-                            background: $windowBackgroundColorRgb !important;
+                            background: ${windowBackgroundColor.toCssRgb()} !important;
                         }
                     </style>
                 `
@@ -90,17 +85,19 @@ class WebViewInjectionScriptFactory {
             
             addEventListener("DOMContentLoaded", injectImmersiveCss)
         """.trimIndent()
-    }
 
-    fun getPhotoPrismHelpImmersiveScript(@ColorInt windowBackgroundColor: Int): String {
-        val windowBackgroundColorRgb = windowBackgroundColor.toCssRgb()
-
-        return """
+    fun getPhotoPrismHelpImmersiveScript(
+        @ColorInt
+        windowBackgroundColor: Int,
+        @ColorInt
+        windowTextColor: Int,
+    ): String =
+        """
             function injectImmersiveCss() {
                 var immersiveCss = `
                     <style type="text/css">
-                        /* Hide toolbar, page header */
-                        .md-header, #using-search-filters  {
+                        /* Hide toolbar, page header, edit button */
+                        .md-header, #using-search-filters, .md-content__button   {
                             display: none !important;
                         }
                         
@@ -112,7 +109,18 @@ class WebViewInjectionScriptFactory {
                         
                         /* Make the background match window color */
                         body {
-                            background: $windowBackgroundColorRgb !important;
+                            background: ${windowBackgroundColor.toCssRgb()} !important;
+                            color: ${windowTextColor.toCssRgb()} !important;
+                        }
+                        
+                        /* Fix table text color in dark mode */
+                        table {
+                            background-color: transparent !important; 
+                            border-color: ${windowTextColor.toCssRgb()} !important;
+                        }
+                        
+                        .md-typeset table:not([class]) td {
+                            border-color: ${windowTextColor.toCssRgb()} !important;
                         }
                     </style>
                 `
@@ -121,7 +129,6 @@ class WebViewInjectionScriptFactory {
             
             addEventListener("DOMContentLoaded", injectImmersiveCss)
         """.trimIndent()
-    }
 
     private fun Int.toCssRgb(): String =
         "rgb(${Color.red(this)},${Color.green(this)},${Color.blue(this)})"
