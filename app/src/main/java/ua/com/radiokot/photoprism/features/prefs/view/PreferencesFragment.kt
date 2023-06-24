@@ -28,6 +28,7 @@ import org.koin.core.qualifier._q
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -36,7 +37,6 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
-import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
@@ -45,9 +45,8 @@ import ua.com.radiokot.photoprism.util.CustomTabsHelper
 
 class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     override val scope: Scope by lazy {
-        createFragmentScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
+        getKoin().getScope(DI_SCOPE_SESSION)
+            .apply { linkTo(createFragmentScope()) }
     }
 
     private val log = kLogger("PreferencesFragment")
@@ -396,12 +395,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun goToEnvConnection() {
-        log.debug {
-            "goToEnvConnection(): going_to_env_connection"
-        }
-
-        startActivity(Intent(requireContext(), EnvConnectionActivity::class.java))
-        requireActivity().finishAffinity()
+        (requireActivity() as BaseActivity).goToEnvConnectionIfNoSession()
     }
 
     private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {

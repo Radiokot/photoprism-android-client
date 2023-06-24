@@ -13,28 +13,16 @@ import android.webkit.WebView
 import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.createActivityScope
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityWebViewBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewWVClient
 
-class WebViewActivity : BaseActivity(), AndroidScopeComponent {
-    override val scope: Scope by lazy {
-        // This allows running the viewer without the session.
-        getKoin().getScopeOrNull(DI_SCOPE_SESSION)
-            ?.apply { linkTo(createActivityScope()) }
-            ?: createActivityScope()
-    }
-
+class WebViewActivity : BaseActivity() {
     private val log = kLogger("WebViewActivity")
 
     private val webClientFactory: WebViewWVClient.Factory by inject()

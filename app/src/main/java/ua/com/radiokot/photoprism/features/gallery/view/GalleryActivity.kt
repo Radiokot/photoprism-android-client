@@ -24,19 +24,13 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.tryOrNull
-import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -52,13 +46,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 
-class GalleryActivity : BaseActivity(), AndroidScopeComponent {
-    override val scope: Scope by lazy {
-        createActivityScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
-    }
-
+class GalleryActivity : BaseActivity() {
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
@@ -115,18 +103,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_finishing"
-                }
-
+            if (finishIfNoSession()) {
                 Toast.makeText(
                     this,
                     R.string.error_you_have_to_connect_to_library,
                     Toast.LENGTH_SHORT
                 ).show()
 
-                finish()
                 return
             }
 
@@ -135,11 +118,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
         } else {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_going_to_env_connection"
-                }
-                goToEnvConnection()
+            if (goToEnvConnectionIfNoSession()) {
                 return
             }
 
@@ -609,15 +588,6 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         view.galleryRecyclerView.post {
             layoutManager.findViewByPosition(itemGlobalPosition)?.requestFocus()
         }
-    }
-
-    private fun goToEnvConnection() {
-        log.debug {
-            "goToEnvConnection(): going_to_env_connection"
-        }
-
-        startActivity(Intent(this, EnvConnectionActivity::class.java))
-        finish()
     }
 
     private fun showFloatingError(error: GalleryViewModel.Error) {

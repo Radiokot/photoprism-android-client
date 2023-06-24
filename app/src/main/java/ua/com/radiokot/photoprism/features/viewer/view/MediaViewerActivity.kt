@@ -24,14 +24,10 @@ import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -46,13 +42,7 @@ import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
 
-class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
-    override val scope: Scope by lazy {
-        createActivityScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
-    }
-
+class MediaViewerActivity : BaseActivity() {
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
@@ -85,6 +75,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (goToEnvConnectionIfNoSession()) {
+            return
+        }
 
         view = ActivityMediaViewerBinding.inflate(layoutInflater)
         setContentView(view.root)
