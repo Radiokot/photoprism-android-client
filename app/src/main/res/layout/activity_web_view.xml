@@ -10,8 +10,9 @@
         android:id="@+id/toolbar"
         style="@style/Widget.Material3.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         app:layout_constraintTop_toTopOf="parent"
+        app:titleTextAppearance="@style/TextAppearance.Material3.BodyLarge"
         tools:title="@string/learn_more" />
 
     <androidx.fragment.app.FragmentContainerView
