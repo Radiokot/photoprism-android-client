@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Occasional blinking of gallery items while loading a new page
 - Occasional incorrect width of the connection screen fields
+- Not visible albums on the search configuration screen after screen rotation
 
 ### Changed
 - PhotoPrism web viewer is now opened internally and has auto-login

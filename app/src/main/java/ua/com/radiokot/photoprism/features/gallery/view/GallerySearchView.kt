@@ -92,6 +92,7 @@ class GallerySearchView(
         initSearchBarAndView()
         initBookmarksDrag()
         initMenus()
+        // Albums are initialized on config view showing.
 
         subscribeToData()
         subscribeToState()
@@ -119,6 +120,15 @@ class GallerySearchView(
                         searchView.editText.setSelection(searchTextStash?.length ?: 0)
                     }
 
+                    // Slightly delay initialization to ease the transition animation.
+                    searchView.post {
+                        initAlbumsListOnce()
+                    }
+                }
+
+                SearchView.TransitionState.SHOWN -> {
+                    // If the view is initialized while the configuration view is already shown,
+                    // albums must be initialized as well.
                     initAlbumsListOnce()
                 }
 
