@@ -1,0 +1,11 @@
+Added:
+- Splash screen for old Android versions
+- Disconnect suggestion when the gallery credentials have been changed
+
+Fixed:
+- Occasional blinking of gallery items while loading a new page
+- Occasional incorrect width of the connection screen fields
+- Not visible albums on the search configuration screen after screen rotation
+
+Changed:
+- PhotoPrism web viewer is now opened internally and has auto-login

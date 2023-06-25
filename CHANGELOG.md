@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.12.0] - 2023-06-25
 
 ### Added
 - Splash screen for old Android versions
@@ -202,7 +202,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...HEAD
+[1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
 [1.11.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.10.0(18)...1.11.0(19)
 [1.10.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.9.0(17)...1.10.0(18)
 [1.9.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.1(16)...1.9.0(17)
