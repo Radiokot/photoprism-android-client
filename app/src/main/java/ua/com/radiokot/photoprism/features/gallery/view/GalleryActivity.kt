@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -137,9 +138,15 @@ class GalleryActivity : BaseActivity() {
         initSearch()
         initErrorView()
         initMultipleSelection()
-        view.galleryRecyclerView.post {
-            initList(savedInstanceState)
+
+        // Init the list once it is laid out.
+        val singleListInitListener = object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                view.galleryRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                initList(savedInstanceState)
+            }
         }
+        view.galleryRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(singleListInitListener)
     }
 
     private fun subscribeToData() {
@@ -369,17 +376,33 @@ class GalleryActivity : BaseActivity() {
                 paddingBottom
             )
 
+            // Safe dimensions of the list keeping from division by 0.
+            // The fallback size is not supposed to be taken,
+            // as it means initializing of a not laid out list.
+            val listWidth = measuredWidth
+                .takeIf { it > 0 }
+                ?: FALLBACK_LIST_SIZE
+                    .also {
+                        log.warn { "initList(): used_fallback_width" }
+                    }
+            val listHeight = measuredHeight
+                .takeIf { it > 0 }
+                ?: FALLBACK_LIST_SIZE
+                    .also {
+                        log.warn { "initList(): used_fallback_height" }
+                    }
+
             val minItemWidthPx =
                 resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
-            val spanCount = (measuredWidth / minItemWidthPx).coerceAtLeast(1)
-            val cellSize = measuredWidth / spanCount.toFloat()
-            val maxVisibleRowCount = (measuredHeight / cellSize).roundToInt()
+            val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
+            val cellSize = listWidth / spanCount.toFloat()
+            val maxVisibleRowCount = (listHeight / cellSize).roundToInt()
             val maxRecycledMediaViewCount = maxVisibleRowCount * spanCount * 2
 
             log.debug {
                 "initList(): calculated_grid:" +
                         "\nspanCount=$spanCount," +
-                        "\nrowWidth=$measuredWidth," +
+                        "\nrowWidth=$listWidth," +
                         "\nminItemWidthPx=$minItemWidthPx," +
                         "\nmaxVisibleRowCount=$maxVisibleRowCount," +
                         "\nmaxRecycledMediaViewCount=$maxRecycledMediaViewCount"
@@ -667,4 +690,8 @@ class GalleryActivity : BaseActivity() {
             GalleryViewModel.Error.CredentialsHaveBeenChanged ->
                 getString(R.string.error_invalid_password)
         }
+
+    private companion object {
+        private const val FALLBACK_LIST_SIZE = 100
+    }
 }
