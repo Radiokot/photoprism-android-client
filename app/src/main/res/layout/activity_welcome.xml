@@ -40,12 +40,14 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/continue_button"
             style="@style/Widget.Material3.Button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="32dp"
             android:text="@string/continuee"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/main_text_view"
+            app:layout_constraintStart_toStartOf="@id/main_text_view"
             app:layout_constraintTop_toBottomOf="@id/main_text_view"
             app:layout_constraintVertical_bias="1" />
 
