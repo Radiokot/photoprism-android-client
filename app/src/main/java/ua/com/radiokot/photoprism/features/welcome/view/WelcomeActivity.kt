@@ -50,6 +50,5 @@ class WelcomeActivity : BaseActivity() {
     private fun safeView(url: String) = tryOrNull {
         // Do not use internal webviewer here, as it may of course have issues too.
         startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)))
-        finish()
     }
 }
