@@ -102,4 +102,11 @@
     <string name="search_doesnt_fit_allowed_types">Запит суперечить дозволеним типам</string>
     <string name="save_file_to_the_storage">Зберегти файл на пристрій</string>
     <string name="share_the_file">Відправити файл</string>
+    <string name="download_is_completed">Завантаження завершено</string>
+    <string name="welcome_title">Вітаю в галереї</string>
+    <string name="welcome_text">Будь ласка, майте на увазі, що це не офіційний застосунок PhotoPrism.
+        Він підтримується Олегом\u00A0Корецьким (Radiokot) та не має відношення до основної команди.\n\nЯкщо
+        із застосунком щось не так, будь ласка, залиште відгук в Google Play,
+        <a href="#issue">відправте звіт про помилку</a> або напишіть на <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nДякую.
+    </string>
 </resources>

@@ -82,6 +82,10 @@
             android:name=".features.webview.view.WebViewActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".features.welcome.view.WelcomeActivity"
+            android:exported="false" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"
