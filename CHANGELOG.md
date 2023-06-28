@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A welcome screen clarifying that this is not an official PhotoPrism client
+
 ### Fixed
 - Rare crash when the app starts while not being visible. Did you know this is possible?
 
