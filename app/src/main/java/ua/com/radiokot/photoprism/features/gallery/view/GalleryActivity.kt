@@ -41,6 +41,8 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.features.welcome.data.storage.WelcomeScreenPreferences
+import ua.com.radiokot.photoprism.features.welcome.view.WelcomeActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
 import java.util.concurrent.TimeUnit
@@ -54,6 +56,7 @@ class GalleryActivity : BaseActivity() {
     private var isBackButtonJustPressed = false
     private var isMovedBackByBackButton = false
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
+    private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
@@ -119,7 +122,12 @@ class GalleryActivity : BaseActivity() {
                 allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
         } else {
-            if (goToEnvConnectionIfNoSession()) {
+            if (!hasSession) {
+                if (!welcomeScreenPreferences.isWelcomeNoticeAccepted) {
+                    goToWelcomeScreen()
+                } else {
+                    goToEnvConnection()
+                }
                 return
             }
 
@@ -628,6 +636,15 @@ class GalleryActivity : BaseActivity() {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
+    }
+
+    private fun goToWelcomeScreen() {
+        log.debug {
+            "goToWelcomeScreen(): going_to_welcome_screen"
+        }
+
+        startActivity(Intent(this, WelcomeActivity::class.java))
+        finishAffinity()
     }
 
     private var backPressResetDisposable: Disposable? = null

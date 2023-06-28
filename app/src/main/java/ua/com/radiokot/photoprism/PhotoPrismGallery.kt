@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
+import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.File
 import java.io.IOException
@@ -46,6 +47,7 @@ class PhotoPrismGallery : Application() {
                         + mediaViewerFeatureModules
                         + envConnectionFeatureModules
                         + webViewFeatureModules
+                        + welcomeScreenFeatureModules
             )
             androidFileProperties("app.properties")
         }

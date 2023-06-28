@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.di
 
+import android.content.Context
 import android.os.Environment
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -24,6 +25,7 @@ const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
 const val INTERNAL_EXPORT_DIRECTORY = "internal-export"
 const val VIDEO_CACHE_DIRECTORY = "video-cache"
 const val IMAGE_CACHE_DIRECTORY = "image-cache"
+const val APP_NO_BACKUP_PREFERENCES = "app-no-backup-preferences"
 
 val ioModules: List<Module> = listOf(
     // JSON
@@ -92,4 +94,14 @@ val ioModules: List<Module> = listOf(
                 .createIfNotExists()
         } bind File::class
     },
+
+    // Preferences.
+    module {
+        single(named(APP_NO_BACKUP_PREFERENCES)) {
+            androidApplication().getSharedPreferences(
+                "app",
+                Context.MODE_PRIVATE,
+            )
+        }
+    }
 )
