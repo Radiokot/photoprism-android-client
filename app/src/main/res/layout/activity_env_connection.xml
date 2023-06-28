@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
@@ -7,33 +8,48 @@
     android:fillViewport="true"
     tools:context=".features.envconnection.view.EnvConnectionActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="32dp"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/content_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge" />
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
-            android:text="@string/connect_to_a_library"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="16dp"
+                android:gravity="center_horizontal"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                app:drawableTopCompat="@mipmap/splash_logo" />
 
-        <include layout="@layout/include_env_connection_fields" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_horizontal"
+                android:text="@string/connect_to_a_library"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="24dp" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="32dp" />
+
+            <include layout="@layout/include_env_connection_fields" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="24dp" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/connect_button"
@@ -41,17 +57,22 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/connect" />
+            android:text="@string/connect"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_layout"
+            app:layout_constraintVertical_bias="1" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_layout"
+            app:layout_constraintVertical_bias="1" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="32dp" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
