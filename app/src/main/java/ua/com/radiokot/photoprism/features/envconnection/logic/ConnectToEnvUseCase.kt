@@ -4,7 +4,11 @@ import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.env.data.model.*
+import ua.com.radiokot.photoprism.env.data.model.EnvAuth
+import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
+import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -32,101 +36,82 @@ class ConnectToEnvUseCase(
 ) {
     private val log = kLogger("ConnectToEnvUseCase")
 
-    private lateinit var sessionId: String
-    private lateinit var config: Config
+    private lateinit var session: EnvSession
 
     fun perform(): Single<EnvSession> {
-        return getSessionId()
+        return getSession()
             .doOnSuccess {
-                sessionId = it
+                session = it
 
                 log.debug {
-                    "perform(): got_session_id:" +
-                            "\nid=$it"
+                    "perform(): got_session:" +
+                            "\nid=${it.id}"
                 }
             }
-            .flatMap { getConfig() }
+            .flatMap { checkEnv() }
             .doOnSuccess {
-                config = it
-
-                log.debug {
-                    "perform(): got_config:" +
-                            "\nconfig=$it"
-                }
+                log.debug { "perform(): env_checked" }
             }
-            .flatMap { checkConfig() }
+            .map { session }
             .doOnSuccess {
-                log.debug { "perform(): config_checked" }
-            }
-            .map {
-                EnvSession(
-                    id = sessionId,
-                    envConnectionParams = connectionParams,
-                    previewToken = config.previewToken,
-                    downloadToken = config.downloadToken,
-                )
-            }
-            .doOnSuccess { session ->
                 log.debug {
                     "perform(): successfully_created_session:" +
                             "\nsession=$session"
                 }
 
-                envSessionHolder?.apply {
-                    set(session)
-
-                    log.debug {
-                        "perform(): session_holder_set:" +
-                                "\nholder=$this"
-                    }
-                }
-                envSessionPersistence?.apply {
-                    saveItem(session)
-
-                    log.debug {
-                        "perform(): session_saved_to_persistence:" +
-                                "\npersistence=$this"
-                    }
-                }
-                envAuthPersistence?.apply {
-                    saveItem(auth)
-
-                    log.debug {
-                        "perform(): auth_saved_to_persistence:" +
-                                "\npersistence=$this"
-                    }
-                }
+                updateHoldersAndPersistence()
             }
     }
 
-    private fun getSessionId(): Single<String> = {
+    private fun getSession(): Single<EnvSession> = {
         sessionCreator.createSession(
             auth = auth,
         )
     }
         .toSingle()
 
-    private fun getConfig(): Single<Config> = {
-        configServiceFactory(connectionParams, sessionId)
-            .getClientConfig()
-            .let(::Config)
-    }.toSingle()
-
-    private fun checkConfig(): Single<Boolean> =
-        if (auth is EnvAuth.Public && !config.isPublic)
-            Single.error(EnvIsNotPublicException())
+    private fun checkEnv(): Single<Boolean> =
+        if (auth is EnvAuth.Public)
+        // If the auth is public, check that the env is actually public.
+            getEnvClientConfig()
+                .map { photoPrismConfig ->
+                    photoPrismConfig.public
+                }
         else
+        // Otherwise, there is currently nothing to check.
             Single.just(true)
 
-    private data class Config(
-        val previewToken: String,
-        val downloadToken: String,
-        val isPublic: Boolean,
-    ) {
-        constructor(source: PhotoPrismClientConfig) : this(
-            previewToken = source.previewToken,
-            downloadToken = source.downloadToken,
-            isPublic = source.public
-        )
+    private fun getEnvClientConfig(): Single<PhotoPrismClientConfig> = {
+        configServiceFactory(connectionParams, session.id)
+            .getClientConfig()
+    }.toSingle()
+
+    private fun updateHoldersAndPersistence() {
+        envSessionHolder?.apply {
+            set(session)
+
+            log.debug {
+                "updateHoldersAndPersistence(): session_holder_set:" +
+                        "\nholder=$this"
+            }
+        }
+
+        envSessionPersistence?.apply {
+            saveItem(session)
+
+            log.debug {
+                "updateHoldersAndPersistence(): session_saved_to_persistence:" +
+                        "\npersistence=$this"
+            }
+        }
+
+        envAuthPersistence?.apply {
+            saveItem(auth)
+
+            log.debug {
+                "updateHoldersAndPersistence(): auth_saved_to_persistence:" +
+                        "\npersistence=$this"
+            }
+        }
     }
 }

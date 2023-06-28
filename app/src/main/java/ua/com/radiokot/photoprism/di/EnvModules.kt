@@ -37,7 +37,7 @@ class EnvHttpClientParams(
         class Renewal(
             val authProvider: () -> EnvAuth,
             val sessionCreator: SessionCreator,
-            val onSessionRenewed: ((newId: String) -> Unit)?,
+            val onSessionRenewed: ((newSession: EnvSession) -> Unit)?,
         )
     }
 }
@@ -114,6 +114,7 @@ val envModules = listOf(
                         envConnectionParams = params.envConnectionParams,
                     )
                 },
+                envConnectionParams = params.envConnectionParams,
             )
         } bind SessionCreator::class
 
@@ -136,8 +137,10 @@ val envModules = listOf(
                                     envConnectionParams = session.envConnectionParams,
                                 )
                             },
-                            onSessionRenewed = {
-                                session.id = it
+                            onSessionRenewed = { newSession ->
+                                session.id = newSession.id
+                                session.downloadToken = newSession.downloadToken
+                                session.previewToken = newSession.previewToken
                                 sessionPersistence?.saveItem(session)
                             }
                         )
