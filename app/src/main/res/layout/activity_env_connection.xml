@@ -1,62 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".features.envconnection.view.EnvConnectionActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_margin="32dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="32dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/connect_to_a_library"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:text="@string/connect_to_a_library"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+        <include layout="@layout/include_env_connection_fields" />
 
-            <include layout="@layout/include_env_connection_fields" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="24dp" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="24dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/connect_button"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/connect" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/connect_button"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/connect" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="true" />
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progress_indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:indeterminate="true" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="32dp" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</FrameLayout>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="32dp" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
