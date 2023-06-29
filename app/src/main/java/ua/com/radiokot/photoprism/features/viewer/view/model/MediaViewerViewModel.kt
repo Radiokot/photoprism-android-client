@@ -479,8 +479,28 @@ class MediaViewerViewModel(
         backgroundDownloadProgressDisposable?.dispose()
     }
 
-    private fun getExternalStorageDownloadDestination(file: GalleryMedia.File) =
-        File(externalDownloadsDir, File(file.name).name)
+    private fun getExternalStorageDownloadDestination(file: GalleryMedia.File): File {
+        val fileByExactName = File(externalDownloadsDir, File(file.name).name)
+
+        return if (!fileByExactName.exists() || fileByExactName.canRead() && fileByExactName.canWrite())
+        // Return a file with the exact name (as is) if it doesn't exist or accessible if it does.
+            fileByExactName
+        else
+        // Otherwise return a file with a random unique name suffix.
+            File(
+                externalDownloadsDir,
+                File(file.name)
+                    .let {
+                        it.nameWithoutExtension +
+                                "_${System.currentTimeMillis()}" +
+                                if (it.extension.isNotEmpty())
+                                    ".${it.extension}"
+                                else
+                                    ""
+                    }
+            )
+    }
+
 
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
