@@ -199,8 +199,8 @@ class EnvConnectionActivity : BaseActivity() {
                 EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
                     showMissingClientCertificatesNotice()
 
-                is EnvConnectionViewModel.Event.OpenRootUrlGuide ->
-                    openRootUrlGuide(url = event.url)
+                is EnvConnectionViewModel.Event.OpenConnectionGuide ->
+                    openConnectionGuide(url = event.url)
 
                 is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
                     openClientCertificateGuide(url = event.url)
@@ -254,12 +254,12 @@ class EnvConnectionActivity : BaseActivity() {
             .show()
     }
 
-    private fun openRootUrlGuide(url: String) {
+    private fun openConnectionGuide(url: String) {
         startActivity(
             Intent(this, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
                     url = url,
-                    titleRes = R.string.library_root_url,
+                    titleRes = R.string.connect_to_a_library,
                     pageStartedInjectionScripts = setOf(
                         WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
                     ),

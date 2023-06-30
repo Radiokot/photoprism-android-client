@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Relicensed the source code over the compatible GPLv3 license 
+- Replaced the root URL guide with the complete connection guide
 
 ## [1.12.0] - 2023-06-25
 
