@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -117,8 +118,17 @@ class WebViewActivity : BaseActivity() {
                 Color.BLUE,
             ),
         )
-        onBackPressedDispatcher.addCallback(client.goBackBackPressedCallback)
         webViewClient = client
+
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (canGoBack()) {
+                    goBack()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
     private fun navigate(url: String) {

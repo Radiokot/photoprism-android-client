@@ -6,7 +6,6 @@ import android.webkit.ClientCertRequest
 import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorInt
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewWVClient.Factory
@@ -36,12 +35,6 @@ class WebViewWVClient(
 
     private lateinit var webView: WebView
 
-    val goBackBackPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            webView.goBack()
-        }
-    }
-
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         webView = view
         injectScripts(pageStartedInjectionScripts)
@@ -49,9 +42,7 @@ class WebViewWVClient(
 
     override fun onPageFinished(view: WebView, url: String) {
         webView = view
-
         injectScripts(pageFinishedInjectionScripts)
-        goBackBackPressedCallback.isEnabled = view.canGoBack()
     }
 
     override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest) {

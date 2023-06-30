@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Keeping a corrupted file in Downloads if the download resulted in an HTTP error
 - Not previewing or downloading files after drop of all sessions on the server
 - Failing download of a file already existing in Downloads but without r/w permission
+- Web viewer back button not responding when browsing GitHub
 
 ### Changed
 - Relicensed the source code over the compatible GPLv3 license 
