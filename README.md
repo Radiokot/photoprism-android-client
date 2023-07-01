@@ -1,10 +1,10 @@
-# <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> PhotoPrism Gallery
+# <img src="app/src/main/res/mipmap-hdpi/ic_launcher.png" alt="Icon" style="vertical-align: bottom; height: 1.2em;"/> Gallery for PhotoPrism
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
 [![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=4&color=e2e0f6&style=flat-square)](#sponsors) 
 
-A native Android gallery and content provider for your [PhotoPrism library](https://www.photoprism.app/). 
+A user-friendly Android gallery that allows browsing [your library](https://www.photoprism.app/) content and sending it to other apps. 
 
 <p float="left">
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width=200 />
@@ -13,7 +13,7 @@ A native Android gallery and content provider for your [PhotoPrism library](http
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width=200 />
 </p>
 
-The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and has [other drawbacks](https://blog.perryizgr8.com/photos/2023/03/20/google-photos-alt.html#photoprism).
+The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and, no matter what, [feels like a web page](https://blog.perryizgr8.com/photos/2023/03/20/google-photos-alt.html#photoprism).
 This app does not (and probably will not) support all the web-client features, but nevertheless it can:
 - Provide the library content to other Android apps – 
 you can select PhotoPrism Gallery among other galleries when picking a photo or video
@@ -28,6 +28,7 @@ you can use your favorite image editor or video player instead of web viewer
 - Endless session – no need to re-enter password
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
+- TV compatibility – easy browsing with a remote-control
 
 The gallery is not intended to sync content with the library. 
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
