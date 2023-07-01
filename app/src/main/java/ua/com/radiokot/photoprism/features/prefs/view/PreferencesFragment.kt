@@ -41,6 +41,8 @@ import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCa
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 
 class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
@@ -155,6 +157,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         with(requirePreference(R.string.pk_report_issue)) {
             setOnPreferenceClickListener {
                 openIssueReport()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_os_licenses)) {
+            setOnPreferenceClickListener {
+                openOpenSourceLicenses()
                 true
             }
         }
@@ -396,6 +405,21 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
     private fun goToEnvConnection() {
         (requireActivity() as BaseActivity).goToEnvConnectionIfNoSession()
+    }
+
+    private fun openOpenSourceLicenses() {
+        startActivity(
+            Intent(requireContext(), WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = "file:///android_asset/open_source_licenses.html",
+                        titleRes = R.string.used_open_source_software,
+                        pageFinishedInjectionScripts = setOf(
+                            WebViewInjectionScriptFactory.Script.SIMPLE_HTML_IMMERSIVE,
+                        )
+                    )
+                )
+        )
     }
 
     private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {

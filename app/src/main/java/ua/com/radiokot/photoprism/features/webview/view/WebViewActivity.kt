@@ -12,8 +12,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
-import com.google.android.material.color.MaterialColors
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -55,12 +54,15 @@ class WebViewActivity : BaseActivity() {
             ?: emptySet()
     }
 
+    private val isUrlBrowsable: Boolean
+        get() = url.toHttpUrlOrNull() != null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         log.debug {
             "onCreate(): creating:" +
-                    "\nurl=${url.toHttpUrl().withMaskedCredentials()}," +
+                    "\nurl=${url.toHttpUrlOrNull()?.withMaskedCredentials() ?: url}," +
                     "\ntitle=${getString(titleRes)}," +
                     "\npageStartedInjectionScripts=${pageStartedInjectionScripts.size}," +
                     "\npageFinishedInjectionScripts=${pageFinishedInjectionScripts.size}," +
@@ -111,12 +113,6 @@ class WebViewActivity : BaseActivity() {
         val client = webClientFactory.getClient(
             pageStartedInjectionScripts = pageStartedInjectionScripts,
             pageFinishedInjectionScripts = pageFinishedInjectionScripts,
-            windowBackgroundColor = windowBackgroundColor,
-            windowTextColor = MaterialColors.getColor(
-                this,
-                com.google.android.material.R.attr.colorOnBackground,
-                Color.BLUE,
-            ),
         )
         webViewClient = client
 
@@ -129,6 +125,8 @@ class WebViewActivity : BaseActivity() {
                 }
             }
         })
+
+        setBackgroundColor(Color.TRANSPARENT)
     }
 
     private fun navigate(url: String) {
@@ -162,6 +160,7 @@ class WebViewActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.web_view, menu)
+        menu.findItem(R.id.open_in_browser).isVisible = isUrlBrowsable
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -130,6 +130,43 @@ class WebViewInjectionScriptFactory {
             addEventListener("DOMContentLoaded", injectImmersiveCss)
         """.trimIndent()
 
+    fun getSimpleHtmlImmersiveScript(
+        @ColorInt
+        windowBackgroundColor: Int,
+        @ColorInt
+        surfaceVariantColor: Int,
+        @ColorInt
+        windowTextColor: Int,
+        @ColorInt
+        primaryColor: Int,
+    ): String =
+        """
+            var immersiveCss = `
+                <style type="text/css">
+                    /* Make the background match window color
+                     * and the text match text color
+                     */
+                    body {
+                        background: ${windowBackgroundColor.toCssRgb()} !important;
+                        color: ${windowTextColor.toCssRgb()} !important;
+                    }
+                    
+                    /* Make the links primary */
+                    a {
+                        color: ${primaryColor.toCssRgb()} !important;
+                    }
+                    
+                    /* Make the code blocks look good
+                     * in both light and dark modes
+                     */
+                    pre {
+                        background: ${surfaceVariantColor.toCssRgb()} !important;
+                    }
+                </style>
+            `
+            document.head.insertAdjacentHTML('beforeend', immersiveCss)
+        """.trimIndent()
+
     private fun Int.toCssRgb(): String =
         "rgb(${Color.red(this)},${Color.green(this)},${Color.blue(this)})"
 
@@ -138,6 +175,7 @@ class WebViewInjectionScriptFactory {
         PHOTOPRISM_IMMERSIVE,
         GITHUB_WIKI_IMMERSIVE,
         PHOTOPRISM_HELP_IMMERSIVE,
+        SIMPLE_HTML_IMMERSIVE,
         ;
     }
 }

@@ -1,23 +1,24 @@
 package ua.com.radiokot.photoprism.features.webview.logic
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Looper
 import android.webkit.ClientCertRequest
 import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.ColorInt
+import com.google.android.material.color.MaterialColors
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewWVClient.Factory
 import kotlin.concurrent.thread
 
 /**
  * [WebViewClient] for the internal web-viewer.
- * It enables mTLS and HTTP basic auth, does script injection,
- * provides a back pressed callback for the "go back" action.
+ * It enables mTLS and HTTP basic auth, does script injection.
  *
  * @see Factory
- * @see goBackBackPressedCallback
  */
 class WebViewWVClient(
     private val clientCertRequestHandler: WebViewClientCertRequestHandler?,
@@ -26,14 +27,39 @@ class WebViewWVClient(
     private val pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script>,
     private val pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script>,
     private val sessionId: String?,
-    @ColorInt
-    private val windowBackgroundColor: Int,
-    @ColorInt
-    private val windowTextColor: Int,
 ) : WebViewClient() {
     private val log = kLogger("WebViewWVClient")
 
     private lateinit var webView: WebView
+
+    @get:ColorInt
+    private val windowBackgroundColor: Int by lazy {
+        MaterialColors.getColor(
+            webView, android.R.attr.colorBackground, Color.RED
+        )
+    }
+
+    @get:ColorInt
+    private val windowTextColor: Int by lazy {
+        MaterialColors.getColor(
+            webView, com.google.android.material.R.attr.colorOnBackground, Color.BLUE
+        )
+    }
+
+    @get:ColorInt
+    @get:SuppressLint("PrivateResource")
+    private val surfaceVariantColor: Int by lazy {
+        MaterialColors.getColor(
+            webView, com.google.android.material.R.attr.colorSurfaceVariant, Color.YELLOW
+        )
+    }
+
+    @get:ColorInt
+    private val primaryColor: Int by lazy {
+        MaterialColors.getColor(
+            webView, com.google.android.material.R.attr.colorPrimary, Color.YELLOW
+        )
+    }
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         webView = view
@@ -115,6 +141,14 @@ class WebViewWVClient(
                     windowBackgroundColor = windowBackgroundColor,
                     windowTextColor = windowTextColor,
                 )
+
+            WebViewInjectionScriptFactory.Script.SIMPLE_HTML_IMMERSIVE ->
+                injectionScriptFactory.getSimpleHtmlImmersiveScript(
+                    windowBackgroundColor = windowBackgroundColor,
+                    windowTextColor = windowTextColor,
+                    surfaceVariantColor = surfaceVariantColor,
+                    primaryColor = primaryColor,
+                )
         }
 
         webView.evaluateJavascript(scriptJs, null)
@@ -134,10 +168,6 @@ class WebViewWVClient(
         fun getClient(
             pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script>,
             pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script>,
-            @ColorInt
-            windowBackgroundColor: Int,
-            @ColorInt
-            windowTextColor: Int,
         ): WebViewWVClient = WebViewWVClient(
             clientCertRequestHandler = clientCertRequestHandler,
             httpAuthRequestHandler = httpAuthRequestHandler,
@@ -145,8 +175,6 @@ class WebViewWVClient(
             pageStartedInjectionScripts = pageStartedInjectionScripts,
             pageFinishedInjectionScripts = pageFinishedInjectionScripts,
             sessionId = sessionId,
-            windowBackgroundColor = windowBackgroundColor,
-            windowTextColor = windowTextColor,
         )
     }
 }

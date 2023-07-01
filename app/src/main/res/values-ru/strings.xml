@@ -109,4 +109,5 @@
         с приложением что-то не так, пожалуйста, оставьте отзыв в Google Play,
         <a href="#issue">отправьте отчет об ошибке</a> или напишите на <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nСпасибо.
     </string>
+    <string name="used_open_source_software">Используемое ПО с открытым кодом</string>
 </resources>

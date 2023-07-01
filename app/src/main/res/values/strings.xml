@@ -112,4 +112,5 @@
         something is wrong with the app, please leave a feedback on Google Play,
         <a href="#issue">submit a bug report</a> or send a letter to <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nThank you.
     </string>
+    <string name="used_open_source_software">Used open-source software</string>
 </resources>

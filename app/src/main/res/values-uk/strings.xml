@@ -109,4 +109,5 @@
         із застосунком щось не так, будь ласка, залиште відгук в Google Play,
         <a href="#issue">відправте звіт про помилку</a> або напишіть на <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nДякую.
     </string>
+    <string name="used_open_source_software">Використане ПЗ з відкритим кодом</string>
 </resources>

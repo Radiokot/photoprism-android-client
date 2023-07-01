@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
+    id 'com.jaredsburrows.license'
 }
 
 def keystorePropertiesFile = rootProject.file("app/keystore.properties")
@@ -88,6 +89,13 @@ android {
 
     packagingOptions {
         doNotStrip '**/*.so'
+    }
+
+    licenseReport {
+        generateHtmlReport = true
+        generateJsonReport = false
+        generateCsvReport = false
+        copyHtmlReportToAssets = true
     }
 }
 
