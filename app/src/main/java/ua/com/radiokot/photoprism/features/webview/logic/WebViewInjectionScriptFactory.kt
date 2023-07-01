@@ -19,7 +19,10 @@ class WebViewInjectionScriptFactory {
             localStorage.setItem('user','{"ID":42,"UID":""}')
         """.trimIndent()
 
-    fun getPhotoPrismImmersiveScript(@ColorInt windowBackgroundColor: Int): String =
+    fun getPhotoPrismImmersiveScript(
+        @ColorInt
+        backgroundColor: Int,
+    ): String =
         """
             var immersiveCss = `
                 <style type="text/css">
@@ -28,7 +31,7 @@ class WebViewInjectionScriptFactory {
                     */
                     .v-content__wrap {
                         padding: 0px !important;
-                        background: ${windowBackgroundColor.toCssRgb()} !important;
+                        background: ${backgroundColor.toCssRgb()} !important;
                     }
                     
                     /* Remove navigation paddings from the content */
@@ -43,7 +46,7 @@ class WebViewInjectionScriptFactory {
                     
                     /* Make the content container background match window color and fill the height*/
                     .p-page-photos .container {
-                        background: ${windowBackgroundColor.toCssRgb()} !important;
+                        background: ${backgroundColor.toCssRgb()} !important;
                         min-height: 100vh !important;    
                     }
                     
@@ -57,7 +60,12 @@ class WebViewInjectionScriptFactory {
             document.head.insertAdjacentHTML('beforeend', immersiveCss)
         """.trimIndent()
 
-    fun getGitHubWikiImmersiveScript(@ColorInt windowBackgroundColor: Int): String =
+    fun getGitHubWikiImmersiveScript(
+        @ColorInt
+        backgroundColor: Int,
+        @ColorInt
+        primaryColor: Int,
+    ): String =
         """
             function injectImmersiveCss() {
                 var immersiveCss = `
@@ -76,7 +84,12 @@ class WebViewInjectionScriptFactory {
                         
                         /* Make the background match window color */
                         body {
-                            background: ${windowBackgroundColor.toCssRgb()} !important;
+                            background: ${backgroundColor.toCssRgb()} !important;
+                        }
+                        
+                        /* Make the links primary */
+                        a {
+                            color: ${primaryColor.toCssRgb()} !important;
                         }
                     </style>
                 `
@@ -88,9 +101,9 @@ class WebViewInjectionScriptFactory {
 
     fun getPhotoPrismHelpImmersiveScript(
         @ColorInt
-        windowBackgroundColor: Int,
+        backgroundColor: Int,
         @ColorInt
-        windowTextColor: Int,
+        textColor: Int,
     ): String =
         """
             function injectImmersiveCss() {
@@ -109,18 +122,18 @@ class WebViewInjectionScriptFactory {
                         
                         /* Make the background match window color */
                         body {
-                            background: ${windowBackgroundColor.toCssRgb()} !important;
-                            color: ${windowTextColor.toCssRgb()} !important;
+                            background: ${backgroundColor.toCssRgb()} !important;
+                            color: ${textColor.toCssRgb()} !important;
                         }
                         
                         /* Fix table text color in dark mode */
                         table {
                             background-color: transparent !important; 
-                            border-color: ${windowTextColor.toCssRgb()} !important;
+                            border-color: ${textColor.toCssRgb()} !important;
                         }
                         
                         .md-typeset table:not([class]) td {
-                            border-color: ${windowTextColor.toCssRgb()} !important;
+                            border-color: ${textColor.toCssRgb()} !important;
                         }
                     </style>
                 `
@@ -132,11 +145,11 @@ class WebViewInjectionScriptFactory {
 
     fun getSimpleHtmlImmersiveScript(
         @ColorInt
-        windowBackgroundColor: Int,
+        backgroundColor: Int,
         @ColorInt
-        surfaceVariantColor: Int,
+        codeBlockColor: Int,
         @ColorInt
-        windowTextColor: Int,
+        textColor: Int,
         @ColorInt
         primaryColor: Int,
     ): String =
@@ -147,8 +160,8 @@ class WebViewInjectionScriptFactory {
                      * and the text match text color
                      */
                     body {
-                        background: ${windowBackgroundColor.toCssRgb()} !important;
-                        color: ${windowTextColor.toCssRgb()} !important;
+                        background: ${backgroundColor.toCssRgb()} !important;
+                        color: ${textColor.toCssRgb()} !important;
                     }
                     
                     /* Make the links primary */
@@ -160,7 +173,7 @@ class WebViewInjectionScriptFactory {
                      * in both light and dark modes
                      */
                     pre {
-                        background: ${surfaceVariantColor.toCssRgb()} !important;
+                        background: ${codeBlockColor.toCssRgb()} !important;
                     }
                 </style>
             `

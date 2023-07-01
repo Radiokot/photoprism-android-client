@@ -128,25 +128,26 @@ class WebViewWVClient(
 
             WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE ->
                 injectionScriptFactory.getPhotoPrismImmersiveScript(
-                    windowBackgroundColor = windowBackgroundColor,
+                    backgroundColor = windowBackgroundColor,
                 )
 
             WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE ->
                 injectionScriptFactory.getGitHubWikiImmersiveScript(
-                    windowBackgroundColor = windowBackgroundColor,
+                    backgroundColor = windowBackgroundColor,
+                    primaryColor = primaryColor,
                 )
 
             WebViewInjectionScriptFactory.Script.PHOTOPRISM_HELP_IMMERSIVE ->
                 injectionScriptFactory.getPhotoPrismHelpImmersiveScript(
-                    windowBackgroundColor = windowBackgroundColor,
-                    windowTextColor = windowTextColor,
+                    backgroundColor = windowBackgroundColor,
+                    textColor = windowTextColor,
                 )
 
             WebViewInjectionScriptFactory.Script.SIMPLE_HTML_IMMERSIVE ->
                 injectionScriptFactory.getSimpleHtmlImmersiveScript(
-                    windowBackgroundColor = windowBackgroundColor,
-                    windowTextColor = windowTextColor,
-                    surfaceVariantColor = surfaceVariantColor,
+                    backgroundColor = windowBackgroundColor,
+                    textColor = windowTextColor,
+                    codeBlockColor = surfaceVariantColor,
                     primaryColor = primaryColor,
                 )
         }
