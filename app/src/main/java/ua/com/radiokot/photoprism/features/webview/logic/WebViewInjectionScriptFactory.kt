@@ -145,7 +145,11 @@ class WebViewInjectionScriptFactory {
                 document.head.insertAdjacentHTML('beforeend', immersiveCss)
             }
             
-            addEventListener("DOMContentLoaded", injectImmersiveCss)
+            if (document.readyState !== 'loading') {
+                injectImmersiveCss()
+            } else {
+                addEventListener("DOMContentLoaded", injectImmersiveCss)
+            }
         """.trimIndent()
 
     fun getSimpleHtmlImmersiveScript(
