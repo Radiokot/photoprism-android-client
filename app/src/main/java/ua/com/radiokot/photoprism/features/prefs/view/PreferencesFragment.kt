@@ -155,6 +155,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 R.string.template_preferences_version,
                 getString(R.string.app_name),
                 BuildConfig.VERSION_NAME,
+                getString(R.string.build_year),
             )
         }
 

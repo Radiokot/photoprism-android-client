@@ -111,5 +111,5 @@
     </string>
     <string name="used_open_source_software">Используемое ПО с открытым кодом</string>
     <string name="user_guides">Руководство пользователя</string>
-    <string name="template_preferences_version">%1$s %2$s\n2023 Олег Корецкий (Radiokot)</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Олег Корецкий и участники с GitHub</string>
 </resources>

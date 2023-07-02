@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PhotoPrism Gallery</string>
     <string name="language_code">en</string>
+    <string name="build_year" translatable="false">2023</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_raw" translatable="false">RAW</string>
@@ -114,5 +115,5 @@
     </string>
     <string name="used_open_source_software">Used open-source software</string>
     <string name="user_guides">User guide</string>
-    <string name="template_preferences_version" translatable="false">%1$s %2$s\n2023 Oleg Koretsky (Radiokot)</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky and contributors from GitHub</string>
 </resources>
