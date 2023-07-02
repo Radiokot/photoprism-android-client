@@ -168,6 +168,8 @@ class WebViewActivity : BaseActivity() {
         when (item.itemId) {
             R.id.open_in_browser ->
                 goToBrowserAndFinish()
+            R.id.close ->
+                finish()
         }
         return super.onOptionsItemSelected(item)
     }
