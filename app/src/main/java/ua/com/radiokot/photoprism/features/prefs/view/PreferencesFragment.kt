@@ -157,6 +157,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 BuildConfig.VERSION_NAME,
                 getString(R.string.build_year),
             )
+
+            setOnPreferenceClickListener {
+                openSourceCode()
+                true
+            }
         }
 
         with(requirePreference(R.string.pk_report_issue)) {
@@ -440,6 +445,23 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                         )
                     )
                 )
+        )
+    }
+
+    private fun openSourceCode() {
+        // Custom tabs are preferred here,
+        // as the user may be already logged into GitHub
+        // and so won't have to log in again.
+        CustomTabsHelper.launchWithFallback(
+            context = requireContext(),
+            intent = CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .build(),
+            url = getKoin().getProperty("sourceCodeUrl")!!,
+            titleRes = R.string.app_name
         )
     }
 
