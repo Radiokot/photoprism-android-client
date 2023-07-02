@@ -111,4 +111,5 @@
     </string>
     <string name="used_open_source_software">Використане ПЗ з відкритим кодом</string>
     <string name="user_guides">Посібник користувача</string>
+    <string name="template_preferences_version">%1$s %2$s\n2023 Олег Корецький (Radiokot)</string>
 </resources>

@@ -151,7 +151,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         }
 
         with(requirePreference(R.string.pk_app_version)) {
-            summary = BuildConfig.VERSION_NAME
+            summary = getString(
+                R.string.template_preferences_version,
+                getString(R.string.app_name),
+                BuildConfig.VERSION_NAME,
+            )
         }
 
         with(requirePreference(R.string.pk_report_issue)) {
@@ -168,7 +172,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             }
         }
 
-        with (requirePreference(R.string.pk_guides)) {
+        with(requirePreference(R.string.pk_guides)) {
             setOnPreferenceClickListener {
                 openGuidesSummary()
                 true

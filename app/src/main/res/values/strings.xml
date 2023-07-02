@@ -114,4 +114,5 @@
     </string>
     <string name="used_open_source_software">Used open-source software</string>
     <string name="user_guides">User guide</string>
+    <string name="template_preferences_version" translatable="false">%1$s %2$s\n2023 Oleg Koretsky (Radiokot)</string>
 </resources>
