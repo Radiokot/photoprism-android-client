@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - A welcome screen clarifying that this is not an official PhotoPrism client
+- Ability to see the user guide in the preferences
+- Ability to see the list of used open-source software in the preferences
 
 ### Fixed
 - Rare crash when the app starts while not being visible. Did you know this is possible?
@@ -20,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Relicensed the source code over the compatible GPLv3 license 
 - Replaced the root URL guide with the complete connection guide
+- App version info in the preferences now additionally shows the app name and the build year.
+Furthermore, it mentions the author and contributors and the source code is opened if you click it
 
 ## [1.12.0] - 2023-06-25
 
