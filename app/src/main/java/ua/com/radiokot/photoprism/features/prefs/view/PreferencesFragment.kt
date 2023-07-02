@@ -167,6 +167,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 true
             }
         }
+
+        with (requirePreference(R.string.pk_guides)) {
+            setOnPreferenceClickListener {
+                openGuidesSummary()
+                true
+            }
+        }
     }
 
     private fun disconnect() {
@@ -381,12 +388,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun openIssueReport() {
-        openIssueReportUrl(
-            url = getKoin().getProperty("issueReportingUrl")!!
-        )
-    }
-
-    private fun openIssueReportUrl(url: String) {
         // Custom tabs are preferred here,
         // as the user may be already logged into GitHub
         // and so won't have to log in again.
@@ -398,7 +399,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 .setUrlBarHidingEnabled(true)
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
-            url = url,
+            url = getKoin().getProperty("issueReportingUrl")!!,
             titleRes = R.string.report_an_issue
         )
     }
@@ -416,6 +417,21 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                         titleRes = R.string.used_open_source_software,
                         pageFinishedInjectionScripts = setOf(
                             WebViewInjectionScriptFactory.Script.SIMPLE_HTML_IMMERSIVE,
+                        )
+                    )
+                )
+        )
+    }
+
+    private fun openGuidesSummary() {
+        startActivity(
+            Intent(requireContext(), WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = getKoin().getProperty("guidesSummaryUrl")!!,
+                        titleRes = R.string.user_guides,
+                        pageFinishedInjectionScripts = setOf(
+                            WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
                         )
                     )
                 )

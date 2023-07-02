@@ -72,7 +72,8 @@ class WebViewInjectionScriptFactory {
                     <style type="text/css">
                         /* Hide toolbar, sidebar, wiki page header */
                         .AppHeader, .Layout-sidebar, .js-header-wrapper, 
-                        #repository-container-header, .gh-header, .gh-header-meta {
+                        #repository-container-header, .gh-header, .gh-header-meta,
+                        .wiki-rightbar {
                             display: none !important;
                         }
                         
@@ -95,8 +96,12 @@ class WebViewInjectionScriptFactory {
                 `
                 document.head.insertAdjacentHTML('beforeend', immersiveCss)
             }
-            
-            addEventListener("DOMContentLoaded", injectImmersiveCss)
+
+            if (document.readyState !== 'loading') {
+                injectImmersiveCss()
+            } else {
+                addEventListener("DOMContentLoaded", injectImmersiveCss)
+            }
         """.trimIndent()
 
     fun getPhotoPrismHelpImmersiveScript(

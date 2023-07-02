@@ -57,6 +57,12 @@
 
         <Preference
             app:iconSpaceReserved="false"
+            app:key="@string/pk_guides"
+            app:persistent="false"
+            app:title="@string/user_guides" />
+
+        <Preference
+            app:iconSpaceReserved="false"
             app:key="@string/pk_os_licenses"
             app:persistent="false"
             app:title="@string/used_open_source_software" />
