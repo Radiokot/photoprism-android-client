@@ -7,9 +7,24 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <queries>
+        <!-- Required for the Custom Tabs fallback -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
     <application
-        android:name=".App"
+        android:name=".PhotoPrismGallery"
         android:allowBackup="false"
+        android:banner="@mipmap/tv_banner"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -24,11 +39,17 @@
         <activity
             android:name=".features.gallery.view.GalleryActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
                 <action android:name="android.intent.action.PICK" />
@@ -56,6 +77,14 @@
             android:name=".features.prefs.view.PreferencesActivity"
             android:exported="false"
             android:label="@string/preferences" />
+
+        <activity
+            android:name=".features.webview.view.WebViewActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".features.welcome.view.WelcomeActivity"
+            android:exported="false" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"

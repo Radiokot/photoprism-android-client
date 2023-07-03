@@ -33,6 +33,7 @@
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="true"
             android:hint="@string/search_the_library"
             app:layout_scrollFlags="enterAlways"
             app:navigationContentDescription="@string/preferences"

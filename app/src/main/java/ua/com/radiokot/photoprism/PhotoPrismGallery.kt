@@ -23,12 +23,15 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
+import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
+import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModules
 import ua.com.radiokot.photoprism.util.LocalizationHelper
 import java.io.File
 import java.io.IOException
+import java.util.Locale
 import kotlin.concurrent.thread
 
-class App : Application() {
+class PhotoPrismGallery : Application() {
     private val log = kLogger("App")
 
     override fun onCreate() {
@@ -36,13 +39,15 @@ class App : Application() {
 
         startKoin {
             androidLogger()
-            androidContext(this@App)
+            androidContext(this@PhotoPrismGallery)
             modules(
                 retrofitApiModules
                         + dbModules
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
                         + envConnectionFeatureModules
+                        + webViewFeatureModules
+                        + welcomeScreenFeatureModules
             )
             androidFileProperties("app.properties")
         }
@@ -92,10 +97,12 @@ class App : Application() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        val stringsLocale = LocalizationHelper.getLocaleOfStrings(newBase.resources)
+        Locale.setDefault(stringsLocale)
         super.attachBaseContext(
             LocalizationHelper.getLocalizedConfigurationContext(
                 context = newBase,
-                locale = LocalizationHelper.getLocaleOfStrings(newBase.resources),
+                locale = stringsLocale,
             )
         )
     }

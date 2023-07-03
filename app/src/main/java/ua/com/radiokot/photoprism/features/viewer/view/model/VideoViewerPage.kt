@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.net.Uri
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -14,6 +13,7 @@ import com.google.android.exoplayer2.decoder.DecoderException
 import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.databinding.LayoutVideoPlayerControlsBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -41,8 +41,10 @@ class VideoViewerPage(
 
     class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
         val view = PagerItemMediaViewerVideoBinding.bind(itemView)
-        val playerControlsLayout: ViewGroup by lazy {
-            view.videoView.findViewById(R.id.player_controls_layout)
+        val playerControlsView: LayoutVideoPlayerControlsBinding by lazy {
+            LayoutVideoPlayerControlsBinding.bind(
+                view.videoView.findViewById(R.id.player_controls_layout)
+            )
         }
         var playerCache: VideoPlayerCache? = null
         var fatalPlaybackErrorListener: (VideoViewerPage) -> Unit = {}

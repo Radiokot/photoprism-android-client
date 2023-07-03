@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
+    id 'com.jaredsburrows.license'
 }
 
 def keystorePropertiesFile = rootProject.file("app/keystore.properties")
@@ -21,10 +22,10 @@ android {
         applicationId "ua.com.radiokot.photoprism"
         minSdk 21
         targetSdk 33
-        versionCode 16
-        versionName "1.8.1"
+        versionCode 20
+        versionName "1.12.0"
 
-        resConfigs "en"
+        resConfigs "en", "tr", "el", "it", "zh", "ru", "uk"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -89,6 +90,13 @@ android {
     packagingOptions {
         doNotStrip '**/*.so'
     }
+
+    licenseReport {
+        generateHtmlReport = true
+        generateJsonReport = false
+        generateCsvReport = false
+        copyHtmlReportToAssets = true
+    }
 }
 
 dependencies {
@@ -140,9 +148,7 @@ dependencies {
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 
-    implementation('com.google.android.exoplayer:exoplayer-core:2.18.6'){
-        exclude group: 'com.google.guava', module: 'guava'
-    }
+    implementation('com.google.android.exoplayer:exoplayer-core:2.18.6')
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.6'
     implementation 'com.google.android.exoplayer:extension-okhttp:2.18.6'
 
@@ -155,6 +161,13 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+
+// Make the built APKs have a release-style name.
+android.applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        outputFileName = "${variant.applicationId}-${variant.versionName}.apk"
+    }
 }
 
 // F-Droid reproducible builds fix: https://gist.github.com/obfusk/61046e09cee352ae6dd109911534b12e

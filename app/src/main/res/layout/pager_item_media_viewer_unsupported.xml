@@ -5,6 +5,7 @@
     android:id="@+id/pager_item_media_viewer_unsupported"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="false"
     android:paddingHorizontal="24dp">
 
     <ImageView

@@ -3,7 +3,6 @@
     <string name="language_code">zh</string>
 
     <string name="media_type_image">图片</string>
-    <string name="media_type_raw">RAW</string>
     <string name="media_type_animated">动图</string>
     <string name="media_type_live">现场照片</string>
     <string name="media_type_video">视频</string>
@@ -37,8 +36,6 @@
     <string name="password_optional">密码 (optional)</string>
     <string name="connect_to_a_library">连接至图库</string>
     <string name="connect">连接</string>
-    <string name="auth_public">公共</string>
-    <string name="auth_private">私有</string>
     <string name="template_error_inaccessible_library_url">图库无法使用: %1$s</string>
     <string name="error_invalid_library_url_format">URL 格式不正确. 请确认它包含了协议类型</string>
     <string name="error_library_requires_credentials">该图库需要 SSL 证书访问</string>
@@ -47,7 +44,7 @@
     <string name="error_library_not_accessible_try_again">图库无法访问. 请检查网络连接并重试</string>
     <string name="try_again">重试</string>
     <string name="load_more">加载更多</string>
-    <string name="template_successfully_downloaded_file">文件已保存至 Downloads: %1$s</string>
+    <string name="template_started_download_file">文件将被保存至 Downloads: %1$s</string>
     <string name="error_storage_permission_is_required">需要文件管理权限</string>
     <string name="add_search_bookmark">添加书签</string>
     <string name="edit_search_bookmark">编辑书签</string>
@@ -59,21 +56,6 @@
     <string name="template_error_failed_to_edit_bookmark">编辑书签失败: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">删除书签失败: %1$s</string>
     <string name="using_search_filters">使用筛选器搜索</string>
-    <!-- This is not a joke, you can't get nominative cased month name from date formats -->
-    <string-array name="months">
-        <item name="january">一月</item>
-        <item name="february">二月</item>
-        <item name="march">三月</item>
-        <item name="april">四月</item>
-        <item name="may">五月</item>
-        <item name="june">六月</item>
-        <item name="july">七月</item>
-        <item name="august">八月</item>
-        <item name="september">九月</item>
-        <item name="october">十月</item>
-        <item name="november">十一月</item>
-        <item name="december">十二月</item>
-    </string-array>
     <string name="some_types_are_not_available_when_selecting">只有应用程序支持的类型才可用</string>
     <string name="include_private_content">包含私有内容</string>
     <string name="client_certificate_optional">客户端证书 (optional)</string>
@@ -92,14 +74,16 @@
     <string name="report_an_issue">提交 issue</string>
     <string name="template_error_failed_to_export_bookmarks">导出书签失败: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">导出</string>
     <string name="export_bookmarks">导出书签</string>
+    <string name="importt">导入书签</string>
     <string name="import_bookmarks">导入书签</string>
     <string name="template_error_failed_to_import_bookmarks">导入书签失败: %1$s</string>
-    <string name="template_successfully_imported_bookmarks_plural">导入书签成功 %1$d %2$s</string>
+    <string name="template_successfully_imported_search_bookmarks">%1$s 成功</string>
     <string name="replace_current_bookmarks_with_saved">使用已有书签覆盖</string>
-    <string name="save_bookmarks_to_file">备份书签</string>
+    <string name="save_current_bookmarks_to_file">备份书签</string>
     <string name="your_bookmarks_will_be_replaced">当前书签将被覆盖. 继续吗?</string>
-    <string name="ccontinue">继续</string>
+    <string name="continuee">继续</string>
     <string name="disconnect_from_library">断开连接</string>
     <string name="your_bookmarks_will_be_kept">你的书签将保留</string>
     <string name="template_error_failed_to_disconnect">断开连接失败: %1$s</string>

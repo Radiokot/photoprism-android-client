@@ -2,11 +2,16 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
@@ -15,20 +20,18 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.tryOrNull
-import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -38,27 +41,26 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.features.welcome.data.storage.WelcomeScreenPreferences
+import ua.com.radiokot.photoprism.features.welcome.view.WelcomeActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 
-class GalleryActivity : BaseActivity(), AndroidScopeComponent {
-    override val scope: Scope by lazy {
-        createActivityScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
-    }
-
+class GalleryActivity : BaseActivity() {
     private lateinit var view: ActivityGalleryBinding
     private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
+    private var isBackButtonJustPressed = false
+    private var isMovedBackByBackButton = false
+    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
+    private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
-
-    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
     private val mediaFileSelectionView: MediaFileSelectionView by lazy {
         MediaFileSelectionView(
@@ -88,6 +90,10 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
             lifecycleOwner = this,
         )
     }
+    private val viewerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onViewerResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,18 +107,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_finishing"
-                }
-
+            if (finishIfNoSession()) {
                 Toast.makeText(
                     this,
                     R.string.error_you_have_to_connect_to_library,
                     Toast.LENGTH_SHORT
                 ).show()
 
-                finish()
                 return
             }
 
@@ -121,11 +122,12 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
         } else {
-            if (tryOrNull { scope } == null) {
-                log.warn {
-                    "onCreate(): no_scope_going_to_env_connection"
+            if (!hasSession) {
+                if (!welcomeScreenPreferences.isWelcomeNoticeAccepted) {
+                    goToWelcomeScreen()
+                } else {
+                    goToEnvConnection()
                 }
-                goToEnvConnection()
                 return
             }
 
@@ -144,9 +146,15 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         initSearch()
         initErrorView()
         initMultipleSelection()
-        view.galleryRecyclerView.post {
-            initList(savedInstanceState)
+
+        // Init the list once it is laid out.
+        val singleListInitListener = object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                view.galleryRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                initList(savedInstanceState)
+            }
         }
+        view.galleryRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(singleListInitListener)
     }
 
     private fun subscribeToData() {
@@ -212,6 +220,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                         context = this,
                     )
 
+                GalleryViewModel.Error.CredentialsHaveBeenChanged ->
+                    ErrorView.Error.General(
+                        message = error.localizedMessage,
+                        retryButtonText = getString(R.string.disconnect_from_library),
+                        retryButtonClickListener = viewModel::onErrorDisconnectClicked
+                    )
+
                 else ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,
@@ -270,6 +285,16 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
                 is GalleryViewModel.Event.OpenPreferences -> {
                     openPreferences()
+                }
+
+                is GalleryViewModel.Event.EnsureListItemVisible -> {
+                    view.galleryRecyclerView.post {
+                        ensureGalleryListItemVisibility(event.listItemIndex)
+                    }
+                }
+
+                is GalleryViewModel.Event.GoToEnvConnection -> {
+                    goToEnvConnection()
                 }
             }
 
@@ -359,17 +384,33 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                 paddingBottom
             )
 
+            // Safe dimensions of the list keeping from division by 0.
+            // The fallback size is not supposed to be taken,
+            // as it means initializing of a not laid out list.
+            val listWidth = measuredWidth
+                .takeIf { it > 0 }
+                ?: FALLBACK_LIST_SIZE
+                    .also {
+                        log.warn { "initList(): used_fallback_width" }
+                    }
+            val listHeight = measuredHeight
+                .takeIf { it > 0 }
+                ?: FALLBACK_LIST_SIZE
+                    .also {
+                        log.warn { "initList(): used_fallback_height" }
+                    }
+
             val minItemWidthPx =
                 resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
-            val spanCount = (measuredWidth / minItemWidthPx).coerceAtLeast(1)
-            val cellSize = measuredWidth / spanCount.toFloat()
-            val maxVisibleRowCount = (measuredHeight / cellSize).roundToInt()
+            val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
+            val cellSize = listWidth / spanCount.toFloat()
+            val maxVisibleRowCount = (listHeight / cellSize).roundToInt()
             val maxRecycledMediaViewCount = maxVisibleRowCount * spanCount * 2
 
             log.debug {
                 "initList(): calculated_grid:" +
                         "\nspanCount=$spanCount," +
-                        "\nrowWidth=$measuredWidth," +
+                        "\nrowWidth=$listWidth," +
                         "\nminItemWidthPx=$minItemWidthPx," +
                         "\nmaxVisibleRowCount=$maxVisibleRowCount," +
                         "\nmaxRecycledMediaViewCount=$maxRecycledMediaViewCount"
@@ -461,6 +502,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         )
 
         onBackPressedDispatcher.addCallback(this, searchView.searchResetBackPressedCallback)
+        onBackPressedDispatcher.addCallback(this, fastScrollView.scrollResetBackPressedCallback)
         onBackPressedDispatcher.addCallback(this, searchView.closeConfigurationBackPressedCallback)
 
         view.searchBar.setNavigationOnClickListener {
@@ -521,7 +563,7 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
-        startActivity(
+        viewerLauncher.launch(
             Intent(this, MediaViewerActivity::class.java)
                 .putExtras(
                     MediaViewerActivity.getBundle(
@@ -531,6 +573,13 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
                     )
                 )
         )
+    }
+
+    private fun onViewerResult(result: ActivityResult) {
+        val lastViewedMediaIndex = MediaViewerActivity.getResult(result)
+            ?: return
+
+        viewModel.onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex)
     }
 
     private fun openPreferences() {
@@ -548,19 +597,94 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
         }
     }
 
-    private fun goToEnvConnection() {
-        log.debug {
-            "goToEnvConnection(): going_to_env_connection"
+    private fun ensureGalleryListItemVisibility(galleryListItemIndex: Int) {
+        val itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(galleryListItemIndex)
+
+        val layoutManager = (view.galleryRecyclerView.layoutManager as? LinearLayoutManager)
+            .checkNotNull {
+                "The recycler must have a layout manager at this moment"
+            }
+
+        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+
+        if (itemGlobalPosition !in firstVisibleItemPosition..lastVisibleItemPosition) {
+            log.debug {
+                "ensureGalleryListItemVisibility(): scrolling_to_make_visible:" +
+                        "\ngalleryListItemIndex=$galleryListItemIndex," +
+                        "\nitemGlobalPosition=$itemGlobalPosition"
+            }
+
+            view.galleryRecyclerView.scrollToPosition(itemGlobalPosition)
+        } else {
+            log.debug {
+                "ensureGalleryListItemVisibility(): item_is_already_visible:" +
+                        "\ngalleryListItemIndex=$galleryListItemIndex," +
+                        "\nitemGlobalPosition=$itemGlobalPosition"
+            }
         }
 
-        startActivity(Intent(this, EnvConnectionActivity::class.java))
-        finish()
+        // Move the focus to the corresponding item.
+        // It only does this when another item was focused before,
+        // e.g. when navigating using a keyboard.
+        view.galleryRecyclerView.post {
+            layoutManager.findViewByPosition(itemGlobalPosition)?.requestFocus()
+        }
     }
 
     private fun showFloatingError(error: GalleryViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
+    }
+
+    private fun goToWelcomeScreen() {
+        log.debug {
+            "goToWelcomeScreen(): going_to_welcome_screen"
+        }
+
+        startActivity(Intent(this, WelcomeActivity::class.java))
+        finishAffinity()
+    }
+
+    private var backPressResetDisposable: Disposable? = null
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            backPressResetDisposable?.dispose()
+            backPressResetDisposable = Single.timer(400, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .doOnSubscribe { isBackButtonJustPressed = true }
+                .subscribeBy { isBackButtonJustPressed = false }
+                .autoDispose(this)
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isMovedBackByBackButton = !isFinishing && isBackButtonJustPressed
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isMovedBackByBackButton) {
+            viewModel.onScreenResumedAfterMovedBackWithBackButton()
+        }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // Hope it works for TV remotes, I can't test it.
+        if (keyCode in setOf(
+                KeyEvent.KEYCODE_SETTINGS,
+                KeyEvent.KEYCODE_MENU,
+                KeyEvent.KEYCODE_BOOKMARK
+            )
+        ) {
+            viewModel.onPreferencesButtonClicked()
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 
     private val GalleryViewModel.Error.localizedMessage: String
@@ -579,5 +703,12 @@ class GalleryActivity : BaseActivity(), AndroidScopeComponent {
 
             GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
+
+            GalleryViewModel.Error.CredentialsHaveBeenChanged ->
+                getString(R.string.error_invalid_password)
         }
+
+    private companion object {
+        private const val FALLBACK_LIST_SIZE = 100
+    }
 }

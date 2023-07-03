@@ -28,6 +28,7 @@ import org.koin.core.qualifier._q
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -36,18 +37,18 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
-import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 
 class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     override val scope: Scope by lazy {
-        createFragmentScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
+        getKoin().getScope(DI_SCOPE_SESSION)
+            .apply { linkTo(createFragmentScope()) }
     }
 
     private val log = kLogger("PreferencesFragment")
@@ -102,10 +103,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
     private fun initBookmarksExportOptionsDialog() {
         childFragmentManager.setFragmentResultListener(
-            BookmarksExportOptionsDialogFragment.REQUEST_KEY,
+            SearchBookmarksExportOptionsDialogFragment.REQUEST_KEY,
             this
         ) { _, bundle ->
-            when (val optionId = BookmarksExportOptionsDialogFragment.getResult(bundle)) {
+            when (val optionId = SearchBookmarksExportOptionsDialogFragment.getResult(bundle)) {
                 R.id.share_button ->
                     shareBookmarksExport()
 
@@ -150,12 +151,36 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         }
 
         with(requirePreference(R.string.pk_app_version)) {
-            summary = BuildConfig.VERSION_NAME
+            summary = getString(
+                R.string.template_preferences_version,
+                getString(R.string.app_name),
+                BuildConfig.VERSION_NAME,
+                getString(R.string.build_year),
+            )
+
+            setOnPreferenceClickListener {
+                openSourceCode()
+                true
+            }
         }
 
         with(requirePreference(R.string.pk_report_issue)) {
             setOnPreferenceClickListener {
                 openIssueReport()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_os_licenses)) {
+            setOnPreferenceClickListener {
+                openOpenSourceLicenses()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_guides)) {
+            setOnPreferenceClickListener {
+                openGuidesSummary()
                 true
             }
         }
@@ -224,8 +249,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         // Activity fragment manager is used to keep the dialog opened
         // on activity re-creation.
         val fragment =
-            (childFragmentManager.findFragmentByTag(BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG) as? BookmarksExportOptionsDialogFragment)
-                ?: BookmarksExportOptionsDialogFragment()
+            (childFragmentManager.findFragmentByTag(BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG) as? SearchBookmarksExportOptionsDialogFragment)
+                ?: SearchBookmarksExportOptionsDialogFragment()
 
         if (!fragment.isAdded || !fragment.showsDialog) {
             fragment.showNow(childFragmentManager, BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG)
@@ -299,7 +324,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.import_bookmarks)
             .setMessage(R.string.your_bookmarks_will_be_replaced)
-            .setPositiveButton(R.string.ccontinue) { _, _ ->
+            .setPositiveButton(R.string.continuee) { _, _ ->
                 bookmarksBackupFileOpeningLauncher
                     .launch(arrayOf(bookmarksBackup.fileMimeType))
             }
@@ -338,9 +363,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                     Snackbar.make(
                         listView,
                         getString(
-                            R.string.template_successfully_imported_bookmarks_plural,
-                            count,
-                            resources.getQuantityString(R.plurals.search_bookmarks, count)
+                            R.string.template_successfully_imported_search_bookmarks,
+                            resources.getQuantityString(
+                                R.plurals.imported_search_bookmarks,
+                                count,
+                                count
+                            )
                         ),
                         Snackbar.LENGTH_LONG,
                     ).show()
@@ -370,32 +398,71 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun openIssueReport() {
-        openUrl(
-            url = getKoin().getProperty("issueReportingUrl")!!
-        )
-    }
-
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-        CustomTabsHelper.safelyLaunchUrl(
-            requireContext(),
-            CustomTabsIntent.Builder()
+        // Custom tabs are preferred here,
+        // as the user may be already logged into GitHub
+        // and so won't have to log in again.
+        CustomTabsHelper.launchWithFallback(
+            context = requireContext(),
+            intent = CustomTabsIntent.Builder()
                 .setShowTitle(false)
                 .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                 .setUrlBarHidingEnabled(true)
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
-            uri
+            url = getKoin().getProperty("issueReportingUrl")!!,
+            titleRes = R.string.report_an_issue
         )
     }
 
     private fun goToEnvConnection() {
-        log.debug {
-            "goToEnvConnection(): going_to_env_connection"
-        }
+        (requireActivity() as BaseActivity).goToEnvConnectionIfNoSession()
+    }
 
-        startActivity(Intent(requireContext(), EnvConnectionActivity::class.java))
-        requireActivity().finishAffinity()
+    private fun openOpenSourceLicenses() {
+        startActivity(
+            Intent(requireContext(), WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = "file:///android_asset/open_source_licenses.html",
+                        titleRes = R.string.used_open_source_software,
+                        pageFinishedInjectionScripts = setOf(
+                            WebViewInjectionScriptFactory.Script.SIMPLE_HTML_IMMERSIVE,
+                        )
+                    )
+                )
+        )
+    }
+
+    private fun openGuidesSummary() {
+        startActivity(
+            Intent(requireContext(), WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = getKoin().getProperty("guidesSummaryUrl")!!,
+                        titleRes = R.string.user_guides,
+                        pageFinishedInjectionScripts = setOf(
+                            WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                        )
+                    )
+                )
+        )
+    }
+
+    private fun openSourceCode() {
+        // Custom tabs are preferred here,
+        // as the user may be already logged into GitHub
+        // and so won't have to log in again.
+        CustomTabsHelper.launchWithFallback(
+            context = requireContext(),
+            intent = CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .build(),
+            url = getKoin().getProperty("sourceCodeUrl")!!,
+            titleRes = R.string.app_name
+        )
     }
 
     private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {

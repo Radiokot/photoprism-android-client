@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="one">importati %1$d segnalibro</item>
+        <item quantity="other">importati %1$d segnalibri</item>
+    </plurals>
+</resources>

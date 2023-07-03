@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.di
 import okhttp3.HttpUrl
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
-import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
@@ -97,7 +96,7 @@ val retrofitApiModules: List<Module> = listOf(
             scoped<PhotoPrismAlbumsService> {
                 get<Retrofit>()
                     .create(PhotoPrismAlbumsService::class.java)
-            } bind PhotoPrismAlbumsService::class
+            }
         }
     }
 )

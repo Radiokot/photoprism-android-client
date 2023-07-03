@@ -5,6 +5,9 @@
     android:id="@+id/list_item_gallery_media"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/focusable_list_item_background"
+    android:clickable="true"
+    android:focusable="true"
     android:padding="@dimen/list_item_gallery_media_margin"
     tools:layout_width="160dp">
 

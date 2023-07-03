@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="one">içeri aktarıldı %1$d yer imi</item>
+        <item quantity="other">içeri aktarıldı %1$d yer imleri</item>
+    </plurals>
+</resources>

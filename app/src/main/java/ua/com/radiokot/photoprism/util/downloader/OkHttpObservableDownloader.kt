@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.util.downloader
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import okhttp3.Request
+import okhttp3.Response
 import okio.Sink
 import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -21,27 +22,31 @@ class OkHttpObservableDownloader(
             .addNetworkInterceptor { chain ->
                 val emitterKey = chain.request().tag() as Int
                 val originalResponse = chain.proceed(chain.request())
-                originalResponse
+                val originalBody = originalResponse.body
+                    ?: return@addNetworkInterceptor originalResponse
+
+                return@addNetworkInterceptor originalResponse
                     .newBuilder()
                     .body(
                         ProgressResponseBody(
-                            originalResponse.body
-                                .checkNotNull {
-                                    "The request must have a body, otherwise there is nothing to download"
-                                }
-                        ) { bytesRead, contentLength, isDone ->
-                            val emitter = emittersMap.getValue(emitterKey)
-                            if (isDone) {
-                                emitter.onComplete()
-                            } else {
+                            observingBody = originalBody,
+                            progressListener = { bytesRead, contentLength ->
+                                val emitter = emittersMap.getValue(emitterKey)
                                 emitter.onNext(
                                     ObservableDownloader.Progress(
                                         bytesRead = bytesRead,
                                         contentLength = contentLength,
                                     )
                                 )
+                            },
+                            closedListener = {
+                                // Emit the completion when the body is closed,
+                                // not when read bytes count matches content length.
+                                // In the second case, the output is not yet fully written.
+                                val emitter = emittersMap.getValue(emitterKey)
+                                emitter.onComplete()
                             }
-                        }
+                        )
                     )
                     .build()
             }
@@ -65,12 +70,21 @@ class OkHttpObservableDownloader(
             emittersMap[emitterKey] = emitter
 
             call.execute().use { response ->
-                response.body
-                    .checkNotNull {
-                        "The request must have a body, otherwise there is nothing to download"
-                    }
-                    .source()
-                    .readAll(destination)
+                try {
+                    response
+                        .takeIf(Response::isSuccessful)
+                        .checkNotNull {
+                            "The response must be successful, no sense in downloading an error"
+                        }
+                        .body
+                        .checkNotNull {
+                            "The response must have a body, otherwise there is nothing to download"
+                        }
+                        .source()
+                        .readAll(destination)
+                } catch (t: Throwable) {
+                    emitter.tryOnError(t)
+                }
             }
         }.doOnDispose(call::cancel)
     }

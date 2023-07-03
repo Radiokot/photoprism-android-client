@@ -1,156 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".features.envconnection.view.EnvConnectionActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_margin="32dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/content_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="32dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="16dp"
                 android:gravity="center_horizontal"
                 android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge" />
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                app:drawableTopCompat="@mipmap/splash_logo" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
                 android:text="@string/connect_to_a_library"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/root_url_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="@string/library_root_url"
-                app:endIconContentDescription="@string/learn_more"
-                app:endIconDrawable="@drawable/ic_lightbulb"
-                app:endIconMode="custom"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_server">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="32dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textUri|textNoSuggestions"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck">
-
-                    <requestFocus />
-                </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/username_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:autofillHints="username"
-                android:hint="@string/username_optional"
-                app:endIconDrawable="@drawable/ic_close"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_account">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="username"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/password_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:autofillHints="password"
-                android:hint="@string/password_optional"
-                app:passwordToggleEnabled="true"
-                app:startIconDrawable="@drawable/ic_lock">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="password"
-                    android:imeOptions="actionGo"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/certificate_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/client_certificate_optional"
-                android:importantForAutofill="no"
-                app:endIconContentDescription="@string/clear"
-                app:endIconDrawable="@drawable/ic_close"
-                app:endIconMode="custom"
-                app:endIconTint="@color/text_input_layout_end_icon_tint"
-                app:startIconDrawable="@drawable/ic_certificate">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:importantForAutofill="no"
-                    android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <include layout="@layout/include_env_connection_fields" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="24dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/connect_button"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/connect" />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progress_indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:indeterminate="true" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="32dp" />
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/connect_button"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/connect"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_layout"
+            app:layout_constraintVertical_bias="1" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_layout"
+            app:layout_constraintVertical_bias="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

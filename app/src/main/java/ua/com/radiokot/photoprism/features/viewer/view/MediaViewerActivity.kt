@@ -1,17 +1,21 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.Button
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter
@@ -20,37 +24,27 @@ import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.createActivityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
 
-class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
-    override val scope: Scope by lazy {
-        createActivityScope().apply {
-            linkTo(getScope(DI_SCOPE_SESSION))
-        }
-    }
-
+class MediaViewerActivity : BaseActivity() {
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
-    private val downloadViewModel: DownloadMediaFileViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val log = kLogger("MMediaViewerActivity")
 
@@ -66,7 +60,7 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = downloadViewModel,
+            viewModel = viewModel.downloadMediaFileViewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.viewPager,
             lifecycleOwner = this
@@ -81,6 +75,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (goToEnvConnectionIfNoSession()) {
+            return
+        }
 
         view = ActivityMediaViewerBinding.inflate(layoutInflater)
         setContentView(view.root)
@@ -109,7 +107,6 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewModel.initOnce(
-            downloadViewModel = downloadViewModel,
             repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
         )
@@ -125,90 +122,107 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         downloadProgressView.init()
         initFullScreenToggle()
         initCustomTabs()
+        initKeyboardNavigation()
     }
 
     private fun initPager(
         startIndex: Int,
         savedInstanceState: Bundle?,
-    ) {
-        with(view.viewPager) {
-            val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
-                stateRestorationPolicy =
-                    RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    ) = with(view.viewPager) {
+        val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
+            stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-                // Set the required index once, after the data is set.
-                if (savedInstanceState == null) {
-                    registerAdapterDataObserver(object : AdapterDataObserver() {
-                        override fun onChanged() {
-                            post {
-                                setCurrentItem(startIndex, false)
-                            }
-                            unregisterAdapterDataObserver(this)
+            // Set the required index once, after the data is set.
+            if (savedInstanceState == null) {
+                registerAdapterDataObserver(object : AdapterDataObserver() {
+                    override fun onChanged() {
+                        post {
+                            setCurrentItem(startIndex, false)
                         }
-                    })
-                }
-
-                addClickListener(
-                    resolveView = { viewHolder: RecyclerView.ViewHolder ->
-                        when (viewHolder) {
-                            is ImageViewerPage.ViewHolder ->
-                                viewHolder.view.photoView
-
-                            is VideoViewerPage.ViewHolder ->
-                                viewHolder.view.videoView
-
-                            else ->
-                                viewHolder.itemView
-                        }
-                    },
-                    onClick = { _, _, _, _ ->
-                        viewModel.onPageClicked()
-                    }
-                )
-
-                addEventHook(object : EventHook<MediaViewerPage> {
-                    override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-                        if (viewHolder !is VideoViewerPage.ViewHolder) {
-                            return null
-                        }
-
-                        setUpVideoViewer(viewHolder)
-
-                        return null
+                        unregisterAdapterDataObserver(this)
                     }
                 })
             }
 
-            adapter = fastAdapter
+            addClickListener(
+                resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                    when (viewHolder) {
+                        is ImageViewerPage.ViewHolder ->
+                            viewHolder.view.photoView
 
-            val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
-                footerAdapter = GenericItemAdapter(),
-                layoutManager = recyclerView.layoutManager.checkNotNull {
-                    "There must be a layout manager at this point"
+                        is VideoViewerPage.ViewHolder ->
+                            viewHolder.view.videoView
+
+                        else ->
+                            viewHolder.itemView
+                    }
                 },
-                visibleThreshold = 6
-            ) {
-                override fun onLoadMore(currentPage: Int) {
-                    if (currentPage == 0) {
-                        // Filter out false-triggering.
-                        return
+                onClick = { _, _, _, _ ->
+                    viewModel.onPageClicked()
+                }
+            )
+
+            addEventHook(object : EventHook<MediaViewerPage> {
+                override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+                    if (viewHolder !is VideoViewerPage.ViewHolder) {
+                        return null
                     }
 
-                    log.debug {
-                        "onLoadMore(): load_more:" +
-                                "\npage=$currentPage"
-                    }
-                    viewModel.loadMore()
+                    setUpVideoViewer(viewHolder)
+
+                    return null
+                }
+            })
+        }
+
+        adapter = fastAdapter
+
+        val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
+            footerAdapter = GenericItemAdapter(),
+            layoutManager = recyclerView.layoutManager.checkNotNull {
+                "There must be a layout manager at this point"
+            },
+            visibleThreshold = 6
+        ) {
+            override fun onLoadMore(currentPage: Int) {
+                if (currentPage == 0) {
+                    // Filter out false-triggering.
+                    return
+                }
+
+                log.debug {
+                    "onLoadMore(): load_more:" +
+                            "\npage=$currentPage"
+                }
+                viewModel.loadMore()
+            }
+        }
+        viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
+            if (isLoading) {
+                endlessScrollListener.disable()
+            } else {
+                endlessScrollListener.enable()
+            }
+        }
+        recyclerView.addOnScrollListener(endlessScrollListener)
+
+        registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            private var prevSelectedPagePosition = -1
+
+            override fun onPageSelected(position: Int) {
+                if (position != prevSelectedPagePosition) {
+                    prevSelectedPagePosition = position
+                    viewModel.onPageChanged(position)
                 }
             }
-            viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
-                if (isLoading) {
-                    endlessScrollListener.disable()
-                } else {
-                    endlessScrollListener.enable()
-                }
-            }
-            recyclerView.addOnScrollListener(endlessScrollListener)
+        })
+
+        // Disable focusability of the inner RecyclerView
+        // so it doesn't mess with the arrow keys swipes.
+        with(recyclerView) {
+            isFocusable = false
+            isFocusableInTouchMode = false
         }
     }
 
@@ -227,6 +241,12 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
 
         view.downloadButton.setOnClickListener {
             viewModel.onDownloadClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
+
+        view.cancelDownloadButton.setOnClickListener {
+            viewModel.onCancelDownloadClicked(
                 position = view.viewPager.currentItem,
             )
         }
@@ -269,22 +289,94 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         CustomTabsHelper.safelyConnectAndInitialize(this)
     }
 
+    private val keyboardNavigationKeyListener = OnKeyListener { parentView, keyCode, event ->
+        log.debug {
+            "initKeyboardNavigation(): key_pressed:" +
+                    "\ncode=$keyCode," +
+                    "\naction=${event.action}"
+        }
+
+        // Ignore all the irrelevant keys.
+        // Do not intercept Enter on buttons.
+        if (keyCode !in setOf(
+                KeyEvent.KEYCODE_DPAD_RIGHT,
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_ENTER
+            ) || keyCode == KeyEvent.KEYCODE_ENTER && parentView is Button
+        ) {
+            return@OnKeyListener false
+        }
+
+        // Ignore all the irrelevant events, but return true to avoid focus loss.
+        if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
+            return@OnKeyListener true
+        }
+
+        // Swipe pages when pressing left and right arrow buttons.
+        // Call page click by pressing Enter (OK).
+        when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                log.debug {
+                    "initKeyboardNavigation(): swipe_page_by_key:" +
+                            "\nkey=right"
+                }
+
+                view.viewPager.setCurrentItem(
+                    view.viewPager.currentItem + 1,
+                    true
+                )
+            }
+
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                log.debug {
+                    "initKeyboardNavigation(): swipe_page_by_key:" +
+                            "\nkey=left"
+                }
+
+                view.viewPager.setCurrentItem(
+                    view.viewPager.currentItem - 1,
+                    true
+                )
+            }
+
+            KeyEvent.KEYCODE_ENTER -> {
+                log.debug {
+                    "initKeyboardNavigation(): click_page_by_enter"
+                }
+
+                viewModel.onPageClicked()
+            }
+        }
+
+        return@OnKeyListener true
+    }
+
+    private fun initKeyboardNavigation() = with(view.keyboardNavigationFocusView) {
+        setOnKeyListener(keyboardNavigationKeyListener)
+
+        setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                log.debug { "initKeyboardNavigation(): focus_view_got_focus" }
+            }
+        }
+    }
+
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
         viewHolder.bindToLifecycle(this.lifecycle)
 
         val view = viewHolder.view
-        val playerControlsLayout = viewHolder.playerControlsLayout
+        val playerControlsView = viewHolder.playerControlsView
 
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            playerControlsLayout.fadeVisibility(isVisible = areActionsVisible)
+            playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
         }
         if (viewModel.areActionsVisible.value == true) {
             view.videoView.showController()
         } else {
             view.videoView.hideController()
         }
-        playerControlsLayout.clearAnimation()
+        playerControlsView.root.clearAnimation()
 
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +
@@ -312,6 +404,10 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         }
 
         viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
+
+        // Make arrow keys swipes work when play/pause buttons are in focus.
+        playerControlsView.exoPlay.setOnKeyListener(keyboardNavigationKeyListener)
+        playerControlsView.exoPause.setOnKeyListener(keyboardNavigationKeyListener)
     }
 
     private fun subscribeToData() {
@@ -347,6 +443,31 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 log.debug { "initData(): disabled_full_screen" }
             }
         }
+
+        viewModel.cancelDownloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
+            view.cancelDownloadButtonProgress.progress = downloadProgressPercent
+            view.cancelDownloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
+        }
+
+        viewModel.isCancelDownloadButtonVisible.observe(this) { isVisible ->
+            if (isVisible) {
+                view.cancelDownloadButtonLayout.isVisible = true
+                view.cancelDownloadButtonProgress.show()
+            } else {
+                view.cancelDownloadButtonLayout.isVisible = false
+                view.cancelDownloadButtonProgress.hide()
+            }
+        }
+
+        viewModel.isDownloadButtonVisible.observe(
+            this,
+            view.downloadButtonLayout::isVisible::set
+        )
+
+        viewModel.isDownloadCompletedIconVisible.observe(
+            this,
+            view.downloadCompletedIcon::isVisible::set
+        )
     }
 
     @Suppress("DEPRECATION")
@@ -400,16 +521,16 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
                 is MediaViewerViewModel.Event.CheckStoragePermission ->
                     checkStoragePermission()
 
-                is MediaViewerViewModel.Event.ShowSuccessfulDownloadMessage ->
-                    showSuccessfulDownloadMessage(
-                        fileName = event.fileName,
+                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                    showStartedDownloadMessage(
+                        destinationFileName = event.destinationFileName,
                     )
 
                 is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showMissingStoragePermissionMessage()
 
-                is MediaViewerViewModel.Event.OpenUrl ->
-                    openUrl(
+                is MediaViewerViewModel.Event.OpenWebViewer ->
+                    openWebViewer(
                         url = event.url,
                     )
             }
@@ -492,39 +613,48 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private fun showSuccessfulDownloadMessage(fileName: String) {
+    private fun showStartedDownloadMessage(destinationFileName: String) {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(
-                R.string.template_successfully_downloaded_file,
-                fileName
+                R.string.template_started_download_file,
+                destinationFileName
             ),
-            Snackbar.LENGTH_LONG,
+            1000,
         ).show()
     }
 
     private fun showMissingStoragePermissionMessage() {
         Snackbar.make(
-            view.viewPager,
+            view.snackbarArea,
             getString(R.string.error_storage_permission_is_required),
             Snackbar.LENGTH_SHORT,
         ).show()
     }
 
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-
-        CustomTabsHelper.safelyLaunchUrl(
-            this,
-            CustomTabsIntent.Builder()
-                .setShowTitle(false)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setUrlBarHidingEnabled(true)
-                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                .setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK)
-                .build(),
-            uri
+    private fun openWebViewer(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.photoprism_web,
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_AUTO_LOGIN,
+                    ),
+                    pageFinishedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_IMMERSIVE,
+                    )
+                )
+            )
         )
+    }
+
+    override fun finish() {
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
+        )
+        super.finish()
     }
 
     companion object {
@@ -532,6 +662,11 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
         private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
 
+        /**
+         * @param mediaIndex index of the media to start from
+         * @param repositoryParams params of the media repository to view
+         * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not.
+         */
         fun getBundle(
             mediaIndex: Int,
             repositoryParams: SimpleGalleryMediaRepository.Params,
@@ -541,5 +676,15 @@ class MediaViewerActivity : BaseActivity(), AndroidScopeComponent {
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
         }
+
+        /**
+         * @return last viewed media index, if there was one.
+         */
+        fun getResult(result: ActivityResult): Int? =
+            result
+                .takeIf { it.resultCode == Activity.RESULT_OK }
+                ?.data
+                ?.getIntExtra(MEDIA_INDEX_KEY, -1)
+                ?.takeIf { it >= 0 }
     }
 }

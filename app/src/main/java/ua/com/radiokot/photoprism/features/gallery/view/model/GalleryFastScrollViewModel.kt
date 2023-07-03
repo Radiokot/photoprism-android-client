@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -133,9 +134,9 @@ class GalleryFastScrollViewModel(
                     GalleryMonthScrollBubble(
                         name =
                         if (month.firstDay.isSameYearAs(today))
-                            bubbleMonthDateFormat.format(month.firstDay)
+                            bubbleMonthDateFormat.format(month.firstDay).capitalized()
                         else
-                            bubbleMonthYearDateFormat.format(month.firstDay),
+                            bubbleMonthYearDateFormat.format(month.firstDay).capitalized(),
                         source = month
                     )
                 }
@@ -147,10 +148,19 @@ class GalleryFastScrollViewModel(
                 }
     }
 
-    fun reset() {
-        log.debug { "reset(): resetting_to_idle" }
+    /**
+     * Reset of the month drag and the scroll (goes back to the top).
+     *
+     * @see Event.Reset
+     */
+    fun reset(isInitiatedByUser: Boolean) {
+        log.debug {
+            "reset(): resetting_drag_and_scroll:" +
+                    "\nisInitiatedByUser=$isInitiatedByUser"
+        }
 
         monthsDragResetSubject.onNext(Unit)
+        eventsSubject.onNext(Event.Reset(isInitiatedByUser))
     }
 
     fun onDragging(monthBubble: GalleryMonthScrollBubble) {
@@ -162,10 +172,15 @@ class GalleryFastScrollViewModel(
     }
 
     sealed interface Event {
-        class DraggingAtMonth(
+        data class DraggingAtMonth(
             val month: GalleryMonth,
             val isTopMonth: Boolean,
         ) : Event
+
+        /**
+         * Reset of the month drag and the scroll (goes back to the top).
+         */
+        data class Reset(val isInitiatedByUser: Boolean) : Event
     }
 
     private companion object {

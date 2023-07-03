@@ -7,31 +7,32 @@
     android:paddingStart="24dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="16dp">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title_text_view"
         style="@style/MaterialAlertDialog.Material3.Title.Text"
         android:layout_width="0dp"
+        android:singleLine="false"
+        android:maxLines="2"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/add_search_bookmark"
         app:layout_constraintEnd_toStartOf="@id/close_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/edit_search_bookmark" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/close_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/cancel"
-        android:padding="8dp"
+        android:padding="4dp"
         android:src="@drawable/ic_close"
         android:tint="?colorOnSurface"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/title_text_view" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_text_input"

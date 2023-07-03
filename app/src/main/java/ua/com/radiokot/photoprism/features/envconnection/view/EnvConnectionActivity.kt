@@ -1,13 +1,11 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyChain
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -15,36 +13,39 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
+import ua.com.radiokot.photoprism.databinding.IncludeEnvConnectionFieldsBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
-import ua.com.radiokot.photoprism.util.CustomTabsHelper
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SoftInputUtil
 
 class EnvConnectionActivity : BaseActivity() {
     private val log = kLogger("EEnvConnectionActivity")
 
     private lateinit var view: ActivityEnvConnectionBinding
+    private lateinit var fields: IncludeEnvConnectionFieldsBinding
     private val viewModel: EnvConnectionViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         view = ActivityEnvConnectionBinding.inflate(layoutInflater)
+        fields = IncludeEnvConnectionFieldsBinding.bind(view.root)
         setContentView(view.root)
 
         initFields()
         initButtons()
-        initCustomTabs()
 
         subscribeToState()
         subscribeToEvents()
     }
 
-    private fun initFields() {
-        with(view.rootUrlTextInput) {
+    private fun initFields() = with(fields) {
+        with(rootUrlTextInput) {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
             viewModel.rootUrlError.observe(this@EnvConnectionActivity) { rootUrlError ->
@@ -56,14 +57,17 @@ class EnvConnectionActivity : BaseActivity() {
                             rootUrlError.shortSummary,
                         )
                     }
+
                     EnvConnectionViewModel.RootUrlError.InvalidFormat -> {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_library_url_format)
                     }
+
                     EnvConnectionViewModel.RootUrlError.RequiresCredentials -> {
                         isErrorEnabled = true
                         error = getString(R.string.error_library_requires_credentials)
                     }
+
                     null -> {
                         isErrorEnabled = false
                         error = null
@@ -76,11 +80,11 @@ class EnvConnectionActivity : BaseActivity() {
             }
         }
 
-        with(view.usernameTextInput) {
+        with(usernameTextInput) {
             editText!!.bindTextTwoWay(viewModel.username)
         }
 
-        with(view.passwordTextInput) {
+        with(passwordTextInput) {
             editText!!.bindTextTwoWay(viewModel.password)
 
             editText!!.setOnEditorActionListener { _, actionId, _ ->
@@ -97,6 +101,7 @@ class EnvConnectionActivity : BaseActivity() {
                         isErrorEnabled = true
                         error = getString(R.string.error_invalid_password)
                     }
+
                     null -> {
                         isErrorEnabled = false
                         error = null
@@ -105,13 +110,15 @@ class EnvConnectionActivity : BaseActivity() {
             }
         }
 
-        with(view.certificateTextInput) {
+        with(certificateTextInput) {
             isVisible = viewModel.isClientCertificateSelectionAvailable
 
             setOnClickListener {
                 viewModel.onCertificateFieldClicked()
             }
-            editText!!.setOnClickListener { viewModel.onCertificateFieldClicked() }
+            editText!!.setOnClickListener {
+                viewModel.onCertificateFieldClicked()
+            }
 
             viewModel.clientCertificateAlias.observe(this@EnvConnectionActivity) { alias ->
                 editText?.setText(alias ?: "")
@@ -136,10 +143,6 @@ class EnvConnectionActivity : BaseActivity() {
         }
     }
 
-    private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(this)
-    }
-
     private fun subscribeToState() {
         viewModel.state.subscribeBy { state ->
             log.debug {
@@ -150,6 +153,7 @@ class EnvConnectionActivity : BaseActivity() {
             view.progressIndicator.visibility = when (state) {
                 EnvConnectionViewModel.State.Connecting ->
                     View.VISIBLE
+
                 EnvConnectionViewModel.State.Idle ->
                     View.GONE
             }
@@ -157,6 +161,7 @@ class EnvConnectionActivity : BaseActivity() {
             view.connectButton.visibility = when (state) {
                 EnvConnectionViewModel.State.Connecting ->
                     View.GONE
+
                 EnvConnectionViewModel.State.Idle ->
                     View.VISIBLE
             }
@@ -165,6 +170,7 @@ class EnvConnectionActivity : BaseActivity() {
                 EnvConnectionViewModel.State.Connecting -> {
                     SoftInputUtil.hideSoftInput(window)
                 }
+
                 EnvConnectionViewModel.State.Idle -> {
                 }
             }
@@ -186,12 +192,18 @@ class EnvConnectionActivity : BaseActivity() {
             when (event) {
                 EnvConnectionViewModel.Event.GoToGallery ->
                     goToGallery()
+
                 EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
                     chooseClientCertificateAlias()
+
                 EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
                     showMissingClientCertificatesNotice()
-                is EnvConnectionViewModel.Event.OpenUrl ->
-                    openUrl(url = event.url)
+
+                is EnvConnectionViewModel.Event.OpenConnectionGuide ->
+                    openConnectionGuide(url = event.url)
+
+                is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
+                    openClientCertificateGuide(url = event.url)
             }
 
             log.debug {
@@ -242,17 +254,31 @@ class EnvConnectionActivity : BaseActivity() {
             .show()
     }
 
-    private fun openUrl(url: String) {
-        val uri = Uri.parse(url)
-        CustomTabsHelper.safelyLaunchUrl(
-            this,
-            CustomTabsIntent.Builder()
-                .setShowTitle(false)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setUrlBarHidingEnabled(true)
-                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                .build(),
-            uri
+    private fun openConnectionGuide(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.connect_to_a_library,
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                    ),
+                )
+            )
+        )
+    }
+
+    private fun openClientCertificateGuide(url: String) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java).putExtras(
+                WebViewActivity.getBundle(
+                    url = url,
+                    titleRes = R.string.how_to_use_client_certificate,
+                    pageStartedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                    ),
+                )
+            )
         )
     }
 

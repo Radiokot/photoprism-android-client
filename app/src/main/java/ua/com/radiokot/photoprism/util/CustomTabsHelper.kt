@@ -3,9 +3,12 @@ package ua.com.radiokot.photoprism.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
+
 
 object CustomTabsHelper {
     private val log = kLogger("CustomTabsHelper")
@@ -27,27 +30,43 @@ object CustomTabsHelper {
 
     /**
      * Tries to launch the [url] with help of the [intent],
-     * on failure starts [Intent.ACTION_VIEW] intent,
-     * on failure returns false.
+     * on failure starts [WebViewActivity].
+     *
+     * @param context context capable of starting activities
+     * @param titleRes title resource for [WebViewActivity] in case of fallback
      */
-    fun safelyLaunchUrl(
+    fun launchWithFallback(
         context: Context,
         intent: CustomTabsIntent,
-        url: Uri
-    ): Boolean {
-        return try {
-            intent.launchUrl(context, url)
-            true
-        } catch (e1: Exception) {
-            log.debug(e1) { "safelyLaunchUrl(): falling_back_to_regular_intent" }
+        url: String,
+        @StringRes
+        titleRes: Int,
+    ) {
+        try {
+            val customTabsPackageName =
+                checkNotNull(CustomTabsClient.getPackageName(context, emptyList())) {
+                    "There must be a browser supporting Custom Tabs"
+                }
 
-            try {
-                context.startActivity(Intent(Intent.ACTION_VIEW).setData(url))
-                true
-            } catch (e2: Exception) {
-                log.error(e2) { "openUrl(): fallback_failed_too" }
-                false
+            log.debug {
+                "launchWithFallback(): launching_url:" +
+                        "\nurl=$url," +
+                        "\ncustomTabsPackageName=$customTabsPackageName"
             }
+
+            intent.launchUrl(context, Uri.parse(url))
+        } catch (e1: Exception) {
+            log.debug(e1) { "launchWithFallback(): falling_back_to_web_viewer" }
+
+            context.startActivity(
+                Intent(context, WebViewActivity::class.java)
+                    .putExtras(
+                        WebViewActivity.getBundle(
+                            url = url,
+                            titleRes = titleRes,
+                        )
+                    )
+            )
         }
     }
 }

@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
@@ -28,14 +29,14 @@
             app:key="@string/pk_import_bookmarks"
             app:persistent="false"
             app:summary="@string/replace_current_bookmarks_with_saved"
-            app:title="@string/import_bookmarks" />
+            app:title="@string/importt" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="@string/pk_export_bookmarks"
             app:persistent="false"
-            app:summary="@string/save_bookmarks_to_file"
-            app:title="@string/export_bookmarks" />
+            app:summary="@string/save_current_bookmarks_to_file"
+            app:title="@string/export" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -44,16 +45,28 @@
 
         <Preference
             app:iconSpaceReserved="false"
-            app:key="@string/pk_app_version"
+            app:key="@string/pk_guides"
             app:persistent="false"
-            app:summary="***"
-            app:title="@string/app_version" />
+            app:title="@string/user_guides" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_os_licenses"
+            app:persistent="false"
+            app:title="@string/used_open_source_software" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="@string/pk_report_issue"
             app:persistent="false"
             app:title="@string/report_an_issue" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_app_version"
+            app:persistent="false"
+            tools:summary="@string/template_preferences_version" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

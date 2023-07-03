@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">PhotoPrism Галерея</string>
+    <string name="language_code">uk</string>
+
+    <string name="media_type_image">Фото</string>
+    <string name="media_type_animated">Анімація</string>
+    <string name="media_type_live">Живе фото</string>
+    <string name="media_type_video">Відео</string>
+    <string name="media_type_vector">Вектор</string>
+    <string name="media_type_sidecar">Допоміжний файл</string>
+    <string name="media_type_text">Текст</string>
+    <string name="media_type_other">Інший файл</string>
+    <string name="media_type_unknown">Невідомий тип</string>
+    <string name="select_media_file">Оберіть файл</string>
+    <string name="file_thumbnail">Мініатюра</string>
+    <string name="downloading_progress">Завантаження…</string>
+    <string name="cancel">Скасувати</string>
+    <string name="failed_to_download_file">Не вдалося завантажити файл</string>
+    <string name="select_content">Виберіть вміст</string>
+    <string name="library">Бібліотека</string>
+    <string name="preview_is_not_available">Перегляд недоступний</string>
+    <string name="share">Відправити</string>
+    <string name="download">Завантажити</string>
+    <string name="open_with">Відкрити за допомогою</string>
+    <string name="failed_to_load_the_preview">Не вдалося завантажити вміст</string>
+    <string name="failed_to_load_the_thumbnail">Не вдалося завантажити мініатюру</string>
+    <string name="today">Сьогодні</string>
+    <string name="search_the_library">Пошук у бібліотеці</string>
+    <string name="enter_the_query">Введіть запит</string>
+    <string name="media_type">Тип</string>
+    <string name="apply_search">Застосувати</string>
+    <string name="reset_search">Скинути</string>
+    <string name="error_you_have_to_connect_to_library">Спершу треба підключитися до бібліотеки</string>
+    <string name="library_root_url">Кореневий URL бібліотеки</string>
+    <string name="username_optional">Логін (опціонально)</string>
+    <string name="password_optional">Пароль (опціонально)</string>
+    <string name="connect_to_a_library">Підключення до бібліотеки</string>
+    <string name="connect">Підключитися</string>
+    <string name="template_error_inaccessible_library_url">Бібліотека недоступна: %1$s</string>
+    <string name="error_invalid_library_url_format">Неправильний формат URL. Переконайтеся, що вказано протокол</string>
+    <string name="error_library_requires_credentials">Потрібні логін і пароль</string>
+    <string name="error_invalid_password">Неправильний пароль</string>
+    <string name="template_error_failed_to_load_content">Не вдалося завантажити дані: %1$s</string>
+    <string name="error_library_not_accessible_try_again">Бібліотека недоступна. Перевірте підключення та спробуйте ще раз</string>
+    <string name="try_again">Повторити</string>
+    <string name="load_more">Завантажити більше</string>
+    <string name="template_started_download_file">Файл було збережено в Завантаження: %1$s</string>
+    <string name="error_storage_permission_is_required">Потрібен доступ до сховища</string>
+    <string name="add_search_bookmark">Нова закладка</string>
+    <string name="edit_search_bookmark">Закладка</string>
+    <string name="search_bookmark_name">Ім\'я</string>
+    <string name="save">Зберегти</string>
+    <string name="delete">Видалити</string>
+    <string name="search_bookmarks">Закладки</string>
+    <string name="template_error_failed_to_add_bookmark">Не вдалося додати закладку: %1$s</string>
+    <string name="template_error_failed_to_edit_bookmark">Не вдалося змінити закладку: %1$s</string>
+    <string name="template_error_failed_to_delete_bookmark">Не вдалося видалити закладку: %1$s</string>
+    <string name="using_search_filters">Використання фільтрів для пошуку</string>
+    <string name="some_types_are_not_available_when_selecting">Доступні тільки типи, які підтримує запитуючий застосунок</string>
+    <string name="include_private_content">Показати приватний вміст</string>
+    <string name="client_certificate_optional">Клієнтський сертифікат (опціонально)</string>
+    <string name="clear">Почистити</string>
+    <string name="how_to_use_client_certificate">Як використовувати клієнтські сертифікати</string>
+    <string name="p12_certificate_guide">
+        1. Завантажте на пристрій ваш сертифікат у форматі PKCS12 (.p12);\n\n
+        2. Встановіть сертифікат відкривши його через провідник. Оберіть тип \"VPN та сертифікат користувача\";\n\n
+        3. Поверніться до галереї та оберіть встановлений сертифікат.</string>
+    <string name="ok">ОК</string>
+    <string name="learn_more">Дізнатися більше</string>
+    <string name="preferences">Налаштування</string>
+    <string name="library_preferences">@string/library</string>
+    <string name="about">Про застосунок</string>
+    <string name="app_version">Версія</string>
+    <string name="report_an_issue">Повідомити про проблему</string>
+    <string name="template_error_failed_to_export_bookmarks">Не вдалося експортувати закладки: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Експорт</string>
+    <string name="export_bookmarks">Експорт закладок</string>
+    <string name="importt">Імпорт</string>
+    <string name="import_bookmarks">Імпорт закладок</string>
+    <string name="template_error_failed_to_import_bookmarks">Не вдалося імпортувати закладки: %1$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Успішно %1$s</string>
+    <string name="replace_current_bookmarks_with_saved">Замінити закладки збереженими раніше</string>
+    <string name="save_current_bookmarks_to_file">Зберегти закладки у файл</string>
+    <string name="your_bookmarks_will_be_replaced">Ваші поточні закладки буде перезаписано. Продовжити?</string>
+    <string name="continuee">Продовжити</string>
+    <string name="disconnect_from_library">Відключитися</string>
+    <string name="your_bookmarks_will_be_kept">Ваші закладки не пропадуть</string>
+    <string name="template_error_failed_to_disconnect">Не вдалося відключитися: %1$s</string>
+    <string name="play_video">Відтворення</string>
+    <string name="pause_video">Пауза</string>
+    <string name="no_media_found">Нічого не знайдено</string>
+    <string name="view_media">Перегляд</string>
+    <string name="open_in_web_viewer">Відкрити у веб-застосунку</string>
+    <string name="albums">Альбоми</string>
+    <string name="loading_albums_progress">Завантаження альбомів…</string>
+    <string name="reload_albums">Перезавантажити альбоми</string>
+    <string name="no_albums_found">Альбоми не знайдено</string>
+    <string name="clear_selection">Очистити вибір</string>
+    <string name="done_selecting">Готово</string>
+    <string name="template_current_of">%1$d з %2$d</string>
+    <string name="search_doesnt_fit_allowed_types">Запит суперечить дозволеним типам</string>
+    <string name="save_file_to_the_storage">Зберегти файл на пристрій</string>
+    <string name="share_the_file">Відправити файл</string>
+    <string name="download_is_completed">Завантаження завершено</string>
+    <string name="welcome_title">Вітаю в галереї</string>
+    <string name="welcome_text">Будь ласка, майте на увазі, що це не офіційний застосунок PhotoPrism.
+        Він підтримується Олегом\u00A0Корецьким (Radiokot) та не має відношення до основної команди.\n\nЯкщо
+        із застосунком щось не так, будь ласка, залиште відгук в Google Play,
+        <a href="#issue">відправте звіт про помилку</a> або напишіть на <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nДякую.
+    </string>
+    <string name="used_open_source_software">Використане ПЗ з відкритим кодом</string>
+    <string name="user_guides">Посібник користувача</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Олег Корецький та учасники з GitHub</string>
+</resources>

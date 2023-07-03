@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pk_library_root_url">library_root_url</string>
-    <string name="pk_library_disconnect">disconnect</string>
-    <string name="pk_report_issue">report_issue</string>
-    <string name="pk_app_version">app_version</string>
-    <string name="pk_export_bookmarks">export_bookmarks</string>
-    <string name="pk_import_bookmarks">import_bookmarks</string>
+    <string name="pk_library_root_url" translatable="false">library_root_url</string>
+    <string name="pk_library_disconnect" translatable="false">disconnect</string>
+    <string name="pk_report_issue" translatable="false">report_issue</string>
+    <string name="pk_app_version" translatable="false">app_version</string>
+    <string name="pk_export_bookmarks" translatable="false">export_bookmarks</string>
+    <string name="pk_import_bookmarks" translatable="false">import_bookmarks</string>
+    <string name="pk_os_licenses" translatable="false">os_licenses</string>
+    <string name="pk_guides" translatable="false">guides</string>
 </resources>

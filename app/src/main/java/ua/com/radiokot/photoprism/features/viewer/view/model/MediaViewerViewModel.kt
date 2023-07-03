@@ -5,23 +5,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.viewer.logic.WrappedMediaScannerConnection
+import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import java.io.File
+import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
-    private val mediaScannerConnection: WrappedMediaScannerConnection?,
+    val downloadMediaFileViewModel: DownloadMediaFileViewModel,
+    private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -39,11 +45,24 @@ class MediaViewerViewModel(
     val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isCancelDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDownloadCompletedIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private lateinit var downloadMediaFileViewModel: DownloadMediaFileViewModel
+    // From 0 to 100, negative for indeterminate.
+    val cancelDownloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
+
+    private val isStoragePermissionNeeded =
+        Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)
+
+    init {
+        // Make download button visibility opposite to the cancel download button.
+        isCancelDownloadButtonVisible.observeForever { isCancelDownloadButtonVisible ->
+            isDownloadButtonVisible.value = !isCancelDownloadButtonVisible
+        }
+    }
 
     fun initOnce(
-        downloadViewModel: DownloadMediaFileViewModel,
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
     ) {
@@ -54,8 +73,6 @@ class MediaViewerViewModel(
 
             return
         }
-
-        downloadMediaFileViewModel = downloadViewModel
 
         galleryMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
             .checkNotNull {
@@ -170,10 +187,20 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        eventsSubject.onNext(Event.OpenUrl(url = item.webViewUrl))
+        // Do not pass HTTP credentials to the web viewer,
+        // as it may be logger there.
+        val safeWebViewUrl = item.webViewUrl.toHttpUrl()
+            .withMaskedCredentials(placeholder = "")
+            .toString()
+
+        eventsSubject.onNext(Event.OpenWebViewer(url = safeWebViewUrl))
     }
 
     fun onDownloadClicked(position: Int) {
+        check(isDownloadButtonVisible.value == true) {
+            "The button can't be clicked while it is not visible"
+        }
+
         val item = galleryMediaRepository.itemsList[position]
 
         log.debug {
@@ -182,6 +209,21 @@ class MediaViewerViewModel(
         }
 
         startDownloadToExternalStorage(item)
+    }
+
+    fun onCancelDownloadClicked(position: Int) {
+        check(isCancelDownloadButtonVisible.value == true) {
+            "The button can't be clicked while it is not visible"
+        }
+
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onCancelDownloadClicked(): canceling_download"
+        }
+
+        backgroundMediaFileDownloadManager.cancel(item.uid)
+        unsubscribeFromDownloadProgress()
     }
 
     fun onPageClicked() {
@@ -204,7 +246,7 @@ class MediaViewerViewModel(
     private fun startDownloadToExternalStorage(media: GalleryMedia) {
         stateSubject.onNext(State.DownloadingToExternalStorage(media))
 
-        if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)) {
+        if (isStoragePermissionNeeded) {
             log.debug {
                 "startDownloadToExternalStorage(): must_check_storage_permission"
             }
@@ -243,6 +285,7 @@ class MediaViewerViewModel(
                     stateSubject.onNext(State.Idle)
                     eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
                 }
+
             else ->
                 error("Can't handle storage permission in $state state")
         }
@@ -266,10 +309,13 @@ class MediaViewerViewModel(
         when (stateSubject.value.checkNotNull()) {
             State.Sharing ->
                 downloadAndShareFile(file)
+
             State.OpeningIn ->
                 downloadAndOpenFile(file)
+
             is State.DownloadingToExternalStorage ->
                 downloadFileToExternalStorage(file)
+
             else ->
                 error("Can't select files in ${stateSubject.value} state")
         }
@@ -294,6 +340,29 @@ class MediaViewerViewModel(
     }
 
     private fun downloadAndShareFile(file: GalleryMedia.File) {
+        fun onSuccess(destinationFile: File) {
+            stateSubject.onNext(State.Idle)
+            eventsSubject.onNext(
+                Event.ShareDownloadedFile(
+                    downloadedFile = destinationFile,
+                    mimeType = file.mimeType,
+                    displayName = File(file.name).name
+                )
+            )
+        }
+
+        val externalStorageDownloadDestination = getExternalStorageDownloadDestination(file)
+        if (!isStoragePermissionNeeded && externalStorageDownloadDestination.exists()) {
+            log.debug {
+                "downloadAndShareFile(): use_existing_external_storage_download:" +
+                        "\nfile=$file," +
+                        "\nexternalStorageDownloadDestination=$externalStorageDownloadDestination"
+            }
+
+            onSuccess(externalStorageDownloadDestination)
+            return
+        }
+
         log.debug {
             "downloadAndShareFile(): start_downloading:" +
                     "\nfile=$file"
@@ -302,20 +371,34 @@ class MediaViewerViewModel(
         downloadMediaFileViewModel.downloadFile(
             file = file,
             destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
-            onSuccess = { destinationFile ->
-                stateSubject.onNext(State.Idle)
-                eventsSubject.onNext(
-                    Event.ShareDownloadedFile(
-                        downloadedFile = destinationFile,
-                        mimeType = file.mimeType,
-                        displayName = File(file.name).name
-                    )
-                )
-            }
+            onSuccess = ::onSuccess
         )
     }
 
     private fun downloadAndOpenFile(file: GalleryMedia.File) {
+        fun onSuccess(destinationFile: File) {
+            stateSubject.onNext(State.Idle)
+            eventsSubject.onNext(
+                Event.OpenDownloadedFile(
+                    downloadedFile = destinationFile,
+                    mimeType = file.mimeType,
+                    displayName = File(file.name).name,
+                )
+            )
+        }
+
+        val externalStorageDownloadDestination = getExternalStorageDownloadDestination(file)
+        if (!isStoragePermissionNeeded && externalStorageDownloadDestination.exists()) {
+            log.debug {
+                "downloadAndOpenFile(): use_existing_external_storage_download:" +
+                        "\nfile=$file," +
+                        "\nexternalStorageDownloadDestination=$externalStorageDownloadDestination"
+            }
+
+            onSuccess(externalStorageDownloadDestination)
+            return
+        }
+
         log.debug {
             "downloadAndOpenFile(): start_downloading:" +
                     "\nfile=$file"
@@ -324,45 +407,100 @@ class MediaViewerViewModel(
         downloadMediaFileViewModel.downloadFile(
             file = file,
             destination = File(internalDownloadsDir, INTERNALLY_DOWNLOADED_FILE_DEFAULT_NAME),
-            onSuccess = { destinationFile ->
-                stateSubject.onNext(State.Idle)
-                eventsSubject.onNext(
-                    Event.OpenDownloadedFile(
-                        downloadedFile = destinationFile,
-                        mimeType = file.mimeType,
-                        displayName = File(file.name).name,
-                    )
-                )
-            }
+            onSuccess = ::onSuccess
         )
     }
 
     private fun downloadFileToExternalStorage(file: GalleryMedia.File) {
+        val destinationFile = getExternalStorageDownloadDestination(file)
+
+        val progressObservable = backgroundMediaFileDownloadManager.enqueue(
+            file = file,
+            destination = destinationFile,
+        )
+
         log.debug {
-            "downloadFileToExternalStorage(): start_downloading:" +
-                    "\nfile=$file"
+            "downloadFileToExternalStorage(): enqueued_download:" +
+                    "\nfile=$file," +
+                    "\ndestination=$destinationFile"
         }
 
-        downloadMediaFileViewModel.downloadFile(
-            file = file,
-            destination = File(externalDownloadsDir, File(file.name).name),
-            onSuccess = { destinationFile ->
-                stateSubject.onNext(State.Idle)
-                eventsSubject.onNext(
-                    Event.ShowSuccessfulDownloadMessage(
-                        fileName = destinationFile.name,
-                    )
-                )
+        subscribeToMediaBackgroundDownloadStatus(progressObservable)
 
-                mediaScannerConnection?.scanFile(
-                    destinationFile.path,
-                    file.mimeType,
-                )?.also {
-                    log.debug { "downloadFileToExternalStorage(): notified_media_scanner" }
-                }
-            }
+        stateSubject.onNext(State.Idle)
+        eventsSubject.onNext(
+            Event.ShowStartedDownloadMessage(
+                destinationFileName = destinationFile.name,
+            )
         )
     }
+
+    fun onPageChanged(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onPageChanged(): page_changed:" +
+                    "\nitem=$item"
+        }
+
+        subscribeToMediaBackgroundDownloadStatus(
+            statusObservable = backgroundMediaFileDownloadManager.getStatus(item.uid)
+        )
+    }
+
+    private var backgroundDownloadProgressDisposable: Disposable? = null
+    private fun subscribeToMediaBackgroundDownloadStatus(
+        statusObservable: Observable<out BackgroundMediaFileDownloadManager.Status>,
+    ) {
+        backgroundDownloadProgressDisposable?.dispose()
+        backgroundDownloadProgressDisposable = statusObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                // Default state.
+                isCancelDownloadButtonVisible.value = false
+                isDownloadCompletedIconVisible.value = false
+            }
+            .subscribeBy(
+                onNext = { status ->
+                    isCancelDownloadButtonVisible.value =
+                        status is BackgroundMediaFileDownloadManager.Status.InProgress
+                    isDownloadCompletedIconVisible.value =
+                        status is BackgroundMediaFileDownloadManager.Status.Ended.Completed
+
+                    if (status is BackgroundMediaFileDownloadManager.Status.InProgress) {
+                        cancelDownloadButtonProgressPercent.value = status.percent.roundToInt()
+                    }
+                }
+            )
+            .autoDispose(this)
+    }
+
+    private fun unsubscribeFromDownloadProgress() {
+        backgroundDownloadProgressDisposable?.dispose()
+    }
+
+    private fun getExternalStorageDownloadDestination(file: GalleryMedia.File): File {
+        val fileByExactName = File(externalDownloadsDir, File(file.name).name)
+
+        return if (!fileByExactName.exists() || fileByExactName.canRead() && fileByExactName.canWrite())
+        // Return a file with the exact name (as is) if it doesn't exist or accessible if it does.
+            fileByExactName
+        else
+        // Otherwise return a file with a random unique name suffix.
+            File(
+                externalDownloadsDir,
+                File(file.name)
+                    .let {
+                        it.nameWithoutExtension +
+                                "_${System.currentTimeMillis()}" +
+                                if (it.extension.isNotEmpty())
+                                    ".${it.extension}"
+                                else
+                                    ""
+                    }
+            )
+    }
+
 
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
@@ -381,8 +519,8 @@ class MediaViewerViewModel(
 
         object CheckStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
-        class ShowSuccessfulDownloadMessage(val fileName: String) : Event
-        class OpenUrl(val url: String) : Event
+        class ShowStartedDownloadMessage(val destinationFileName: String) : Event
+        class OpenWebViewer(val url: String) : Event
     }
 
     sealed interface State {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="search_bookmarks">
-        <item quantity="zero">bookmarks</item>
-        <item quantity="one">bookmark</item>
-        <item quantity="other">bookmarks</item>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="zero">imported %1$d bookmarks</item>
+        <item quantity="one">imported %1$d bookmark</item>
+        <item quantity="other">imported %1$d bookmarks</item>
     </plurals>
 </resources>

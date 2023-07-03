@@ -4,6 +4,7 @@
     android:id="@+id/list_item_gallery_day_header"
     android:layout_width="match_parent"
     android:layout_height="48dp"
+    android:focusable="false"
     android:gravity="center_vertical"
     android:paddingHorizontal="12dp"
     android:textAppearance="@style/TextAppearance.Material3.LabelLarge"

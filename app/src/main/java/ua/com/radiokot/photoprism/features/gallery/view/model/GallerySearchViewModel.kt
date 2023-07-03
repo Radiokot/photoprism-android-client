@@ -427,7 +427,7 @@ class GallerySearchViewModel(
                     "\nurl=$searchFiltersGuideUrl"
         }
 
-        eventsSubject.onNext(Event.OpenUrl(url = searchFiltersGuideUrl))
+        eventsSubject.onNext(Event.OpenSearchFiltersGuide(url = searchFiltersGuideUrl))
     }
 
     sealed interface State {
@@ -442,6 +442,6 @@ class GallerySearchViewModel(
             val existingBookmark: SearchBookmark?,
         ) : Event
 
-        class OpenUrl(val url: String) : Event
+        class OpenSearchFiltersGuide(val url: String) : Event
     }
 }

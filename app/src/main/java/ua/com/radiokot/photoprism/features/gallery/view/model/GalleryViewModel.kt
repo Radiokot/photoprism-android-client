@@ -11,7 +11,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.isSameDayAs
 import ua.com.radiokot.photoprism.extension.isSameMonthAs
@@ -19,7 +21,9 @@ import ua.com.radiokot.photoprism.extension.isSameYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.io.File
@@ -28,7 +32,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
 import java.util.Date
-import java.util.Locale
+import kotlin.collections.set
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -37,6 +41,7 @@ class GalleryViewModel(
     private val dateHeaderMonthYearDateFormat: DateFormat,
     private val dateHeaderMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
+    private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -76,17 +81,20 @@ class GalleryViewModel(
         val allowedMediaTypes: Set<GalleryMedia.TypeName>? = when {
             requestedMimeType == null ->
                 null
+
             requestedMimeType.startsWith("image/") ->
                 setOf(
                     GalleryMedia.TypeName.IMAGE,
                     GalleryMedia.TypeName.ANIMATED,
                     GalleryMedia.TypeName.VECTOR
                 )
+
             requestedMimeType.startsWith("video/") ->
                 setOf(
                     GalleryMedia.TypeName.VIDEO,
                     GalleryMedia.TypeName.LIVE,
                 )
+
             else ->
                 null
         }
@@ -156,6 +164,7 @@ class GalleryViewModel(
                     )
                 )
             }
+
             State.Viewing -> {
                 currentSearchConfig = null
                 mediaRepositoryChanges.onNext(
@@ -192,7 +201,7 @@ class GalleryViewModel(
                     val searchMediaRepository = galleryMediaRepositoryFactory
                         .getForSearch(searchConfigToApply)
 
-                    fastScrollViewModel.reset()
+                    fastScrollViewModel.reset(isInitiatedByUser = false)
 
                     if (searchMediaRepository != mediaRepositoryChanges.value?.repository) {
                         mediaRepositoryChanges.onNext(
@@ -202,10 +211,12 @@ class GalleryViewModel(
                         )
                     }
                 }
+
                 GallerySearchViewModel.State.NoSearch -> {
-                    fastScrollViewModel.reset()
+                    fastScrollViewModel.reset(isInitiatedByUser = false)
                     resetRepositoryToInitial()
                 }
+
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
                     // Nothing to change.
                 }
@@ -227,41 +238,18 @@ class GalleryViewModel(
 
             when (event) {
                 is GalleryFastScrollViewModel.Event.DraggingAtMonth -> {
-                    val searchConfigForMonth: SearchConfig? =
-                        if (event.isTopMonth)
-                        // For top month we don't need to alter the "before" date,
-                        // if altered the result is the same as if the date is not set at all.
-                            currentSearchConfig
-                        else
-                            (currentSearchConfig ?: SearchConfig.DEFAULT)
-                                .copy(before = event.month.nextDayAfter)
+                    handleFastScroll(
+                        month = event.month,
+                        isScrolledToTheTop = event.isTopMonth,
+                    )
+                }
 
-                    // Always reset the scroll.
-                    // If the list is scrolled manually, setting fast scroll to the same month
-                    // must bring it back to the top.
-                    eventsSubject.onNext(Event.ResetScroll)
-
-                    // We need to change the repo if scrolled to the top month
-                    // (return to initial state before scrolling)
-                    // or if the search config for the month differs from the current.
-                    if (event.isTopMonth || searchConfigForMonth != currentSearchConfig) {
-                        log.debug {
-                            "subscribeToFastScroll(): switching_to_month_search_config:" +
-                                    "\nconfig=$searchConfigForMonth"
-                        }
-
-                        if (searchConfigForMonth != null) {
-                            val repositoryForMonth =
-                                galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
-
-                            mediaRepositoryChanges.onNext(
-                                MediaRepositoryChange.FastScroll(
-                                    repositoryForMonth
-                                )
-                            )
-                        } else {
-                            resetRepositoryToInitial()
-                        }
+                is GalleryFastScrollViewModel.Event.Reset -> {
+                    if (event.isInitiatedByUser) {
+                        handleFastScroll(
+                            month = null,
+                            isScrolledToTheTop = true,
+                        )
                     }
                 }
             }
@@ -271,6 +259,52 @@ class GalleryViewModel(
                         "\nevent=$event"
             }
         }.autoDispose(this)
+    }
+
+    /**
+     * @param month current month the fast scroll is staying, if any
+     * @param isScrolledToTheTop whether the fast scroll is at the top
+     */
+    private fun handleFastScroll(
+        month: GalleryMonth?,
+        isScrolledToTheTop: Boolean,
+    ) {
+        val searchConfigForMonth: SearchConfig? =
+            if (isScrolledToTheTop || month == null)
+            // For top month we don't need to alter the "before" date,
+            // if altered the result is the same as if the date is not set at all.
+                currentSearchConfig
+            else
+                (currentSearchConfig ?: SearchConfig.DEFAULT)
+                    .copy(before = month.nextDayAfter)
+
+        // Always reset the scroll.
+        // If the list is scrolled manually, setting fast scroll to the same month
+        // must bring it back to the top.
+        eventsSubject.onNext(Event.ResetScroll)
+
+        // We need to change the repo if scrolled to the top month
+        // (return to initial state before scrolling)
+        // or if the search config for the month differs from the current.
+        if (isScrolledToTheTop || searchConfigForMonth != currentSearchConfig) {
+            log.debug {
+                "subscribeToFastScroll(): switching_to_month_search_config:" +
+                        "\nconfig=$searchConfigForMonth"
+            }
+
+            if (searchConfigForMonth != null) {
+                val repositoryForMonth =
+                    galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+
+                mediaRepositoryChanges.onNext(
+                    MediaRepositoryChange.FastScroll(
+                        repositoryForMonth
+                    )
+                )
+            } else {
+                resetRepositoryToInitial()
+            }
+        }
     }
 
     private fun subscribeToRepositoryChanges() {
@@ -334,6 +368,10 @@ class GalleryViewModel(
                     is NoRouteToHostException,
                     is SocketTimeoutException ->
                         Error.LibraryNotAccessible
+
+                    is InvalidCredentialsException ->
+                        Error.CredentialsHaveBeenChanged
+
                     else ->
                         Error.LoadingFailed(error.shortSummary)
                 }
@@ -359,8 +397,10 @@ class GalleryViewModel(
             when {
                 galleryMediaList.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
                     Error.SearchDoesntFitAllowedTypes
+
                 galleryMediaList.isEmpty() && !repository.isNeverUpdated ->
                     Error.NoMediaFound
+
                 else ->
                     // Dismiss the main error when there are items.
                     null
@@ -389,7 +429,7 @@ class GalleryViewModel(
 
                     newListItems.add(
                         GalleryListItem.Header.month(
-                            text = formattedMonth,
+                            text = formattedMonth.capitalized(),
                         )
                     )
                 }
@@ -408,12 +448,7 @@ class GalleryViewModel(
                                     dateHeaderDayYearDateFormat.format(takenAt)
 
                             GalleryListItem.Header.day(
-                                text = formattedDate.replaceFirstChar {
-                                    if (it.isLowerCase())
-                                        it.titlecase(Locale.getDefault())
-                                    else
-                                        it.toString()
-                                },
+                                text = formattedDate.capitalized(),
                             )
                         }
                     )
@@ -658,6 +693,43 @@ class GalleryViewModel(
         )
     }
 
+    fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int) {
+        // Find the media list item index considering there are other item types.
+        var mediaListItemIndex = -1
+        var listItemIndex = 0
+        var mediaItemsCounter = 0
+        for (item in itemsList.value ?: emptyList()) {
+            if (item is GalleryListItem.Media) {
+                mediaItemsCounter++
+            }
+            if (mediaItemsCounter == lastViewedMediaIndex + 1) {
+                mediaListItemIndex = listItemIndex
+                break
+            }
+            listItemIndex++
+        }
+
+        // Ensure that the last viewed media is visible in the gallery list.
+        if (mediaListItemIndex >= 0) {
+            log.debug {
+                "onViewerReturnedLastViewedMediaIndex(): ensuring_media_list_item_visibility:" +
+                        "\nmediaIndex=$lastViewedMediaIndex" +
+                        "\nmediaListItemIndex=$mediaListItemIndex"
+            }
+
+            eventsSubject.onNext(
+                Event.EnsureListItemVisible(
+                    listItemIndex = mediaListItemIndex,
+                )
+            )
+        } else {
+            log.error {
+                "onViewerReturnedLastViewedMediaIndex(): cant_find_media_list_item_index:" +
+                        "\nmediaIndex=$lastViewedMediaIndex"
+            }
+        }
+    }
+
     fun onMainErrorRetryClicked() {
         update()
     }
@@ -720,11 +792,64 @@ class GalleryViewModel(
             val areActionsEnabled: Boolean,
         ) : Event
 
+        /**
+         * Reset the scroll (to the top) and the infinite scrolling.
+         */
         object ResetScroll : Event
 
         class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event
+
+        /**
+         * Ensure that the given item of the [itemsList] is visible on the screen.
+         */
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
+
+        object GoToEnvConnection : Event
+    }
+
+    fun onScreenResumedAfterMovedBackWithBackButton() {
+        log.debug {
+            "onScreenResumedAfterMovedBackWithBackButton(): invalidate_all_cached_repos"
+        }
+
+        // When resuming from the background, invalidate all the cached repos
+        // to load the fresh data.
+        galleryMediaRepositoryFactory.invalidateAllCached()
+        update()
+
+        // Reset the scroll and, more importantly, pagination
+        // as the number of list items may decrease.
+        eventsSubject.onNext(Event.ResetScroll)
+    }
+
+    fun onErrorDisconnectClicked() {
+        log.debug { "onErrorDisconnectClicked(): begin_disconnect" }
+
+        disconnectFromEnvUseCase
+            .perform()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onComplete = {
+                    eventsSubject.onNext(Event.GoToEnvConnection)
+                },
+                onError = { error ->
+                    log.error(error) {
+                        "disconnect(): error_occurred"
+                    }
+
+                    eventsSubject.onNext(
+                        Event.ShowFloatingError(
+                            Error.LoadingFailed(
+                                shortSummary = error.shortSummary
+                            )
+                        )
+                    )
+                }
+            )
+            .autoDispose(this)
     }
 
     sealed interface State {
@@ -752,6 +877,7 @@ class GalleryViewModel(
         class LoadingFailed(val shortSummary: String) : Error
         object NoMediaFound : Error
         object SearchDoesntFitAllowedTypes : Error
+        object CredentialsHaveBeenChanged : Error
     }
 
     private sealed class MediaRepositoryChange(
