@@ -101,4 +101,13 @@
     <string name="search_doesnt_fit_allowed_types">ο όρος αναζήτησης δεν ταυτίζεται με τους επιτρεπόμενους τύπους</string>
     <string name="save_file_to_the_storage">αποθήκευση αρχείου στο δίσκο</string>
     <string name="share_the_file">κοινοποίηση αρχείου</string>
+    <string name="welcome_title">Καλώς ήρθατε στην Gallery</string>
+    <string name="welcome_text">Λάβετε υπόψη ότι αυτή η εφαρμογή δεν είναι ένας επίσημος PhotoPrism client.
+        Συντηρείται απο τον Oleg\u00A0Koretsky (Radiokot) και δεν συσχετίζεται με την επίσημη ομάδα.\n\nΑν
+        κάτι πάει λάθος παρακαλώ αφήστε ενα σχόλιο στο Google Play,
+        <a href="#issue">υποβάλετε μια αναφορά σφάλματος</a> ή στείλτε ενα μέιλ στο <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nΕυχαριστώ.
+    </string>
+    <string name="used_open_source_software">Χρησιμοποιηθέντα προγράμματα ανοιχτού κώδικα</string>
+    <string name="user_guides">Οδηγός χρήσης</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky και συνεισφέροντες στο GitHub</string>
 </resources>
