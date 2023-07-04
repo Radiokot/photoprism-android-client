@@ -102,4 +102,15 @@
     <string name="search_doesnt_fit_allowed_types">Arama sorgusu, izin verilen türlere uymuyor</string>
     <string name="save_file_to_the_storage">Dosyayı cihaz hafızasına kaydet</string>
     <string name="share_the_file">Dosyayı paylaş</string>
+    <string name="download_is_completed">İndirme tamamlandı</string>
+    <string name="welcome_title">Galeriye hoş geldiniz</string>
+    Uygulamayla ilgili bir sorun varsa, lütfen Google Play'de geri bildirim bırakın, bir hata raporu gönderin veya oleg@radiokot.com.ua adresine bir mektup gönderin.
+    <string name="welcome_text">Lütfen bunun resmi bir PhotoPrism uygulaması olmadığını unutmayın.
+        Oleg\u00A0Koretsky (Radiokot) tarafından sürdürülür ve çekirdek ekiple hiçbir ilişkisi yoktur.\n\nUygulamayla
+        ilgili bir sorun varsa, lütfen Google Play'de geri bildirim bırakın,
+        <a href="#issue">bir hata raporu</a> gönderin veya <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a> adresine bir mektup gönderin.\n\nTeşekkür ederim.
+    </string>
+    <string name="used_open_source_software">Kullanılan açık kaynaklı yazılım</string>
+    <string name="user_guides">Kullanici rehberi</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky, GitHub\'dan katkı sağlayanlar</string>
 </resources>
