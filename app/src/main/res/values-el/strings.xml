@@ -101,6 +101,7 @@
     <string name="search_doesnt_fit_allowed_types">ο όρος αναζήτησης δεν ταυτίζεται με τους επιτρεπόμενους τύπους</string>
     <string name="save_file_to_the_storage">αποθήκευση αρχείου στο δίσκο</string>
     <string name="share_the_file">κοινοποίηση αρχείου</string>
+    <string name="download_is_completed">Η λήψη ολοκληρώθηκε</string>
     <string name="welcome_title">Καλώς ήρθατε στην Gallery</string>
     <string name="welcome_text">Λάβετε υπόψη ότι αυτή η εφαρμογή δεν είναι ένας επίσημος PhotoPrism client.
         Συντηρείται απο τον Oleg\u00A0Koretsky (Radiokot) και δεν συσχετίζεται με την επίσημη ομάδα.\n\nΑν
