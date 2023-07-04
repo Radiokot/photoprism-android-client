@@ -3,6 +3,7 @@
     <string name="language_code">zh</string>
 
     <string name="media_type_image">图片</string>
+    <string name="media_type_raw" translatable="false">RAW</string>
     <string name="media_type_animated">动图</string>
     <string name="media_type_live">现场照片</string>
     <string name="media_type_video">视频</string>
@@ -102,4 +103,15 @@
     <string name="search_doesnt_fit_allowed_types">未支持的查询类型</string>
     <string name="save_file_to_the_storage">将文件保存至本地</string>
     <string name="share_the_file">分享文件</string>
+    <string name="download_is_completed">下载完成</string>
+    <string name="welcome_title">欢迎使用相册</string>
+    <string name="welcome_text">此应用并非PhotoPrism官方客户端.
+        它由 Oleg\u00A0Koretsky (Radiokot) 维护且与官方团队无关\n\nIf
+        如果在使用过程中遇到问题, 请在 Google Play 留下反馈,
+        <a href="#issue">报告漏洞</a> 或发送邮件至 <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\n谢谢.
+    </string>
+    <string name="used_open_source_software">使用的开源程序</string>
+    <string name="user_guides">用户指引</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky 与其他 GitHub 贡献者</string>
+
 </resources>
