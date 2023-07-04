@@ -106,7 +106,7 @@
     <string name="welcome_title">Benvenuti nella galleria</string>
     <string name="welcome_text">Si noti che questa applicazione non è un client ufficiale di PhotoPrism.
         È gestito da Oleg\u00A0Koretsky (Radiokot) e non ha alcuna relazione con il team principale.\n\nSe
-        qualcosa non va con l'applicazione, lasciate un feedback su Google Play,
+        qualcosa non va con l\'applicazione, lasciate un feedback su Google Play,
         <a href="#issue">inviate una segnalazione di bug</a> o una lettera a <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nGrazie.
     </string>
     <string name="used_open_source_software">Software open-source utilizzato</string>
