@@ -3,7 +3,6 @@
     <string name="language_code">zh</string>
 
     <string name="media_type_image">图片</string>
-    <string name="media_type_raw" translatable="false">RAW</string>
     <string name="media_type_animated">动图</string>
     <string name="media_type_live">现场照片</string>
     <string name="media_type_video">视频</string>
