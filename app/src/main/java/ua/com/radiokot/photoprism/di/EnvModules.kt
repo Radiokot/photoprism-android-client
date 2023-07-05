@@ -13,7 +13,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.util.KeyChainClientCertificateKeyManager
 import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
-import ua.com.radiokot.photoprism.api.util.SessionRenewalInterceptor
+import ua.com.radiokot.photoprism.api.util.SynchronizedSessionRenewalInterceptor
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
@@ -63,7 +63,7 @@ val envModules = listOf(
                     val renewal = sessionAwareness.renewal
 
                     builder.addInterceptor(
-                        SessionRenewalInterceptor(
+                        SynchronizedSessionRenewalInterceptor(
                             authProvider = renewal.authProvider,
                             onSessionRenewed = renewal.onSessionRenewed,
                             sessionCreator = renewal.sessionCreator,
