@@ -7,4 +7,11 @@ class InvalidCredentialsException : IOException()
 class EnvIsNotPublicException : IOException()
 
 class SessionExpiredException(sessionId: String) :
-    IOException("The session '${sessionId.substring(0..(sessionId.length.coerceAtMost(5)))}...' has expired")
+    IOException(
+        "The session '${
+            sessionId.substring(
+                0,
+                sessionId.length.coerceAtMost(5)
+            )
+        }...' has expired"
+    )
