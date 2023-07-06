@@ -1,0 +1,18 @@
+Added:
+- A welcome screen clarifying that this is not an official PhotoPrism client
+- Ability to see the user guide in the preferences
+- Ability to see the list of used open-source software in the preferences
+
+Fixed:
+- Rare crash when the app starts while not being visible. Did you know this is possible?
+- Keeping a corrupted file in Downloads if the download resulted in an HTTP error
+- Not previewing or downloading files after drop of all sessions on the server
+- Failing download of a file already existing in Downloads but without r/w permission
+- Web viewer back button not responding when browsing GitHub
+- Creating multiple sessions during the renewal
+
+Changed:
+- Relicensed the source code over the compatible GPLv3 license
+- Replaced the root URL guide with the complete connection guide
+- App version info in the preferences now additionally shows the app name and the build year.
+Furthermore, it mentions the author and contributors and the source code is opened if you click it

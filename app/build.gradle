@@ -22,8 +22,8 @@ android {
         applicationId "ua.com.radiokot.photoprism"
         minSdk 21
         targetSdk 33
-        versionCode 20
-        versionName "1.12.0"
+        versionCode 21
+        versionName "1.13.0"
 
         resConfigs "en", "tr", "el", "it", "zh", "ru", "uk"
 

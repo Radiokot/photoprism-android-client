@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.13.0] - 2023-07-06
 
 ### Added
 - A welcome screen clarifying that this is not an official PhotoPrism client
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Not previewing or downloading files after drop of all sessions on the server
 - Failing download of a file already existing in Downloads but without r/w permission
 - Web viewer back button not responding when browsing GitHub
+- Creating multiple sessions during the renewal
 
 ### Changed
 - Relicensed the source code over the compatible GPLv3 license 
@@ -222,7 +223,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...HEAD
+[1.13.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...1.13.0(21)
 [1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
 [1.11.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.10.0(18)...1.11.0(19)
 [1.10.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.9.0(17)...1.10.0(18)
