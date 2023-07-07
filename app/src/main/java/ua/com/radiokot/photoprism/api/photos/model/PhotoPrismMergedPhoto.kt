@@ -16,6 +16,8 @@ constructor(
     val height: Int,
     @JsonProperty("TakenAt")
     val takenAt: String,
+    @JsonProperty("TakenAtLocal")
+    val takenAtLocal: String,
     @JsonProperty("Type")
     val type: String,
     @JsonProperty("Name")
