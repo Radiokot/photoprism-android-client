@@ -35,7 +35,7 @@ import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
         val thumbnailUrl: String,
-        val name: String,
+        val title: String,
         @DrawableRes
         val mediaTypeIcon: Int?,
         @StringRes
@@ -52,7 +52,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             isMediaSelected: Boolean,
         ) : this(
             thumbnailUrl = source.smallThumbnailUrl,
-            name = source.name,
+            title = source.title,
             mediaTypeIcon =
             if (source.media !is GalleryMedia.TypeData.Image)
                 GalleryMediaTypeResources.getIcon(source.media.typeName)
@@ -125,7 +125,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
             override fun bindView(item: Media, payloads: List<Any>) {
                 with(view.imageView) {
-                    contentDescription = item.name
+                    contentDescription = item.title
 
                     picasso
                         .load(item.thumbnailUrl)

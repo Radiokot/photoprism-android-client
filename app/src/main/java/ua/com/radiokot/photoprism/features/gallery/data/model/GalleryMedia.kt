@@ -31,8 +31,10 @@ class GalleryMedia(
     val height: Int,
     // TODO: Replace with local.
     val takenAt: Date,
-    // TODO: Replace with title.
-    val name: String,
+    /**
+     * Human-friendly title (PhotoPrism "Title").
+     */
+    val title: String,
     /**
      * Direct URL to the small square static thumbnail.
      */
@@ -63,7 +65,7 @@ class GalleryMedia(
         width = source.width,
         height = source.height,
         takenAt = parsePhotoPrismDate(source.takenAt)!!,
-        name = source.name,
+        title = source.title,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
         files = source.files.map { photoPrismFile ->

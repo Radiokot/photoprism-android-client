@@ -20,8 +20,8 @@ constructor(
     val takenAtLocal: String,
     @JsonProperty("Type")
     val type: String,
-    @JsonProperty("Name")
-    val name: String,
+    @JsonProperty("Title")
+    val title: String,
     @JsonProperty("Files")
     val files: List<File>,
 ) {
