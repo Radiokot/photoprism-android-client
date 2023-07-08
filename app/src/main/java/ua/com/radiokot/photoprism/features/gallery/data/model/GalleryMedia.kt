@@ -6,19 +6,46 @@ import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
-import java.util.*
+import java.util.Date
 
+/**
+ * A merged gallery media entry.
+ */
 class GalleryMedia(
+    /**
+     * Type-specific media data.
+     */
     val media: TypeData,
+    /**
+     * Unique ID of the merged entry.
+     * But because of PhotoPrism pagination strategy, it may be duplicated on adjacent pages.
+     */
     val uid: String,
+    /**
+     * Original graphics width.
+     */
     val width: Int,
+    /**
+     * Original graphics height.
+     */
     val height: Int,
+    // TODO: Replace with local.
     val takenAt: Date,
+    // TODO: Replace with title.
     val name: String,
+    /**
+     * Direct URL to the small square static thumbnail.
+     */
     val smallThumbnailUrl: String,
+    /**
+     * Direct URL to open this media in the web viewer.
+     */
     val webViewUrl: String,
     files: List<File>,
 ) {
+    /**
+     * Files associated with this media.
+     */
     var files: List<File> = files
         private set
 
@@ -154,21 +181,27 @@ class GalleryMedia(
                     TypeName.IMAGE.value -> Image(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
+
                     TypeName.RAW.value -> Raw(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
+
                     TypeName.ANIMATED.value -> Animated(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
+
                     TypeName.LIVE.value -> Live(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
+
                     TypeName.VIDEO.value -> Video(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
                     )
+
                     TypeName.VECTOR.value -> Vector(
                         hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
                     )
+
                     TypeName.SIDECAR.value -> Sidecar
                     TypeName.TEXT.value -> Text
                     TypeName.OTHER.value -> Other
@@ -179,6 +212,9 @@ class GalleryMedia(
 
     @Parcelize
     class File(
+        /**
+         * Filename with the full path.
+         */
         val name: String,
         /**
          * Unique ID of the file.
@@ -190,7 +226,13 @@ class GalleryMedia(
         val mediaUid: String,
         val mimeType: String,
         val sizeBytes: Long,
+        /**
+         * Direct URL to the small square static thumbnail.
+         */
         val smallThumbnailUrl: String,
+        /**
+         * Direct URL download this file.
+         */
         val downloadUrl: String,
     ) : Parcelable {
         constructor(
