@@ -1,9 +1,14 @@
 package ua.com.radiokot.photoprism.extension
 
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
-fun Date.isSameDayAs(other: Date): Boolean {
-    val calendar = Calendar.getInstance()
+private fun getUtcCalendar() =
+    Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+
+fun Date.isSameUtcDayAs(other: Date): Boolean {
+    val calendar = getUtcCalendar()
     calendar.time = this
     val thisYear = calendar[Calendar.YEAR]
     val thisDay = calendar[Calendar.DAY_OF_YEAR]
@@ -14,8 +19,8 @@ fun Date.isSameDayAs(other: Date): Boolean {
     return thisYear == otherYear && thisDay == otherDay
 }
 
-fun Date.isSameMonthAs(other: Date): Boolean {
-    val calendar = Calendar.getInstance()
+fun Date.isSameUtcMonthAs(other: Date): Boolean {
+    val calendar = getUtcCalendar()
     calendar.time = this
     val thisYear = calendar[Calendar.YEAR]
     val thisMonth = calendar[Calendar.MONTH]
@@ -26,8 +31,8 @@ fun Date.isSameMonthAs(other: Date): Boolean {
     return thisYear == otherYear && thisMonth == otherMonth
 }
 
-fun Date.isSameYearAs(other: Date): Boolean {
-    val calendar = Calendar.getInstance()
+fun Date.isSameUtcYearAs(other: Date): Boolean {
+    val calendar = getUtcCalendar()
     calendar.time = this
     val thisYear = calendar[Calendar.YEAR]
     calendar.time = other

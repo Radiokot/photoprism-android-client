@@ -157,7 +157,7 @@ class SimpleGalleryMediaRepository(
                 order = PhotoPrismOrder.NEWEST
             )
                 .firstOrNull()
-                ?.takenAt
+                ?.takenAtLocal
                 ?.let(::parsePhotoPrismDate)
         }.toMaybe()
 
@@ -169,7 +169,7 @@ class SimpleGalleryMediaRepository(
                 order = PhotoPrismOrder.OLDEST
             )
                 .firstOrNull()
-                ?.takenAt
+                ?.takenAtLocal
                 ?.let(::parsePhotoPrismDate)
         }.toMaybe()
 
@@ -186,7 +186,7 @@ class SimpleGalleryMediaRepository(
         page.items.forEach { item ->
             // Precise post filter by the "before" date, workaround for PhotoPrism filtering.
             // Do not add items, taken at or after the specified time.
-            if (params.postFilterBefore != null && item.takenAt >= params.postFilterBefore) {
+            if (params.postFilterBefore != null && item.takenAtLocal >= params.postFilterBefore) {
                 return@forEach
             }
 

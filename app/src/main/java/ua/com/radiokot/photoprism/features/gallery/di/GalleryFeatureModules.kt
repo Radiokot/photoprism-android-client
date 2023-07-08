@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.setUtcTimeZone
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
@@ -45,10 +46,10 @@ import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-private const val MONTH_DATE_FORMAT = "month"
-private const val MONTH_YEAR_DATE_FORMAT = "month-year"
-private const val DAY_DATE_FORMAT = "day"
-private const val DAY_YEAR_DATE_FORMAT = "day-year"
+private const val UTC_MONTH_DATE_FORMAT = "utc-month"
+private const val UTC_MONTH_YEAR_DATE_FORMAT = "utc-month-year"
+private const val UTC_DAY_DATE_FORMAT = "utc-day"
+private const val UTC_DAY_YEAR_DATE_FORMAT = "utc-day-year"
 
 class ImportSearchBookmarksUseCaseParams(
     val fileUri: Uri,
@@ -58,32 +59,32 @@ val galleryFeatureModules: List<Module> = listOf(
     module {
         factory { Locale.getDefault() }
 
-        factory(named(MONTH_DATE_FORMAT)) {
+        factory(named(UTC_MONTH_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "MMMM"),
                 get<Locale>()
-            )
+            ).setUtcTimeZone()
         } bind java.text.DateFormat::class
 
-        factory(named(MONTH_YEAR_DATE_FORMAT)) {
+        factory(named(UTC_MONTH_YEAR_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
                 get<Locale>()
-            )
+            ).setUtcTimeZone()
         } bind java.text.DateFormat::class
 
-        factory(named(DAY_DATE_FORMAT)) {
+        factory(named(UTC_DAY_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "EEMMMMd"),
                 get<Locale>()
-            )
+            ).setUtcTimeZone()
         } bind java.text.DateFormat::class
 
-        factory(named(DAY_YEAR_DATE_FORMAT)) {
+        factory(named(UTC_DAY_YEAR_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
                 get<Locale>()
-            )
+            ).setUtcTimeZone()
         } bind java.text.DateFormat::class
     },
 
@@ -166,18 +167,18 @@ val galleryFeatureModules: List<Module> = listOf(
 
             viewModel {
                 GalleryFastScrollViewModel(
-                    bubbleMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
-                    bubbleMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
+                    bubbleMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
+                    bubbleMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
                 )
             }
 
             viewModel {
                 GalleryViewModel(
                     galleryMediaRepositoryFactory = get(),
-                    dateHeaderDayYearDateFormat = get(named(DAY_YEAR_DATE_FORMAT)),
-                    dateHeaderDayDateFormat = get(named(DAY_DATE_FORMAT)),
-                    dateHeaderMonthYearDateFormat = get(named(MONTH_YEAR_DATE_FORMAT)),
-                    dateHeaderMonthDateFormat = get(named(MONTH_DATE_FORMAT)),
+                    dateHeaderUtcDayYearDateFormat = get(named(UTC_DAY_YEAR_DATE_FORMAT)),
+                    dateHeaderUtcDayDateFormat = get(named(UTC_DAY_DATE_FORMAT)),
+                    dateHeaderUtcMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
+                    dateHeaderUtcMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                     downloadMediaFileViewModel = get(),
                     searchViewModel = get(),

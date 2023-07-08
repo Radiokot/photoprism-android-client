@@ -15,9 +15,9 @@ import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.isSameDayAs
-import ua.com.radiokot.photoprism.extension.isSameMonthAs
-import ua.com.radiokot.photoprism.extension.isSameYearAs
+import ua.com.radiokot.photoprism.extension.isSameUtcDayAs
+import ua.com.radiokot.photoprism.extension.isSameUtcMonthAs
+import ua.com.radiokot.photoprism.extension.isSameUtcYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -32,14 +32,15 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
 import java.util.Date
+import java.util.TimeZone
 import kotlin.collections.set
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val dateHeaderDayYearDateFormat: DateFormat,
-    private val dateHeaderDayDateFormat: DateFormat,
-    private val dateHeaderMonthYearDateFormat: DateFormat,
-    private val dateHeaderMonthDateFormat: DateFormat,
+    private val dateHeaderUtcDayYearDateFormat: DateFormat,
+    private val dateHeaderUtcDayDateFormat: DateFormat,
+    private val dateHeaderUtcMonthYearDateFormat: DateFormat,
+    private val dateHeaderUtcMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
@@ -413,19 +414,22 @@ class GalleryViewModel(
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
         // Add date headers.
-        val today = Date()
+        // To deal with local dates, everything is UTCfied.
+        val currentUtcTime = System.currentTimeMillis()
+        val currentDateAsIfInUtc =
+            Date(currentUtcTime + TimeZone.getDefault().getOffset(currentUtcTime))
         galleryMediaList
             .forEachIndexed { i, galleryMedia ->
-                val takenAt = galleryMedia.takenAt
+                val takenAtLocal = galleryMedia.takenAtLocal
 
-                if (i == 0 && !takenAt.isSameMonthAs(today)
-                    || i != 0 && !takenAt.isSameMonthAs(galleryMediaList[i - 1].takenAt)
+                if (i == 0 && !takenAtLocal.isSameUtcMonthAs(currentDateAsIfInUtc)
+                    || i != 0 && !takenAtLocal.isSameUtcMonthAs(galleryMediaList[i - 1].takenAtLocal)
                 ) {
                     val formattedMonth =
-                        if (takenAt.isSameYearAs(today))
-                            dateHeaderMonthDateFormat.format(takenAt)
+                        if (takenAtLocal.isSameUtcYearAs(currentDateAsIfInUtc))
+                            dateHeaderUtcMonthDateFormat.format(takenAtLocal)
                         else
-                            dateHeaderMonthYearDateFormat.format(takenAt)
+                            dateHeaderUtcMonthYearDateFormat.format(takenAtLocal)
 
                     newListItems.add(
                         GalleryListItem.Header.month(
@@ -434,18 +438,18 @@ class GalleryViewModel(
                     )
                 }
 
-                if (i == 0 || !takenAt.isSameDayAs(galleryMediaList[i - 1].takenAt)) {
+                if (i == 0 || !takenAtLocal.isSameUtcDayAs(galleryMediaList[i - 1].takenAtLocal)) {
                     newListItems.add(
-                        if (takenAt.isSameDayAs(today))
+                        if (takenAtLocal.isSameUtcDayAs(currentDateAsIfInUtc))
                             GalleryListItem.Header.day(
                                 textRes = R.string.today,
                             )
                         else {
                             val formattedDate =
-                                if (takenAt.isSameYearAs(today))
-                                    dateHeaderDayDateFormat.format(takenAt)
+                                if (takenAtLocal.isSameUtcYearAs(currentDateAsIfInUtc))
+                                    dateHeaderUtcDayDateFormat.format(takenAtLocal)
                                 else
-                                    dateHeaderDayYearDateFormat.format(takenAt)
+                                    dateHeaderUtcDayYearDateFormat.format(takenAtLocal)
 
                             GalleryListItem.Header.day(
                                 text = formattedDate.capitalized(),

@@ -29,8 +29,17 @@ class GalleryMedia(
      * Original graphics height.
      */
     val height: Int,
-    // TODO: Replace with local.
-    val takenAt: Date,
+    /**
+     * **Local** time of taking the shot.
+     * While the value is not actually in UTC (unless really taken there),
+     * all the temporal operations (Calendar, DateFormat) must be done in UTC
+     * to get proper result.
+     *
+     * *For example, if a photo is taken on July 4th at 23:18 in Montenegro,
+     * its local time 2023-07-04T23:18:32Z must be displayed and treated as July 4th, 23:18
+     * regardless of whether the gallery is viewed from Montenegro or USA.*
+     */
+    val takenAtLocal: Date,
     /**
      * Human-friendly title (PhotoPrism "Title").
      */
@@ -64,7 +73,7 @@ class GalleryMedia(
         uid = source.uid,
         width = source.width,
         height = source.height,
-        takenAt = parsePhotoPrismDate(source.takenAt)!!,
+        takenAtLocal = parsePhotoPrismDate(source.takenAtLocal)!!,
         title = source.title,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
