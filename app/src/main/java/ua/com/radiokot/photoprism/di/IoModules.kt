@@ -51,7 +51,12 @@ val ioModules: List<Module> = listOf(
 
         factory {
             OkHttpClient.Builder()
+                // Connect timeout to cut off dead network.
                 .connectTimeout(30, TimeUnit.SECONDS)
+                // Read and write timeouts are big because PhotoPrism
+                // may run really slow on low-power servers.
+                .readTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
                 .addInterceptor(UrlBasicAuthInterceptor())
         } bind OkHttpClient.Builder::class
 
