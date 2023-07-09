@@ -29,9 +29,14 @@ class LocalDate : Date {
     )
 
     /**
-     * Creates an instance wrapping an already UTCfied local datetime from [localDate].
+     * Creates an instance wrapping an already UTCfied local time.
      */
-    constructor(localDate: Date) : super(localDate.time)
+    constructor(localTimeMillis: Long): super(localTimeMillis)
+
+    /**
+     * Creates an instance wrapping an already UTCfied local date.
+     */
+    constructor(localDate: Date) : this(localDate.time)
 
     /**
      * Creates an instance with the current time using the current default timezone

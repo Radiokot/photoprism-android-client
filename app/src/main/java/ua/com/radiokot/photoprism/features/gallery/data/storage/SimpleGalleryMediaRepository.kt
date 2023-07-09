@@ -26,7 +26,6 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFac
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
-import java.util.Date
 
 /**
  * @param pageLimit target limit setting the minimum number of items in the page.
@@ -98,14 +97,20 @@ class SimpleGalleryMediaRepository(
                             "\npageIsLast=$pageIsLast"
                 }
 
-                photoPrismPhotos.mapSuccessful {
-                    GalleryMedia(
-                        source = it,
-                        previewUrlFactory = thumbnailUrlFactory,
-                        downloadUrlFactory = downloadUrlFactory,
-                        webUrlFactory = webUrlFactory,
-                    )
-                }
+                photoPrismPhotos
+                    .mapSuccessful {
+                        GalleryMedia(
+                            source = it,
+                            previewUrlFactory = thumbnailUrlFactory,
+                            downloadUrlFactory = downloadUrlFactory,
+                            webUrlFactory = webUrlFactory,
+                        )
+                    }
+                    .filter { entry ->
+                        // Precise post filter by the "before" date, workaround for PhotoPrism filtering.
+                        // Ignore entries taken at or after the specified local time.
+                        params.postFilterBefore == null || entry.takenAtLocal < params.postFilterBefore
+                    }
             }
             .doOnSuccess { successfullyLoadedItems ->
                 collectedGalleryMediaItems.addAll(successfullyLoadedItems)
@@ -187,12 +192,6 @@ class SimpleGalleryMediaRepository(
 
     override fun addNewPageItems(page: DataPage<GalleryMedia>) {
         page.items.forEach { item ->
-            // Precise post filter by the "before" date, workaround for PhotoPrism filtering.
-            // Do not add items, taken at or after the specified time.
-            if (params.postFilterBefore != null && item.takenAtLocal >= params.postFilterBefore) {
-                return@forEach
-            }
-
             if (itemsByUid.containsKey(item.uid)) {
                 // If this item is already loaded, just merge the files. Why?
                 // Scenario:
@@ -240,13 +239,13 @@ class SimpleGalleryMediaRepository(
 
     /**
      * @param query user query
-     * @param postFilterBefore time to apply post filtering of the items,
-     * as PhotoPrism is incapable of time filtering.
+     * @param postFilterBefore local time to apply post filtering of the items,
+     * as PhotoPrism is incapable of precise local time filtering.
      */
     @Parcelize
     data class Params(
         val query: String? = null,
-        val postFilterBefore: Date? = null,
+        val postFilterBefore: LocalDate? = null,
     ) : Parcelable
 
     class Factory(
@@ -278,21 +277,15 @@ class SimpleGalleryMediaRepository(
                 }
             }
 
-            if (config.before != null) {
-                val timeToNextDay = DAY_MS - config.before.time % DAY_MS
+            if (config.beforeLocal != null) {
                 // PhotoPrism "before" filter does not take into account the time.
                 // "before:2023-04-30T22:57:32Z" is treated like "2023-04-30T00:00:00Z".
-                // Redundancy is needed whenever the requested before date is in between UTC midnights,
-                // so 2023-04-30T22:57:32Z is mapped to 2023-05-01T00:00:00Z
-                // hence all the photos taken on 04.30 will be returned.
-
-                // When using the redundancy workaround, the post filtering is needed.
+                // It also filters by the "TakenAt" date rather than "TakenAtLocal",
+                // so an extra day is added to overcome these problems.
+                //
+                // When using this workaround workaround, the local post filtering is needed.
                 // See below.
-                val redundantBefore =
-                    if (timeToNextDay != DAY_MS)
-                        Date(config.before.time + timeToNextDay)
-                    else
-                        config.before
+                val redundantBefore = LocalDate(config.beforeLocal.time + DAY_MS)
                 queryBuilder.append(" before:\"${formatPhotoPrismDate(redundantBefore)}\"")
             }
 
@@ -306,7 +299,7 @@ class SimpleGalleryMediaRepository(
                 query = queryBuilder.toString()
                     .trim()
                     .takeUnless(String::isNullOrBlank),
-                postFilterBefore = config.before,
+                postFilterBefore = config.beforeLocal,
             )
 
             return get(params)

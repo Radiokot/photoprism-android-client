@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.util.*
+import ua.com.radiokot.photoprism.util.LocalDate
 
 @Parcelize
 data class SearchConfig(
@@ -13,7 +13,11 @@ data class SearchConfig(
      */
     val mediaTypes: Set<GalleryMedia.TypeName>?,
     val albumUid: String?,
-    val before: Date?,
+    /**
+     * Local date to find media taken before it.
+     * The filter is applied to [GalleryMedia.takenAtLocal]
+     */
+    val beforeLocal: LocalDate?,
     val userQuery: String,
     val includePrivate: Boolean,
 ) : Parcelable {
@@ -47,7 +51,7 @@ data class SearchConfig(
         val DEFAULT = SearchConfig(
             mediaTypes = null,
             albumUid = null,
-            before = null,
+            beforeLocal = null,
             userQuery = "",
             includePrivate = false,
         )

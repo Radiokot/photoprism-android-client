@@ -11,5 +11,8 @@ import java.util.*
 fun parsePhotoPrismDate(date: String): Date? =
     ISO8601Utils.parse(date, ParsePosition(0))
 
+/**
+ * @return PhotoPrism-compatible ISO8601 string representing the [date] in the UTC timezone.
+ */
 fun formatPhotoPrismDate(date: Date): String =
     ISO8601Utils.format(date)

@@ -273,7 +273,7 @@ class GalleryViewModel(
                 currentSearchConfig
             else
                 (currentSearchConfig ?: SearchConfig.DEFAULT)
-                    .copy(before = month.nextDayAfter)
+                    .copy(beforeLocal = month.nextDayAfter)
 
         // Always reset the scroll.
         // If the list is scrolled manually, setting fast scroll to the same month

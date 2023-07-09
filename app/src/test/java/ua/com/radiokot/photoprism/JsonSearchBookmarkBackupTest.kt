@@ -46,7 +46,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.RAW,
                         GalleryMedia.TypeName.VIDEO,
                     ),
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz"
@@ -58,7 +58,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 name = "Интересные фото 🍕",
                 searchConfig = SearchConfig(
                     mediaTypes = null,
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
@@ -70,7 +70,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 name = "media types empty",
                 searchConfig = SearchConfig(
                     mediaTypes = emptySet(),
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
@@ -102,7 +102,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.RAW,
                         GalleryMedia.TypeName.VIDEO,
                     ),
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz"
@@ -114,7 +114,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 name = "Интересные фото 🍕",
                 searchConfig = SearchConfig(
                     mediaTypes = null,
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
@@ -126,7 +126,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 name = "media types empty",
                 searchConfig = SearchConfig(
                     mediaTypes = emptySet(),
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
@@ -173,7 +173,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.RAW,
                         GalleryMedia.TypeName.VIDEO,
                     ),
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz",
@@ -185,7 +185,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 name = "Интересные фото 🍕",
                 searchConfig = SearchConfig(
                     mediaTypes = null,
-                    before = null,
+                    beforeLocal = null,
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,

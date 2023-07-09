@@ -30,7 +30,7 @@ class GalleryMedia(
      */
     val height: Int,
     /**
-     * **Local** time of taking the shot.
+     * **Local** time of taking (or at least indexing) the shot.
      * While the value is not actually in UTC (unless really taken there),
      * all the temporal operations (Calendar, DateFormat) must be done in UTC
      * to get proper result.

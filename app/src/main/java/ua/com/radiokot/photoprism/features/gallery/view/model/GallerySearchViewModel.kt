@@ -236,7 +236,7 @@ class GallerySearchViewModel(
             mediaTypes = selectedMediaTypes.value,
             userQuery = userQuery.value!!.trim(),
             albumUid = selectedAlbumUid.value,
-            before = null,
+            beforeLocal = null,
             includePrivate = includePrivateContent.value == true,
         )
         val bookmark = bookmarksRepository.findByConfig(config)

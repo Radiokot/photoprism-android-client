@@ -110,7 +110,7 @@ class JsonSearchBookmarksBackup(
                         ?.map { GalleryMedia.TypeName.valueOf(it) }
                         ?.toSet(),
                     includePrivate = includePrivate,
-                    before = null,
+                    beforeLocal = null,
                     albumUid = albumUid,
                 )
             )
@@ -152,7 +152,7 @@ class JsonSearchBookmarksBackup(
                         ?.map { GalleryMedia.TypeName.valueOf(it) }
                         ?.toSet(),
                     includePrivate = includePrivate,
-                    before = null,
+                    beforeLocal = null,
                     albumUid = albumUid,
                 )
             )

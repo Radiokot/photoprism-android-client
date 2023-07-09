@@ -19,7 +19,7 @@ data class SearchBookmark(
                 ?.map { GalleryMedia.TypeName.valueOf(it) }
                 ?.toSet(),
             albumUid = dbEntity.albumUid,
-            before = null,
+            beforeLocal = null,
             userQuery = dbEntity.userQuery ?: "",
             includePrivate = dbEntity.includePrivate,
         )
