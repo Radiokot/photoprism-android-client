@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Showing some gallery entries under the wrong day occasionally.<br>
+Now, if a photo is taken on July 4th at 23:18 in Montenegro, 
+its time is displayed and treated as July 4th, 23:18 
+regardless of whether the gallery is viewed from Montenegro, USA or the Moon.
+- Inability to connect to a library running on a slow server due to the timeout error
+
 ## [1.13.0] - 2023-07-06
 
 ### Added
