@@ -1,10 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.data.model
 
-import java.util.*
+import ua.com.radiokot.photoprism.util.LocalDate
 
 data class GalleryMonth(
-    val firstDay: Date,
-    val nextDayAfter: Date,
+    val firstDay: LocalDate,
+    val nextDayAfter: LocalDate,
 ) : Comparable<GalleryMonth> {
 
     override fun compareTo(other: GalleryMonth): Int =

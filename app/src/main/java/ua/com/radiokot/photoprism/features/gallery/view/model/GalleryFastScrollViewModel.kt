@@ -11,19 +11,18 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.filterIsInstance
-import ua.com.radiokot.photoprism.extension.isSameUtcYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
+import ua.com.radiokot.photoprism.util.LocalDate
 import java.text.DateFormat
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class GalleryFastScrollViewModel(
-    private val bubbleMonthYearDateFormat: DateFormat,
-    private val bubbleMonthDateFormat: DateFormat,
+    private val bubbleUtcMonthYearDateFormat: DateFormat,
+    private val bubbleUtcMonthDateFormat: DateFormat,
 ) : ViewModel() {
     private val log = kLogger("GalleryFastScrollVM")
     private var currentMediaRepository: SimpleGalleryMediaRepository? = null
@@ -96,7 +95,7 @@ class GalleryFastScrollViewModel(
     private var bubblesUpdateDisposable: Disposable? = null
     private fun updateBubbles(mediaRepository: SimpleGalleryMediaRepository) {
         bubblesUpdateDisposable?.dispose()
-        bubblesUpdateDisposable = mediaRepository.getNewestAndOldestDates()
+        bubblesUpdateDisposable = mediaRepository.getNewestAndOldestLocalDates()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 bubbles.value = emptyList()
@@ -120,23 +119,22 @@ class GalleryFastScrollViewModel(
             )
     }
 
-    private fun createBubbles(newestDate: Date, oldestDate: Date) {
-        val today = Date()
-
+    private fun createBubbles(newestDate: LocalDate, oldestDate: LocalDate) {
+        val currentLocalDate = LocalDate()
         bubbles.value =
             GalleryMonthsSequence(
-                startDate = oldestDate,
-                endDate = newestDate
+                startLocalDate = oldestDate,
+                endLocalDate = newestDate
             )
                 .toList()
                 .sortedDescending()
                 .map { month ->
                     GalleryMonthScrollBubble(
                         name =
-                        if (month.firstDay.isSameUtcYearAs(today))
-                            bubbleMonthDateFormat.format(month.firstDay).capitalized()
+                        if (month.firstDay.isSameYearAs(currentLocalDate))
+                            bubbleUtcMonthDateFormat.format(month.firstDay).capitalized()
                         else
-                            bubbleMonthYearDateFormat.format(month.firstDay).capitalized(),
+                            bubbleUtcMonthYearDateFormat.format(month.firstDay).capitalized(),
                         source = month
                     )
                 }

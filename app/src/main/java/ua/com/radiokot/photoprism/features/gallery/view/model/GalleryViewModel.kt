@@ -15,9 +15,6 @@ import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.isSameUtcDayAs
-import ua.com.radiokot.photoprism.extension.isSameUtcMonthAs
-import ua.com.radiokot.photoprism.extension.isSameUtcYearAs
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -26,13 +23,12 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.DateFormat
-import java.util.Date
-import java.util.TimeZone
 import kotlin.collections.set
 
 class GalleryViewModel(
@@ -414,19 +410,16 @@ class GalleryViewModel(
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
         // Add date headers.
-        // To deal with local dates, everything is UTCfied.
-        val currentUtcTime = System.currentTimeMillis()
-        val currentDateAsIfInUtc =
-            Date(currentUtcTime + TimeZone.getDefault().getOffset(currentUtcTime))
+        val currentLocalDate = LocalDate()
         galleryMediaList
             .forEachIndexed { i, galleryMedia ->
                 val takenAtLocal = galleryMedia.takenAtLocal
 
-                if (i == 0 && !takenAtLocal.isSameUtcMonthAs(currentDateAsIfInUtc)
-                    || i != 0 && !takenAtLocal.isSameUtcMonthAs(galleryMediaList[i - 1].takenAtLocal)
+                if (i == 0 && !takenAtLocal.isSameMonthAs(currentLocalDate)
+                    || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
                 ) {
                     val formattedMonth =
-                        if (takenAtLocal.isSameUtcYearAs(currentDateAsIfInUtc))
+                        if (takenAtLocal.isSameYearAs(currentLocalDate))
                             dateHeaderUtcMonthDateFormat.format(takenAtLocal)
                         else
                             dateHeaderUtcMonthYearDateFormat.format(takenAtLocal)
@@ -438,15 +431,15 @@ class GalleryViewModel(
                     )
                 }
 
-                if (i == 0 || !takenAtLocal.isSameUtcDayAs(galleryMediaList[i - 1].takenAtLocal)) {
+                if (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal)) {
                     newListItems.add(
-                        if (takenAtLocal.isSameUtcDayAs(currentDateAsIfInUtc))
+                        if (takenAtLocal.isSameDayAs(currentLocalDate))
                             GalleryListItem.Header.day(
                                 textRes = R.string.today,
                             )
                         else {
                             val formattedDate =
-                                if (takenAtLocal.isSameUtcYearAs(currentDateAsIfInUtc))
+                                if (takenAtLocal.isSameYearAs(currentLocalDate))
                                     dateHeaderUtcDayDateFormat.format(takenAtLocal)
                                 else
                                     dateHeaderUtcDayYearDateFormat.format(takenAtLocal)

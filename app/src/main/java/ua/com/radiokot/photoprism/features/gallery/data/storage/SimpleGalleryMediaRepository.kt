@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDat
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
+import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Date
 
 /**
@@ -142,8 +143,8 @@ class SimpleGalleryMediaRepository(
             }
     }
 
-    private var newestAndOldestDates: Pair<Date, Date>? = null
-    fun getNewestAndOldestDates(): Maybe<Pair<Date, Date>> {
+    private var newestAndOldestDates: Pair<LocalDate, LocalDate>? = null
+    fun getNewestAndOldestLocalDates(): Maybe<Pair<LocalDate, LocalDate>> {
         val loadedDates = newestAndOldestDates
         if (loadedDates != null) {
             return Maybe.just(loadedDates)
@@ -159,6 +160,7 @@ class SimpleGalleryMediaRepository(
                 .firstOrNull()
                 ?.takenAtLocal
                 ?.let(::parsePhotoPrismDate)
+                ?.let(::LocalDate)
         }.toMaybe()
 
         val getOldestDate = {
@@ -171,6 +173,7 @@ class SimpleGalleryMediaRepository(
                 .firstOrNull()
                 ?.takenAtLocal
                 ?.let(::parsePhotoPrismDate)
+                ?.let(::LocalDate)
         }.toMaybe()
 
         return Maybe.zip(

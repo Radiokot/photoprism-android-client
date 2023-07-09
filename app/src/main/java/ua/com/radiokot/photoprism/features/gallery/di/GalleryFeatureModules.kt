@@ -167,8 +167,8 @@ val galleryFeatureModules: List<Module> = listOf(
 
             viewModel {
                 GalleryFastScrollViewModel(
-                    bubbleMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
-                    bubbleMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
+                    bubbleUtcMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
+                    bubbleUtcMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
                 )
             }
 
