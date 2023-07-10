@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.di
 
 import android.net.Uri
-import android.text.format.DateFormat
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -14,10 +13,14 @@ import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
+import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.dateFormatModules
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.setUtcTimeZone
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
@@ -43,15 +46,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
-import java.text.SimpleDateFormat
-import java.util.Locale
-
-private const val UTC_MONTH_DATE_FORMAT = "utc-month"
-private const val UTC_MONTH_YEAR_DATE_FORMAT = "utc-month-year"
-private const val UTC_DAY_DATE_FORMAT = "utc-day"
-private const val UTC_DAY_YEAR_DATE_FORMAT = "utc-day-year"
-const val UTC_DATE_TIME_DATE_FORMAT = "utc-date-time"
-const val UTC_DATE_TIME_YEAR_DATE_FORMAT = "utc-date-time-year"
 
 class ImportSearchBookmarksUseCaseParams(
     val fileUri: Uri,
@@ -59,53 +53,8 @@ class ImportSearchBookmarksUseCaseParams(
 
 val galleryFeatureModules: List<Module> = listOf(
     module {
-        factory { Locale.getDefault() }
-
-        factory(named(UTC_MONTH_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "MMMM"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-
-        factory(named(UTC_MONTH_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-
-        factory(named(UTC_DAY_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMd"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-
-        factory(named(UTC_DAY_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-
-        factory(named(UTC_DATE_TIME_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMd HH:mm"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-
-        factory(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy HH:mm"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-    },
-
-    module {
         includes(envConnectionFeatureModules)
+        includes(dateFormatModules)
 
         scope<EnvSession> {
             scoped {
