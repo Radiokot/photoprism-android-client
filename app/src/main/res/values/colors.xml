@@ -63,4 +63,5 @@
 
     <color name="media_type_background">#30000000</color>
     <color name="black_overlay">#66000000</color>
+    <color name="media_viewer_toolbar_gradient_start">#99000000</color>
 </resources>

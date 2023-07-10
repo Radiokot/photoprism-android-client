@@ -50,6 +50,8 @@ private const val UTC_MONTH_DATE_FORMAT = "utc-month"
 private const val UTC_MONTH_YEAR_DATE_FORMAT = "utc-month-year"
 private const val UTC_DAY_DATE_FORMAT = "utc-day"
 private const val UTC_DAY_YEAR_DATE_FORMAT = "utc-day-year"
+const val UTC_DATE_TIME_DATE_FORMAT = "utc-date-time"
+const val UTC_DATE_TIME_YEAR_DATE_FORMAT = "utc-date-time-year"
 
 class ImportSearchBookmarksUseCaseParams(
     val fileUri: Uri,
@@ -83,6 +85,20 @@ val galleryFeatureModules: List<Module> = listOf(
         factory(named(UTC_DAY_YEAR_DATE_FORMAT)) {
             SimpleDateFormat(
                 DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
+                get<Locale>()
+            ).setUtcTimeZone()
+        } bind java.text.DateFormat::class
+
+        factory(named(UTC_DATE_TIME_DATE_FORMAT)) {
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "EEMMMMd HH:mm"),
+                get<Locale>()
+            ).setUtcTimeZone()
+        } bind java.text.DateFormat::class
+
+        factory(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)) {
+            SimpleDateFormat(
+                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy HH:mm"),
                 get<Locale>()
             ).setUtcTimeZone()
         } bind java.text.DateFormat::class

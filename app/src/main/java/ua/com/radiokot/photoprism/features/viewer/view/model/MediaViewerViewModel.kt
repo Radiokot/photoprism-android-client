@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -19,7 +20,9 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
+import java.text.DateFormat
 import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
@@ -28,11 +31,14 @@ class MediaViewerViewModel(
     private val externalDownloadsDir: File,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
+    private val utcDateTimeDateFormat: DateFormat,
+    private val utcDateTimeYearDateFormat: DateFormat,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
     private var areActionsEnabled = false
+    private val currentLocalDate = LocalDate()
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -48,6 +54,8 @@ class MediaViewerViewModel(
     val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isCancelDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDownloadCompletedIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val title: MutableLiveData<String> = MutableLiveData()
+    val subtitle: MutableLiveData<String> = MutableLiveData()
 
     // From 0 to 100, negative for indeterminate.
     val cancelDownloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
@@ -89,6 +97,8 @@ class MediaViewerViewModel(
         }
 
         update()
+
+        isInitialized = true
     }
 
     private fun initActionsVisibility() {
@@ -446,6 +456,7 @@ class MediaViewerViewModel(
         subscribeToMediaBackgroundDownloadStatus(
             statusObservable = backgroundMediaFileDownloadManager.getStatus(item.uid)
         )
+        updateTitleAndSubtitle(item)
     }
 
     private var backgroundDownloadProgressDisposable: Disposable? = null
@@ -477,6 +488,17 @@ class MediaViewerViewModel(
 
     private fun unsubscribeFromDownloadProgress() {
         backgroundDownloadProgressDisposable?.dispose()
+    }
+
+    private fun updateTitleAndSubtitle(item: GalleryMedia) {
+        title.value = item.title
+
+        val takenAtLocal = item.takenAtLocal
+        subtitle.value =
+            if (takenAtLocal.isSameYearAs(currentLocalDate))
+                utcDateTimeDateFormat.format(takenAtLocal).capitalized()
+            else
+                utcDateTimeYearDateFormat.format(takenAtLocal).capitalized()
     }
 
     private fun getExternalStorageDownloadDestination(file: GalleryMedia.File): File {

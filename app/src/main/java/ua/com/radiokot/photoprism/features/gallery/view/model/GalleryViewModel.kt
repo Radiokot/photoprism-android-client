@@ -45,6 +45,7 @@ class GalleryViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
+    private val currentLocalDate = LocalDate()
 
     // Current search config regardless the fast scroll.
     private var currentSearchConfig: SearchConfig? = null
@@ -410,7 +411,6 @@ class GalleryViewModel(
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
         // Add date headers.
-        val currentLocalDate = LocalDate()
         galleryMediaList
             .forEachIndexed { i, galleryMedia ->
                 val takenAtLocal = galleryMedia.takenAtLocal

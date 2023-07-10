@@ -113,6 +113,7 @@ class MediaViewerActivity : BaseActivity() {
 
         // Init before the subscription.
         initPager(mediaIndex, savedInstanceState)
+        initToolbar()
 
         subscribeToData()
         subscribeToEvents()
@@ -361,6 +362,12 @@ class MediaViewerActivity : BaseActivity() {
         }
     }
 
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = ""
+    }
+
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
         viewHolder.bindToLifecycle(this.lifecycle)
@@ -432,6 +439,7 @@ class MediaViewerActivity : BaseActivity() {
 
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
             view.buttonsLayout.fadeVisibility(areActionsVisible)
+            view.toolbar.fadeVisibility(areActionsVisible)
         }
 
         viewModel.isFullScreen.observe(this) { isFullScreen ->
@@ -467,6 +475,18 @@ class MediaViewerActivity : BaseActivity() {
         viewModel.isDownloadCompletedIconVisible.observe(
             this,
             view.downloadCompletedIcon::isVisible::set
+        )
+
+        viewModel.title.observe(this) { title ->
+            // Delay setting the title to avoid weird behaviour
+            // on activity init.
+            view.toolbar.post {
+                setTitle(title)
+            }
+        }
+        viewModel.subtitle.observe(
+            this,
+            view.toolbar::setSubtitle
         )
     }
 

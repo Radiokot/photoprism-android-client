@@ -14,6 +14,9 @@ its time is displayed and treated as July 4th, 23:18
 regardless of whether the gallery is viewed from Montenegro, USA or the Moon.
 - Inability to connect to a library running on a slow server due to the timeout error
 
+### Added
+- Display of the item title and date in the media viewer
+
 ## [1.13.0] - 2023-07-06
 
 ### Added

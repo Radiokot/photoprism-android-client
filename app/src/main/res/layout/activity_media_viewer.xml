@@ -4,12 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:background="#f3f3f3"
     tools:context=".features.viewer.view.MediaViewerActivity">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Material3.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/media_viewer_toolbar_background"
+        android:fitsSystemWindows="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:subtitleTextAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:titleTextAppearance="@style/TextAppearance.Material3.BodyLarge"
+        tools:subtitle="Sunday, July 9, 2023 at 12:14"
+        tools:title="Dnipro / 2023" />
 
     <View
         android:id="@+id/keyboard_navigation_focus_view"
