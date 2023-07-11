@@ -1,1 +1,1 @@
-An unofficial gallery and content provider for your PhotoPrism library
+An unofficial gallery to view and pick content from your PhotoPrism library

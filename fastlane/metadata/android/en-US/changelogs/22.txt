@@ -1,0 +1,9 @@
+Fixed:
+- Showing some gallery entries under the wrong day occasionally.<br>
+Now, if a photo is taken on July 4th at 23:18 in Montenegro,
+its time is displayed and treated as July 4th, 23:18
+regardless of whether the gallery is viewed from Montenegro, USA or the Moon.
+- Inability to connect to a library running on a slow server due to the timeout error
+
+Added:
+- Display of the item title and date in the media viewer

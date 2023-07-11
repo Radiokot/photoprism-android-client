@@ -1,4 +1,5 @@
-The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and has other drawbacks. This app does not (and probably will not) support all the web-client features, but nevertheless it can:
+The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and, no matter what, feels like a web page.
+This app does not (and probably will not) support all the web-client features, but nevertheless it can:
 - Provide the library content to other Android apps – you can select PhotoPrism Gallery among other galleries when picking a photo or video
 - Open the library content in suitable apps – you can use your favorite image editor or video player instead of web viewer
 
@@ -10,5 +11,6 @@ There are more handy features in the gallery:
 - Endless session – no need to re-enter password
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
+- TV compatibility – easy browsing with a remote-control
 
-The gallery is confirmed to work with PhotoPrism versions from May 2, 2023 down to October 9, 2021
+The gallery is confirmed to work with PhotoPrism versions from June 7, 2023 down to October 9, 2021

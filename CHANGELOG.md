@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.14.0] - 2023-07-11
 
 ### Fixed
 - Showing some gallery entries under the wrong day occasionally.<br>
@@ -235,7 +235,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.14.0(22)...HEAD
+[1.14.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...1.14.0(22)
 [1.13.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...1.13.0(21)
 [1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
 [1.11.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.10.0(18)...1.11.0(19)
