@@ -109,7 +109,7 @@ class GalleryViewModel(
         }
 
         stateSubject.onNext(
-            State.Selecting(
+            State.Selecting.ToReturn(
                 allowedMediaTypes = allowedMediaTypes,
                 allowMultiple = allowMultiple,
             )
@@ -148,29 +148,26 @@ class GalleryViewModel(
     }
 
     private fun resetRepositoryToInitial() {
-        when (val state = stateSubject.value!!) {
-            is State.Selecting -> {
-                val searchConfig =
-                    SearchConfig.DEFAULT
-                        .withOnlyAllowedMediaTypes(state.allowedMediaTypes)
+        val currentState = stateSubject.value
 
-                currentSearchConfig = searchConfig
+        if (currentState is State.Selecting.ToReturn) {
+            val searchConfig =
+                SearchConfig.DEFAULT
+                    .withOnlyAllowedMediaTypes(currentState.allowedMediaTypes)
 
-                mediaRepositoryChanges.onNext(
-                    MediaRepositoryChange.Other(
-                        galleryMediaRepositoryFactory.getForSearch(searchConfig),
-                    )
+            currentSearchConfig = searchConfig
+            mediaRepositoryChanges.onNext(
+                MediaRepositoryChange.Other(
+                    galleryMediaRepositoryFactory.getForSearch(searchConfig),
                 )
-            }
-
-            State.Viewing -> {
-                currentSearchConfig = null
-                mediaRepositoryChanges.onNext(
-                    MediaRepositoryChange.Other(
-                        galleryMediaRepositoryFactory.get(),
-                    )
+            )
+        } else {
+            currentSearchConfig = null
+            mediaRepositoryChanges.onNext(
+                MediaRepositoryChange.Other(
+                    galleryMediaRepositoryFactory.get(),
                 )
-            }
+            )
         }
     }
 
@@ -185,7 +182,7 @@ class GalleryViewModel(
                 is GallerySearchViewModel.State.AppliedSearch -> {
                     val currentState = stateSubject.value
                     val searchConfigToApply: SearchConfig =
-                        if (currentState is State.Selecting) {
+                        if (currentState is State.Selecting.ToReturn) {
                             // If we are selecting the content,
                             // make sure we do not apply search that overcomes the allowed media types.
                             state.search.config.withOnlyAllowedMediaTypes(
@@ -637,7 +634,11 @@ class GalleryViewModel(
         )
     }
 
-    private fun downloadAndReturnMultipleSelectionFiles() {
+    private fun downloadMultipleSelectionFilesAndFinishSelection() {
+        val selectingState = checkNotNull(stateSubject.value as? State.Selecting) {
+            "Selection can only be finished in the corresponding state"
+        }
+
         val filesAndDestinations =
             multipleSelectionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
                 mediaFile to File(internalDownloadsDir, "downloaded_$i")
@@ -648,17 +649,25 @@ class GalleryViewModel(
             onSuccess = {
                 log.debug { "downloadAndReturnMultipleSelectionFiles(): download_completed" }
 
-                eventsSubject.onNext(
-                    Event.ReturnDownloadedFiles(
-                        filesAndDestinations.map { (mediaFile, destination) ->
-                            Event.ReturnDownloadedFiles.FileToReturn(
-                                downloadedFile = destination,
-                                mimeType = mediaFile.mimeType,
-                                displayName = File(mediaFile.name).name
+                when (selectingState) {
+                    is State.Selecting.ToReturn -> {
+                        eventsSubject.onNext(
+                            Event.ReturnDownloadedFiles(
+                                filesAndDestinations.map { (mediaFile, destination) ->
+                                    Event.ReturnDownloadedFiles.FileToReturn(
+                                        downloadedFile = destination,
+                                        mimeType = mediaFile.mimeType,
+                                        displayName = File(mediaFile.name).name
+                                    )
+                                }
                             )
-                        }
-                    )
-                )
+                        )
+                    }
+
+                    is State.Selecting.ToShare -> {
+                        // TODO: Share downloaded files
+                    }
+                }
             }
         )
     }
@@ -765,45 +774,7 @@ class GalleryViewModel(
             "onDoneMultipleSelectionClicked(): start_downloading_multiple_selection_files"
         }
 
-        downloadAndReturnMultipleSelectionFiles()
-    }
-
-    sealed interface Event {
-        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
-
-        class ReturnDownloadedFiles(
-            val files: List<FileToReturn>,
-        ) : Event {
-            constructor(fileToReturn: FileToReturn) : this(listOf(fileToReturn))
-
-            data class FileToReturn(
-                val downloadedFile: File,
-                val mimeType: String,
-                val displayName: String,
-            )
-        }
-
-        class OpenViewer(
-            val mediaIndex: Int,
-            val repositoryParams: SimpleGalleryMediaRepository.Params,
-            val areActionsEnabled: Boolean,
-        ) : Event
-
-        /**
-         * Reset the scroll (to the top) and the infinite scrolling.
-         */
-        object ResetScroll : Event
-
-        class ShowFloatingError(val error: Error) : Event
-
-        object OpenPreferences : Event
-
-        /**
-         * Ensure that the given item of the [itemsList] is visible on the screen.
-         */
-        class EnsureListItemVisible(val listItemIndex: Int) : Event
-
-        object GoToEnvConnection : Event
+        downloadMultipleSelectionFilesAndFinishSelection()
     }
 
     fun onScreenResumedAfterMovedBackWithBackButton() {
@@ -851,22 +822,78 @@ class GalleryViewModel(
 
     sealed interface State {
         object Viewing : State
-        class Selecting(
-            /**
-             * Non-empty optional set of allowed media types (e.g. only images)
-             */
-            val allowedMediaTypes: Set<GalleryMedia.TypeName>?,
+
+        sealed class Selecting(
             /**
              * Whether selection of multiple items is allowed or not.
              */
             val allowMultiple: Boolean,
         ) : State {
-            init {
-                require(allowedMediaTypes == null || allowedMediaTypes.isNotEmpty()) {
-                    "The set of allowed types must either be null or not empty"
+
+            /**
+             * Selecting to return the files to the requesting app.
+             */
+            class ToReturn(
+                /**
+                 * Non-empty optional set of allowed media types (e.g. only images)
+                 */
+                val allowedMediaTypes: Set<GalleryMedia.TypeName>?,
+                allowMultiple: Boolean,
+            ) : Selecting(
+                allowMultiple = allowMultiple,
+            ) {
+                init {
+                    require(allowedMediaTypes == null || allowedMediaTypes.isNotEmpty()) {
+                        "The set of allowed types must either be null or not empty"
+                    }
                 }
             }
+
+            /**
+             * Selecting to share the files with any app of the user's choice.
+             */
+            object ToShare : Selecting(
+                allowMultiple = true,
+            )
         }
+    }
+
+    sealed interface Event {
+        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+
+        class ReturnDownloadedFiles(
+            val files: List<FileToReturn>,
+        ) : Event {
+            constructor(fileToReturn: FileToReturn) : this(listOf(fileToReturn))
+
+            data class FileToReturn(
+                val downloadedFile: File,
+                val mimeType: String,
+                val displayName: String,
+            )
+        }
+
+        class OpenViewer(
+            val mediaIndex: Int,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+            val areActionsEnabled: Boolean,
+        ) : Event
+
+        /**
+         * Reset the scroll (to the top) and the infinite scrolling.
+         */
+        object ResetScroll : Event
+
+        class ShowFloatingError(val error: Error) : Event
+
+        object OpenPreferences : Event
+
+        /**
+         * Ensure that the given item of the [itemsList] is visible on the screen.
+         */
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
+
+        object GoToEnvConnection : Event
     }
 
     sealed interface Error {
