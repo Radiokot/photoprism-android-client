@@ -56,7 +56,7 @@
     <string name="template_error_failed_to_edit_bookmark">Не удалось изменить закладку: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Не удалось удалить закладку: %1$s</string>
     <string name="using_search_filters">Использование фильтров для поиска</string>
-    <string name="some_types_are_not_available_when_selecting">Доступные только типы которые поддерживает запрашивающее приложение</string>
+    <string name="some_types_are_not_available_when_selecting">Доступные только типы, которые поддерживает запрашивающее приложение</string>
     <string name="include_private_content">Показать приватное содержимое</string>
     <string name="client_certificate_optional">Клиентский сертификат (опционально)</string>
     <string name="clear">Очистить</string>
