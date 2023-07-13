@@ -437,10 +437,15 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        viewModel.areActionsVisible.observe(this) { areActionsVisible ->
-            view.buttonsLayout.fadeVisibility(areActionsVisible)
-            view.toolbar.fadeVisibility(areActionsVisible)
-        }
+        viewModel.areActionsVisible.observe(
+            this,
+            view.buttonsLayout::fadeVisibility
+        )
+
+        viewModel.isToolbarVisible.observe(
+            this,
+            view.toolbar::fadeVisibility
+        )
 
         viewModel.isFullScreen.observe(this) { isFullScreen ->
             if (isFullScreen) {

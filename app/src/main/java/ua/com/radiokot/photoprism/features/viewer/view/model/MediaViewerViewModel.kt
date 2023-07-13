@@ -50,6 +50,7 @@ class MediaViewerViewModel(
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
     val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isToolbarVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isCancelDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -89,7 +90,7 @@ class MediaViewerViewModel(
         subscribeToRepository()
 
         this.areActionsEnabled = areActionsEnabled
-        initActionsVisibility()
+        initControlsVisibility()
 
         log.debug {
             "init(): initialized:" +
@@ -101,13 +102,12 @@ class MediaViewerViewModel(
         isInitialized = true
     }
 
-    private fun initActionsVisibility() {
-        fun updateActionsVisibility() {
-            areActionsVisible.value =
-                isFullScreen.value == false && areActionsEnabled
+    private fun initControlsVisibility() {
+        fun updateControlsVisibility(isFullScreen: Boolean) {
+            areActionsVisible.value = !isFullScreen && areActionsEnabled
+            isToolbarVisible.value = !isFullScreen
         }
-        isFullScreen.observeForever { updateActionsVisibility() }
-        updateActionsVisibility()
+        isFullScreen.observeForever(::updateControlsVisibility)
     }
 
     private fun subscribeToRepository() {
