@@ -488,47 +488,24 @@ class GalleryViewModel(
                     "\nitem=$item"
         }
 
-        if (item !is GalleryListItem.Media) {
-            return
-        }
+        val media = (item as? GalleryListItem.Media)?.source
+            ?: return
 
         when (val state = stateSubject.value.checkNotNull()) {
             is State.Selecting -> {
-                val media = item.source
-                    ?: return
-
                 if (state.allowMultiple) {
-                    if (multipleSelectionFilesByMediaUid.containsKey(media.uid)) {
-                        // When clicking currently selected media in the multiple selection state,
-                        // just unselect it.
-                        removeMediaFromMultipleSelection(media.uid)
-                    } else {
-                        if (media.files.size > 1) {
-                            openFileSelectionDialog(media.files)
-                        } else {
-                            addFileToMultipleSelection(media.files.firstOrNull().checkNotNull {
-                                "There must be at least one file in the gallery media object"
-                            })
-                        }
-                    }
+                    toggleMediaMultipleSelection(media)
                 } else {
-                    if (media.files.size > 1) {
-                        openFileSelectionDialog(media.files)
-                    } else {
-                        downloadAndReturnFile(media.files.firstOrNull().checkNotNull {
-                            "There must be at least one file in the gallery media object"
-                        })
-                    }
+                    selectMedia(media)
                 }
             }
 
-            is State.Viewing ->
-                if (item.source != null) {
-                    openViewer(
-                        media = item.source,
-                        areActionsEnabled = true,
-                    )
-                }
+            is State.Viewing -> {
+                openViewer(
+                    media = media,
+                    areActionsEnabled = true,
+                )
+            }
         }
     }
 
@@ -547,6 +524,80 @@ class GalleryViewModel(
                 media = item.source,
                 areActionsEnabled = false,
             )
+        }
+    }
+
+    fun onItemLongClicked(item: GalleryListItem) {
+        log.debug {
+            "onItemLongClicked(): gallery_item_long_clicked:" +
+                    "\nitem=$item"
+        }
+
+        val media = (item as? GalleryListItem.Media)?.source
+            ?: return
+
+        when (stateSubject.value.checkNotNull()) {
+            State.Viewing -> {
+                switchToSelectingToShare(media)
+            }
+
+            else -> {
+                // Long click does nothing in other states.
+                log.debug {
+                    "onItemLongClicked(): ignored"
+                }
+            }
+        }
+    }
+
+    /**
+     * @param target an entry the user interacted with initiating the switch.
+     */
+    private fun switchToSelectingToShare(target: GalleryMedia) {
+        assert(stateSubject.value is State.Viewing) {
+            "Switching to selecting is only possible while viewing"
+        }
+
+        stateSubject.onNext(State.Selecting.ToShare)
+
+        // Automatically select the target media.
+        toggleMediaMultipleSelection(target)
+
+        postGalleryItems()
+        postMultipleSelectionItemsCount()
+    }
+
+    private fun selectMedia(media: GalleryMedia) {
+        assert(stateSubject.value is State.Selecting) {
+            "Media can only be selected handled in the corresponding state"
+        }
+
+        if (media.files.size > 1) {
+            openFileSelectionDialog(media.files)
+        } else {
+            downloadAndReturnFile(media.files.firstOrNull().checkNotNull {
+                "There must be at least one file in the gallery media object"
+            })
+        }
+    }
+
+    private fun toggleMediaMultipleSelection(media: GalleryMedia) {
+        assert(stateSubject.value is State.Selecting) {
+            "Media multiple selection can only be toggled in the corresponding state"
+        }
+
+        if (multipleSelectionFilesByMediaUid.containsKey(media.uid)) {
+            // When clicking currently selected media in the multiple selection state,
+            // just unselect it.
+            removeMediaFromMultipleSelection(media.uid)
+        } else {
+            if (media.files.size > 1) {
+                openFileSelectionDialog(media.files)
+            } else {
+                addFileToMultipleSelection(media.files.firstOrNull().checkNotNull {
+                    "There must be at least one file in the gallery media object"
+                })
+            }
         }
     }
 

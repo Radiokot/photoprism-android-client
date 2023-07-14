@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +19,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
+import com.mikepenz.fastadapter.listeners.addLongClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
@@ -320,8 +321,11 @@ class GalleryActivity : BaseActivity() {
                     getString(R.string.library)
             }
 
-            view.selectionBottomAppBar.isVisible =
-                state is GalleryViewModel.State.Selecting
+            // The bottom bar visibility must be switched between Visible and Invisible,
+            // because Gone for an unknown reason causes FAB misplacement
+            // when switching from Viewing to Selecting 🤷🏻
+            view.selectionBottomAppBar.isInvisible =
+                state is GalleryViewModel.State.Viewing
             view.selectionBottomAppBar.navigationIcon =
                 if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
                     ContextCompat.getDrawable(this, R.drawable.ic_close)
@@ -372,6 +376,21 @@ class GalleryActivity : BaseActivity() {
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
                     }
+                }
+            )
+
+            addLongClickListener(
+                resolveView = { viewHolder: ViewHolder ->
+                    (viewHolder as? GalleryListItem.Media.ViewHolder)
+                        ?.itemView
+                },
+                onLongClick = { _, _, _, item ->
+                    if (item !is GalleryListItem.Media) {
+                        return@addLongClickListener false
+                    }
+
+                    viewModel.onItemLongClicked(item)
+                    true
                 }
             )
         }
