@@ -391,7 +391,7 @@ class GalleryViewModel(
         mainError.postValue(
             when {
                 galleryMediaList.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
-                    Error.SearchDoesntFitAllowedTypes
+                    Error.SearchDoesNotFitAllowedTypes
 
                 galleryMediaList.isEmpty() && !repository.isNeverUpdated ->
                     Error.NoMediaFound
@@ -872,8 +872,14 @@ class GalleryViewModel(
     }
 
     sealed interface State {
+        /**
+         * Viewing the gallery content.
+         */
         object Viewing : State
 
+        /**
+         * Viewing the gallery content to select something.
+         */
         sealed class Selecting(
             /**
              * Whether selection of multiple items is allowed or not.
@@ -912,6 +918,9 @@ class GalleryViewModel(
     sealed interface Event {
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
+        /**
+         * Return the files to the requesting app when the selection is done.
+         */
         class ReturnDownloadedFiles(
             val files: List<FileToReturn>,
         ) : Event {
@@ -944,14 +953,40 @@ class GalleryViewModel(
          */
         class EnsureListItemVisible(val listItemIndex: Int) : Event
 
+        /**
+         * Close the screen and go to the connection.
+         */
         object GoToEnvConnection : Event
     }
 
     sealed interface Error {
+        /**
+         * Can't establish a connection with the library
+         */
         object LibraryNotAccessible : Error
+
+        /**
+         * The data has been requested, but something went wrong
+         * while receiving the response.
+         */
         class LoadingFailed(val shortSummary: String) : Error
+
+        /**
+         * Nothing is found for the given search.
+         * The gallery may be empty as well.
+         */
         object NoMediaFound : Error
-        object SearchDoesntFitAllowedTypes : Error
+
+        /**
+         * Nothing is found because all the types from the given search
+         * are not allowed by the requesting app.
+         */
+        object SearchDoesNotFitAllowedTypes : Error
+
+        /**
+         * Automatic session renewal failed because the credentials
+         * have been changed. Disconnect is required.
+         */
         object CredentialsHaveBeenChanged : Error
     }
 

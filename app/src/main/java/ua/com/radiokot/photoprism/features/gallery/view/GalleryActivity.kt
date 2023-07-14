@@ -215,7 +215,7 @@ class GalleryActivity : BaseActivity() {
                         context = this,
                     )
 
-                GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
+                GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                     ErrorView.Error.EmptyView(
                         messageRes = R.string.search_doesnt_fit_allowed_types,
                         context = this,
@@ -720,7 +720,7 @@ class GalleryActivity : BaseActivity() {
             GalleryViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
 
-            GalleryViewModel.Error.SearchDoesntFitAllowedTypes ->
+            GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
 
             GalleryViewModel.Error.CredentialsHaveBeenChanged ->
