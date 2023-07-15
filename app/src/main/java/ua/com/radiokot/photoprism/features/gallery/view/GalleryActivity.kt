@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -525,6 +526,11 @@ class GalleryActivity : BaseActivity() {
                         count = maxRecycledMediaViewCount,
                     )
             }
+
+            // Do not run fade animation for changed items.
+            // It looks wierd when switching to Selecting from Viewing
+            // and vice-versa.
+            (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
         }
 
         fastScrollView.init(
