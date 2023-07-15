@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Not showing the item title and date in the media viewer when selecting content
 
+### Changed
+- Use the advanced system dialog (with chats, nearby share, etc.) when sharing a file
+
 ## [1.14.0] - 2023-07-11
 
 ### Fixed

@@ -605,7 +605,7 @@ class MediaViewerActivity : BaseActivity() {
                     "\ndownloadedFile=$downloadedFile"
         }
 
-        startActivity(resultIntent)
+        startActivity(Intent.createChooser(resultIntent, getString(R.string.share)))
     }
 
     private fun openDownloadedFile(
