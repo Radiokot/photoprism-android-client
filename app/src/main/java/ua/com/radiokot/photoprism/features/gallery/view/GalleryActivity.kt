@@ -711,6 +711,8 @@ class GalleryActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        // Detect moving to background to handle it on resume.
+        // If there is a better solution, I am happy to use it.
         isMovedBackByBackButton = !isFinishing && isBackButtonJustPressed
     }
 
