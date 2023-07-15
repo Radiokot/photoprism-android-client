@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Ability to select multiple items and share them directly from the gallery.
+To start selecting, make a long press on an item.
+
 ### Fixed
 - Not showing the item title and date in the media viewer when selecting content
 
