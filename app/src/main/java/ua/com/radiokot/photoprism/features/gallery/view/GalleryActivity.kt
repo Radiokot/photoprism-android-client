@@ -158,6 +158,9 @@ class GalleryActivity : BaseActivity() {
             }
         }
         view.galleryRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(singleListInitListener)
+
+        // Allow the view model to intercept back press.
+        onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
     private fun subscribeToData() {

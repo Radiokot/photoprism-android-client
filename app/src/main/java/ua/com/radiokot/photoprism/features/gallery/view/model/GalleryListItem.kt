@@ -162,32 +162,30 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 view.viewButton.isVisible = item.isViewButtonVisible
                 view.selectionCheckBox.isVisible = item.isSelectionViewVisible
 
-                if (item.isSelectionViewVisible) {
-                    view.selectionCheckBox.isChecked = item.isMediaSelected
+                view.selectionCheckBox.isChecked = item.isMediaSelected
 
-                    view.imageView.shapeAppearanceModel =
-                        if (item.isMediaSelected)
-                            selectedImageViewShape
-                        else
-                            defaultImageViewShape
+                view.imageView.shapeAppearanceModel =
+                    if (item.isMediaSelected)
+                        selectedImageViewShape
+                    else
+                        defaultImageViewShape
 
-                    if (item.isMediaSelected) {
-                        view.imageView.setColorFilter(selectedImageViewColorFilter)
-                        if (view.imageView.scaleX != selectedImageViewScale) {
-                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
-                                animateImageScale(selectedImageViewScale)
-                            } else {
-                                setImageScale(selectedImageViewScale)
-                            }
+                if (item.isMediaSelected) {
+                    view.imageView.setColorFilter(selectedImageViewColorFilter)
+                    if (view.imageView.scaleX != selectedImageViewScale) {
+                        if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                            animateImageScale(selectedImageViewScale)
+                        } else {
+                            setImageScale(selectedImageViewScale)
                         }
-                    } else {
-                        view.imageView.clearColorFilter()
-                        if (view.imageView.scaleX != 1f) {
-                            if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
-                                animateImageScale(1f)
-                            } else {
-                                setImageScale(1f)
-                            }
+                    }
+                } else {
+                    view.imageView.clearColorFilter()
+                    if (view.imageView.scaleX != 1f) {
+                        if (payloads.contains(PAYLOAD_ANIMATE_SELECTION)) {
+                            animateImageScale(1f)
+                        } else {
+                            setImageScale(1f)
                         }
                     }
                 }

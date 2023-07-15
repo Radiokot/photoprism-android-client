@@ -15,6 +15,7 @@ class GalleryListItemDiffCallback : DiffCallback<GalleryListItem> {
                 oldItem.isMediaSelected == newItem.isMediaSelected
                         && oldItem.isSelectionViewVisible == newItem.isSelectionViewVisible
                         && oldItem.isViewButtonVisible == newItem.isViewButtonVisible
+
             else ->
                 true
         }
@@ -27,7 +28,10 @@ class GalleryListItemDiffCallback : DiffCallback<GalleryListItem> {
     ): Any? {
         if (oldItem is GalleryListItem.Media && newItem is GalleryListItem.Media
             && oldItem.isMediaSelected != newItem.isMediaSelected
+            && oldItem.isSelectionViewVisible == newItem.isSelectionViewVisible
+            && oldItem.isViewButtonVisible == newItem.isViewButtonVisible
         ) {
+            // Only animate if the selection state change is the only one.
             return GalleryListItem.Media.ViewHolder.PAYLOAD_ANIMATE_SELECTION
         }
         return null

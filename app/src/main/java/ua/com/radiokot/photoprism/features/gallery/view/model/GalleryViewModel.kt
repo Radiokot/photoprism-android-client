@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -64,6 +65,9 @@ class GalleryViewModel(
         private set
     private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
     val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
+    val backPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = onBackPressed()
+    }
 
     fun initSelectionOnce(
         requestedMimeType: String?,
@@ -146,6 +150,14 @@ class GalleryViewModel(
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
         resetRepositoryToInitial()
+        initBackPressedCallback()
+    }
+
+    private fun initBackPressedCallback() {
+        state.subscribeBy { state ->
+            // Intercept back press only in selection for sharing state.
+            backPressedCallback.isEnabled = state is State.Selecting.ToShare
+        }.autoDispose(this)
     }
 
     private fun resetRepositoryToInitial() {
@@ -479,6 +491,7 @@ class GalleryViewModel(
 
         if (!currentMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
+
             currentMediaRepository.loadMore()
         }
     }
@@ -539,14 +552,14 @@ class GalleryViewModel(
 
         when (stateSubject.value.checkNotNull()) {
             State.Viewing -> {
+                log.debug { "onItemLongClicked(): switching_to_selecting_to_share" }
+
                 switchToSelectingToShare(media)
             }
 
             else -> {
                 // Long click does nothing in other states.
-                log.debug {
-                    "onItemLongClicked(): ignored"
-                }
+                log.debug { "onItemLongClicked(): ignored" }
             }
         }
     }
@@ -811,6 +824,10 @@ class GalleryViewModel(
     fun onClearMultipleSelectionClicked() {
         log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
 
+        clearMultipleSelection()
+    }
+
+    private fun clearMultipleSelection() {
         multipleSelectionFilesByMediaUid.clear()
         postGalleryItems()
         postMultipleSelectionItemsCount()
@@ -874,6 +891,32 @@ class GalleryViewModel(
                 }
             )
             .autoDispose(this)
+    }
+
+    private fun onBackPressed() {
+        log.debug { "onBackPressed(): handling_back_press" }
+
+        when (val state = stateSubject.value) {
+            State.Selecting.ToShare -> {
+                log.debug { "onBackPressed(): switching_to_viewing" }
+
+                switchToViewing()
+            }
+
+            else -> {
+                error("Back press must not be intercepted in the current state: $state")
+            }
+        }
+    }
+
+    private fun switchToViewing() {
+        assert(stateSubject.value is State.Selecting.ToShare) {
+            "Switching to viewing is only possible while selecting to share"
+        }
+
+        stateSubject.onNext(State.Viewing)
+
+        clearMultipleSelection()
     }
 
     sealed interface State {
