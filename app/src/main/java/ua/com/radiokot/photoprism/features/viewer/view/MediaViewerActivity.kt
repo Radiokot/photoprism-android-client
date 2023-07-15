@@ -597,8 +597,6 @@ class MediaViewerActivity : BaseActivity() {
             displayName = displayName,
         )
 
-        resultIntent.action = Intent.ACTION_SEND
-
         log.debug {
             "shareDownloadedFile(): starting_intent:" +
                     "\nintent=$resultIntent" +
@@ -617,9 +615,9 @@ class MediaViewerActivity : BaseActivity() {
             fileToReturn = downloadedFile,
             mimeType = mimeType,
             displayName = displayName,
-        )
-
-        resultIntent.action = Intent.ACTION_VIEW
+        ).also {
+            it.action = Intent.ACTION_VIEW
+        }
 
         log.debug {
             "openDownloadedFile(): starting_intent:" +

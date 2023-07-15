@@ -9,7 +9,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 /**
  * Exports the bookmarks from [searchBookmarksRepository]
@@ -64,9 +65,7 @@ class ExportSearchBookmarksUseCase(
             fileToReturn = outputFile,
             mimeType = backupStrategy.fileMimeType,
             displayName = sharingFileDisplayName,
-        ).apply {
-            action = Intent.ACTION_SEND
-        }
+        )
     }.toSingle()
 
     private companion object {

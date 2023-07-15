@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -34,6 +35,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
@@ -262,12 +264,13 @@ class GalleryActivity : BaseActivity() {
 
             when (event) {
                 is GalleryViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(
-                        files = event.files,
-                    )
+                    openMediaFilesDialog(event.files)
 
                 is GalleryViewModel.Event.ReturnDownloadedFiles ->
                     returnDownloadedFiles(event.files)
+
+                is GalleryViewModel.Event.ShareDownloadedFiles ->
+                    shareDownloadedFiles(event.files)
 
                 is GalleryViewModel.Event.OpenViewer ->
                     openViewer(
@@ -331,6 +334,27 @@ class GalleryActivity : BaseActivity() {
                     ContextCompat.getDrawable(this, R.drawable.ic_close)
                 else
                     null
+
+            with(view.doneSelectingFab) {
+                when (state) {
+                    is GalleryViewModel.State.Selecting.ToReturn -> {
+                        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_done))
+                        contentDescription = getString(R.string.done_selecting)
+                    }
+
+                    is GalleryViewModel.State.Selecting.ToShare -> {
+                        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_share))
+                        contentDescription = getString(R.string.share)
+                    }
+
+                    else -> {
+                        setImageDrawable(null)
+                        contentDescription = null
+                    }
+                }
+
+                ViewCompat.setTooltipText(this, contentDescription)
+            }
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +
@@ -555,17 +579,9 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun returnDownloadedFiles(
-        filesToReturn: List<GalleryViewModel.Event.ReturnDownloadedFiles.FileToReturn>,
+        filesToReturn: List<SendableFile>,
     ) {
-        val resultIntent = fileReturnIntentCreator.createIntent(
-            filesToReturn.map { fileToReturn ->
-                FileReturnIntentCreator.FileToReturn(
-                    file = fileToReturn.downloadedFile,
-                    mimeType = fileToReturn.mimeType,
-                    displayName = fileToReturn.displayName,
-                )
-            }
-        )
+        val resultIntent = fileReturnIntentCreator.createIntent(filesToReturn)
         setResult(RESULT_OK, resultIntent)
 
         log.debug {
@@ -575,6 +591,20 @@ class GalleryActivity : BaseActivity() {
         }
 
         finish()
+    }
+
+    private fun shareDownloadedFiles(
+        files: List<SendableFile>,
+    ) {
+        val resultIntent = fileReturnIntentCreator.createIntent(files)
+
+        log.debug {
+            "shareDownloadedFiles(): starting_intent:" +
+                    "\nintent=$resultIntent," +
+                    "\nfilesCount=${files.size}"
+        }
+
+        startActivity(Intent.createChooser(resultIntent, getString(R.string.share)))
     }
 
     private fun openViewer(

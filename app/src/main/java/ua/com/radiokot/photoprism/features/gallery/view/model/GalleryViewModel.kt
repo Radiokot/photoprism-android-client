@@ -22,6 +22,7 @@ import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnv
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -674,10 +675,9 @@ class GalleryViewModel(
             onSuccess = { destinationFile ->
                 eventsSubject.onNext(
                     Event.ReturnDownloadedFiles(
-                        Event.ReturnDownloadedFiles.FileToReturn(
-                            downloadedFile = destinationFile,
-                            mimeType = file.mimeType,
-                            displayName = File(file.name).name
+                        SendableFile(
+                            downloadedMediaFile = destinationFile,
+                            mediaFile = file,
                         )
                     )
                 )
@@ -698,25 +698,30 @@ class GalleryViewModel(
         downloadMediaFileViewModel.downloadFiles(
             filesAndDestinations = filesAndDestinations,
             onSuccess = {
-                log.debug { "downloadAndReturnMultipleSelectionFiles(): download_completed" }
+                val downloadedFiles = filesAndDestinations.map { (mediaFile, destination) ->
+                    SendableFile(
+                        downloadedMediaFile = destination,
+                        mediaFile = mediaFile,
+                    )
+                }
 
                 when (selectingState) {
                     is State.Selecting.ToReturn -> {
-                        eventsSubject.onNext(
-                            Event.ReturnDownloadedFiles(
-                                filesAndDestinations.map { (mediaFile, destination) ->
-                                    Event.ReturnDownloadedFiles.FileToReturn(
-                                        downloadedFile = destination,
-                                        mimeType = mediaFile.mimeType,
-                                        displayName = File(mediaFile.name).name
-                                    )
-                                }
-                            )
-                        )
+                        log.debug {
+                            "downloadMultipleSelectionFilesAndFinishSelection(): returning_files:" +
+                                    "\ndownloadedFiles=${downloadedFiles.size}"
+                        }
+
+                        eventsSubject.onNext(Event.ReturnDownloadedFiles(downloadedFiles))
                     }
 
                     is State.Selecting.ToShare -> {
-                        // TODO: Share downloaded files
+                        log.debug {
+                            "downloadMultipleSelectionFilesAndFinishSelection(): sharing_files:" +
+                                    "\ndownloadedFiles=${downloadedFiles.size}"
+                        }
+
+                        eventsSubject.onNext(Event.ShareDownloadedFiles(downloadedFiles))
                     }
                 }
             }
@@ -922,16 +927,17 @@ class GalleryViewModel(
          * Return the files to the requesting app when the selection is done.
          */
         class ReturnDownloadedFiles(
-            val files: List<FileToReturn>,
+            val files: List<SendableFile>,
         ) : Event {
-            constructor(fileToReturn: FileToReturn) : this(listOf(fileToReturn))
-
-            data class FileToReturn(
-                val downloadedFile: File,
-                val mimeType: String,
-                val displayName: String,
-            )
+            constructor(downloadedFile: SendableFile) : this(listOf(downloadedFile))
         }
+
+        /**
+         * Share the files with any app of the user's choice when the selection is done.
+         */
+        class ShareDownloadedFiles(
+            val files: List<SendableFile>,
+        ) : Event
 
         class OpenViewer(
             val mediaIndex: Int,
