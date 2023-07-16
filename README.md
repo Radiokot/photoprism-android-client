@@ -23,11 +23,11 @@ you can use your favorite image editor or video player instead of web viewer
 ## Other features
 - Chronological grouping – the content is grouped by days
 - Chronological fast scroll – slide the scroll bar to quickly jump to a specific month
-- Search by media types and custom queries
-- Search bookmarks – the search configuration can be bookmarked and applied later with a click
+- [Search by media types and custom queries](https://docs.photoprism.app/user-guide/search/filters/#using-search-filters)
+- [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) – the search configuration can be bookmarked and applied later with a click
 - Endless session – no need to re-enter password
-- Connection to both private and public libraries
-- Support of mTLS (mutual TLS) and HTTP basic authentication
+- [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
+- Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F) and [HTTP basic authentication](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - TV compatibility – easy browsing with a remote-control
 
 The gallery is not intended to sync content with the library. 
