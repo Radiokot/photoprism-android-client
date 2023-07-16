@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -574,6 +575,12 @@ class GalleryActivity : BaseActivity() {
         view.doneSelectingFab.setOnClickListener {
             viewModel.onDoneMultipleSelectionClicked()
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            ShareSheetShareEventReceiver.shareEvents.subscribeBy {
+                viewModel.onDownloadedFilesShared()
+            }.autoDispose(this)
+        }
     }
 
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
@@ -607,13 +614,44 @@ class GalleryActivity : BaseActivity() {
     ) {
         val resultIntent = fileReturnIntentCreator.createIntent(files)
 
-        log.debug {
-            "shareDownloadedFiles(): starting_intent:" +
-                    "\nintent=$resultIntent," +
-                    "\nfilesCount=${files.size}"
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // From Android 5.1 it is possible to get a callback on successful sharing,
+            // which is used to exit Selection once the files are shared.
+            val callbackPendingIntent = ShareSheetShareEventReceiver.getPendingIntent(this)
 
-        startActivity(Intent.createChooser(resultIntent, getString(R.string.share)))
+            log.debug {
+                "shareDownloadedFiles(): starting_intent_with_callback:" +
+                        "\nintent=$resultIntent," +
+                        "\ncallbackPendingIntent=$callbackPendingIntent," +
+                        "\nfilesCount=${files.size}"
+            }
+
+            startActivity(
+                Intent.createChooser(
+                    resultIntent,
+                    getString(R.string.share),
+                    callbackPendingIntent.intentSender
+                )
+            )
+        } else {
+            // If there is no way to determine whether the files are shared,
+            // just assume they are once the dialog is opened.
+
+            log.debug {
+                "shareDownloadedFiles(): starting_intent:" +
+                        "\nintent=$resultIntent," +
+                        "\nfilesCount=${files.size}"
+            }
+
+            startActivity(
+                Intent.createChooser(
+                    resultIntent,
+                    getString(R.string.share),
+                )
+            )
+
+            viewModel.onDownloadedFilesShared()
+        }
     }
 
     private fun openViewer(

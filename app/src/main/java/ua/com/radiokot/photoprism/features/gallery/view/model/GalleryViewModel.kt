@@ -919,6 +919,10 @@ class GalleryViewModel(
         clearMultipleSelection()
     }
 
+    fun onDownloadedFilesShared() {
+        switchToViewing()
+    }
+
     sealed interface State {
         /**
          * Viewing the gallery content.
@@ -964,6 +968,11 @@ class GalleryViewModel(
     }
 
     sealed interface Event {
+        /**
+         * Open the media file selection dialog.
+         *
+         * Once selected, the [onFileSelected] method should be called.
+         */
         class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
 
         /**
@@ -977,6 +986,8 @@ class GalleryViewModel(
 
         /**
          * Share the files with any app of the user's choice when the selection is done.
+         *
+         * Once shared, the [onDownloadedFilesShared] method should be called.
          */
         class ShareDownloadedFiles(
             val files: List<SendableFile>,
@@ -993,6 +1004,12 @@ class GalleryViewModel(
          */
         object ResetScroll : Event
 
+        /**
+         * Show a dismissible floating error.
+         *
+         * The [onFloatingErrorRetryClicked] method should be called
+         * if the error assumes retrying.
+         */
         class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event

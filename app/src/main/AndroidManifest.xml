@@ -91,6 +91,10 @@
             android:authorities="${fileProviderAuthority}"
             android:exported="false"
             android:grantUriPermissions="true" />
+
+        <receiver
+            android:name=".features.gallery.view.ShareSheetShareEventReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
