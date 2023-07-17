@@ -248,6 +248,7 @@ icon on the main screen
 `PHOTOPRISM_SITE_URL` server config value 
 
 [Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.14.0(22)...HEAD
+[1.15.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.14.0(22)...1.15.0(23)
 [1.14.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...1.14.0(22)
 [1.13.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...1.13.0(21)
 [1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
