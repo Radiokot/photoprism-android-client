@@ -1,0 +1,9 @@
+Added:
+- Ability to select multiple items and share them directly from the gallery.
+To start selecting, make a long press on an item.
+
+Fixed:
+- Not showing the item title and date in the media viewer when selecting content
+
+Changed:
+- Use the advanced system dialog (with chats, nearby share, etc.) when sharing a file
