@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Fixed
 - Connection screen allowing connection to a private library without credentials
+- Not finding a private entry when opening in the web viewer
 
 ## [1.15.0] - 2023-07-18
 

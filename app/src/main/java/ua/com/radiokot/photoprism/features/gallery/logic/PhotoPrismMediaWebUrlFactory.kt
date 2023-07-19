@@ -13,7 +13,7 @@ class PhotoPrismMediaWebUrlFactory(
     override fun getWebViewUrl(uid: String): String =
         browseUrlBase.newBuilder()
             // Override default quality setting of the demo env.
-            .addQueryParameter("q", "uid:$uid quality:0")
+            .addQueryParameter("q", "uid:$uid quality:0 public:false")
             // Force include private.
             .addQueryParameter("public", "false")
             // Force "cards" view for immersion (big thumbnail with EXIF data).

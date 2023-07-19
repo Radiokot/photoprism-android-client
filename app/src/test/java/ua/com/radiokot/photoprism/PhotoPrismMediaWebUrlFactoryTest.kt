@@ -15,7 +15,7 @@ class PhotoPrismMediaWebUrlFactoryTest {
             uid = "prtkeob2g20yq13w",
         )
         Assert.assertEquals(
-            "https://photoprism.me/library/browse?q=uid%3Aprtkeob2g20yq13w%20quality%3A0&public=false&view=cards",
+            "https://photoprism.me/library/browse?q=uid%3Aprtkeob2g20yq13w%20quality%3A0%20public%3Afalse&public=false&view=cards",
             url
         )
     }
