@@ -7,6 +7,7 @@
         android:id="@+id/close"
         android:icon="@drawable/ic_close"
         android:title="@string/cancel"
+        app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="ifRoom"
         tools:ignore="PrivateResource" />
 
