@@ -75,7 +75,11 @@ class ConnectToEnvUseCase(
         // If the auth is public, check that the env is actually public.
             getEnvClientConfig()
                 .map { photoPrismConfig ->
-                    photoPrismConfig.public
+                    if (!photoPrismConfig.public) {
+                        throw EnvIsNotPublicException()
+                    } else {
+                        true
+                    }
                 }
         else
         // Otherwise, there is currently nothing to check.
