@@ -360,12 +360,20 @@ class MediaViewerActivity : BaseActivity() {
                 log.debug { "initKeyboardNavigation(): focus_view_got_focus" }
             }
         }
+
+        requestFocus()
     }
 
     private fun initToolbar() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
+
+        // Make all the toolbar views not focusable
+        // to not mess with the keyboard navigation.
+        view.toolbar.forEach { toolbarView ->
+            toolbarView.isFocusable = false
+        }
     }
 
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {

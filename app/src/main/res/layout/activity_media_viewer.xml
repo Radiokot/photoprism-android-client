@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/media_viewer_toolbar_background"
         android:fitsSystemWindows="true"
+        android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:subtitleTextAppearance="@style/TextAppearance.Material3.BodyMedium"
