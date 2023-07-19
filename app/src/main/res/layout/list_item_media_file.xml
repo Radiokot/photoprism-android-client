@@ -5,6 +5,10 @@
     android:id="@+id/list_item_media_file"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/focusable_list_item_background"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingHorizontal="8dp"
     android:paddingVertical="8dp">
 
     <ImageView
