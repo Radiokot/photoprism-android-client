@@ -4,7 +4,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
 [![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=4&color=e2e0f6&style=flat-square)](#sponsors) 
 
-A user-friendly Android gallery that allows browsing [your library](https://www.photoprism.app/) content and sending it to other apps. 
+This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
 <p float="left">
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width=200 />
@@ -13,29 +13,23 @@ A user-friendly Android gallery that allows browsing [your library](https://www.
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width=200 />
 </p>
 
-The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and, no matter what, [feels like a web page](https://blog.perryizgr8.com/photos/2023/03/20/google-photos-alt.html#photoprism).
-This app does not (and probably will not) support all the web-client features, but nevertheless it can:
-- Provide the library content to other Android apps – 
-you can select PhotoPrism Gallery among other galleries when picking a photo or video
-- Open the library content in suitable apps –
-you can use your favorite image editor or video player instead of web viewer
-
-## Other features
-- Chronological grouping – the content is grouped by days
-- Chronological fast scroll – slide the scroll bar to quickly jump to a specific month
-- [Search by media types and custom queries](https://docs.photoprism.app/user-guide/search/filters/#using-search-filters)
-- [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) – the search configuration can be bookmarked and applied later with a click
-- Endless session – no need to re-enter password
+It does not support all the official web app functionality, but nevertheless has plenty of useful features:
+- Sending photos or videos to Gmail, Telegram or any other app
+- Grouping the content by days and months
+- Chronological scroll bar that lets you quickly jump to a specific month
+- Configurable search
+- [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) that let you save search configurations and apply them later
+- Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F) and [HTTP basic authentication](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
-- TV compatibility – easy browsing with a remote-control
+- TV compatibility to easily browse your library with a remote-control
 
 The gallery is not intended to sync content with the library. 
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from 
-[June 7, 2023](https://github.com/photoprism/photoprism/releases/tag/230607-9e086c7eb) 
+[July 19, 2023](https://github.com/photoprism/photoprism/releases/tag/230719-73fa7bbe8) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
 The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), 
@@ -61,9 +55,9 @@ When a new version of PhotoPrism comes out, the app may break.
 - Kotlin
 - RxJava
 - Koin dependency injection
-- OkHTTP + Retrofit
-- ViewModel
-- Room
+- OkHTTP networking + Retrofit
+- Room database
 - kotlin-logging with slf4j-handroid
 - ExoPlayer
 - FastAdapter
+- ViewModel

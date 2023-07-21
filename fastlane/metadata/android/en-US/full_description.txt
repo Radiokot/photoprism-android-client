@@ -1,16 +1,13 @@
-The official PhotoPrism PWA, despite being mobile-friendly, can't be integrated into the OS and, no matter what, feels like a web page.
-This app does not (and probably will not) support all the web-client features, but nevertheless it can:
-- Provide the library content to other Android apps – you can select PhotoPrism Gallery among other galleries when picking a photo or video
-- Open the library content in suitable apps – you can use your favorite image editor or video player instead of web viewer
-
-There are more handy features in the gallery:
-- Chronological grouping – the content is grouped by days
-- Chronological fast scroll – slide the scroll bar to quickly jump to a specific month
-- Search by media types and custom queries
-- Search bookmarks – the search configuration can be bookmarked and applied later with a click
-- Endless session – no need to re-enter password
+This app brings a convenient mobile gallery experience for PhotoPrism.
+It does not support all the official web app functionality, but nevertheless has plenty of useful features:
+- Sending photos or videos to Gmail, Telegram or any other app
+- Grouping the content by days and months
+- Chronological scroll bar that lets you quickly jump to a specific month
+- Configurable search
+- Search bookmarks that let you save search configurations and apply them later
+- Endless session without the need to re-enter the password
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
-- TV compatibility – easy browsing with a remote-control
+- TV compatibility to easily browse your library with a remote-control
 
-The gallery is confirmed to work with PhotoPrism versions from June 7, 2023 down to October 9, 2021
+The gallery is confirmed to work with PhotoPrism versions from July 19, 2023 down to October 9, 2021
