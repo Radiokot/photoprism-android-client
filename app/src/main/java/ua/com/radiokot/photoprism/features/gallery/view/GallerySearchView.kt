@@ -33,6 +33,7 @@ import com.google.android.material.search.SearchView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.core.component.KoinComponent
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.extension.*
@@ -52,8 +53,12 @@ class GallerySearchView(
     @MenuRes
     private val menuRes: Int?,
     lifecycleOwner: LifecycleOwner,
-) : LifecycleOwner by lifecycleOwner {
+) : LifecycleOwner by lifecycleOwner, KoinComponent {
     private val log = kLogger("GallerySearchView")
+
+    private val searchFiltersGuideUrl = getKoin()
+        .getProperty<String>("searchFiltersGuideUrl")
+        .checkNotNull { "Missing search filters guide URL" }
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
@@ -151,7 +156,7 @@ class GallerySearchView(
             viewModel.onConfigurationBackClicked()
         }
 
-        with (searchBar) {
+        with(searchBar) {
             textView.ellipsize = TextUtils.TruncateAt.END
 
             // Override the default bar click listener
@@ -470,7 +475,7 @@ class GallerySearchView(
                     )
 
                 is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
-                    openSearchFiltersGuide(url = event.url)
+                    openSearchFiltersGuide()
             }
 
             log.debug {
@@ -603,11 +608,11 @@ class GallerySearchView(
         }
     }
 
-    private fun openSearchFiltersGuide(url: String) {
+    private fun openSearchFiltersGuide() {
         context.startActivity(
             Intent(context, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
-                    url = url,
+                    url = searchFiltersGuideUrl,
                     titleRes = R.string.using_search_filters,
                     pageStartedInjectionScripts = setOf(
                         WebViewInjectionScriptFactory.Script.PHOTOPRISM_HELP_IMMERSIVE,

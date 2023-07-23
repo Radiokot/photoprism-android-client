@@ -9,6 +9,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.android.ext.android.getKoin
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -16,6 +17,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
 import ua.com.radiokot.photoprism.databinding.IncludeEnvConnectionFieldsBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
@@ -29,6 +31,12 @@ class EnvConnectionActivity : BaseActivity() {
     private lateinit var view: ActivityEnvConnectionBinding
     private lateinit var fields: IncludeEnvConnectionFieldsBinding
     private val viewModel: EnvConnectionViewModel by viewModel()
+    private val clientCertificateGuideUrl: String = getKoin()
+        .getProperty<String>("clientCertificatesGuideUrl")
+        .checkNotNull { "Missing client certificate guide URL" }
+    private val connectionGuideUrl: String = getKoin()
+        .getProperty<String>("connectionGuideUrl")
+        .checkNotNull { "Missing connection guide URL" }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,10 +208,10 @@ class EnvConnectionActivity : BaseActivity() {
                     showMissingClientCertificatesNotice()
 
                 is EnvConnectionViewModel.Event.OpenConnectionGuide ->
-                    openConnectionGuide(url = event.url)
+                    openConnectionGuide()
 
                 is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
-                    openClientCertificateGuide(url = event.url)
+                    openClientCertificateGuide()
             }
 
             log.debug {
@@ -254,11 +262,11 @@ class EnvConnectionActivity : BaseActivity() {
             .show()
     }
 
-    private fun openConnectionGuide(url: String) {
+    private fun openConnectionGuide() {
         startActivity(
             Intent(this, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
-                    url = url,
+                    url = connectionGuideUrl,
                     titleRes = R.string.connect_to_a_library,
                     pageStartedInjectionScripts = setOf(
                         WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
@@ -268,11 +276,11 @@ class EnvConnectionActivity : BaseActivity() {
         )
     }
 
-    private fun openClientCertificateGuide(url: String) {
+    private fun openClientCertificateGuide() {
         startActivity(
             Intent(this, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
-                    url = url,
+                    url = clientCertificateGuideUrl,
                     titleRes = R.string.how_to_use_client_certificate,
                     pageStartedInjectionScripts = setOf(
                         WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,

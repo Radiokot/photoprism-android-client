@@ -19,7 +19,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksR
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
     val albumsViewModel: GallerySearchAlbumsViewModel,
-    private val searchFiltersGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
@@ -441,11 +440,10 @@ class GallerySearchViewModel(
 
     fun onSearchFiltersGuideClicked() {
         log.debug {
-            "onSearchFiltersGuideClicked(): opening_guide:" +
-                    "\nurl=$searchFiltersGuideUrl"
+            "onSearchFiltersGuideClicked(): opening_guide"
         }
 
-        eventsSubject.onNext(Event.OpenSearchFiltersGuide(url = searchFiltersGuideUrl))
+        eventsSubject.onNext(Event.OpenSearchFiltersGuide)
     }
 
     sealed interface State {
@@ -460,6 +458,6 @@ class GallerySearchViewModel(
             val existingBookmark: SearchBookmark?,
         ) : Event
 
-        class OpenSearchFiltersGuide(val url: String) : Event
+        object OpenSearchFiltersGuide : Event
     }
 }

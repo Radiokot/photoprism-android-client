@@ -72,6 +72,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         },
         this::writeBookmarksExportToFile
     )
+    private val issueReportingUrl: String = getKoin()
+        .getProperty<String>("issueReportingUrl")
+        .checkNotNull { "Missing issue reporting URL" }
+    private val guidesSummaryUrl: String = getKoin()
+        .getProperty<String>("guidesSummaryUrl")
+        .checkNotNull { "Missing guides summary URL" }
+    private val sourceCodeUrl: String = getKoin()
+        .getProperty<String>("sourceCodeUrl")
+        .checkNotNull { "Missing source code URL" }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -409,7 +418,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 .setUrlBarHidingEnabled(true)
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
-            url = getKoin().getProperty("issueReportingUrl")!!,
+            url = issueReportingUrl,
             titleRes = R.string.report_an_issue
         )
     }
@@ -438,7 +447,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             Intent(requireContext(), WebViewActivity::class.java)
                 .putExtras(
                     WebViewActivity.getBundle(
-                        url = getKoin().getProperty("guidesSummaryUrl")!!,
+                        url = guidesSummaryUrl,
                         titleRes = R.string.user_guides,
                         pageFinishedInjectionScripts = setOf(
                             WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
@@ -460,7 +469,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 .setUrlBarHidingEnabled(true)
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
-            url = getKoin().getProperty("sourceCodeUrl")!!,
+            url = sourceCodeUrl,
             titleRes = R.string.app_name
         )
     }

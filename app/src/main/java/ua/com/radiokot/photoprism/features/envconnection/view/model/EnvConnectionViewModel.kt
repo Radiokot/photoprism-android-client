@@ -25,8 +25,6 @@ typealias ConnectUseCaseProvider = (
 
 class EnvConnectionViewModel(
     private val connectUseCaseProvider: ConnectUseCaseProvider,
-    private val clientCertificatesGuideUrl: String,
-    private val rootUrlGuideUrl: String,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
@@ -134,19 +132,11 @@ class EnvConnectionViewModel(
     }
 
     fun onCertificateLearnMoreButtonClicked() {
-        eventsSubject.onNext(
-            Event.OpenClientCertificateGuide(
-                url = clientCertificatesGuideUrl,
-            )
-        )
+        eventsSubject.onNext(Event.OpenClientCertificateGuide)
     }
 
     fun onRootUrlGuideButtonClicked() {
-        eventsSubject.onNext(
-            Event.OpenConnectionGuide(
-                url = rootUrlGuideUrl,
-            )
-        )
+        eventsSubject.onNext(Event.OpenConnectionGuide)
     }
 
     private fun connect() {
@@ -214,8 +204,10 @@ class EnvConnectionViewModel(
                     when (error) {
                         is InvalidCredentialsException ->
                             passwordError.value = PasswordError.Invalid
+
                         is EnvIsNotPublicException ->
                             rootUrlError.value = RootUrlError.RequiresCredentials
+
                         else ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
                     }
@@ -243,7 +235,7 @@ class EnvConnectionViewModel(
         object GoToGallery : Event
         object ChooseClientCertificateAlias : Event
         object ShowMissingClientCertificatesNotice : Event
-        class OpenConnectionGuide(val url: String) : Event
-        class OpenClientCertificateGuide(val url: String) : Event
+        object OpenConnectionGuide : Event
+        object OpenClientCertificateGuide : Event
     }
 }

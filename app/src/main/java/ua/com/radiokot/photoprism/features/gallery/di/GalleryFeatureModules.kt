@@ -126,7 +126,6 @@ val galleryFeatureModules: List<Module> = listOf(
                 GallerySearchViewModel(
                     bookmarksRepository = get(),
                     albumsViewModel = get(),
-                    searchFiltersGuideUrl = getProperty("searchFiltersGuideUrl")
                 )
             }
 

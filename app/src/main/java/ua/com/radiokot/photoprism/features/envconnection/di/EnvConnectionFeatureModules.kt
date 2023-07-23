@@ -115,8 +115,6 @@ val envConnectionFeatureModules: List<Module> = listOf(
                         )
                     }
                 },
-                clientCertificatesGuideUrl = getProperty("clientCertificatesGuideUrl"),
-                rootUrlGuideUrl = getProperty("connectionGuideUrl"),
             )
         }
     },
