@@ -85,7 +85,7 @@ class GallerySearchViewModel(
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
 
     val canMoveBookmarks: Boolean
-        get() = stateSubject.value is State.ConfiguringSearch
+        get() = stateSubject.value is State.Configuring
                 && !bookmarksRepository.isLoading
                 && areBookmarksCurrentlyMoving.value == false
 
@@ -116,10 +116,10 @@ class GallerySearchViewModel(
         isBookmarksSectionVisible.value = newBookmarks.isNotEmpty()
 
         val currentState = stateSubject.value!!
-        if (currentState is State.AppliedSearch) {
+        if (currentState is State.Applied) {
             val matchedBookmark = bookmarksRepository.findByConfig(currentState.search.config)
             stateSubject.onNext(
-                State.AppliedSearch(
+                State.Applied(
                     // If a bookmark has been created or updated for the current search,
                     // switch to an equivalent bookmarked search.
                     if (matchedBookmark != null)
@@ -151,20 +151,25 @@ class GallerySearchViewModel(
         }
     }
 
-    fun onConfigurationViewOpening() {
-        log.debug {
-            "onConfigurationViewOpening(): configuration_view_is_opening"
-        }
+    fun onSearchBarClicked() {
+        switchToConfiguring()
+    }
 
+    private fun switchToConfiguring() {
         when (val state = stateSubject.value!!) {
-            is State.AppliedSearch -> {
+            is State.Applied -> {
                 selectedMediaTypes.value = state.search.config.mediaTypes
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
                 selectedAlbumUid.value = state.search.config.albumUid
 
+                log.debug {
+                    "switchToConfiguringSearch(): switching_to_configuring:" +
+                            "\nalreadyApplied=${state.search}"
+                }
+
                 stateSubject.onNext(
-                    State.ConfiguringSearch(
+                    State.Configuring(
                         alreadyAppliedSearch = state.search,
                     )
                 )
@@ -176,16 +181,19 @@ class GallerySearchViewModel(
                 includePrivateContent.value = searchDefaults.includePrivate
                 selectedAlbumUid.value = searchDefaults.albumUid
 
+                log.debug {
+                    "switchToConfiguringSearch(): switching_to_configuring"
+                }
+
                 stateSubject.onNext(
-                    State.ConfiguringSearch(
+                    State.Configuring(
                         alreadyAppliedSearch = null
                     )
                 )
             }
 
-            is State.ConfiguringSearch -> {
-                // Nothing to change.
-            }
+            is State.Configuring ->
+                error("Can't switch to configuring while already configuring")
         }
 
         updateExternalData()
@@ -194,26 +202,6 @@ class GallerySearchViewModel(
     private fun updateExternalData() {
         bookmarksRepository.updateIfNotFresh()
         albumsViewModel.updateIfNotFresh()
-    }
-
-    fun onConfigurationViewClosing() {
-        log.debug {
-            "onConfigurationViewClosing(): configuration_view_is_closing"
-        }
-
-        when (val state = stateSubject.value!!) {
-            is State.AppliedSearch,
-            is State.NoSearch -> {
-                // Expected.
-            }
-            is State.ConfiguringSearch -> {
-                if (state.alreadyAppliedSearch != null) {
-                    stateSubject.onNext(State.AppliedSearch(state.alreadyAppliedSearch))
-                } else {
-                    stateSubject.onNext(State.NoSearch)
-                }
-            }
-        }
     }
 
     fun onSearchClicked() {
@@ -228,7 +216,7 @@ class GallerySearchViewModel(
     }
 
     private fun applyConfiguredSearch() {
-        check(stateSubject.value is State.ConfiguringSearch) {
+        check(stateSubject.value is State.Configuring) {
             "The search can only be applied while configuring"
         }
 
@@ -251,7 +239,7 @@ class GallerySearchViewModel(
                     "\nsearch=$appliedSearch"
         }
 
-        stateSubject.onNext(State.AppliedSearch(appliedSearch))
+        stateSubject.onNext(State.Applied(appliedSearch))
     }
 
     fun onResetClicked() {
@@ -266,22 +254,37 @@ class GallerySearchViewModel(
         stateSubject.onNext(State.NoSearch)
     }
 
-    fun closeConfigurationView() {
-        log.debug {
-            "closeConfigurationView(): closing_configuration_view"
+    fun onConfigurationBackClicked() {
+        switchBackFromConfiguring()
+    }
+
+    fun switchBackFromConfiguring() {
+        val configuringState = checkNotNull(stateSubject.value as? State.Configuring) {
+            "Switch back from configuring is only possible in the corresponding state"
         }
 
-        // TODO combine with onConfigurationViewClosing.
-        // Make the ViewModel control the visibility, not the view.
-        // Intercept "<-" press.
-        eventsSubject.onNext(Event.CloseSearchConfigurationView)
+        val alreadyAppliedSearch = configuringState.alreadyAppliedSearch
+        if (alreadyAppliedSearch != null) {
+            log.debug {
+                "switchBackFromConfiguring(): switching_to_applied:" +
+                        "\napplied=${alreadyAppliedSearch}"
+            }
+
+            stateSubject.onNext(State.Applied(alreadyAppliedSearch))
+        } else {
+            log.debug {
+                "switchBackFromConfiguring(): switching_to_no_search"
+            }
+
+            stateSubject.onNext(State.NoSearch)
+        }
     }
 
     fun onAddBookmarkClicked() {
-        val appliedSearchState = (stateSubject.value as? State.AppliedSearch).checkNotNull {
+        val appliedState = (stateSubject.value as? State.Applied).checkNotNull {
             "Add bookmark button is only clickable in the applied search state"
         }
-        check(appliedSearchState.search !is AppliedGallerySearch.Bookmarked) {
+        check(appliedState.search !is AppliedGallerySearch.Bookmarked) {
             "Add bookmark button can't be clicked in the applied bookmarked search state"
         }
 
@@ -291,17 +294,17 @@ class GallerySearchViewModel(
 
         eventsSubject.onNext(
             Event.OpenBookmarkDialog(
-                searchConfig = appliedSearchState.search.config,
+                searchConfig = appliedState.search.config,
                 existingBookmark = null,
             )
         )
     }
 
     fun onEditBookmarkClicked() {
-        val appliedSearchState = (stateSubject.value as? State.AppliedSearch).checkNotNull {
+        val appliedState = (stateSubject.value as? State.Applied).checkNotNull {
             "Edit bookmark button is only clickable in the applied search state"
         }
-        val bookmark = (appliedSearchState.search as? AppliedGallerySearch.Bookmarked)
+        val bookmark = (appliedState.search as? AppliedGallerySearch.Bookmarked)
             ?.bookmark
             .checkNotNull {
                 "Edit bookmark button is only clickable when a bookmarked search is applied"
@@ -321,7 +324,7 @@ class GallerySearchViewModel(
     }
 
     fun onBookmarkChipClicked(item: SearchBookmarkItem) {
-        check(stateSubject.value is State.ConfiguringSearch) {
+        check(stateSubject.value is State.Configuring) {
             "Bookmark chips are clickable only in the search configuration state"
         }
 
@@ -353,7 +356,7 @@ class GallerySearchViewModel(
     }
 
     fun onBookmarkChipEditClicked(item: SearchBookmarkItem) {
-        check(stateSubject.value is State.ConfiguringSearch) {
+        check(stateSubject.value is State.Configuring) {
             "Bookmark chip edit buttons are clickable only in the search configuration state"
         }
 
@@ -376,7 +379,7 @@ class GallerySearchViewModel(
      * @param placedAfter Item after which the chip is placed, or null if placed at the start
      */
     fun onBookmarkChipMoved(item: SearchBookmarkItem, placedAfter: SearchBookmarkItem?) {
-        check(stateSubject.value is State.ConfiguringSearch) {
+        check(stateSubject.value is State.Configuring) {
             "Bookmark chips are movable only in the search configuration state"
         }
 
@@ -408,7 +411,7 @@ class GallerySearchViewModel(
         first: SearchBookmarkItem,
         second: SearchBookmarkItem,
     ) {
-        check(stateSubject.value is State.ConfiguringSearch) {
+        check(stateSubject.value is State.Configuring) {
             "Bookmark chips are movable only in the search configuration state"
         }
 
@@ -447,8 +450,8 @@ class GallerySearchViewModel(
 
     sealed interface State {
         object NoSearch : State
-        data class ConfiguringSearch(val alreadyAppliedSearch: AppliedGallerySearch?) : State
-        data class AppliedSearch(val search: AppliedGallerySearch) : State
+        data class Configuring(val alreadyAppliedSearch: AppliedGallerySearch?) : State
+        data class Applied(val search: AppliedGallerySearch) : State
     }
 
     sealed interface Event {
@@ -458,7 +461,5 @@ class GallerySearchViewModel(
         ) : Event
 
         class OpenSearchFiltersGuide(val url: String) : Event
-
-        object CloseSearchConfigurationView: Event
     }
 }

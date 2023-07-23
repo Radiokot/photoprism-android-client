@@ -77,7 +77,7 @@ class GalleryViewModel(
         searchViewModel.resetSearch()
     }
     private val closeSearchConfigurationOnBackPress = {
-        searchViewModel.closeConfigurationView()
+        searchViewModel.switchBackFromConfiguring()
     }
     private val switchBackToViewingOnBackPress = {
         switchToViewing()
@@ -198,7 +198,7 @@ class GalleryViewModel(
             }
 
             when (state) {
-                is GallerySearchViewModel.State.AppliedSearch -> {
+                is GallerySearchViewModel.State.Applied -> {
                     val currentState = stateSubject.value
                     val searchConfigToApply: SearchConfig =
                         if (currentState is State.Selecting.ToReturn) {
@@ -241,7 +241,7 @@ class GalleryViewModel(
                     backPressActionsStack.removeAction(closeSearchConfigurationOnBackPress)
                 }
 
-                is GallerySearchViewModel.State.ConfiguringSearch -> {
+                is GallerySearchViewModel.State.Configuring -> {
                     // Make the back button press close the search configuration view.
                     backPressActionsStack.pushUniqueAction(closeSearchConfigurationOnBackPress)
                 }

@@ -94,10 +94,8 @@ class GallerySearchView(
 
             when (newState) {
                 SearchView.TransitionState.SHOWING -> {
-                    viewModel.onConfigurationViewOpening()
-                    searchTextStash = searchView.editText.text
-
                     // Override logic of the SearchView setting the SearchBar text.
+                    searchTextStash = searchView.editText.text
                     searchView.editText.post {
                         searchView.editText.text = searchTextStash
                         searchView.editText.setSelection(searchTextStash?.length ?: 0)
@@ -115,11 +113,9 @@ class GallerySearchView(
                     initAlbumsListOnce()
                 }
 
-                SearchView.TransitionState.HIDING -> {
-                    viewModel.onConfigurationViewClosing()
+                else -> {
+                    // Noting to do.
                 }
-
-                else -> {}
             }
         }
 
@@ -149,6 +145,24 @@ class GallerySearchView(
             bindTextTwoWay(viewModel.userQuery)
         }
 
+        // Override the default back click listener
+        // to make the ViewModel in charge of the state.
+        searchView.toolbar.setNavigationOnClickListener {
+            viewModel.onConfigurationBackClicked()
+        }
+
+        with (searchBar) {
+            textView.ellipsize = TextUtils.TruncateAt.END
+
+            // Override the default bar click listener
+            // to make the ViewModel in charge of the state.
+            post {
+                setOnClickListener {
+                    viewModel.onSearchBarClicked()
+                }
+            }
+        }
+
         configurationView.privateContentSwitch.bindCheckedTwoWay(viewModel.includePrivateContent)
 
         configurationView.searchButton.setOnClickListener {
@@ -158,8 +172,6 @@ class GallerySearchView(
         configurationView.resetButton.setOnClickListener {
             viewModel.onResetClicked()
         }
-
-        searchBar.textView.ellipsize = TextUtils.TruncateAt.END
     }
 
     private fun initMenus() {
@@ -386,13 +398,13 @@ class GallerySearchView(
             searchBar.post {
                 searchBar.text =
                     when (state) {
-                        is GallerySearchViewModel.State.AppliedSearch ->
+                        is GallerySearchViewModel.State.Applied ->
                             getSearchBarText(
                                 search = state.search,
                                 textView = searchBar.textView,
                             )
 
-                        is GallerySearchViewModel.State.ConfiguringSearch ->
+                        is GallerySearchViewModel.State.Configuring ->
                             if (state.alreadyAppliedSearch != null)
                                 getSearchBarText(
                                     search = state.alreadyAppliedSearch,
@@ -408,29 +420,32 @@ class GallerySearchView(
 
             with(searchBar.menu) {
                 findItem(R.id.reset_search)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                    isVisible = state is GallerySearchViewModel.State.Applied
                 }
 
                 findItem(R.id.add_search_bookmark)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                    isVisible = state is GallerySearchViewModel.State.Applied
                             && state.search !is AppliedGallerySearch.Bookmarked
                 }
 
                 findItem(R.id.edit_search_bookmark)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.AppliedSearch
+                    isVisible = state is GallerySearchViewModel.State.Applied
                             && state.search is AppliedGallerySearch.Bookmarked
                 }
             }
 
             when (state) {
-                is GallerySearchViewModel.State.AppliedSearch ->
+                is GallerySearchViewModel.State.Applied -> {
                     closeConfigurationView()
+                }
 
-                is GallerySearchViewModel.State.ConfiguringSearch ->
+                is GallerySearchViewModel.State.Configuring -> {
                     openConfigurationView()
+                }
 
-                GallerySearchViewModel.State.NoSearch ->
+                GallerySearchViewModel.State.NoSearch -> {
                     closeConfigurationView()
+                }
             }
 
             log.debug {
@@ -456,9 +471,6 @@ class GallerySearchView(
 
                 is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
                     openSearchFiltersGuide(url = event.url)
-
-                is GallerySearchViewModel.Event.CloseSearchConfigurationView ->
-                    closeConfigurationView()
             }
 
             log.debug {
