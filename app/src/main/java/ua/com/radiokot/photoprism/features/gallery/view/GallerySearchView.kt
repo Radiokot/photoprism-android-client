@@ -13,7 +13,6 @@ import android.text.style.ImageSpan
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.ContextThemeWrapper
@@ -46,11 +45,6 @@ import kotlin.math.roundToInt
 
 /**
  * View for configuring and applying gallery search.
- *
- * To enable back navigation button behavior, add its pressed callbacks.
- *
- * @see closeConfigurationBackPressedCallback
- * @see searchResetBackPressedCallback
  */
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
@@ -68,17 +62,6 @@ class GallerySearchView(
         get() = searchBar.context
     private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
-
-    val closeConfigurationBackPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            searchView.hide()
-        }
-    }
-    val searchResetBackPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            viewModel.onResetClicked()
-        }
-    }
 
     fun init(
         searchBar: SearchBar,
@@ -138,11 +121,6 @@ class GallerySearchView(
 
                 else -> {}
             }
-
-            closeConfigurationBackPressedCallback.isEnabled = newState in setOf(
-                SearchView.TransitionState.SHOWING,
-                SearchView.TransitionState.SHOWN
-            )
         }
 
         with(searchView.findViewById<ImageButton>(com.google.android.material.R.id.search_view_clear_button)) {
@@ -444,9 +422,6 @@ class GallerySearchView(
                 }
             }
 
-            searchResetBackPressedCallback.isEnabled =
-                state is GallerySearchViewModel.State.AppliedSearch
-
             when (state) {
                 is GallerySearchViewModel.State.AppliedSearch ->
                     closeConfigurationView()
@@ -481,6 +456,9 @@ class GallerySearchView(
 
                 is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
                     openSearchFiltersGuide(url = event.url)
+
+                is GallerySearchViewModel.Event.CloseSearchConfigurationView ->
+                    closeConfigurationView()
             }
 
             log.debug {

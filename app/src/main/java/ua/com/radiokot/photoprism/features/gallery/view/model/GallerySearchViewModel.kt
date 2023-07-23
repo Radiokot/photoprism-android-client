@@ -255,11 +255,26 @@ class GallerySearchViewModel(
     }
 
     fun onResetClicked() {
+        resetSearch()
+    }
+
+    fun resetSearch() {
         log.debug {
-            "onResetClicked(): reset_clicked"
+            "resetSearch(): resetting"
         }
 
         stateSubject.onNext(State.NoSearch)
+    }
+
+    fun closeConfigurationView() {
+        log.debug {
+            "closeConfigurationView(): closing_configuration_view"
+        }
+
+        // TODO combine with onConfigurationViewClosing.
+        // Make the ViewModel control the visibility, not the view.
+        // Intercept "<-" press.
+        eventsSubject.onNext(Event.CloseSearchConfigurationView)
     }
 
     fun onAddBookmarkClicked() {
@@ -443,5 +458,7 @@ class GallerySearchViewModel(
         ) : Event
 
         class OpenSearchFiltersGuide(val url: String) : Event
+
+        object CloseSearchConfigurationView: Event
     }
 }

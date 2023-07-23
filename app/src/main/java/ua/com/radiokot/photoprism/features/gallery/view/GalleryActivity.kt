@@ -554,10 +554,6 @@ class GalleryActivity : BaseActivity() {
             configurationView = view.searchContent,
         )
 
-        onBackPressedDispatcher.addCallback(this, searchView.searchResetBackPressedCallback)
-        onBackPressedDispatcher.addCallback(this, fastScrollView.scrollResetBackPressedCallback)
-        onBackPressedDispatcher.addCallback(this, searchView.closeConfigurationBackPressedCallback)
-
         view.searchBar.setNavigationOnClickListener {
             viewModel.onPreferencesButtonClicked()
         }

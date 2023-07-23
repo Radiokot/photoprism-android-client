@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Incorrect color of the "Close" web viewer button in dark theme
 - Missing focus indication in file selection dialog
 - Unwanted focus on the "Back" toolbar button in the media viewer
+- Not intuitive behavior of the "Back" button when selecting multiple items
 
 ## [1.15.0] - 2023-07-18
 

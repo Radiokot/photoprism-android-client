@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
 import java.net.NoRouteToHostException
@@ -65,8 +66,21 @@ class GalleryViewModel(
         private set
     private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
     val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
-    val backPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() = onBackPressed()
+
+    private val backPressActionsStack = BackPressActionsStack()
+    val backPressedCallback: OnBackPressedCallback =
+        backPressActionsStack.onBackPressedCallback
+    private val resetFastScrollBackPressAction = {
+        fastScrollViewModel.reset(isInitiatedByUser = true)
+    }
+    private val resetSearchOnBackPress = {
+        searchViewModel.resetSearch()
+    }
+    private val closeSearchConfigurationOnBackPress = {
+        searchViewModel.closeConfigurationView()
+    }
+    private val switchBackToViewingOnBackPress = {
+        switchToViewing()
     }
 
     fun initSelectionOnce(
@@ -150,14 +164,6 @@ class GalleryViewModel(
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
         resetRepositoryToInitial()
-        initBackPressedCallback()
-    }
-
-    private fun initBackPressedCallback() {
-        state.subscribeBy { state ->
-            // Intercept back press only in selection for sharing state.
-            backPressedCallback.isEnabled = state is State.Selecting.ToShare
-        }.autoDispose(this)
     }
 
     private fun resetRepositoryToInitial() {
@@ -218,15 +224,26 @@ class GalleryViewModel(
                             )
                         )
                     }
+
+                    // Make the back button press reset the search.
+                    backPressActionsStack.removeAction(closeSearchConfigurationOnBackPress)
+                    backPressActionsStack.pushUniqueAction(resetSearchOnBackPress)
                 }
 
                 GallerySearchViewModel.State.NoSearch -> {
                     fastScrollViewModel.reset(isInitiatedByUser = false)
                     resetRepositoryToInitial()
+
+                    // When search is switched to NoSearch, no need to reset
+                    // fast scroll or close the configuration view.
+                    backPressActionsStack.removeAction(resetSearchOnBackPress)
+                    backPressActionsStack.removeAction(resetFastScrollBackPressAction)
+                    backPressActionsStack.removeAction(closeSearchConfigurationOnBackPress)
                 }
 
                 is GallerySearchViewModel.State.ConfiguringSearch -> {
-                    // Nothing to change.
+                    // Make the back button press close the search configuration view.
+                    backPressActionsStack.pushUniqueAction(closeSearchConfigurationOnBackPress)
                 }
             }
 
@@ -290,6 +307,12 @@ class GalleryViewModel(
         // If the list is scrolled manually, setting fast scroll to the same month
         // must bring it back to the top.
         eventsSubject.onNext(Event.ResetScroll)
+
+        // Make the back button press reset fast scroll if it is not on the top.
+        backPressActionsStack.removeAction(resetFastScrollBackPressAction)
+        if (!isScrolledToTheTop) {
+            backPressActionsStack.pushUniqueAction(resetFastScrollBackPressAction)
+        }
 
         // We need to change the repo if scrolled to the top month
         // (return to initial state before scrolling)
@@ -579,6 +602,9 @@ class GalleryViewModel(
 
         postGalleryItems()
         postMultipleSelectionItemsCount()
+
+        // Make the back button press switch back to viewing.
+        backPressActionsStack.pushUniqueAction(switchBackToViewingOnBackPress)
     }
 
     private fun selectMedia(media: GalleryMedia) {
@@ -891,22 +917,6 @@ class GalleryViewModel(
                 }
             )
             .autoDispose(this)
-    }
-
-    private fun onBackPressed() {
-        log.debug { "onBackPressed(): handling_back_press" }
-
-        when (val state = stateSubject.value) {
-            State.Selecting.ToShare -> {
-                log.debug { "onBackPressed(): switching_to_viewing" }
-
-                switchToViewing()
-            }
-
-            else -> {
-                error("Back press must not be intercepted in the current state: $state")
-            }
-        }
     }
 
     private fun switchToViewing() {

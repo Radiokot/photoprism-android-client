@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.LifecycleOwner
@@ -105,18 +104,11 @@ class GalleryFastScrollView(
             override fun scrollTo(offset: Int) {
                 this@GalleryFastScrollView.scrollOffset = offset
                 fastScrollRecyclerView.invalidateItemDecorations()
-                scrollResetBackPressedCallback.isEnabled = offset != 0
                 notifyFastScroller()
             }
 
             override fun getPopupText(): CharSequence? =
                 getCurrentBubble()?.name
-        }
-    }
-
-    val scrollResetBackPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            viewModel.reset(isInitiatedByUser = true)
         }
     }
 
