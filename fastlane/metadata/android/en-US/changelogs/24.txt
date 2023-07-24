@@ -1,0 +1,7 @@
+Fixed
+- Connection screen allowing connection to a private library without credentials
+- Not finding a private entry when opening in the web viewer
+- Incorrect color of the "Close" web viewer button in dark theme
+- Missing focus indication in file selection dialog
+- Unwanted focus on the "Back" toolbar button in the media viewer
+- Not intuitive behavior of the "Back" button when selecting multiple items
