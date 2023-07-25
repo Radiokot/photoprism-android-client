@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
@@ -109,6 +110,14 @@ val galleryFeatureModules: List<Module> = listOf(
                         .thenByDescending(Album::updatedAt)
                 )
             } bind AlbumsRepository::class
+
+            scoped {
+                PeopleRepository(
+                    photoPrismFacesService = get(),
+                    photoPrismSubjectsService = get(),
+                    previewUrlFactory = get(),
+                )
+            } bind PeopleRepository::class
 
             viewModel {
                 DownloadMediaFileViewModel(
