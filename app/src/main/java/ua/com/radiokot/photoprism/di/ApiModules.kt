@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
+import ua.com.radiokot.photoprism.api.subjects.service.PhotoPrismSubjectsService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
@@ -96,6 +97,11 @@ val retrofitApiModules: List<Module> = listOf(
             scoped<PhotoPrismAlbumsService> {
                 get<Retrofit>()
                     .create(PhotoPrismAlbumsService::class.java)
+            }
+
+            scoped<PhotoPrismSubjectsService> {
+                get<Retrofit>()
+                    .create(PhotoPrismSubjectsService::class.java)
             }
         }
     }
