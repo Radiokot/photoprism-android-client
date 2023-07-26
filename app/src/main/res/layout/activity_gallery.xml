@@ -68,7 +68,7 @@
         app:autoShowKeyboard="false"
         app:layout_anchor="@id/search_bar">
 
-        <!-- It is important for this view to be in a ConstraintLayout
+        <!-- It is important for this view to be in a CoordinatorLayout
         and have an anchor-->
 
         <include

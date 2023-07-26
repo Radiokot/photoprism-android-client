@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksR
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
     val albumsViewModel: GallerySearchAlbumsViewModel,
+    val peopleViewModel: GallerySearchPeopleViewModel,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
@@ -201,6 +202,7 @@ class GallerySearchViewModel(
     private fun updateExternalData() {
         bookmarksRepository.updateIfNotFresh()
         albumsViewModel.updateIfNotFresh()
+        peopleViewModel.updateIfNotFresh()
     }
 
     fun onSearchClicked() {

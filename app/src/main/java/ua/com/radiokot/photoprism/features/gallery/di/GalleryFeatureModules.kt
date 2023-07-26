@@ -42,6 +42,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchAlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
@@ -132,9 +133,16 @@ val galleryFeatureModules: List<Module> = listOf(
             }
 
             viewModel {
+                GallerySearchPeopleViewModel(
+                    peopleRepository = get(),
+                )
+            }
+
+            viewModel {
                 GallerySearchViewModel(
                     bookmarksRepository = get(),
                     albumsViewModel = get(),
+                    peopleViewModel = get(),
                 )
             }
 

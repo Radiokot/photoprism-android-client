@@ -110,6 +110,13 @@ class PeopleRepository(
             }
     }
 
+    /**
+     * @return [Person] found by [uid] in the [itemsList]
+     * or null if nothing found.
+     */
+    fun getLoadedPerson(uid: String): Person? =
+        itemsList.find { it.uid == uid }
+
     private companion object {
         private const val PAGE_LIMIT = 30
     }

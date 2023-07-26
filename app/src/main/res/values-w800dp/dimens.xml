@@ -2,4 +2,5 @@
 <resources>
     <dimen name="list_item_gallery_media_min_size">160dp</dimen>
     <dimen name="list_item_album_width">160dp</dimen>
+    <dimen name="list_item_person_width">120dp</dimen>
 </resources>

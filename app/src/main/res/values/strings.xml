@@ -116,4 +116,8 @@
     <string name="used_open_source_software">Used open-source software</string>
     <string name="user_guides">User guide</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky and contributors from GitHub</string>
+    <string name="people">People</string>
+    <string name="loading_people_progress">Loading people…</string>
+    <string name="reload_people">Reload people</string>
+    <string name="no_people_found">No people found</string>
 </resources>

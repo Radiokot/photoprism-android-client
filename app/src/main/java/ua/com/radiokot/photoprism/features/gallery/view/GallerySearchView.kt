@@ -67,6 +67,8 @@ class GallerySearchView(
         get() = searchBar.context
     private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
     private val albumsAdapter = ItemAdapter<AlbumListItem>()
+    private val peopleViewModel: GallerySearchPeopleViewModel = viewModel.peopleViewModel
+    private val peopleAdapter = ItemAdapter<PersonListItem>()
 
     fun init(
         searchBar: SearchBar,
@@ -80,12 +82,13 @@ class GallerySearchView(
         initSearchBarAndView()
         initBookmarksDrag()
         initMenus()
-        // Albums are initialized on config view showing.
+        // Albums and people are initialized on config view showing.
 
         subscribeToData()
         subscribeToState()
         subscribeToEvents()
         subscribeToAlbumsState()
+        subscribeToPeopleState()
     }
 
     private fun initSearchBarAndView() {
@@ -109,6 +112,7 @@ class GallerySearchView(
                     // Slightly delay initialization to ease the transition animation.
                     searchView.post {
                         initAlbumsListOnce()
+                        initPeopleListOnce()
                     }
                 }
 
@@ -116,6 +120,7 @@ class GallerySearchView(
                     // If the view is initialized while the configuration view is already shown,
                     // albums must be initialized as well.
                     initAlbumsListOnce()
+                    initPeopleListOnce()
                 }
 
                 else -> {
@@ -247,6 +252,33 @@ class GallerySearchView(
         }
 
         isAlbumsListInitialized = true
+    }
+
+    private var isPeopleListInitialized = false
+    private fun initPeopleListOnce() = configurationView.peopleRecyclerView.post {
+        if (isPeopleListInitialized) {
+            return@post
+        }
+
+        val listAdapter = FastAdapter.with(peopleAdapter).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+            onClickListener = { _, _, item: PersonListItem, _ ->
+                peopleViewModel.onPersonItemClicked(item)
+                true
+            }
+        }
+
+        with(configurationView.peopleRecyclerView) {
+            adapter = listAdapter
+            // Layout manager is set in XML.
+        }
+
+        configurationView.reloadPeopleButton.setOnClickListener {
+            peopleViewModel.onReloadPeopleClicked()
+        }
+
+        isPeopleListInitialized = true
     }
 
     private fun subscribeToData() {
@@ -387,6 +419,39 @@ class GallerySearchView(
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +
+                        "\nstate=$state"
+            }
+        }.autoDispose(this)
+    }
+
+    private fun subscribeToPeopleState() {
+        peopleViewModel.state.subscribeBy { state ->
+            log.debug {
+                "subscribeToPeopleState(): received_new_state:" +
+                        "\nstate=$state"
+            }
+
+            peopleAdapter.setNewList(
+                when (state) {
+                    is GallerySearchPeopleViewModel.State.Ready ->
+                        state.people
+
+                    else ->
+                        emptyList()
+                }
+            )
+
+            configurationView.loadingPeopleTextView.isVisible =
+                state is GallerySearchPeopleViewModel.State.Loading
+
+            configurationView.reloadPeopleButton.isVisible =
+                state is GallerySearchPeopleViewModel.State.LoadingFailed
+
+            configurationView.noPeopleFoundTextView.isVisible =
+                state is GallerySearchPeopleViewModel.State.Ready && state.people.isEmpty()
+
+            log.debug {
+                "subscribeToPeopleState(): handled_new_state:" +
                         "\nstate=$state"
             }
         }.autoDispose(this)
