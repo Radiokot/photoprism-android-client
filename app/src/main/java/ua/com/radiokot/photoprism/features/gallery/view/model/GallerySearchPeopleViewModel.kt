@@ -17,9 +17,9 @@ class GallerySearchPeopleViewModel(
     val state = stateSubject.toMainThreadObservable()
 
     /**
-     * Set of the selected person UIDs, or **null** if nothing is selected.
+     * Non-null set of the selected person UIDs, **empty** if nothing is selected.
      */
-    val selectedPersonUids = MutableLiveData<Set<String>?>()
+    val selectedPersonUids = MutableLiveData<Set<String>>(emptySet())
 
     init {
         subscribeToRepository()
@@ -61,7 +61,7 @@ class GallerySearchPeopleViewModel(
     private fun postReadyState() {
         val repositoryPeople = peopleRepository.itemsList
 
-        val selectedPersonUids = selectedPersonUids.value ?: emptySet()
+        val selectedPersonUids = selectedPersonUids.value!!
 
         log.debug {
             "postReadyState(): posting_ready_state:" +
@@ -103,7 +103,7 @@ class GallerySearchPeopleViewModel(
 
         if (item.source != null) {
             val uid = item.source.uid
-            val currentlySelectedPersonUids = selectedPersonUids.value ?: emptySet()
+            val currentlySelectedPersonUids = selectedPersonUids.value!!
 
             if (currentlySelectedPersonUids.contains(uid)) {
                 log.debug {

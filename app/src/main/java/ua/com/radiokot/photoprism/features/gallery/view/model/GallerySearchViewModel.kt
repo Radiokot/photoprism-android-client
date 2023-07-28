@@ -56,6 +56,7 @@ class GallerySearchViewModel(
     val userQuery = MutableLiveData<String>()
     val includePrivateContent = MutableLiveData<Boolean>()
     private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
+    private val selectedPersonUids = peopleViewModel.selectedPersonUids
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -66,6 +67,7 @@ class GallerySearchViewModel(
         userQuery.observeForever(updateApplyButtonEnabled)
         includePrivateContent.observeForever(updateApplyButtonEnabled)
         selectedAlbumUid.observeForever(updateApplyButtonEnabled)
+        selectedPersonUids.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
@@ -80,6 +82,7 @@ class GallerySearchViewModel(
                     || userQuery.value != searchDefaults.userQuery
                     || includePrivateContent.value != searchDefaults.includePrivate
                     || selectedAlbumUid.value != searchDefaults.albumUid
+                    || selectedPersonUids.value != searchDefaults.personUids
         }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
@@ -162,6 +165,7 @@ class GallerySearchViewModel(
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
                 selectedAlbumUid.value = state.search.config.albumUid
+                selectedPersonUids.value = state.search.config.personUids
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring:" +
@@ -180,6 +184,7 @@ class GallerySearchViewModel(
                 userQuery.value = searchDefaults.userQuery
                 includePrivateContent.value = searchDefaults.includePrivate
                 selectedAlbumUid.value = searchDefaults.albumUid
+                selectedPersonUids.value = searchDefaults.personUids
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring"
@@ -225,6 +230,7 @@ class GallerySearchViewModel(
             mediaTypes = selectedMediaTypes.value,
             userQuery = userQuery.value!!.trim(),
             albumUid = selectedAlbumUid.value,
+            personUids = selectedPersonUids.value!!,
             beforeLocal = null,
             includePrivate = includePrivateContent.value == true,
         )

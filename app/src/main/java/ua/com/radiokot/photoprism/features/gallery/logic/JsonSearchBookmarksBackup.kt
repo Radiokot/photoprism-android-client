@@ -112,6 +112,8 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
+                    // TODO Save person UIDs in the new version
+                    personUids = emptySet()
                 )
             )
         }
@@ -154,6 +156,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
+                    personUids = emptySet(),
                 )
             )
         }

@@ -295,6 +295,14 @@ class SimpleGalleryMediaRepository(
                 queryBuilder.append(" album:${config.albumUid}")
             }
 
+            if (config.personUids.isNotEmpty()) {
+                queryBuilder.append(
+                    " person:${
+                        config.personUids.joinToString("|")
+                    }"
+                )
+            }
+
             val params = Params(
                 query = queryBuilder.toString()
                     .trim()
