@@ -56,7 +56,7 @@ class GallerySearchViewModel(
     val userQuery = MutableLiveData<String>()
     val includePrivateContent = MutableLiveData<Boolean>()
     private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
-    private val selectedPersonUids = peopleViewModel.selectedPersonUids
+    private val selectedPersonIds = peopleViewModel.selectedPersonIds
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -67,7 +67,7 @@ class GallerySearchViewModel(
         userQuery.observeForever(updateApplyButtonEnabled)
         includePrivateContent.observeForever(updateApplyButtonEnabled)
         selectedAlbumUid.observeForever(updateApplyButtonEnabled)
-        selectedPersonUids.observeForever(updateApplyButtonEnabled)
+        selectedPersonIds.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
@@ -82,7 +82,7 @@ class GallerySearchViewModel(
                     || userQuery.value != searchDefaults.userQuery
                     || includePrivateContent.value != searchDefaults.includePrivate
                     || selectedAlbumUid.value != searchDefaults.albumUid
-                    || selectedPersonUids.value != searchDefaults.personUids
+                    || selectedPersonIds.value != searchDefaults.personIds
         }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
@@ -165,7 +165,7 @@ class GallerySearchViewModel(
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
                 selectedAlbumUid.value = state.search.config.albumUid
-                selectedPersonUids.value = state.search.config.personUids
+                selectedPersonIds.value = state.search.config.personIds
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring:" +
@@ -184,7 +184,7 @@ class GallerySearchViewModel(
                 userQuery.value = searchDefaults.userQuery
                 includePrivateContent.value = searchDefaults.includePrivate
                 selectedAlbumUid.value = searchDefaults.albumUid
-                selectedPersonUids.value = searchDefaults.personUids
+                selectedPersonIds.value = searchDefaults.personIds
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring"
@@ -230,7 +230,7 @@ class GallerySearchViewModel(
             mediaTypes = selectedMediaTypes.value,
             userQuery = userQuery.value!!.trim(),
             albumUid = selectedAlbumUid.value,
-            personUids = selectedPersonUids.value!!,
+            personIds = selectedPersonIds.value!!,
             beforeLocal = null,
             includePrivate = includePrivateContent.value == true,
         )
@@ -353,7 +353,7 @@ class GallerySearchViewModel(
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
         selectedAlbumUid.value = bookmark.searchConfig.albumUid
-        selectedPersonUids.value = bookmark.searchConfig.personUids
+        selectedPersonIds.value = bookmark.searchConfig.personIds
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +

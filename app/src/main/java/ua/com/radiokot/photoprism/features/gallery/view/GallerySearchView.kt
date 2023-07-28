@@ -606,7 +606,7 @@ class GallerySearchView(
 
         val spannableString = SpannableStringBuilder()
             .apply {
-                search.config.personUids.forEach { personUid ->
+                search.config.personIds.forEach { personUid ->
                     // If the URL is missing, the placeholder will be shown.
                     val thumbnailUrl = viewModel.peopleViewModel.getPersonThumbnail(personUid)
                         ?: "missing:/"

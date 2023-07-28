@@ -39,7 +39,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz",
-                    personUids = emptySet(),
+                    personIds = emptySet(),
                 )
             ),
             SearchBookmark(
@@ -52,7 +52,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
-                    personUids = setOf("p2132523232"),
+                    personIds = setOf("p2132523232"),
                 )
             ),
             SearchBookmark(
@@ -65,7 +65,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
-                    personUids = setOf("p2132523232", "pwr9hh8ef9w3"),
+                    personIds = setOf("p2132523232", "pwr9hh8ef9w3"),
                 )
             ),
         )
@@ -138,7 +138,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz",
-                    personUids = emptySet(),
+                    personIds = emptySet(),
                 )
             )
         )
@@ -187,7 +187,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz",
-                    personUids = emptySet(),
+                    personIds = emptySet(),
                 )
             ),
             SearchBookmark(
@@ -200,7 +200,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
-                    personUids = emptySet(),
+                    personIds = emptySet(),
                 )
             ),
         )

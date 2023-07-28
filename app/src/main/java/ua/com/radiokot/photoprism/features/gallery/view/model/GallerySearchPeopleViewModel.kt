@@ -18,9 +18,9 @@ class GallerySearchPeopleViewModel(
     val state = stateSubject.toMainThreadObservable()
 
     /**
-     * Non-null set of the selected person UIDs, **empty** if nothing is selected.
+     * Non-null set of the selected person IDs, **empty** if nothing is selected.
      */
-    val selectedPersonUids = MutableLiveData<Set<String>>(emptySet())
+    val selectedPersonIds = MutableLiveData<Set<String>>(emptySet())
 
     init {
         subscribeToRepository()
@@ -62,12 +62,12 @@ class GallerySearchPeopleViewModel(
     private fun postReadyState() {
         val repositoryPeople = peopleRepository.itemsList
 
-        val selectedPersonUids = selectedPersonUids.value!!
+        val selectedPersonIds = selectedPersonIds.value!!
 
         log.debug {
             "postReadyState(): posting_ready_state:" +
                     "\npeopleCount=${repositoryPeople.size}," +
-                    "\nselectedPeopleCount=${selectedPersonUids.size}"
+                    "\nselectedPeopleCount=${selectedPersonIds.size}"
         }
 
         val hasAnyNames = repositoryPeople.any(Person::hasName)
@@ -77,7 +77,7 @@ class GallerySearchPeopleViewModel(
                 people = repositoryPeople.map { person ->
                     PersonListItem(
                         source = person,
-                        isPersonSelected = person.uid in selectedPersonUids,
+                        isPersonSelected = person.id in selectedPersonIds,
                         isNameShown = hasAnyNames,
                     )
                 }
@@ -86,7 +86,7 @@ class GallerySearchPeopleViewModel(
     }
 
     private fun subscribeToPeopleSelection() {
-        selectedPersonUids.observeForever {
+        selectedPersonIds.observeForever {
             val currentState = stateSubject.value
             if (currentState is State.Ready) {
                 postReadyState()
@@ -106,21 +106,21 @@ class GallerySearchPeopleViewModel(
         }
 
         if (item.source != null) {
-            val uid = item.source.uid
-            val currentlySelectedPersonUids = selectedPersonUids.value!!
+            val id = item.source.id
+            val currentlySelectedPersonIds = selectedPersonIds.value!!
 
-            if (currentlySelectedPersonUids.contains(uid)) {
+            if (currentlySelectedPersonIds.contains(id)) {
                 log.debug {
                     "onPersonItemClicked(): unselect:" +
-                            "\npersonUid=$uid"
+                            "\npersonId=$id"
                 }
-                selectedPersonUids.value = currentlySelectedPersonUids - uid
+                selectedPersonIds.value = currentlySelectedPersonIds - id
             } else {
                 log.debug {
                     "onPersonItemClicked(): select:" +
-                            "\npersonUid=$uid"
+                            "\npersonId=$id"
                 }
-                selectedPersonUids.value = currentlySelectedPersonUids + uid
+                selectedPersonIds.value = currentlySelectedPersonIds + id
             }
         }
     }

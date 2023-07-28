@@ -103,7 +103,7 @@ class PeopleRepository(
             .map { unknownFaces ->
                 unknownFaces.map { unknownFace ->
                     Person(
-                        unknownFace = unknownFace,
+                        face = unknownFace,
                         previewUrlFactory = previewUrlFactory,
                     )
                 }
@@ -115,7 +115,7 @@ class PeopleRepository(
      * or null if nothing found.
      */
     fun getLoadedPerson(uid: String): Person? =
-        itemsList.find { it.uid == uid }
+        itemsList.find { it.id == uid }
 
     private companion object {
         private const val PAGE_LIMIT = 30

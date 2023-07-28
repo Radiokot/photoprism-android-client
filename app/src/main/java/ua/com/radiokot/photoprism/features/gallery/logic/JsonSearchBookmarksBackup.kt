@@ -97,7 +97,7 @@ class JsonSearchBookmarksBackup(
             @JsonProperty("a")
             val albumUid: String?,
             @JsonProperty("pe")
-            val personUids: Set<String>,
+            val personIds: Set<String>,
         ) {
             constructor(source: SearchBookmark) : this(
                 id = source.id,
@@ -108,7 +108,7 @@ class JsonSearchBookmarksBackup(
                     ?.map(GalleryMedia.TypeName::toString),
                 includePrivate = source.searchConfig.includePrivate,
                 albumUid = source.searchConfig.albumUid,
-                personUids = source.searchConfig.personUids,
+                personIds = source.searchConfig.personIds,
             )
 
             fun toSource() = SearchBookmark(
@@ -123,7 +123,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
-                    personUids = personUids,
+                    personIds = personIds,
                 )
             )
         }
@@ -165,7 +165,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
-                    personUids = emptySet()
+                    personIds = emptySet()
                 )
             )
         }
@@ -208,7 +208,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
-                    personUids = emptySet(),
+                    personIds = emptySet(),
                 )
             )
         }

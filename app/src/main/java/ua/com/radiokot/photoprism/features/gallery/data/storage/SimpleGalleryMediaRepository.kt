@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toMaybe
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.formatPhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
@@ -295,12 +296,18 @@ class SimpleGalleryMediaRepository(
                 queryBuilder.append(" album:${config.albumUid}")
             }
 
-            if (config.personUids.isNotEmpty()) {
-                queryBuilder.append(
-                    " person:${
-                        config.personUids.joinToString("|")
-                    }"
-                )
+            if (config.personIds.isNotEmpty()) {
+                val subjectUids = config.personIds
+                    .filter { Person.isSubjectUid(it) }
+                if (subjectUids.isNotEmpty()) {
+                    queryBuilder.append(" subject:${subjectUids.joinToString("&")}")
+                }
+
+                val faceIds = config.personIds
+                    .filter { Person.isFaceId(it) }
+                if (faceIds.isNotEmpty()) {
+                    queryBuilder.append(" face:${faceIds.joinToString("&")}")
+                }
             }
 
             val params = Params(

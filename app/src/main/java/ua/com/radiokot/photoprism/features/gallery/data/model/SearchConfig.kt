@@ -14,10 +14,11 @@ data class SearchConfig(
     val mediaTypes: Set<GalleryMedia.TypeName>?,
     val albumUid: String?,
     /**
-     * A set of person UIDs to find only items with their faces.
-     * If empty, no person filter is applied.
+     * A set of [Person.id] which may be subjects or faces,
+     * to find only items with them together.
+     * If empty, no subject/face filters are applied.
      */
-    val personUids: Set<String>,
+    val personIds: Set<String>,
     /**
      * Local date to find media taken before it.
      * The filter is applied to [GalleryMedia.takenAtLocal]
@@ -56,7 +57,7 @@ data class SearchConfig(
         val DEFAULT = SearchConfig(
             mediaTypes = null,
             albumUid = null,
-            personUids = emptySet(),
+            personIds = emptySet(),
             beforeLocal = null,
             userQuery = "",
             includePrivate = false,

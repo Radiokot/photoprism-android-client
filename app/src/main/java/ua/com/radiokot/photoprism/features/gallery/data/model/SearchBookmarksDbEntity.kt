@@ -26,6 +26,6 @@ data class SearchBookmarksDbEntity(
     val includePrivate: Boolean,
     @ColumnInfo("album_uid")
     val albumUid: String?,
-    @ColumnInfo("person_uids", defaultValue = "[]")
-    val personUids: List<String>,
+    @ColumnInfo("person_ids", defaultValue = "[]")
+    val personIds: List<String>,
 )
