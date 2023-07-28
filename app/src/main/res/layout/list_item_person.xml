@@ -11,13 +11,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        tools:background="@color/md_theme_light_secondaryContainer">
 
         <ImageView
             android:id="@+id/image_view"
             android:layout_width="@dimen/list_item_person_image_size"
             android:layout_height="@dimen/list_item_person_image_size"
-            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -33,7 +34,7 @@
             android:ellipsize="end"
             android:gravity="center_horizontal"
             android:maxLines="1"
-            android:paddingVertical="4dp"
+            android:paddingTop="4dp"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             app:layout_constraintTop_toBottomOf="@id/image_view"
             tools:text="Dima S." />

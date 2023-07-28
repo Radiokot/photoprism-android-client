@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.view.model
 import android.content.res.ColorStateList
 import android.view.View
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import com.google.android.material.color.MaterialColors
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -20,6 +21,7 @@ class PersonListItem(
     val name: String?,
     val thumbnailUrl: String,
     val isPersonSelected: Boolean,
+    val isNameShown: Boolean,
     val source: Person?,
 ) : AbstractItem<PersonListItem.ViewHolder>() {
     override val type: Int =
@@ -37,10 +39,12 @@ class PersonListItem(
     constructor(
         source: Person,
         isPersonSelected: Boolean,
+        isNameShown: Boolean,
     ) : this(
         name = source.name,
         thumbnailUrl = source.smallThumbnailUrl,
         isPersonSelected = isPersonSelected,
+        isNameShown = isNameShown,
         source = source,
     )
 
@@ -69,7 +73,10 @@ class PersonListItem(
                 .transform(CircleImageTransformation.INSTANCE)
                 .into(view.imageView)
 
-            view.nameTextView.text = item.name
+            with(view.nameTextView) {
+                text = item.name
+                isVisible = item.isNameShown
+            }
 
             with(view.listItemPerson) {
                 backgroundTintList =

@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.data.storage.PeopleRepository
 
 class GallerySearchPeopleViewModel(
@@ -69,12 +70,15 @@ class GallerySearchPeopleViewModel(
                     "\nselectedPeopleCount=${selectedPersonUids.size}"
         }
 
+        val hasAnyNames = repositoryPeople.any(Person::hasName)
+
         stateSubject.onNext(
             State.Ready(
                 people = repositoryPeople.map { person ->
                     PersonListItem(
                         source = person,
-                        isPersonSelected = person.uid in selectedPersonUids
+                        isPersonSelected = person.uid in selectedPersonUids,
+                        isNameShown = hasAnyNames,
                     )
                 }
             )
