@@ -24,6 +24,51 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 modules(galleryFeatureModules)
             }
         }
+
+        val BOOKMARKS = listOf(
+            SearchBookmark(
+                id = 1,
+                position = 1.0,
+                name = "My camera",
+                searchConfig = SearchConfig(
+                    mediaTypes = setOf(
+                        GalleryMedia.TypeName.RAW,
+                        GalleryMedia.TypeName.VIDEO,
+                    ),
+                    beforeLocal = null,
+                    userQuery = "quality:3 oleg&cam",
+                    includePrivate = true,
+                    albumUid = "ars1juz1456bluxz",
+                    personUids = emptySet(),
+                )
+            ),
+            SearchBookmark(
+                id = 2,
+                position = Math.PI,
+                name = "Интересные фото 🍕",
+                searchConfig = SearchConfig(
+                    mediaTypes = null,
+                    beforeLocal = null,
+                    userQuery = "",
+                    includePrivate = false,
+                    albumUid = null,
+                    personUids = setOf("p2132523232"),
+                )
+            ),
+            SearchBookmark(
+                id = 3,
+                position = 25.5,
+                name = "media types empty",
+                searchConfig = SearchConfig(
+                    mediaTypes = emptySet(),
+                    beforeLocal = null,
+                    userQuery = "",
+                    includePrivate = false,
+                    albumUid = null,
+                    personUids = setOf("p2132523232", "pwr9hh8ef9w3"),
+                )
+            ),
+        )
     }
 
     @Test
@@ -36,60 +81,47 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
     fun export() {
         val backup = getKoin().get<JsonSearchBookmarksBackup>()
 
-        val bookmarks = listOf(
-            SearchBookmark(
-                id = 1,
-                position = 1.0,
-                name = "My camera",
-                searchConfig = SearchConfig(
-                    mediaTypes = setOf(
-                        GalleryMedia.TypeName.RAW,
-                        GalleryMedia.TypeName.VIDEO,
-                    ),
-                    beforeLocal = null,
-                    userQuery = "quality:3 oleg&cam",
-                    includePrivate = true,
-                    albumUid = "ars1juz1456bluxz"
-                )
-            ),
-            SearchBookmark(
-                id = 2,
-                position = Math.PI,
-                name = "Интересные фото 🍕",
-                searchConfig = SearchConfig(
-                    mediaTypes = null,
-                    beforeLocal = null,
-                    userQuery = "",
-                    includePrivate = false,
-                    albumUid = null,
-                )
-            ),
-            SearchBookmark(
-                id = 3,
-                position = 25.5,
-                name = "media types empty",
-                searchConfig = SearchConfig(
-                    mediaTypes = emptySet(),
-                    beforeLocal = null,
-                    userQuery = "",
-                    includePrivate = false,
-                    albumUid = null,
-                )
-            ),
-        )
-
         val outputStream = ByteArrayOutputStream()
-        backup.writeBackup(bookmarks, outputStream)
+        backup.writeBackup(BOOKMARKS, outputStream)
         val outputJson = String(outputStream.toByteArray(), Charsets.UTF_8)
 
         Assert.assertEquals(
-            """{"v":2,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz"},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null}]}}""",
+            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}""",
             outputJson,
         )
     }
 
     @Test
     fun import() {
+        val backup = getKoin().get<JsonSearchBookmarksBackup>()
+
+        val inputJson =
+            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}"""
+        val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
+        val imported = backup.readBackup(inputStream)
+
+        Assert.assertEquals(
+            BOOKMARKS.size,
+            imported.size,
+        )
+
+        BOOKMARKS.forEachIndexed { i, bookmark ->
+            val importedBookmark = imported[i]
+
+            Assert.assertEquals(bookmark, importedBookmark)
+
+            Assert.assertEquals(bookmark.position, importedBookmark.position, 0.0)
+            Assert.assertEquals(bookmark.name, importedBookmark.name)
+
+            // As long as the searchConfig is a data class,
+            // equals can be used to check all the fields.
+            Assert.assertEquals(bookmark.searchConfig, importedBookmark.searchConfig)
+            println(bookmark.searchConfig.copy()) // Test for data class – .copy exists.
+        }
+    }
+
+    @Test
+    fun importV2() {
         val backup = getKoin().get<JsonSearchBookmarksBackup>()
 
         val bookmarks = listOf(
@@ -105,37 +137,14 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     beforeLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
-                    albumUid = "ars1juz1456bluxz"
+                    albumUid = "ars1juz1456bluxz",
+                    personUids = emptySet(),
                 )
-            ),
-            SearchBookmark(
-                id = 2,
-                position = Math.PI,
-                name = "Интересные фото 🍕",
-                searchConfig = SearchConfig(
-                    mediaTypes = null,
-                    beforeLocal = null,
-                    userQuery = "",
-                    includePrivate = false,
-                    albumUid = null,
-                )
-            ),
-            SearchBookmark(
-                id = 3,
-                position = 25.5,
-                name = "media types empty",
-                searchConfig = SearchConfig(
-                    mediaTypes = emptySet(),
-                    beforeLocal = null,
-                    userQuery = "",
-                    includePrivate = false,
-                    albumUid = null,
-                )
-            ),
+            )
         )
 
         val inputJson =
-            """{"v":2,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz"},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null}]}}"""
+            """{"v":2,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz"}]}}"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
         val imported = backup.readBackup(inputStream)
 
@@ -159,6 +168,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         }
     }
 
+
     @Test
     fun importV1() {
         val backup = getKoin().get<JsonSearchBookmarksBackup>()
@@ -177,6 +187,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
                     albumUid = "ars1juz1456bluxz",
+                    personUids = emptySet(),
                 )
             ),
             SearchBookmark(
@@ -189,6 +200,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                     userQuery = "",
                     includePrivate = false,
                     albumUid = null,
+                    personUids = emptySet(),
                 )
             ),
         )

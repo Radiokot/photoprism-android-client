@@ -39,8 +39,13 @@ class JsonSearchBookmarksBackup(
         return when (val version = backup.version) {
             VERSION ->
                 readBackupData(backup.data).bookmarks.map(BackupData.Bookmark::toSource)
+
+            2 ->
+                readBackupDataV2(backup.data).bookmarks.map(BackupDataV2.Bookmark::toSource)
+
             1 ->
                 readBackupDataV1(backup.data).bookmarks.map(BackupDataV1.Bookmark::toSource)
+
             else ->
                 throw UnsupportedVersionException(version)
         }
@@ -52,6 +57,9 @@ class JsonSearchBookmarksBackup(
 
     private fun readBackupData(dataTree: JsonNode): BackupData =
         jsonObjectMapper.treeToValue(dataTree, BackupData::class.java)
+
+    private fun readBackupDataV2(dataTree: JsonNode): BackupDataV2 =
+        jsonObjectMapper.treeToValue(dataTree, BackupDataV2::class.java)
 
     private fun readBackupDataV1(dataTree: JsonNode): BackupDataV1 =
         jsonObjectMapper.treeToValue(dataTree, BackupDataV1::class.java)
@@ -88,6 +96,8 @@ class JsonSearchBookmarksBackup(
             val includePrivate: Boolean,
             @JsonProperty("a")
             val albumUid: String?,
+            @JsonProperty("pe")
+            val personUids: Set<String>,
         ) {
             constructor(source: SearchBookmark) : this(
                 id = source.id,
@@ -98,6 +108,7 @@ class JsonSearchBookmarksBackup(
                     ?.map(GalleryMedia.TypeName::toString),
                 includePrivate = source.searchConfig.includePrivate,
                 albumUid = source.searchConfig.albumUid,
+                personUids = source.searchConfig.personUids,
             )
 
             fun toSource() = SearchBookmark(
@@ -112,7 +123,48 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     beforeLocal = null,
                     albumUid = albumUid,
-                    // TODO Save person UIDs in the new version
+                    personUids = personUids,
+                )
+            )
+        }
+    }
+
+    class BackupDataV2
+    @JsonCreator
+    constructor(
+        @JsonProperty("b")
+        val bookmarks: List<Bookmark>,
+    ) {
+        class Bookmark
+        @JsonCreator
+        constructor(
+            @JsonProperty("id")
+            val id: Long,
+            @JsonProperty("p")
+            val position: Double,
+            @JsonProperty("n")
+            val name: String,
+            @JsonProperty("q")
+            val userQuery: String,
+            @JsonProperty("mt")
+            val mediaTypes: List<String>?,
+            @JsonProperty("ip")
+            val includePrivate: Boolean,
+            @JsonProperty("a")
+            val albumUid: String?,
+        ) {
+            fun toSource() = SearchBookmark(
+                id = id,
+                name = name,
+                position = position,
+                searchConfig = SearchConfig(
+                    userQuery = userQuery,
+                    mediaTypes = mediaTypes
+                        ?.map { GalleryMedia.TypeName.valueOf(it) }
+                        ?.toSet(),
+                    includePrivate = includePrivate,
+                    beforeLocal = null,
+                    albumUid = albumUid,
                     personUids = emptySet()
                 )
             )
@@ -163,6 +215,6 @@ class JsonSearchBookmarksBackup(
     }
 
     private companion object {
-        private const val VERSION = 2
+        private const val VERSION = 3
     }
 }

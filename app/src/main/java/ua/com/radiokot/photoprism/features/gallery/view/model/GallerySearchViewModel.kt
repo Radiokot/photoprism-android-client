@@ -353,6 +353,7 @@ class GallerySearchViewModel(
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
         selectedAlbumUid.value = bookmark.searchConfig.albumUid
+        selectedPersonUids.value = bookmark.searchConfig.personUids
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +
