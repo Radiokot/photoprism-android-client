@@ -92,8 +92,8 @@
     <string name="view_media">προβολή</string>
     <string name="open_in_web_viewer">άνοιγμα σε περιηγητή</string>
     <string name="albums">άλμπουμ</string>
-    <string name="loading_albums_progress">φόρτωση άλμπουμ…</string>
-    <string name="reload_albums">επαναφόρτωση άλμπουμ</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">δε βρέθηκαν άλμπουμ</string>
     <string name="clear_selection">καθαρισμος επιλογής</string>
     <string name="done_selecting">ολοκλήρωση</string>
@@ -111,4 +111,10 @@
     <string name="used_open_source_software">Χρησιμοποιηθέντα προγράμματα ανοιχτού κώδικα</string>
     <string name="user_guides">Οδηγός χρήσης</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky και συνεισφέροντες στο GitHub</string>
+    <string name="people">Άνθρωποι</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Δεν βρέθηκαν άτομα</string>
+    <string name="reload">Φορτώστε ξανά</string>
+    <string name="loading_data_progress">φόρτωση δεδομένων…</string>
 </resources>

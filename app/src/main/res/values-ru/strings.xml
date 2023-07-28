@@ -93,8 +93,8 @@
     <string name="view_media">Просмотр</string>
     <string name="open_in_web_viewer">Открыть в веб-приложении</string>
     <string name="albums">Альбомы</string>
-    <string name="loading_albums_progress">Загрузка альбомов…</string>
-    <string name="reload_albums">Перезагрузить альбомы</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">Альбомы не найдены</string>
     <string name="clear_selection">Очистить выбор</string>
     <string name="done_selecting">Готово</string>
@@ -112,4 +112,10 @@
     <string name="used_open_source_software">Используемое ПО с открытым кодом</string>
     <string name="user_guides">Руководство пользователя</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Олег Корецкий и участники с GitHub</string>
+    <string name="people">Люди</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Люди не найдены</string>
+    <string name="reload">Перезагрузить</string>
+    <string name="loading_data_progress">Загрузка данных…</string>
 </resources>

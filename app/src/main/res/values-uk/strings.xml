@@ -93,8 +93,8 @@
     <string name="view_media">Перегляд</string>
     <string name="open_in_web_viewer">Відкрити у веб-застосунку</string>
     <string name="albums">Альбоми</string>
-    <string name="loading_albums_progress">Завантаження альбомів…</string>
-    <string name="reload_albums">Перезавантажити альбоми</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">Альбоми не знайдено</string>
     <string name="clear_selection">Очистити вибір</string>
     <string name="done_selecting">Готово</string>
@@ -112,4 +112,10 @@
     <string name="used_open_source_software">Використане ПЗ з відкритим кодом</string>
     <string name="user_guides">Посібник користувача</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Олег Корецький та учасники з GitHub</string>
+    <string name="people">Люди</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Людей не знайдено</string>
+    <string name="reload">Перезавантажити</string>
+    <string name="loading_data_progress">Завантаження даних…</string>
 </resources>

@@ -93,8 +93,8 @@
     <string name="view_media">预览</string>
     <string name="open_in_web_viewer">在浏览器打开</string>
     <string name="albums">相册</string>
-    <string name="loading_albums_progress">正在加载相册…</string>
-    <string name="reload_albums">重新加载相册</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">找不到相册</string>
     <string name="clear_selection">清除选项</string>
     <string name="done_selecting">完成</string>
@@ -112,5 +112,10 @@
     <string name="used_open_source_software">使用的开源程序</string>
     <string name="user_guides">用户指引</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky 与其他 GitHub 贡献者</string>
-
+    <string name="people">人</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">找不到人物</string>
+    <string name="reload">重新加载</string>
+    <string name="loading_data_progress">加载数据中…</string>
 </resources>

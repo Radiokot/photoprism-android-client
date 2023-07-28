@@ -95,8 +95,8 @@
     <string name="view_media">View</string>
     <string name="open_in_web_viewer">Open in web viewer</string>
     <string name="albums">Albums</string>
-    <string name="loading_albums_progress">Loading albums…</string>
-    <string name="reload_albums">Reload albums</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">No albums found</string>
     <string name="clear_selection">Clear selection</string>
     <string name="done_selecting">Done</string>
@@ -117,7 +117,9 @@
     <string name="user_guides">User guide</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky and contributors from GitHub</string>
     <string name="people">People</string>
-    <string name="loading_people_progress">Loading people…</string>
-    <string name="reload_people">Reload people</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
     <string name="no_people_found">No people found</string>
+    <string name="reload">Reload</string>
+    <string name="loading_data_progress">Loading data…</string>
 </resources>

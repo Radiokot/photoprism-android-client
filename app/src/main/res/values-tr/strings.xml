@@ -93,8 +93,8 @@
     <string name="view_media">Görüntüle</string>
     <string name="open_in_web_viewer">Web görüntüleyicide aç</string>
     <string name="albums">Albümler</string>
-    <string name="loading_albums_progress">Albümler yükleniyor…</string>
-    <string name="reload_albums">Albümleri yeniden yükle</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">Albüm bulunamadı</string>
     <string name="clear_selection">Seçimi temizle</string>
     <string name="done_selecting">Tamam</string>
@@ -112,4 +112,10 @@
     <string name="used_open_source_software">Kullanılan açık kaynaklı yazılım</string>
     <string name="user_guides">Kullanici rehberi</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky, GitHub\'dan katkı sağlayanlar</string>
+    <string name="people">Kişi</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Hiç kimse bulunamadı</string>
+    <string name="reload">Tekrar yükle</string>
+    <string name="loading_data_progress">Veri yükleniyor…</string>
 </resources>
