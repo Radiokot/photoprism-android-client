@@ -1,8 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import androidx.core.view.ViewCompat
 import com.google.android.material.color.MaterialColors
@@ -16,6 +14,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.data.model.Person
+import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
 
 class PersonListItem(
     val name: String?,
@@ -64,9 +63,10 @@ class PersonListItem(
 
             picasso
                 .load(item.thumbnailUrl)
-                .placeholder(ColorDrawable(Color.LTGRAY))
+                .placeholder(R.drawable.image_placeholder_circle)
                 .fit()
                 .centerCrop()
+                .transform(CircleImageTransformation.INSTANCE)
                 .into(view.imageView)
 
             view.nameTextView.text = item.name

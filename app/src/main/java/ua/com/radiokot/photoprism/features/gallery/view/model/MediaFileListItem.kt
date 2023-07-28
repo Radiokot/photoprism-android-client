@@ -1,8 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Parcelable
 import android.text.format.Formatter
 import android.view.View
@@ -70,7 +68,7 @@ class MediaFileListItem(
 
             picasso
                 .load(item.thumbnailUrl)
-                .placeholder(ColorDrawable(Color.LTGRAY))
+                .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .centerCrop()
                 .into(view.thumbnailImageView)

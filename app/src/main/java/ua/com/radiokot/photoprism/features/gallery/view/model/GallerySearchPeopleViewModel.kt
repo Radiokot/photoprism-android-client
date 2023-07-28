@@ -110,8 +110,7 @@ class GallerySearchPeopleViewModel(
                     "onPersonItemClicked(): unselect:" +
                             "\npersonUid=$uid"
                 }
-                selectedPersonUids.value = (currentlySelectedPersonUids - uid)
-                    .takeUnless(Set<*>::isEmpty)
+                selectedPersonUids.value = currentlySelectedPersonUids - uid
             } else {
                 log.debug {
                     "onPersonItemClicked(): select:" +
@@ -130,8 +129,8 @@ class GallerySearchPeopleViewModel(
         updateIfNotFresh()
     }
 
-    fun getPersonName(uid: String): String? =
-        peopleRepository.getLoadedPerson(uid)?.name
+    fun getPersonThumbnail(uid: String): String? =
+        peopleRepository.getLoadedPerson(uid)?.smallThumbnailUrl
 
     sealed interface State {
         object Loading : State

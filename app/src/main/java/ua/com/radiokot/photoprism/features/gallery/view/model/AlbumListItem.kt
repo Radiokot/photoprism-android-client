@@ -1,8 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import androidx.core.view.ViewCompat
 import com.google.android.material.color.MaterialColors
@@ -65,7 +63,7 @@ data class AlbumListItem(
 
             picasso
                 .load(item.thumbnailUrl)
-                .placeholder(ColorDrawable(Color.LTGRAY))
+                .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .centerCrop()
                 .into(view.imageView)

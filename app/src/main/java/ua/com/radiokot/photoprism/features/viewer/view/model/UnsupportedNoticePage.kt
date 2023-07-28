@@ -1,7 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -70,7 +68,7 @@ class UnsupportedNoticePage(
 
             picasso
                 .load(item.thumbnailUrl)
-                .placeholder(ColorDrawable(Color.LTGRAY))
+                .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .into(view.thumbnailImageView, imageLoadingCallback)
         }

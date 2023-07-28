@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/image_view"
             android:layout_width="@dimen/list_item_person_image_size"
             android:layout_height="@dimen/list_item_person_image_size"
@@ -21,8 +21,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearance="@style/CircleImageViewShapeAppearance"
             tools:background="@color/md_theme_dark_background"
+            tools:ignore="ContentDescription"
             tools:src="@mipmap/splash_logo" />
 
         <TextView

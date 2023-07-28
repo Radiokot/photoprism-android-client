@@ -9,7 +9,6 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
-import android.text.style.ImageSpan
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -32,16 +31,24 @@ import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import org.koin.core.component.KoinComponent
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
+import ua.com.radiokot.photoprism.util.images.CenterVerticalImageSpan
+import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
+import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
+import ua.com.radiokot.photoprism.util.images.TextViewWrappedDrawableTarget
 import kotlin.math.roundToInt
 
 /**
@@ -53,12 +60,16 @@ class GallerySearchView(
     @MenuRes
     private val menuRes: Int?,
     lifecycleOwner: LifecycleOwner,
-) : LifecycleOwner by lifecycleOwner, KoinComponent {
+) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
+    override val scope: Scope
+        get() = getKoin().getScope(DI_SCOPE_SESSION)
+
     private val log = kLogger("GallerySearchView")
 
     private val searchFiltersGuideUrl = getKoin()
         .getProperty<String>("searchFiltersGuideUrl")
         .checkNotNull { "Missing search filters guide URL" }
+    private val picasso: Picasso by inject()
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
@@ -575,7 +586,8 @@ class GallerySearchView(
             }
         }
 
-        val iconSize = (textView.lineHeight * 0.7).roundToInt()
+        val iconSize = (textView.lineHeight * 0.8).roundToInt()
+        val imageSize = (textView.lineHeight * 1.3).roundToInt()
         val textColors = textView.textColors
 
         fun SpannableStringBuilder.appendIcon(@DrawableRes id: Int) =
@@ -586,8 +598,21 @@ class GallerySearchView(
                 sizePx = iconSize,
             )
 
+        fun SpannableStringBuilder.appendCircleImage(url: String) =
+            appendCircleImage(
+                url = url,
+                sizePx = imageSize,
+            )
+
         val spannableString = SpannableStringBuilder()
             .apply {
+                search.config.personUids.forEach { personUid ->
+                    // If the URL is missing, the placeholder will be shown.
+                    val thumbnailUrl = viewModel.peopleViewModel.getPersonThumbnail(personUid)
+                        ?: "missing:/"
+                    appendCircleImage(thumbnailUrl)
+                }
+
                 search.config.mediaTypes?.forEach { mediaType ->
                     appendIcon(GalleryMediaTypeResources.getIcon(mediaType))
                 }
@@ -647,7 +672,41 @@ class GallerySearchView(
         }
         append("x")
         setSpan(
-            ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
+            CenterVerticalImageSpan(drawable),
+            length - 1,
+            length,
+            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        )
+        append(end)
+    }
+
+    private fun SpannableStringBuilder.appendCircleImage(
+        url: String,
+        sizePx: Int,
+        end: String = " "
+    ) {
+        val wrappedDrawable = SimpleWrappedDrawable(
+            defaultWidthPx = sizePx,
+            defaultHeightPx = sizePx,
+        )
+
+        picasso
+            .load(url)
+            .resize(sizePx, sizePx)
+            .centerInside()
+            .noFade()
+            .transform(CircleImageTransformation.INSTANCE)
+            .placeholder(R.drawable.image_placeholder_circle)
+            .into(
+                TextViewWrappedDrawableTarget(
+                    textView = searchBar.textView,
+                    wrappedDrawable = wrappedDrawable,
+                )
+            )
+
+        append("x")
+        setSpan(
+            CenterVerticalImageSpan(wrappedDrawable),
             length - 1,
             length,
             Spannable.SPAN_INCLUSIVE_EXCLUSIVE
