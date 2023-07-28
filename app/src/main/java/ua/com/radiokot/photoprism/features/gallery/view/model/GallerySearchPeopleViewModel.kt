@@ -15,8 +15,11 @@ class GallerySearchPeopleViewModel(
     private val log = kLogger("GallerySearchPeopleVM")
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
-    // TODO Multiple selection
-    val selectedPersonUid = MutableLiveData<String?>()
+
+    /**
+     * Set of the selected person UIDs, or **null** if nothing is selected.
+     */
+    val selectedPersonUids = MutableLiveData<Set<String>?>()
 
     init {
         subscribeToRepository()
@@ -58,12 +61,12 @@ class GallerySearchPeopleViewModel(
     private fun postReadyState() {
         val repositoryPeople = peopleRepository.itemsList
 
-        val selectedPersonUid = selectedPersonUid.value
+        val selectedPersonUids = selectedPersonUids.value ?: emptySet()
 
         log.debug {
             "postReadyState(): posting_ready_state:" +
                     "\npeopleCount=${repositoryPeople.size}," +
-                    "\nselectedPersonUid=$selectedPersonUid"
+                    "\nselectedPeopleCount=${selectedPersonUids.size}"
         }
 
         stateSubject.onNext(
@@ -71,7 +74,7 @@ class GallerySearchPeopleViewModel(
                 people = repositoryPeople.map { person ->
                     PersonListItem(
                         source = person,
-                        isPersonSelected = person.uid == selectedPersonUid
+                        isPersonSelected = person.uid in selectedPersonUids
                     )
                 }
             )
@@ -79,7 +82,7 @@ class GallerySearchPeopleViewModel(
     }
 
     private fun subscribeToPeopleSelection() {
-        selectedPersonUid.observeForever {
+        selectedPersonUids.observeForever {
             val currentState = stateSubject.value
             if (currentState is State.Ready) {
                 postReadyState()
@@ -100,19 +103,22 @@ class GallerySearchPeopleViewModel(
 
         if (item.source != null) {
             val uid = item.source.uid
+            val currentlySelectedPersonUids = selectedPersonUids.value ?: emptySet()
 
-            val newSelectedPersonUid: String? =
-                if (selectedPersonUid.value != uid)
-                    uid
-                else
-                    null
-
-            log.debug {
-                "onPersonItemClicked(): setting_selected_person_uid:" +
-                        "\nnewUid=$newSelectedPersonUid"
+            if (currentlySelectedPersonUids.contains(uid)) {
+                log.debug {
+                    "onPersonItemClicked(): unselect:" +
+                            "\npersonUid=$uid"
+                }
+                selectedPersonUids.value = (currentlySelectedPersonUids - uid)
+                    .takeUnless(Set<*>::isEmpty)
+            } else {
+                log.debug {
+                    "onPersonItemClicked(): select:" +
+                            "\npersonUid=$uid"
+                }
+                selectedPersonUids.value = currentlySelectedPersonUids + uid
             }
-
-            selectedPersonUid.value = newSelectedPersonUid
         }
     }
 
