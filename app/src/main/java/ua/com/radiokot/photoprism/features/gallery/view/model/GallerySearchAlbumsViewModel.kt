@@ -25,7 +25,7 @@ class GallerySearchAlbumsViewModel(
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
-    val isViewVisible = searchPreferences.showPeople.toMainThreadObservable()
+    val isViewVisible = searchPreferences.showAlbums.toMainThreadObservable()
 
     init {
         subscribeToRepository()
