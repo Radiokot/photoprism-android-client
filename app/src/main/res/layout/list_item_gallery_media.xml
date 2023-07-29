@@ -48,6 +48,7 @@
         android:scaleY=".56"
         android:tooltipText="@string/view_media"
         android:visibility="gone"
+        app:backgroundTint="?colorPrimaryContainer"
         app:icon="@drawable/ic_arrows_expand"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
         app:layout_constraintEnd_toEndOf="@id/image_view"
@@ -66,7 +67,7 @@
         android:scaleY="1.1"
         android:visibility="gone"
         app:buttonCompat="@drawable/checkbox_circle_button"
-        app:buttonTint="?colorSecondaryContainer"
+        app:buttonTint="?colorPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="@id/image_view"
         app:layout_constraintStart_toStartOf="@id/image_view"
         tools:visibility="visible" />
