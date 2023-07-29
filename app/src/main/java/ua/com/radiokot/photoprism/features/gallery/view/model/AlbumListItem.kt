@@ -1,6 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
-import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.View
 import androidx.core.view.ViewCompat
 import com.google.android.material.color.MaterialColors
@@ -49,12 +49,11 @@ data class AlbumListItem(
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
         private val view = ListItemAlbumBinding.bind(itemView)
-        private val selectedCardBackgroundTint = ColorStateList.valueOf(
-            MaterialColors.getColor(
-                itemView,
-                com.google.android.material.R.attr.colorSecondaryContainer,
-            )
+        private val selectedCardBackgroundColor = MaterialColors.getColor(
+            itemView,
+            com.google.android.material.R.attr.colorSecondaryContainer,
         )
+        private val unselectedCardBackgroundColor = Color.TRANSPARENT
         private val unselectedCardStrokeWidth = view.listItemAlbum.strokeWidth
         private val picasso: Picasso by inject()
 
@@ -71,11 +70,12 @@ data class AlbumListItem(
             view.titleTextView.text = item.title
 
             with(view.listItemAlbum) {
-                backgroundTintList =
+                setCardBackgroundColor(
                     if (item.isAlbumSelected)
-                        selectedCardBackgroundTint
+                        selectedCardBackgroundColor
                     else
-                        null
+                        unselectedCardBackgroundColor
+                )
 
                 strokeWidth =
                     if (item.isAlbumSelected)

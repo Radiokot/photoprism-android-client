@@ -1,6 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
-import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -54,12 +54,11 @@ class PersonListItem(
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
         private val view = ListItemPersonBinding.bind(itemView)
-        private val selectedCardBackgroundTint = ColorStateList.valueOf(
-            MaterialColors.getColor(
-                itemView,
-                com.google.android.material.R.attr.colorSecondaryContainer,
-            )
+        private val selectedCardBackgroundColor = MaterialColors.getColor(
+            itemView,
+            com.google.android.material.R.attr.colorSecondaryContainer,
         )
+        private val unselectedCardBackgroundColor = Color.TRANSPARENT
         private val picasso: Picasso by inject()
 
         override fun bindView(item: PersonListItem, payloads: List<Any>) {
@@ -79,11 +78,12 @@ class PersonListItem(
             }
 
             with(view.listItemPerson) {
-                backgroundTintList =
+                setCardBackgroundColor(
                     if (item.isPersonSelected)
-                        selectedCardBackgroundTint
+                        selectedCardBackgroundColor
                     else
-                        null
+                        unselectedCardBackgroundColor
+                )
 
                 ViewCompat.setTooltipText(this, item.name)
             }

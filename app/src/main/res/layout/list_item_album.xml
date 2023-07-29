@@ -6,6 +6,7 @@
     android:layout_width="@dimen/list_item_album_width"
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
+    app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
