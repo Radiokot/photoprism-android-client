@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Search by people and new faces
 - Showing full album name as a tooltip when making a long press on it
+- Ability to disable loading and showing people and albums on the search configuration screen 
 
 ## [1.15.1] - 2023-07-24
 
