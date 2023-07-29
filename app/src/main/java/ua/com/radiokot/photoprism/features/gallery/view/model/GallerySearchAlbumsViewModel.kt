@@ -8,6 +8,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 /**
  * A viewmodel that controls list of selectable albums for the gallery search.
@@ -17,12 +18,14 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
  */
 class GallerySearchAlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
+    searchPreferences: SearchPreferences,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchAlbumsVM")
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
+    val isViewVisible = searchPreferences.showPeople.toMainThreadObservable()
 
     init {
         subscribeToRepository()

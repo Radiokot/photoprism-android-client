@@ -10,6 +10,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
@@ -26,6 +27,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
@@ -129,12 +132,14 @@ val galleryFeatureModules: List<Module> = listOf(
             viewModel {
                 GallerySearchAlbumsViewModel(
                     albumsRepository = get(),
+                    searchPreferences = get(),
                 )
             }
 
             viewModel {
                 GallerySearchPeopleViewModel(
                     peopleRepository = get(),
+                    searchPreferences = get(),
                 )
             }
 
@@ -143,6 +148,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     bookmarksRepository = get(),
                     albumsViewModel = get(),
                     peopleViewModel = get(),
+                    searchPreferences = get(),
                 )
             }
 
@@ -231,5 +237,16 @@ val galleryFeatureModules: List<Module> = listOf(
                 contentResolver = androidContext().contentResolver,
             )
         } bind ImportSearchBookmarksUseCase::class
+    },
+
+    module {
+        includes(ioModules)
+
+        single {
+            SearchPreferencesOnPrefs(
+                preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+                keyPrefix = "search",
+            )
+        } bind SearchPreferences::class
     },
 )

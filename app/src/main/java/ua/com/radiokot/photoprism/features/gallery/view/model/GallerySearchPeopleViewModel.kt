@@ -9,13 +9,16 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.data.storage.PeopleRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 class GallerySearchPeopleViewModel(
     private val peopleRepository: PeopleRepository,
+    searchPreferences: SearchPreferences,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchPeopleVM")
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
+    val isViewVisible = searchPreferences.showPeople.toMainThreadObservable()
 
     /**
      * Non-null set of the selected person IDs, **empty** if nothing is selected.

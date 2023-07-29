@@ -117,4 +117,9 @@
     <string name="no_people_found">Δεν βρέθηκαν άτομα</string>
     <string name="reload">Φορτώστε ξανά</string>
     <string name="loading_data_progress">φόρτωση δεδομένων…</string>
+    <string name="search_preferences">αναζήτηση</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">εμφάνιση ατόμων και νέων προσώπων στην οθόνη αναζήτησης</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">εμφάνιση άλμπουμ και φακέλων στην οθόνη αναζήτησης</string>
 </resources>

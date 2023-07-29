@@ -22,6 +22,28 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/search_preferences">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_show_people"
+            app:persistent="false"
+            app:summary="@string/show_people_explanation"
+            app:title="@string/show_people"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_show_albums"
+            app:persistent="false"
+            app:summary="@string/show_albums_explanation"
+            app:title="@string/show_albums"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/bookmarks_preferences">
 
         <Preference

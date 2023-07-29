@@ -10,6 +10,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -37,6 +38,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
@@ -59,6 +61,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
             this::importBookmarksFromFile
         )
     private val session: EnvSession by inject()
+    private val searchPreferences: SearchPreferences by inject()
     private var bookmarksExportResultIntent: Intent? = null
     private val bookmarksExportSaveDialogLauncher = registerForActivityResult(
         object : ActivityResultContracts.CreateDocument("*/*") {
@@ -141,6 +144,34 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         with(requirePreference(R.string.pk_library_disconnect)) {
             setOnPreferenceClickListener {
                 disconnect()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_show_people)) {
+            this as SwitchPreferenceCompat
+
+            searchPreferences.showPeople
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onNext = this::setChecked)
+                .autoDispose(this@PreferencesFragment)
+
+            setOnPreferenceChangeListener { _, newValue ->
+                searchPreferences.showPeople.onNext(newValue == true)
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_show_albums)) {
+            this as SwitchPreferenceCompat
+
+            searchPreferences.showAlbums
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onNext = this::setChecked)
+                .autoDispose(this@PreferencesFragment)
+
+            setOnPreferenceChangeListener { _, newValue ->
+                searchPreferences.showAlbums.onNext(newValue == true)
                 true
             }
         }

@@ -15,11 +15,13 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,
     val albumsViewModel: GallerySearchAlbumsViewModel,
     val peopleViewModel: GallerySearchPeopleViewModel,
+    private val searchPreferences: SearchPreferences,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchViewModel")
 
@@ -206,8 +208,14 @@ class GallerySearchViewModel(
 
     private fun updateExternalData() {
         bookmarksRepository.updateIfNotFresh()
-        albumsViewModel.updateIfNotFresh()
-        peopleViewModel.updateIfNotFresh()
+
+        if (searchPreferences.showAlbums.value == true) {
+            albumsViewModel.updateIfNotFresh()
+        }
+
+        if (searchPreferences.showPeople.value == true) {
+            peopleViewModel.updateIfNotFresh()
+        }
     }
 
     fun onSearchClicked() {

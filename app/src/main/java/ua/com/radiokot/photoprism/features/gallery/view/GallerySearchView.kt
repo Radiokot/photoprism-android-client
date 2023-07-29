@@ -433,6 +433,10 @@ class GallerySearchView(
                         "\nstate=$state"
             }
         }.autoDispose(this)
+
+        albumsViewModel.isViewVisible
+            .subscribeBy { configurationView.albumsLayout.isVisible = it }
+            .autoDispose(this)
     }
 
     private fun subscribeToPeopleState() {
@@ -466,6 +470,10 @@ class GallerySearchView(
                         "\nstate=$state"
             }
         }.autoDispose(this)
+
+        peopleViewModel.isViewVisible
+            .subscribeBy { configurationView.peopleLayout.isVisible = it }
+            .autoDispose(this)
     }
 
     private fun subscribeToState() {

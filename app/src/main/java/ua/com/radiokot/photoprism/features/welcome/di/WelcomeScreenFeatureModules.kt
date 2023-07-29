@@ -18,11 +18,6 @@ val welcomeScreenFeatureModules: List<Module> = listOf(
                 preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
                 keyPrefix = "welcome"
             )
-//            object : WelcomeScreenPreferences {
-//                override var isWelcomeScreenEverShown: Boolean
-//                    get() = false
-//                    set(value) {}
-//            }
         } bind WelcomeScreenPreferences::class
     }
 )

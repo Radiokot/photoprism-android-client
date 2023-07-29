@@ -122,4 +122,9 @@
     <string name="no_people_found">No people found</string>
     <string name="reload">Reload</string>
     <string name="loading_data_progress">Loading data…</string>
+    <string name="search_preferences">Search</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Show people and new faces on the search screen</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Show albums and folders on the search screen</string>
 </resources>

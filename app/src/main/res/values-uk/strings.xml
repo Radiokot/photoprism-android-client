@@ -118,4 +118,9 @@
     <string name="no_people_found">Людей не знайдено</string>
     <string name="reload">Перезавантажити</string>
     <string name="loading_data_progress">Завантаження даних…</string>
+    <string name="search_preferences">Пошук</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Показувати людей та нові обличча на екрані пошуку</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Показувати альбоми та папки на екрані пошуку</string>
 </resources>

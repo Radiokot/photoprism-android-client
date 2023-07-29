@@ -118,4 +118,9 @@
     <string name="no_people_found">Hiç kimse bulunamadı</string>
     <string name="reload">Tekrar yükle</string>
     <string name="loading_data_progress">Veri yükleniyor…</string>
+    <string name="search_preferences">Arama</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Arama ekranında kişileri ve yeni yüzleri gösterin</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Arama ekranında albümleri ve klasörleri göster</string>
 </resources>

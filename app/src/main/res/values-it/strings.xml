@@ -118,4 +118,9 @@
     <string name="no_people_found">Nessuna persona trovata</string>
     <string name="reload">Ricarica</string>
     <string name="loading_data_progress">Caricamento dati…</string>
+    <string name="search_preferences">Cerca</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Mostra persone e volti nuovi nella schermata di cerca</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Mostra album e cartelle nella schermata di cerca</string>
 </resources>

@@ -118,4 +118,9 @@
     <string name="no_people_found">找不到人物</string>
     <string name="reload">重新加载</string>
     <string name="loading_data_progress">加载数据中…</string>
+    <string name="search_preferences">搜索</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">在搜索屏幕上显示人员和新面孔</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">在搜索屏幕上显示相册和文件夹</string>
 </resources>
