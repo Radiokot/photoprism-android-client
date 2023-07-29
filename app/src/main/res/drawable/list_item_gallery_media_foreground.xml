@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <stroke android:width="@dimen/list_item_gallery_media_margin" android:color="?colorControlHighlight" />
+                </shape>
+            </item>
+            <item android:bottom="@dimen/list_item_gallery_media_margin" android:left="@dimen/list_item_gallery_media_margin" android:right="@dimen/list_item_gallery_media_margin" android:top="@dimen/list_item_gallery_media_margin">
+                <shape android:shape="rectangle">
+                    <stroke android:width="@dimen/list_item_gallery_media_margin" android:color="?android:colorBackground" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>

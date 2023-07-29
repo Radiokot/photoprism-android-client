@@ -8,6 +8,7 @@
     android:background="@drawable/focusable_list_item_background"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="@drawable/list_item_gallery_media_foreground"
     android:padding="@dimen/list_item_gallery_media_margin"
     tools:layout_width="160dp">
 
