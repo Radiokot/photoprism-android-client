@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Showing full album name as a tooltip when making a long press on it
 - Ability to disable loading and showing people and albums on the search configuration screen 
 
+### Changed
+- Horizontal lists on the search configuration screen are now scrolled from edge to edge
+
 ## [1.15.1] - 2023-07-24
 
 ## Fixed
