@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PhotoPrism search filter guide on the search configuration screen 
 is replaced with the new gallery search guide
 
+### Fixed
+- The "Back" toolbar button in the web viewer closing it rather than navigating back
+
 ## [1.15.1] - 2023-07-24
 
 ## Fixed

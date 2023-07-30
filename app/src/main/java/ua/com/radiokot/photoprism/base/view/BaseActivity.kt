@@ -104,7 +104,7 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            finish()
+            onBackPressedDispatcher.onBackPressed()
         }
         return super.onOptionsItemSelected(item)
     }
