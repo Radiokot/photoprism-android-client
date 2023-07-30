@@ -17,7 +17,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Sending photos or videos to Gmail, Telegram or any other app
 - Grouping the content by days and months
 - Chronological scroll bar that lets you quickly jump to a specific month
-- Configurable search
+- [Configurable search](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-search-the-library)
 - [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) that let you save search configurations and apply them later
 - Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
