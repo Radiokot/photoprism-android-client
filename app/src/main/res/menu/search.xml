@@ -4,7 +4,7 @@
     <item
         android:id="@+id/search_filters_guide"
         android:icon="@drawable/ic_lightbulb"
-        android:title="@string/using_search_filters"
+        android:title="@string/how_to_search_the_library"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="ifRoom" />
 </menu>

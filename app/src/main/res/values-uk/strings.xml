@@ -55,7 +55,7 @@
     <string name="template_error_failed_to_add_bookmark">Не вдалося додати закладку: %1$s</string>
     <string name="template_error_failed_to_edit_bookmark">Не вдалося змінити закладку: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Не вдалося видалити закладку: %1$s</string>
-    <string name="using_search_filters">Використання фільтрів для пошуку</string>
+    <string name="how_to_search_the_library">Як шукати в бібліотеці</string>
     <string name="some_types_are_not_available_when_selecting">Доступні тільки типи, які підтримує запитуючий застосунок</string>
     <string name="include_private_content">Показати приватний вміст</string>
     <string name="client_certificate_optional">Клієнтський сертифікат (опціонально)</string>

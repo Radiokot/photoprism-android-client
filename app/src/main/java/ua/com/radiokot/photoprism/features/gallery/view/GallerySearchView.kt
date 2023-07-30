@@ -67,7 +67,7 @@ class GallerySearchView(
     private val log = kLogger("GallerySearchView")
 
     private val searchFiltersGuideUrl = getKoin()
-        .getProperty<String>("searchFiltersGuideUrl")
+        .getProperty<String>("searchGuideUrl")
         .checkNotNull { "Missing search filters guide URL" }
     private val picasso: Picasso by inject()
 
@@ -745,9 +745,9 @@ class GallerySearchView(
             Intent(context, WebViewActivity::class.java).putExtras(
                 WebViewActivity.getBundle(
                     url = searchFiltersGuideUrl,
-                    titleRes = R.string.using_search_filters,
-                    pageStartedInjectionScripts = setOf(
-                        WebViewInjectionScriptFactory.Script.PHOTOPRISM_HELP_IMMERSIVE,
+                    titleRes = R.string.how_to_search_the_library,
+                    pageFinishedInjectionScripts = setOf(
+                        WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
                     ),
                 )
             )

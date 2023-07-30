@@ -54,7 +54,7 @@
     <string name="template_error_failed_to_add_bookmark">αδυναμία δημιουργίας σελιδοδείκτη: %1$s</string>
     <string name="template_error_failed_to_edit_bookmark">αποτυχία επεξεργασίας σελιδοδείκτη: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">αποτυχία διαγραφής σελιδοδείκτη: %1$s</string>
-    <string name="using_search_filters">χρηση φίλτρων αναζήτησης</string>
+    <string name="how_to_search_the_library">πώς να κάνετε αναζήτηση στη βιβλιοθήκη</string>
     <string name="some_types_are_not_available_when_selecting">Διατίθενται μόνο τύποι που υποστηρίζονται από την αιτούσα εφαρμογή</string>
     <string name="include_private_content">συμπερίληψη ιδιωτικού περιεχομένου</string>
     <string name="client_certificate_optional">πιστοποιητικό χρήστη (προαιρετικό)</string>

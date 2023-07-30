@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Horizontal lists on the search configuration screen are now scrolled from edge to edge
 - Selected elements on the search configuration screen now have more contrast
 - Focused gallery item, when using keyboard navigation, is now better highlighted
+- PhotoPrism search filter guide on the search configuration screen 
+is replaced with the new gallery search guide
 
 ## [1.15.1] - 2023-07-24
 

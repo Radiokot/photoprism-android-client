@@ -55,7 +55,7 @@
     <string name="template_error_failed_to_add_bookmark">Impossibile aggiungere un segnalibro: %1$s</string>
     <string name="template_error_failed_to_edit_bookmark">Impossibile modificare un segnalibro: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Impossibile eliminare un segnalibro: %1$s</string>
-    <string name="using_search_filters">Usa filtri di ricerca</string>
+    <string name="how_to_search_the_library">Come cercare nella libreria</string>
     <string name="some_types_are_not_available_when_selecting">Solo i tipi supportati dall\'app sono disponibili</string>
     <string name="include_private_content">Includi contenuti privati</string>
     <string name="client_certificate_optional">Certificato client (opzionale)</string>

@@ -55,7 +55,7 @@
     <string name="template_error_failed_to_add_bookmark">Yer imi eklenemedi: %1$s</string>
     <string name="template_error_failed_to_edit_bookmark">Yer imi düzenlenemedi: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">Yer imi silinemedi: %1$s</string>
-    <string name="using_search_filters">Arama filtrelerini kullanmak</string>
+    <string name="how_to_search_the_library">Arama filtrelerini kullanmak</string>
     <string name="some_types_are_not_available_when_selecting">Yalnızca istekte bulunan uygulama tarafından desteklenen türler mevcuttur</string>
     <string name="include_private_content">Gizli içeriği dahil et</string>
     <string name="client_certificate_optional">İstemci sertifikası (isteğe bağlı)</string>

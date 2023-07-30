@@ -55,7 +55,7 @@
     <string name="template_error_failed_to_add_bookmark">添加书签失败: %1$s</string>
     <string name="template_error_failed_to_edit_bookmark">编辑书签失败: %1$s</string>
     <string name="template_error_failed_to_delete_bookmark">删除书签失败: %1$s</string>
-    <string name="using_search_filters">使用筛选器搜索</string>
+    <string name="how_to_search_the_library">如何搜索图书馆</string>
     <string name="some_types_are_not_available_when_selecting">只有应用程序支持的类型才可用</string>
     <string name="include_private_content">包含私有内容</string>
     <string name="client_certificate_optional">客户端证书 (optional)</string>
