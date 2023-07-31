@@ -102,8 +102,9 @@ class GalleryViewModel(
             requestedMimeType.startsWith("image/") ->
                 setOf(
                     GalleryMedia.TypeName.IMAGE,
+                    GalleryMedia.TypeName.RAW,
                     GalleryMedia.TypeName.ANIMATED,
-                    GalleryMedia.TypeName.VECTOR
+                    GalleryMedia.TypeName.VECTOR,
                 )
 
             requestedMimeType.startsWith("video/") ->

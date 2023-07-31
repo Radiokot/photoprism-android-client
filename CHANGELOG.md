@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Search by people and new faces
 - Showing full album name as a tooltip when making a long press on it
-- Ability to disable loading and showing people and albums on the search configuration screen 
+- Ability to disable loading and showing people and albums on the search configuration screen
+- Ability to pick RAW photos when the gallery is opened to pick an image
 
 ### Changed
 - Horizontal lists on the search configuration screen are now scrolled from edge to edge
