@@ -24,7 +24,7 @@
     <application
         android:name=".PhotoPrismGallery"
         android:allowBackup="false"
-        android:banner="@mipmap/tv_banner"
+        android:banner="@drawable/tv_banner"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
