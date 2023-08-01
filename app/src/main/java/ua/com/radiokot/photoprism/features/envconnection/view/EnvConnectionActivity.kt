@@ -42,6 +42,7 @@ class EnvConnectionActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         view = ActivityEnvConnectionBinding.inflate(layoutInflater)
+        // Notice: there are layouts for multiple dimens.
         fields = IncludeEnvConnectionFieldsBinding.bind(view.root)
         setContentView(view.root)
 

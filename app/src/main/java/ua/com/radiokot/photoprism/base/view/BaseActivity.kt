@@ -100,6 +100,25 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
         window.setBackgroundDrawable(ColorDrawable(windowBackgroundColor))
 
         super.onCreate(savedInstanceState)
+
+        // Focus debug.
+//        io.reactivex.rxjava3.core.Observable.interval(
+//            500,
+//            java.util.concurrent.TimeUnit.MILLISECONDS
+//        )
+//            .subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
+//            .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+//            .subscribe {
+//                val focusedView = window.currentFocus
+//                val activity = this::javaClass.name
+//
+//                log.debug {
+//                    "focusDebuggerTick(): printing_current_focus:" +
+//                            "\nfocusedView=$focusedView," +
+//                            "\nactivity=$activity"
+//                }
+//            }
+//            .autoDispose(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

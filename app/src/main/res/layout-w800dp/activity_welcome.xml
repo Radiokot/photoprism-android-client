@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="2">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/title_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:layout_gravity="fill_horizontal"
+        android:drawablePadding="16dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:paddingVertical="32dp"
+        android:text="@string/welcome_title"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+        app:drawableTopCompat="@mipmap/splash_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/main_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="3"
+        android:layout_gravity="fill_horizontal|center_vertical"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="72dp"
+        android:focusable="true"
+        android:nextFocusRight="@id/continue_button"
+        android:text="@string/welcome_text"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        tools:targetApi="o" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/continue_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_columnWeight="2"
+        android:layout_gravity="fill_horizontal|center_vertical"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="72dp"
+        android:focusable="true"
+        android:nextFocusLeft="@id/main_text_view"
+        android:text="@string/continuee">
+
+        <requestFocus />
+    </com.google.android.material.button.MaterialButton>
+
+</GridLayout>

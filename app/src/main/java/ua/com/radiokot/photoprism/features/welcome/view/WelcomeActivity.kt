@@ -19,6 +19,7 @@ class WelcomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Notice: there are layouts for multiple dimens.
         view = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(view.root)
 
