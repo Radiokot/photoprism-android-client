@@ -178,7 +178,7 @@ class GallerySearchView(
             // Override the default bar click listener
             // to make the ViewModel in charge of the state.
             post {
-                setOnClickListener {
+                setThrottleOnClickListener {
                     viewModel.onSearchBarClicked()
                 }
             }
@@ -186,11 +186,11 @@ class GallerySearchView(
 
         configurationView.privateContentSwitch.bindCheckedTwoWay(viewModel.includePrivateContent)
 
-        configurationView.searchButton.setOnClickListener {
+        configurationView.searchButton.setThrottleOnClickListener {
             viewModel.onSearchClicked()
         }
 
-        configurationView.resetButton.setOnClickListener {
+        configurationView.resetButton.setThrottleOnClickListener {
             viewModel.onResetClicked()
         }
     }
