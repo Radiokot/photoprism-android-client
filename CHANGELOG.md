@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Crash when clicking the "Apply" button on the search screen twice
+- Media viewer failing to load very big images
 
 ## [1.16.0] - 2023-07-31
 

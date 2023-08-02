@@ -50,8 +50,11 @@ class ImageViewerPage(
             view.progressIndicator.show()
             view.errorTextView.visibility = View.GONE
 
+            // TODO: The quality should be improved
             picasso
                 .load(item.previewUrl)
+                .fit()
+                .centerInside()
                 .into(view.photoView, imageLoadingCallback)
         }
 
