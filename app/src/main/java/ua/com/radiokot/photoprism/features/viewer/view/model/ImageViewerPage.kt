@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import android.util.Size
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
@@ -14,6 +15,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 class ImageViewerPage(
     val previewUrl: String,
+    val imageViewSize: Size,
     thumbnailUrl: String,
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
@@ -50,11 +52,13 @@ class ImageViewerPage(
             view.progressIndicator.show()
             view.errorTextView.visibility = View.GONE
 
-            // TODO: The quality should be improved
             picasso
                 .load(item.previewUrl)
-                .fit()
+                // Picasso deferred fit is no good when we we want to resize the image
+                // considering the zoom factor, so the zoom actually makes sense.
+                .resize(item.imageViewSize.width, item.imageViewSize.height)
                 .centerInside()
+                .onlyScaleDown()
                 .into(view.photoView, imageLoadingCallback)
         }
 

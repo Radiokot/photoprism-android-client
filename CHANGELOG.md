@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Improved quality of the viewed photos. Now the app loads corresponding previews 
+according to the screen size. This, however, may increase network load
+
 ### Fixed
 - Crash when clicking the "Apply" button on the search screen twice
 - Media viewer failing to load very big images

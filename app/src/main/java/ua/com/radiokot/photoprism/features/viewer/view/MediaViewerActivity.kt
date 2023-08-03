@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Size
 import android.view.KeyEvent
 import android.view.View
 import android.view.View.OnKeyListener
@@ -41,6 +42,7 @@ import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import java.io.File
+import kotlin.math.roundToInt
 
 class MediaViewerActivity : BaseActivity() {
     private lateinit var view: ActivityMediaViewerBinding
@@ -130,6 +132,14 @@ class MediaViewerActivity : BaseActivity() {
         startIndex: Int,
         savedInstanceState: Bundle?,
     ) = with(view.viewPager) {
+        window.decorView.viewTreeObserver.addOnGlobalLayoutListener {
+            // Image view size is the window size multiplied by a zoom factor.
+            viewModel.imageViewSize = Size(
+                (window.decorView.width * 1.5).roundToInt(),
+                (window.decorView.height * 1.5).roundToInt()
+            )
+        }
+
         val fastAdapter = FastAdapter.with(viewerPagesAdapter).apply {
             stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY

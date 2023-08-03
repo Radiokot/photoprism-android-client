@@ -145,7 +145,36 @@ class GalleryMedia(
 
     sealed class TypeData(val typeName: TypeName) {
         interface ViewableAsImage {
-            val hdPreviewUrl: String
+            fun getPreviewUrl(maxViewSize: Int): String
+        }
+
+        private class ViewableAsImageWithUrlFactory(
+            private val hash: String,
+            private val mediaPreviewUrlFactory: MediaPreviewUrlFactory,
+        ) : ViewableAsImage {
+            override fun getPreviewUrl(maxViewSize: Int): String =
+                when {
+                    maxViewSize < 1000 ->
+                        mediaPreviewUrlFactory.getPreview720Url(hash)
+
+                    maxViewSize < 1500 ->
+                        mediaPreviewUrlFactory.getPreview1280Url(hash)
+
+                    maxViewSize < 2000 ->
+                        mediaPreviewUrlFactory.getPreview1920Url(hash)
+
+                    maxViewSize < 2500 ->
+                        mediaPreviewUrlFactory.getPreview2048Url(hash)
+
+                    maxViewSize < 4000 ->
+                        mediaPreviewUrlFactory.getPreview3840Url(hash)
+
+                    maxViewSize < 4500 ->
+                        mediaPreviewUrlFactory.getPreview4096Url(hash)
+
+                    else ->
+                        mediaPreviewUrlFactory.getPreview7680Url(hash)
+                }
         }
 
         interface ViewableAsVideo {
@@ -155,12 +184,16 @@ class GalleryMedia(
         object Unknown : TypeData(TypeName.UNKNOWN)
 
         class Image(
-            override val hdPreviewUrl: String,
-        ) : TypeData(TypeName.IMAGE), ViewableAsImage
+            hash: String,
+            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
+        ) : TypeData(TypeName.IMAGE),
+            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
 
         class Raw(
-            override val hdPreviewUrl: String,
-        ) : TypeData(TypeName.RAW), ViewableAsImage
+            hash: String,
+            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
+        ) : TypeData(TypeName.RAW),
+            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
 
         class Animated(
             override val avcPreviewUrl: String,
@@ -175,8 +208,10 @@ class GalleryMedia(
         ) : TypeData(TypeName.VIDEO), ViewableAsVideo
 
         class Vector(
-            override val hdPreviewUrl: String,
-        ) : TypeData(TypeName.VECTOR), ViewableAsImage
+            hash: String,
+            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
+        ) : TypeData(TypeName.VECTOR),
+            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
 
         object Sidecar : TypeData(TypeName.SIDECAR)
         object Text : TypeData(TypeName.TEXT)
@@ -190,11 +225,13 @@ class GalleryMedia(
                 when (val type = source.type) {
                     TypeName.UNKNOWN.value -> Unknown
                     TypeName.IMAGE.value -> Image(
-                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                        hash = source.hash,
+                        mediaPreviewUrlFactory = previewUrlFactory,
                     )
 
                     TypeName.RAW.value -> Raw(
-                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                        hash = source.hash,
+                        mediaPreviewUrlFactory = previewUrlFactory,
                     )
 
                     TypeName.ANIMATED.value -> Animated(
@@ -210,7 +247,8 @@ class GalleryMedia(
                     )
 
                     TypeName.VECTOR.value -> Vector(
-                        hdPreviewUrl = previewUrlFactory.getHdPreviewUrl(source.hash),
+                        hash = source.hash,
+                        mediaPreviewUrlFactory = previewUrlFactory,
                     )
 
                     TypeName.SIDECAR.value -> Sidecar

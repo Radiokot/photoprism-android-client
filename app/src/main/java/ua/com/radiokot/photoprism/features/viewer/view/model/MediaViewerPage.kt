@@ -1,9 +1,11 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import android.util.Size
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import kotlin.math.max
 
 sealed class MediaViewerPage(
     val thumbnailUrl: String,
@@ -15,14 +17,19 @@ sealed class MediaViewerPage(
         set(_) = error("Don't override my value")
 
     companion object {
-        fun fromGalleryMedia(source: GalleryMedia): MediaViewerPage {
+        fun fromGalleryMedia(
+            source: GalleryMedia,
+            imageViewSize: Size,
+        ): MediaViewerPage {
             return when (source.media) {
                 is GalleryMedia.TypeData.ViewableAsImage ->
                     ImageViewerPage(
-                        previewUrl = source.media.hdPreviewUrl,
+                        previewUrl = source.media.getPreviewUrl(max(imageViewSize.width, imageViewSize.height)),
+                        imageViewSize = imageViewSize,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,
                     )
+
                 is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewerPage(
                         previewUrl = source.media.avcPreviewUrl,
@@ -32,6 +39,7 @@ sealed class MediaViewerPage(
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,
                     )
+
                 else ->
                     unsupported(source)
             }

@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.os.Build
+import android.util.Size
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -58,7 +59,28 @@ class MediaViewerViewModel(
     val title: MutableLiveData<String> = MutableLiveData()
     val subtitle: MutableLiveData<String> = MutableLiveData()
 
-    // From 0 to 100, negative for indeterminate.
+    /**
+     * Size of the image viewing area in px.
+     * Used to load previews of suitable quality.
+     * Must be set by the view.
+     */
+    var imageViewSize: Size = Size(0, 0)
+        set(value) {
+            val previous = field
+            field = value
+            if (previous != value) {
+                log.debug {
+                    "imageViewSize::set(): broadcasting_after_value_change:" +
+                            "\nvalue=$value"
+                }
+
+                broadcastItemsFromRepository()
+            }
+        }
+
+    /**
+     * From 0 to 100, negative for indeterminate.
+     */
     val cancelDownloadButtonProgressPercent: MutableLiveData<Int> = MutableLiveData(-1)
 
     private val isStoragePermissionNeeded =
@@ -130,13 +152,23 @@ class MediaViewerViewModel(
     }
 
     private fun broadcastItemsFromRepository() {
+        if (imageViewSize.width == 0 || imageViewSize.height == 0) {
+            log.warn {
+                "broadcastItemsFromRepository(): skip_without_image_view_size"
+            }
+            return
+        }
+
         itemsList.value = galleryMediaRepository
             .itemsList
             .map { galleryMedia ->
                 if (galleryMedia in afterAllNotViewableMedia)
                     MediaViewerPage.unsupported(galleryMedia)
                 else
-                    MediaViewerPage.fromGalleryMedia(galleryMedia)
+                    MediaViewerPage.fromGalleryMedia(
+                        source = galleryMedia,
+                        imageViewSize = imageViewSize,
+                    )
             }
     }
 
