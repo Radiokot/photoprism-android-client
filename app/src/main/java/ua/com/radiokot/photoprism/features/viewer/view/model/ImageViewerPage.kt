@@ -11,6 +11,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 class ImageViewerPage(
@@ -54,6 +55,7 @@ class ImageViewerPage(
 
             picasso
                 .load(item.previewUrl)
+                .hardwareConfigIfAvailable()
                 // Picasso deferred fit is no good when we we want to resize the image
                 // considering the zoom factor, so the zoom actually makes sense.
                 .resize(item.imageViewSize.width, item.imageViewSize.height)

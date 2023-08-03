@@ -28,6 +28,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.util.ItemViewFactory
 import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
@@ -129,6 +130,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
                     picasso
                         .load(item.thumbnailUrl)
+                        .hardwareConfigIfAvailable()
                         .apply {
                             if (isBonded) {
                                 noFade()

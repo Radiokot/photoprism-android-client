@@ -13,6 +13,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 class UnsupportedNoticePage(
@@ -68,6 +69,7 @@ class UnsupportedNoticePage(
 
             picasso
                 .load(item.thumbnailUrl)
+                .hardwareConfigIfAvailable()
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .into(view.thumbnailImageView, imageLoadingCallback)
