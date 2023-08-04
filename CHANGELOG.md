@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A notice suggesting to use the mouse to search the library,
+which is shown in the search bar when the app is running on a TV
+
 ### Changed
 - Improved quality of the viewed photos. Now the app loads corresponding previews 
 according to the screen size. This, however, may increase network load
+- Split the welcome screen layout into 2 columns on wide landscape screens
 
 ### Fixed
 - Crash when clicking the "Apply" button on the search screen twice
