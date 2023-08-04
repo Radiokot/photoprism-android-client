@@ -33,6 +33,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
@@ -42,6 +43,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -70,6 +72,7 @@ class GallerySearchView(
         .getProperty<String>("searchGuideUrl")
         .checkNotNull { "Missing search filters guide URL" }
     private val picasso: Picasso by inject()
+    private val tvDetector: TvDetector by inject()
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
@@ -173,6 +176,13 @@ class GallerySearchView(
         }
 
         with(searchBar) {
+            setHint(
+                if (tvDetector.isRunningOnTv)
+                    R.string.use_mouse_to_search_the_library
+                else
+                    R.string.search_the_library
+            )
+
             textView.ellipsize = TextUtils.TruncateAt.END
 
             // Override the default bar click listener

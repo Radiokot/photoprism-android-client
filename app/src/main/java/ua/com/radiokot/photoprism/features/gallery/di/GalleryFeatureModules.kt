@@ -42,6 +42,8 @@ import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaDownload
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.logic.TvDetector
+import ua.com.radiokot.photoprism.features.gallery.logic.TvDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchAlbumsViewModel
@@ -60,6 +62,19 @@ val galleryFeatureModules: List<Module> = listOf(
     module {
         includes(envConnectionFeatureModules)
         includes(dateFormatModules)
+
+        single {
+            FileReturnIntentCreator(
+                fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
+                context = get(),
+            )
+        } bind FileReturnIntentCreator::class
+
+        single {
+            TvDetectorImpl(
+                context = androidContext(),
+            )
+        } bind TvDetector::class
 
         scope<EnvSession> {
             scoped {
@@ -123,6 +138,14 @@ val galleryFeatureModules: List<Module> = listOf(
                 )
             } bind PeopleRepository::class
 
+            // Downloader must be session-scoped to have the correct
+            // HTTP client (e.g. for mTLS)
+            scoped {
+                OkHttpObservableDownloader(
+                    httpClient = get()
+                )
+            } bind ObservableDownloader::class
+
             viewModel {
                 DownloadMediaFileViewModel(
                     downloadFileUseCaseFactory = get(),
@@ -173,25 +196,6 @@ val galleryFeatureModules: List<Module> = listOf(
                     disconnectFromEnvUseCase = get(),
                 )
             }
-        }
-    },
-
-    module {
-        single {
-            FileReturnIntentCreator(
-                fileProviderAuthority = BuildConfig.FILE_PROVIDER_AUTHORITY,
-                context = get(),
-            )
-        } bind FileReturnIntentCreator::class
-
-        scope<EnvSession> {
-            // Downloader must be session-scoped to have the correct
-            // HTTP client (e.g. for mTLS)
-            scoped {
-                OkHttpObservableDownloader(
-                    httpClient = get()
-                )
-            } bind ObservableDownloader::class
         }
     },
 
