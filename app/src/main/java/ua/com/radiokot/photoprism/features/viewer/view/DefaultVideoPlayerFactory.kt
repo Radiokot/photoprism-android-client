@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.content.Context
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
@@ -18,7 +17,6 @@ class DefaultVideoPlayerFactory(
 ) : VideoPlayerFactory {
     override fun createVideoPlayer(): VideoPlayer =
         ExoPlayer.Builder(context)
-            .setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
             .setLoadControl(
                 DefaultLoadControl.Builder()
                     .setBufferDurationsMs(
