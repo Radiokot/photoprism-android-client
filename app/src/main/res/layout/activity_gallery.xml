@@ -27,11 +27,12 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical">
 
         <com.google.android.material.search.SearchBar
             android:id="@+id/search_bar"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/search_bar_width"
             android:layout_height="wrap_content"
             android:focusable="true"
             android:hint="@string/search_the_library"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="list_item_gallery_media_margin">4dp</dimen>
     <dimen name="list_item_gallery_media_min_size">80dp</dimen>
     <dimen name="gallery_search_chip_spacing">8dp</dimen>
@@ -18,5 +18,9 @@
     <dimen name="list_item_person_width">80dp</dimen>
     <dimen name="list_item_person_image_size">72dp</dimen>
     <dimen name="selection_bottom_app_bar_height">56dp</dimen>
-    <dimen name="selected_gallery_item_corner_radius">11.5dp</dimen> <!-- Should match the radius of round buttons on the view -->
+    <dimen name="selected_gallery_item_corner_radius">
+        11.5dp
+        <!-- Should match the radius of round buttons on the view -->
+    </dimen>
+    <dimen name="search_bar_width" tools:ignore="ReferenceType">@integer/match_parent</dimen>
 </resources>
