@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A notice suggesting to use the mouse to search the library,
 which is shown in the search bar when the app is running on a TV
 - Distinctive `User-Agent` to be shown in the PhotoPrism sessions list
+- Going full screen automatically when viewing a video
 
 ### Changed
 - Improved quality of the viewed photos. Now the app loads corresponding previews 

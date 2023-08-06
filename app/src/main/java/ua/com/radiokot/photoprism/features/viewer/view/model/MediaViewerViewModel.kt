@@ -489,6 +489,11 @@ class MediaViewerViewModel(
             statusObservable = backgroundMediaFileDownloadManager.getStatus(item.uid)
         )
         updateTitleAndSubtitle(item)
+
+        // When switching to a video (not live photo or GIF), go full screen if currently is not.
+        if (item.media is GalleryMedia.TypeData.Video && isFullScreen.value == false) {
+            isFullScreen.value = true
+        }
     }
 
     private var backgroundDownloadProgressDisposable: Disposable? = null
