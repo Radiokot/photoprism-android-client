@@ -81,7 +81,14 @@ class VideoViewerPage(
             lifecycle.addObserver(lifecycleObserver)
 
         override fun attachToWindow(item: VideoViewerPage) {
-            view.videoView.useController = item.needsVideoControls
+            if (item.needsVideoControls) {
+                view.videoView.useController = true
+                // If need to use the controller, show it manually.
+                view.videoView.showController()
+            } else {
+                // Setting to false hides the controller automatically.
+                view.videoView.useController = false
+            }
 
             val playerCache = this.playerCache.checkNotNull {
                 "Player cache must be set"

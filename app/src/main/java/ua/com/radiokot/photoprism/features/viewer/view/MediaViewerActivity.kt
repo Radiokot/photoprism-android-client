@@ -394,14 +394,11 @@ class MediaViewerActivity : BaseActivity() {
         val playerControlsView = viewHolder.playerControlsView
 
         viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
+            // Use fade animation rather than videoPlayer controller visibility methods
+            // for consistency.
+            playerControlsView.root.clearAnimation()
             playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
         }
-        if (viewModel.areActionsVisible.value == true) {
-            view.videoView.showController()
-        } else {
-            view.videoView.hideController()
-        }
-        playerControlsView.root.clearAnimation()
 
         window.decorView.post {
             val extraBottomMargin = this.view.buttonsLayout.height +
