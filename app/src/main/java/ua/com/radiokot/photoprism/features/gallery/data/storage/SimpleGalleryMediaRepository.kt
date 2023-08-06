@@ -19,9 +19,7 @@ import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toMaybe
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.model.formatPhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
@@ -259,61 +257,8 @@ class SimpleGalleryMediaRepository(
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
         fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
-            val queryBuilder = StringBuilder()
-
-            // User query goes first, hence all the other params override the input.
-            queryBuilder.append(" ${config.userQuery}")
-
-            // If mediaTypes are not specified, all the types are allowed and no filter is added.
-            // If they are empty, nothing is allowed (empty search results).
-            if (config.mediaTypes != null) {
-                if (config.mediaTypes.isEmpty()) {
-                    queryBuilder.append(" type:nothing")
-                } else {
-                    queryBuilder.append(
-                        " type:${
-                            config.mediaTypes.joinToString("|") { it.value }
-                        }"
-                    )
-                }
-            }
-
-            if (config.beforeLocal != null) {
-                // PhotoPrism "before" filter does not take into account the time.
-                // "before:2023-04-30T22:57:32Z" is treated like "2023-04-30T00:00:00Z".
-                // It also filters by the "TakenAt" date rather than "TakenAtLocal",
-                // so an extra day is added to overcome these problems.
-                //
-                // When using this workaround workaround, the local post filtering is needed.
-                // See below.
-                val redundantBefore = LocalDate(config.beforeLocal.time + DAY_MS)
-                queryBuilder.append(" before:\"${formatPhotoPrismDate(redundantBefore)}\"")
-            }
-
-            queryBuilder.append(" public:${!config.includePrivate}")
-
-            if (config.albumUid != null) {
-                queryBuilder.append(" album:${config.albumUid}")
-            }
-
-            if (config.personIds.isNotEmpty()) {
-                val subjectUids = config.personIds
-                    .filter { Person.isSubjectUid(it) }
-                if (subjectUids.isNotEmpty()) {
-                    queryBuilder.append(" subject:${subjectUids.joinToString("&")}")
-                }
-
-                val faceIds = config.personIds
-                    .filter { Person.isFaceId(it) }
-                if (faceIds.isNotEmpty()) {
-                    queryBuilder.append(" face:${faceIds.joinToString("&")}")
-                }
-            }
-
             val params = Params(
-                query = queryBuilder.toString()
-                    .trim()
-                    .takeUnless(String::isNullOrBlank),
+                query = config.getPhotoPrismQuery(),
                 postFilterBefore = config.beforeLocal,
             )
 
@@ -341,10 +286,6 @@ class SimpleGalleryMediaRepository(
          */
         fun invalidateAllCached() {
             cache.snapshot().values.onEach(Repository::invalidate)
-        }
-
-        private companion object {
-            private const val DAY_MS = 86400000L
         }
     }
 }

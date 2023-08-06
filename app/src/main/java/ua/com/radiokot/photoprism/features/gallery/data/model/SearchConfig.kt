@@ -52,6 +52,70 @@ data class SearchConfig(
             this
     }
 
+    /**
+     * @return PhotoPrism query for the search request,
+     * or null if there are no search criteria.
+     *
+     * **To get accurate results with dates, the local post filtering is needed**
+     */
+    fun getPhotoPrismQuery(): String? {
+        val queryBuilder = StringBuilder()
+
+        // User query goes first, hence all the other params override the input.
+        if (userQuery.isNotBlank()) {
+            queryBuilder.append(userQuery)
+        }
+
+        // If mediaTypes are not specified, all the types are allowed and no filter is added.
+        // If they are empty, nothing is allowed (empty search results).
+        if (mediaTypes != null) {
+            if (mediaTypes.isEmpty()) {
+                queryBuilder.append(" type:nothing")
+            } else {
+                queryBuilder.append(
+                    " type:${
+                        mediaTypes.joinToString("|") { it.value }
+                    }"
+                )
+            }
+        }
+
+        if (beforeLocal != null) {
+            // PhotoPrism "before" filter does not take into account the time.
+            // "before:2023-04-30T22:57:32Z" is treated like "2023-04-30T00:00:00Z".
+            // It also filters by the "TakenAt" date rather than "TakenAtLocal",
+            // so an extra day is added to overcome these problems.
+            //
+            // When using this workaround workaround, the local post filtering is needed.
+            val redundantBefore =
+                LocalDate(beforeLocal.time + DAY_MS)
+            queryBuilder.append(" before:\"${formatPhotoPrismDate(redundantBefore)}\"")
+        }
+
+        queryBuilder.append(" public:${!includePrivate}")
+
+        if (albumUid != null) {
+            queryBuilder.append(" album:$albumUid")
+        }
+
+        if (personIds.isNotEmpty()) {
+            val subjectUids = personIds
+                .filter { Person.isSubjectUid(it) }
+            if (subjectUids.isNotEmpty()) {
+                queryBuilder.append(" subject:${subjectUids.joinToString("&")}")
+            }
+
+            val faceIds = personIds
+                .filter { Person.isFaceId(it) }
+            if (faceIds.isNotEmpty()) {
+                queryBuilder.append(" face:${faceIds.joinToString("&")}")
+            }
+        }
+
+        return queryBuilder
+            .toString()
+            .takeUnless(String::isNullOrBlank)
+    }
 
     companion object {
         val DEFAULT = SearchConfig(
@@ -62,5 +126,7 @@ data class SearchConfig(
             userQuery = "",
             includePrivate = false,
         )
+
+        private const val DAY_MS = 86400000L
     }
 }
