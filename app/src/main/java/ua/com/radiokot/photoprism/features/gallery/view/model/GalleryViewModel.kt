@@ -849,9 +849,25 @@ class GalleryViewModel(
     }
 
     fun onClearMultipleSelectionClicked() {
-        log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
+        val currentState = stateSubject.value
 
-        clearMultipleSelection()
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Clear multiple selection button is only clickable in the corresponding state"
+        }
+
+        when (currentState) {
+            is State.Selecting.ToReturn -> {
+                log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
+
+                clearMultipleSelection()
+            }
+
+            State.Selecting.ToShare -> {
+                log.debug { "onClearMultipleSelectionClicked(): switching_to_viewing" }
+
+                switchToViewing()
+            }
+        }
     }
 
     private fun clearMultipleSelection() {
@@ -925,6 +941,7 @@ class GalleryViewModel(
             "Switching to viewing is only possible while selecting to share"
         }
 
+        backPressActionsStack.removeAction(switchBackToViewingOnBackPress)
         stateSubject.onNext(State.Viewing)
 
         clearMultipleSelection()

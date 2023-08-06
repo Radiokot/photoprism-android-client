@@ -17,6 +17,8 @@ which is shown in the search bar when the app is running on a TV
 according to the screen size. This, however, may increase network load
 - Split the welcome screen layout into 2 columns on wide landscape screens
 - Limited the max width of the search bar
+- The "X" button now exits the selection mode instead of just clearing, 
+if the selection is initiated by a long press
 
 ### Fixed
 - Crash when clicking the "Apply" button on the search screen twice
