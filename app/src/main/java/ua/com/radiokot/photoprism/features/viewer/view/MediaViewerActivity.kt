@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
-import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -154,11 +153,7 @@ class MediaViewerActivity : BaseActivity() {
         initFullScreenToggle()
         initCustomTabs()
         initKeyboardNavigation()
-
-        swipeToDismissHandler.translationLimit = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_MM, 25f,
-            resources.displayMetrics,
-        ).roundToInt()
+        initSwipeToDismiss()
     }
 
     private fun initPager(
@@ -417,6 +412,11 @@ class MediaViewerActivity : BaseActivity() {
         view.toolbar.forEach { toolbarView ->
             toolbarView.isFocusable = false
         }
+    }
+
+    private fun initSwipeToDismiss() {
+        swipeToDismissHandler.translationLimit =
+            resources.getDimensionPixelSize(R.dimen.swipe_to_dismiss_distance_threshold)
     }
 
     private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {

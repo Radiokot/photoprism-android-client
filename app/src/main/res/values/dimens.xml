@@ -23,4 +23,10 @@
         <!-- Should match the radius of round buttons on the view -->
     </dimen>
     <dimen name="search_bar_width" tools:ignore="ReferenceType">@integer/match_parent</dimen>
+    <dimen name="swipe_to_dismiss_distance_threshold" tools:ignore="InOrMmUsage">
+        8mm
+        <!-- Dragging for 8 mm with a finger is fairly easy.
+         When the distance is fixed and not calculated as a view height fraction,
+         doesn't matter whether you run the app on a large tablet or a small phone. -->
+    </dimen>
 </resources>
