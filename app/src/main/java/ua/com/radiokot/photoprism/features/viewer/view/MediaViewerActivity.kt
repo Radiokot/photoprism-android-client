@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
+import android.util.TypedValue
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
@@ -16,6 +18,7 @@ import androidx.activity.result.registerForActivityResult
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
@@ -75,6 +78,31 @@ class MediaViewerActivity : BaseActivity() {
             this::onStoragePermissionResult
         )
 
+    private val swipeToDismissHandler: SwipeToDismissHandler by lazy {
+        SwipeToDismissHandler(
+            swipeView = view.root,
+            onDismiss = ::finish,
+            onSwipeViewMove = { translationY, _ ->
+                if (translationY != 0.0f) {
+                    onSwipeToDismissGoing()
+                }
+            },
+            shouldAnimateDismiss = { false }
+        )
+    }
+    private val swipeDirectionDetector: SwipeDirectionDetector by lazy {
+        SwipeDirectionDetector(this)
+    }
+    private val isScaled: Boolean
+        get() {
+            val currentPageViewHolder: ViewHolder? =
+                view.viewPager.recyclerView
+                    .findViewHolderForAdapterPosition(view.viewPager.currentItem)
+
+            return currentPageViewHolder is ImageViewerPage.ViewHolder
+                    && currentPageViewHolder.view.photoView.scale != 1f
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -126,6 +154,11 @@ class MediaViewerActivity : BaseActivity() {
         initFullScreenToggle()
         initCustomTabs()
         initKeyboardNavigation()
+
+        swipeToDismissHandler.translationLimit = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_MM, 25f,
+            resources.displayMetrics,
+        ).roundToInt()
     }
 
     private fun initPager(
@@ -157,7 +190,7 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             addClickListener(
-                resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                resolveView = { viewHolder: ViewHolder ->
                     when (viewHolder) {
                         is ImageViewerPage.ViewHolder ->
                             viewHolder.view.photoView
@@ -175,7 +208,7 @@ class MediaViewerActivity : BaseActivity() {
             )
 
             addEventHook(object : EventHook<MediaViewerPage> {
-                override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+                override fun onBind(viewHolder: ViewHolder): View? {
                     if (viewHolder !is VideoViewerPage.ViewHolder) {
                         return null
                     }
@@ -685,6 +718,40 @@ class MediaViewerActivity : BaseActivity() {
                 )
             )
         )
+    }
+
+    // Swipe to dismiss happens here.
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        swipeDirectionDetector.handleTouchEvent(event)
+
+        // Do not allow swipe to dismiss if currently viewing a scaled photo.
+        if (!isScaled) {
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                swipeToDismissHandler.onTouch(view.root, event)
+            } else if (event.action == MotionEvent.ACTION_UP) {
+                swipeToDismissHandler.onTouch(view.root, event)
+            }
+
+            // If swipe in required direction is detected,
+            // dispatch further touch events to the handler.
+            val detectedSwipeDirection = swipeDirectionDetector.detectedDirection
+            if (detectedSwipeDirection == SwipeDirection.Up
+                || detectedSwipeDirection == SwipeDirection.Down
+            ) {
+                return swipeToDismissHandler.onTouch(view.root, event)
+            }
+        }
+
+        return super.dispatchTouchEvent(event)
+    }
+
+    private fun onSwipeToDismissGoing() {
+        // Hide system UI and instantly hide all the controls
+        // for the finish animation to be smooth.
+        // If the swipe is cancelled, visibility could be returned by a tap.
+        hideSystemUI()
+        view.toolbar.alpha = 0f
+        view.buttonsLayout.alpha = 0f
     }
 
     override fun finish() {
