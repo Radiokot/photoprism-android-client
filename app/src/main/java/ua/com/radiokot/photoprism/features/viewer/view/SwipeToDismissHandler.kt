@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023 Oleg Koretsky
  * Copyright (c) 2020 New Vector Ltd
  * Copyright (C) 2018 stfalcon.com
  *
@@ -27,19 +28,21 @@ import android.view.ViewPropertyAnimator
 import android.view.animation.AccelerateInterpolator
 
 class SwipeToDismissHandler(
-        private val swipeView: View,
-        private val onDismiss: () -> Unit,
-        private val onSwipeViewMove: (translationY: Float, translationLimit: Int) -> Unit,
-        private val shouldAnimateDismiss: () -> Boolean
+    private val swipeView: View,
+    private val onDismiss: () -> Unit,
+    private val onSwipeViewMove: (translationY: Float, translationLimit: Int) -> Unit,
+    private val shouldAnimateDismiss: () -> Boolean = { false },
 ) : View.OnTouchListener {
 
-    companion object {
-        private const val ANIMATION_DURATION = 200L
-    }
+    var distanceThreshold: Int = swipeView.height / 4
 
-    var translationLimit: Int = swipeView.height / 4
     private var isTracking = false
     private var startY: Float = 0f
+    private val animationDuration: Long by lazy {
+        swipeView.context.resources
+            .getInteger(android.R.integer.config_shortAnimTime)
+            .toLong()
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
@@ -51,6 +54,7 @@ class SwipeToDismissHandler(
                 startY = event.y
                 return true
             }
+
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (isTracking) {
                     isTracking = false
@@ -58,29 +62,32 @@ class SwipeToDismissHandler(
                 }
                 return true
             }
+
             MotionEvent.ACTION_MOVE -> {
                 if (isTracking) {
                     val translationY = event.y - startY
                     swipeView.translationY = translationY
-                    onSwipeViewMove(translationY, translationLimit)
+                    onSwipeViewMove(translationY, distanceThreshold)
                 }
                 return true
             }
+
             else -> {
                 return false
             }
         }
     }
 
-    internal fun initiateDismissToBottom() {
-        animateTranslation(swipeView.height.toFloat())
-    }
-
     private fun onTrackingEnd(parentHeight: Int) {
         val animateTo = when {
-            swipeView.translationY < -translationLimit -> -parentHeight.toFloat()
-            swipeView.translationY > translationLimit -> parentHeight.toFloat()
-            else -> 0f
+            swipeView.translationY < -distanceThreshold ->
+                -parentHeight.toFloat()
+
+            swipeView.translationY > distanceThreshold ->
+                parentHeight.toFloat()
+
+            else ->
+                0f
         }
 
         if (animateTo != 0f && !shouldAnimateDismiss()) {
@@ -92,31 +99,31 @@ class SwipeToDismissHandler(
 
     private fun animateTranslation(translationTo: Float) {
         swipeView.animate()
-                .translationY(translationTo)
-                .setDuration(ANIMATION_DURATION)
-                .setInterpolator(AccelerateInterpolator())
-                .setUpdateListener { onSwipeViewMove(swipeView.translationY, translationLimit) }
-                .setAnimatorEndListener {
-                    if (translationTo != 0f) {
-                        onDismiss()
-                    }
-
-                    // remove the update listener, otherwise it will be saved on the next animation execution:
-                    swipeView.animate().setUpdateListener(null)
+            .translationY(translationTo)
+            .setDuration(animationDuration)
+            .setInterpolator(AccelerateInterpolator())
+            .setUpdateListener { onSwipeViewMove(swipeView.translationY, distanceThreshold) }
+            .setAnimatorEndListener {
+                if (translationTo != 0f) {
+                    onDismiss()
                 }
-                .start()
+
+                // remove the update listener, otherwise it will be saved on the next animation execution:
+                swipeView.animate().setUpdateListener(null)
+            }
+            .start()
     }
 }
 
 private fun ViewPropertyAnimator.setAnimatorEndListener(
-        onAnimationEnd: () -> Unit,
+    onAnimationEnd: () -> Unit,
 ) = setListener(
-        object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                onAnimationEnd()
-            }
+    object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator) {
+            onAnimationEnd()
         }
+    }
 )
 
 private val View.hitRect: Rect
-    get() = Rect().also { getHitRect(it) }
+    get() = Rect().also(::getHitRect)

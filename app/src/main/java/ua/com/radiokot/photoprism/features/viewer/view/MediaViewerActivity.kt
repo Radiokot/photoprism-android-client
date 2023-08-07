@@ -86,7 +86,6 @@ class MediaViewerActivity : BaseActivity() {
                     onSwipeToDismissGoing()
                 }
             },
-            shouldAnimateDismiss = { false }
         )
     }
     private val swipeDirectionDetector: SwipeDirectionDetector by lazy {
@@ -415,7 +414,7 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     private fun initSwipeToDismiss() {
-        swipeToDismissHandler.translationLimit =
+        swipeToDismissHandler.distanceThreshold =
             resources.getDimensionPixelSize(R.dimen.swipe_to_dismiss_distance_threshold)
     }
 
