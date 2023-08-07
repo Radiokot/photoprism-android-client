@@ -4,12 +4,13 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -153,13 +154,9 @@ class GalleryActivity : BaseActivity() {
         initMultipleSelection()
 
         // Init the list once it is laid out.
-        val singleListInitListener = object : OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                view.galleryRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                initList(savedInstanceState)
-            }
+        view.galleryRecyclerView.doOnPreDraw {
+            initList(savedInstanceState)
         }
-        view.galleryRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(singleListInitListener)
 
         // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
