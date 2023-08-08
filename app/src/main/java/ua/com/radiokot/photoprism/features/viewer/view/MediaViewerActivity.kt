@@ -293,22 +293,23 @@ class MediaViewerActivity : BaseActivity() {
             )
         }
 
-        window.decorView.post {
+        view.buttonsLayout.doOnNextLayout { buttonsLayout ->
             val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
 
-            view.buttonsLayout.layoutParams =
-                (view.buttonsLayout.layoutParams as MarginLayoutParams).apply {
-                    bottomMargin += insets.bottom
-                    leftMargin += insets.left
-                    rightMargin += insets.right
+            buttonsLayout.updateLayoutParams {
+                this as MarginLayoutParams
 
-                    log.debug {
-                        "initButtons(): applied_buttons_insets_margin:" +
-                                "\nleft=$leftMargin," +
-                                "\nright=$rightMargin," +
-                                "\nbottom=$bottomMargin"
-                    }
+                bottomMargin += insets.bottom
+                leftMargin += insets.left
+                rightMargin += insets.right
+
+                log.debug {
+                    "initButtons(): applied_buttons_insets_margin:" +
+                            "\nleft=$leftMargin," +
+                            "\nright=$rightMargin," +
+                            "\nbottom=$bottomMargin"
                 }
+            }
         }
     }
 
@@ -430,29 +431,30 @@ class MediaViewerActivity : BaseActivity() {
             playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
         }
 
-        window.decorView.post {
-            val extraBottomMargin = this.view.buttonsLayout.height +
-                    (this.view.buttonsLayout.layoutParams as MarginLayoutParams).bottomMargin
-            val extraLeftMargin =
-                (this.view.buttonsLayout.layoutParams as MarginLayoutParams).leftMargin
-            val extraRightMargin =
-                (this.view.buttonsLayout.layoutParams as MarginLayoutParams).rightMargin
+        this.view.buttonsLayout.doOnNextLayout { buttonsLayout ->
+            val buttonsLayoutParams = buttonsLayout.layoutParams as MarginLayoutParams
 
-            with(view.videoView.findViewById<View>(R.id.player_progress_payout)) {
-                layoutParams = (layoutParams as MarginLayoutParams).apply {
-                    bottomMargin += extraBottomMargin
-                    leftMargin += extraLeftMargin
-                    rightMargin += extraRightMargin
+            view.videoView.findViewById<View>(R.id.player_progress_layout)
+                .also { playerProgressLayout ->
+                    val extraBottomMargin = buttonsLayout.height + buttonsLayoutParams.bottomMargin
+                    val extraLeftMargin = buttonsLayoutParams.leftMargin
+                    val extraRightMargin = buttonsLayoutParams.rightMargin
 
-                    log.debug {
-                        "setUpVideoViewer(): applied_controls_insets_margin:" +
-                                "\nleft=$leftMargin," +
-                                "\nright=$rightMargin," +
-                                "\nbottom=$bottomMargin"
+                    playerProgressLayout.updateLayoutParams {
+                        this as MarginLayoutParams
+
+                        bottomMargin += extraBottomMargin
+                        leftMargin += extraLeftMargin
+                        rightMargin += extraRightMargin
+
+                        log.debug {
+                            "setUpVideoViewer(): applied_controls_insets_margin:" +
+                                    "\nleft=$leftMargin," +
+                                    "\nright=$rightMargin," +
+                                    "\nbottom=$bottomMargin"
+                        }
                     }
-
                 }
-            }
         }
 
         viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
