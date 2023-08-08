@@ -175,9 +175,7 @@ class MediaViewerActivity : BaseActivity() {
             if (savedInstanceState == null) {
                 registerAdapterDataObserver(object : AdapterDataObserver() {
                     override fun onChanged() {
-                        post {
-                            setCurrentItem(startIndex, false)
-                        }
+                        recyclerView.scrollToPosition(startIndex)
                         unregisterAdapterDataObserver(this)
                     }
                 })

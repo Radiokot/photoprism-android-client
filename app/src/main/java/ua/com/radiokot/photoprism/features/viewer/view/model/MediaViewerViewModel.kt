@@ -482,6 +482,7 @@ class MediaViewerViewModel(
 
         log.debug {
             "onPageChanged(): page_changed:" +
+                    "\nposition=$position," +
                     "\nitem=$item"
         }
 
