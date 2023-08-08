@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <integer name="short_activity_animation_duration">150</integer>
+
     <integer name="match_parent">-1</integer>
     <integer name="wrap_content">-2</integer>
 </resources>

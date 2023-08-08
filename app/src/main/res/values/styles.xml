@@ -3,4 +3,11 @@
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
+
+    <style name="FadeWindowAnimationStyle" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_fade_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/stay_visible</item>
+        <item name="android:activityCloseEnterAnimation">@anim/stay_visible</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_fade_out</item>
+    </style>
 </resources>
