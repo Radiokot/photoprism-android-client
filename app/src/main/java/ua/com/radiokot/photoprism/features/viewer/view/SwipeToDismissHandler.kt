@@ -18,20 +18,17 @@
 
 package ua.com.radiokot.photoprism.features.viewer.view
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewPropertyAnimator
 import android.view.animation.AccelerateInterpolator
+import ua.com.radiokot.photoprism.R
 
 class SwipeToDismissHandler(
     private val swipeView: View,
     private val onDismiss: () -> Unit,
     private val onSwipeViewMove: (translationY: Float, translationLimit: Int) -> Unit,
-    private val shouldAnimateDismiss: () -> Boolean = { false },
 ) : View.OnTouchListener {
 
     var distanceThreshold: Int = swipeView.height / 4
@@ -40,7 +37,7 @@ class SwipeToDismissHandler(
     private var startY: Float = 0f
     private val animationDuration: Long by lazy {
         swipeView.context.resources
-            .getInteger(android.R.integer.config_shortAnimTime)
+            .getInteger(R.integer.short_activity_animation_duration)
             .toLong()
     }
 
@@ -90,10 +87,10 @@ class SwipeToDismissHandler(
                 0f
         }
 
-        if (animateTo != 0f && !shouldAnimateDismiss()) {
+        animateTranslation(animateTo)
+
+        if (animateTo != 0f) {
             onDismiss()
-        } else {
-            animateTranslation(animateTo)
         }
     }
 
@@ -103,27 +100,9 @@ class SwipeToDismissHandler(
             .setDuration(animationDuration)
             .setInterpolator(AccelerateInterpolator())
             .setUpdateListener { onSwipeViewMove(swipeView.translationY, distanceThreshold) }
-            .setAnimatorEndListener {
-                if (translationTo != 0f) {
-                    onDismiss()
-                }
-
-                // remove the update listener, otherwise it will be saved on the next animation execution:
-                swipeView.animate().setUpdateListener(null)
-            }
             .start()
     }
 }
-
-private fun ViewPropertyAnimator.setAnimatorEndListener(
-    onAnimationEnd: () -> Unit,
-) = setListener(
-    object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator) {
-            onAnimationEnd()
-        }
-    }
-)
 
 private val View.hitRect: Rect
     get() = Rect().also(::getHitRect)
