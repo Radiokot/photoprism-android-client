@@ -30,12 +30,17 @@ class GallerySearchPeopleViewModel(
         subscribeToPeopleSelection()
     }
 
-    fun updateIfNotFresh() {
+    fun update(force: Boolean = false) {
         log.debug {
-            "updateIfNotFresh(): begin_loading"
+            "update(): updating:" +
+                    "\nforce=$force"
         }
 
-        peopleRepository.updateIfNotFresh()
+        if (force) {
+            peopleRepository.update()
+        } else {
+            peopleRepository.updateIfNotFresh()
+        }
     }
 
     private fun subscribeToRepository() {
@@ -133,7 +138,7 @@ class GallerySearchPeopleViewModel(
             "onReloadPeopleClicked(): reload_people_clicked"
         }
 
-        updateIfNotFresh()
+        update()
     }
 
     fun getPersonThumbnail(uid: String): String? =

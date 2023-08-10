@@ -206,15 +206,19 @@ class GallerySearchViewModel(
         updateExternalData()
     }
 
-    private fun updateExternalData() {
-        bookmarksRepository.updateIfNotFresh()
+    fun updateExternalData(force: Boolean = false) {
+        if (force) {
+            bookmarksRepository.update()
+        } else {
+            bookmarksRepository.updateIfNotFresh()
+        }
 
         if (searchPreferences.showAlbums.value == true) {
-            albumsViewModel.updateIfNotFresh()
+            albumsViewModel.update(force)
         }
 
         if (searchPreferences.showPeople.value == true) {
-            peopleViewModel.updateIfNotFresh()
+            peopleViewModel.update(force)
         }
     }
 

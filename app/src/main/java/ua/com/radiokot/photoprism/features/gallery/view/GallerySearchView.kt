@@ -33,7 +33,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope

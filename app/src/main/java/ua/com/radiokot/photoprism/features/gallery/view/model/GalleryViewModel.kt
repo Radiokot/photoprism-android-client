@@ -901,7 +901,9 @@ class GalleryViewModel(
         // When resuming from the background, invalidate all the cached repos
         // to load the fresh data.
         galleryMediaRepositoryFactory.invalidateAllCached()
-        update()
+
+        update(force = true)
+        searchViewModel.updateExternalData(force = true)
 
         // Reset the scroll and, more importantly, pagination
         // as the number of list items may decrease.

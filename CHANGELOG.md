@@ -13,6 +13,8 @@ which is shown in the search bar when the app is running on a TV
 - Distinctive `User-Agent` to be shown in the PhotoPrism sessions list
 - Going full screen automatically when viewing a video
 - Closing media viewer by swiping up or down
+- Automatic update of album and people lists when re-opening the app after it has been moved 
+to the background by pressing the "Back" navigation button.
 
 ### Changed
 - Improved quality of the viewed photos. Now the app loads corresponding previews 

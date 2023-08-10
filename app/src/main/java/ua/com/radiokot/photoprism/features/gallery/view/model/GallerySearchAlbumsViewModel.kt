@@ -13,7 +13,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreference
 /**
  * A viewmodel that controls list of selectable albums for the gallery search.
  *
- * @see updateIfNotFresh
+ * @see update
  * @see selectedAlbumUid
  */
 class GallerySearchAlbumsViewModel(
@@ -32,12 +32,17 @@ class GallerySearchAlbumsViewModel(
         subscribeToAlbumSelection()
     }
 
-    fun updateIfNotFresh() {
+    fun update(force: Boolean = false) {
         log.debug {
-            "updateIfNotFresh(): begin_loading"
+            "update(): updating:" +
+                    "\nforce=$force"
         }
 
-        albumsRepository.updateIfNotFresh()
+        if (force) {
+            albumsRepository.update()
+        } else {
+            albumsRepository.updateIfNotFresh()
+        }
     }
 
     private fun subscribeToRepository() {
@@ -129,7 +134,7 @@ class GallerySearchAlbumsViewModel(
             "onReloadAlbumsClicked(): reload_albums_clicked"
         }
 
-        updateIfNotFresh()
+        update()
     }
 
     fun getAlbumTitle(uid: String): String? =
