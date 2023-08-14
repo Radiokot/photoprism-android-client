@@ -38,7 +38,8 @@
 
         <activity
             android:name=".features.gallery.view.GalleryActivity"
-            android:exported="true">
+            android:exported="true"
+            android:resizeableActivity="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,26 +66,31 @@
         <activity
             android:name=".features.viewer.view.MediaViewerActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:theme="@style/MediaViewerTheme" />
 
         <activity
             android:name=".features.envconnection.view.EnvConnectionActivity"
             android:exported="false"
             android:label="@string/connect_to_a_library"
+            android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
 
         <activity
             android:name=".features.prefs.view.PreferencesActivity"
             android:exported="false"
-            android:label="@string/preferences" />
+            android:label="@string/preferences"
+            android:resizeableActivity="true" />
 
         <activity
             android:name=".features.webview.view.WebViewActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:resizeableActivity="true" />
 
         <activity
             android:name=".features.welcome.view.WelcomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:resizeableActivity="true" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
