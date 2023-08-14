@@ -9,7 +9,6 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
-import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -23,16 +22,12 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.squareup.picasso.Picasso
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
@@ -78,10 +73,9 @@ class GallerySearchView(
     private lateinit var configurationView: ViewGallerySearchConfigurationBinding
     private val context: Context
         get() = searchBar.context
-    private val albumsViewModel: GallerySearchAlbumsViewModel = viewModel.albumsViewModel
-    private val albumsAdapter = ItemAdapter<AlbumListItem>()
-    private val peopleViewModel: GallerySearchPeopleViewModel = viewModel.peopleViewModel
-    private val peopleAdapter = ItemAdapter<PersonListItem>()
+    private lateinit var bookmarksView: GallerySearchBookmarksView
+    private lateinit var peopleView: GallerySearchPeopleView
+    private lateinit var albumsView: GallerySearchAlbumsView
 
     fun init(
         searchBar: SearchBar,
@@ -92,16 +86,29 @@ class GallerySearchView(
         this.searchView = searchView
         this.configurationView = configurationView
 
+        this.bookmarksView = GallerySearchBookmarksView(
+            view = configurationView.bookmarksView,
+            viewModel = viewModel,
+            lifecycleOwner = this,
+        )
+        this.peopleView = GallerySearchPeopleView(
+            view = configurationView.peopleView,
+            viewModel = viewModel.peopleViewModel,
+            lifecycleOwner = this,
+        )
+        this.albumsView = GallerySearchAlbumsView(
+            view = configurationView.albumsView,
+            viewModel = viewModel.albumsViewModel,
+            lifecycleOwner = this,
+        )
+
         initSearchBarAndView()
-        initBookmarksDrag()
         initMenus()
-        // Albums and people are initialized on config view showing.
+        // Bookmarks, albums and people are initialized on config view showing.
 
         subscribeToData()
         subscribeToState()
         subscribeToEvents()
-        subscribeToAlbumsState()
-        subscribeToPeopleState()
     }
 
     private fun initSearchBarAndView() {
@@ -124,16 +131,18 @@ class GallerySearchView(
 
                     // Slightly delay initialization to ease the transition animation.
                     searchView.post {
-                        initAlbumsListOnce()
-                        initPeopleListOnce()
+                        bookmarksView.initListOnce()
+                        albumsView.initListOnce()
+                        peopleView.initListOnce()
                     }
                 }
 
                 SearchView.TransitionState.SHOWN -> {
                     // If the view is initialized while the configuration view is already shown,
                     // albums must be initialized as well.
-                    initAlbumsListOnce()
-                    initPeopleListOnce()
+                    bookmarksView.initListOnce()
+                    albumsView.initListOnce()
+                    peopleView.initListOnce()
                 }
 
                 else -> {
@@ -241,66 +250,6 @@ class GallerySearchView(
         }
     }
 
-    private fun initBookmarksDrag() {
-        configurationView.bookmarksChipsLayout.setOnDragListener(
-            SearchBookmarkViewDragListener(viewModel)
-        )
-    }
-
-    private var isAlbumsListInitialized = false
-    private fun initAlbumsListOnce() = configurationView.albumsRecyclerView.post {
-        if (isAlbumsListInitialized) {
-            return@post
-        }
-
-        val listAdapter = FastAdapter.with(albumsAdapter).apply {
-            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-
-            onClickListener = { _, _, item: AlbumListItem, _ ->
-                albumsViewModel.onAlbumItemClicked(item)
-                true
-            }
-        }
-
-        with(configurationView.albumsRecyclerView) {
-            adapter = listAdapter
-            // Layout manager is set in XML.
-        }
-
-        configurationView.reloadAlbumsButton.setOnClickListener {
-            albumsViewModel.onReloadAlbumsClicked()
-        }
-
-        isAlbumsListInitialized = true
-    }
-
-    private var isPeopleListInitialized = false
-    private fun initPeopleListOnce() = configurationView.peopleRecyclerView.post {
-        if (isPeopleListInitialized) {
-            return@post
-        }
-
-        val listAdapter = FastAdapter.with(peopleAdapter).apply {
-            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-
-            onClickListener = { _, _, item: PersonListItem, _ ->
-                peopleViewModel.onPersonItemClicked(item)
-                true
-            }
-        }
-
-        with(configurationView.peopleRecyclerView) {
-            adapter = listAdapter
-            // Layout manager is set in XML.
-        }
-
-        configurationView.reloadPeopleButton.setOnClickListener {
-            peopleViewModel.onReloadPeopleClicked()
-        }
-
-        isPeopleListInitialized = true
-    }
-
     private fun subscribeToData() {
         val context = configurationView.mediaTypeChipsLayout.context
         viewModel.isApplyButtonEnabled
@@ -369,120 +318,6 @@ class GallerySearchView(
         viewModel.areSomeTypesUnavailable.observe(this) { areSomeTypesUnavailable ->
             configurationView.typesNotAvailableNotice.isVisible = areSomeTypesUnavailable
         }
-
-        val bookmarkChipClickListener = View.OnClickListener { chip ->
-            viewModel.onBookmarkChipClicked(chip.tag as SearchBookmarkItem)
-        }
-        val bookmarkChipEditClickListener = View.OnClickListener { chip ->
-            viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
-        }
-        val bookmarkChipLongClickListener = View.OnLongClickListener { chip ->
-            if (viewModel.canMoveBookmarks) {
-                SearchBookmarkViewDragListener.beginDrag(chip as Chip)
-            }
-            true
-        }
-
-        with(configurationView.bookmarksChipsLayout) {
-            viewModel.bookmarks.observe(this@GallerySearchView) { bookmarks ->
-                removeAllViews()
-                bookmarks.forEach { bookmark ->
-                    addView(Chip(chipContext).apply {
-                        tag = bookmark
-                        text = bookmark.name
-                        setEnsureMinTouchTargetSize(false)
-                        setOnClickListener(bookmarkChipClickListener)
-
-                        isCheckable = false
-
-                        setCloseIconResource(R.drawable.ic_pencil)
-                        isCloseIconVisible = true
-                        setOnCloseIconClickListener(bookmarkChipEditClickListener)
-
-                        setOnLongClickListener(bookmarkChipLongClickListener)
-                    }, chipLayoutParams)
-                }
-            }
-        }
-
-        viewModel.isBookmarksSectionVisible.observe(this) { isBookmarksSectionVisible ->
-            configurationView.bookmarksChipsLayout.isVisible = isBookmarksSectionVisible
-            configurationView.bookmarksTitleTextView.isVisible = isBookmarksSectionVisible
-        }
-    }
-
-    private fun subscribeToAlbumsState() {
-        albumsViewModel.state.subscribeBy { state ->
-            log.debug {
-                "subscribeToAlbumsState(): received_new_state:" +
-                        "\nstate=$state"
-            }
-
-            albumsAdapter.setNewList(
-                when (state) {
-                    is GallerySearchAlbumsViewModel.State.Ready ->
-                        state.albums
-
-                    else ->
-                        emptyList()
-                }
-            )
-
-            configurationView.loadingAlbumsTextView.isVisible =
-                state is GallerySearchAlbumsViewModel.State.Loading
-
-            configurationView.reloadAlbumsButton.isVisible =
-                state is GallerySearchAlbumsViewModel.State.LoadingFailed
-
-            configurationView.noAlbumsFoundTextView.isVisible =
-                state is GallerySearchAlbumsViewModel.State.Ready && state.albums.isEmpty()
-
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.autoDispose(this)
-
-        albumsViewModel.isViewVisible
-            .subscribeBy { configurationView.albumsLayout.isVisible = it }
-            .autoDispose(this)
-    }
-
-    private fun subscribeToPeopleState() {
-        peopleViewModel.state.subscribeBy { state ->
-            log.debug {
-                "subscribeToPeopleState(): received_new_state:" +
-                        "\nstate=$state"
-            }
-
-            peopleAdapter.setNewList(
-                when (state) {
-                    is GallerySearchPeopleViewModel.State.Ready ->
-                        state.people
-
-                    else ->
-                        emptyList()
-                }
-            )
-
-            configurationView.loadingPeopleTextView.isVisible =
-                state is GallerySearchPeopleViewModel.State.Loading
-
-            configurationView.reloadPeopleButton.isVisible =
-                state is GallerySearchPeopleViewModel.State.LoadingFailed
-
-            configurationView.noPeopleFoundTextView.isVisible =
-                state is GallerySearchPeopleViewModel.State.Ready && state.people.isEmpty()
-
-            log.debug {
-                "subscribeToPeopleState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.autoDispose(this)
-
-        peopleViewModel.isViewVisible
-            .subscribeBy { configurationView.peopleLayout.isVisible = it }
-            .autoDispose(this)
     }
 
     private fun subscribeToState() {

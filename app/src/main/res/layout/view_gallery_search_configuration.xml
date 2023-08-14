@@ -23,154 +23,17 @@
             android:layout_marginVertical="16dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/bookmarks_title_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="@string/search_bookmarks"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+            <include
+                android:id="@+id/bookmarks_view"
+                layout="@layout/view_gallery_search_bookmarks" />
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/bookmarks_chips_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                app:flexWrap="wrap"
-                tools:background="@android:color/system_neutral1_50"
-                tools:layout_height="30dp">
-                <!--Filled programmatically -->
-            </com.google.android.flexbox.FlexboxLayout>
+            <include
+                android:id="@+id/people_view"
+                layout="@layout/view_gallery_search_people" />
 
-            <LinearLayout
-                android:id="@+id/people_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:text="@string/people"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="8dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/people_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/list_item_person" />
-
-                <TextView
-                    android:id="@+id/loading_people_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:gravity="center"
-                    android:text="@string/loading_people_progress"
-                    android:textAppearance="@style/NoticeTextAppearance"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/no_people_found_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:gravity="center"
-                    android:text="@string/no_people_found"
-                    android:textAppearance="@style/NoticeTextAppearance"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/reload_people_button"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingVertical="0dp"
-                    android:text="@string/reload_people"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="16dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/albums_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:text="@string/albums"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="8dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/albums_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/list_item_album" />
-
-                <TextView
-                    android:id="@+id/loading_albums_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:gravity="center"
-                    android:text="@string/loading_albums_progress"
-                    android:textAppearance="@style/NoticeTextAppearance"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/no_albums_found_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:gravity="center"
-                    android:text="@string/no_albums_found"
-                    android:textAppearance="@style/NoticeTextAppearance"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/reload_albums_button"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingVertical="0dp"
-                    android:text="@string/reload_albums"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="16dp" />
-            </LinearLayout>
+            <include
+                android:id="@+id/albums_view"
+                layout="@layout/view_gallery_search_albums" />
 
             <TextView
                 android:layout_width="wrap_content"
