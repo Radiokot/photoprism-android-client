@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 app:flexWrap="wrap"
                 tools:background="@android:color/system_neutral1_50"
                 tools:layout_height="30dp">
@@ -69,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/include_private_content"
                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
