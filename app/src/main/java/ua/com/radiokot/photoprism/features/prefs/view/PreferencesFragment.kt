@@ -40,9 +40,9 @@ import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
-import ua.com.radiokot.photoprism.features.gallery.logic.ExportSearchBookmarksUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.ImportSearchBookmarksUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
+import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
+import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper

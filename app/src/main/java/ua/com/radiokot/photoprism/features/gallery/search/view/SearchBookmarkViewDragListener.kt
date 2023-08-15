@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.content.ClipData
 import android.graphics.Rect
@@ -8,8 +8,8 @@ import android.view.View.OnDragListener
 import android.view.ViewGroup
 import androidx.core.view.forEachIndexed
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkItem
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkItem
 
 class SearchBookmarkViewDragListener(
     val viewModel: GallerySearchViewModel,

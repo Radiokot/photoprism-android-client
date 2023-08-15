@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view.model
+package ua.com.radiokot.photoprism.features.gallery.search.people.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,8 +7,8 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
-import ua.com.radiokot.photoprism.features.gallery.data.model.Person
-import ua.com.radiokot.photoprism.features.gallery.data.storage.PeopleRepository
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 class GallerySearchPeopleViewModel(

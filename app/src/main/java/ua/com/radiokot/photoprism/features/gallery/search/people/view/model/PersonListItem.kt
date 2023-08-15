@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view.model
+package ua.com.radiokot.photoprism.features.gallery.search.people.view.model
 
 import android.graphics.Color
 import android.view.View
@@ -14,7 +14,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.features.gallery.data.model.Person
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
 
 class PersonListItem(

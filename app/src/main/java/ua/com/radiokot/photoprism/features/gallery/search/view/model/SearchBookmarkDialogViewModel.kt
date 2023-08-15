@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view.model
+package ua.com.radiokot.photoprism.features.gallery.search.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
 
 @Parcelize

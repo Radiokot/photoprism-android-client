@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.data.storage
+package ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage
 
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -7,7 +7,7 @@ import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.data.model.Album
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 

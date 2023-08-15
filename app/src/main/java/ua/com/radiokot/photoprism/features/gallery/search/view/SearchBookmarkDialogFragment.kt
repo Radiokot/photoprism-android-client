@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.app.Dialog
 import android.os.Bundle
@@ -17,7 +17,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkDialogViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
 
 class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_search_bookmark) {
     private val log = kLogger("SearchBookmarkDialog")

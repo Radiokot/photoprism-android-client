@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.logic
+package ua.com.radiokot.photoprism.features.gallery.search.logic
 
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import java.io.InputStream

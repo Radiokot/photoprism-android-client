@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view.model
+package ua.com.radiokot.photoprism.features.gallery.search.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +16,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 
 class GallerySearchViewModel(
     private val bookmarksRepository: SearchBookmarksRepository,

@@ -11,8 +11,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
-import ua.com.radiokot.photoprism.features.gallery.logic.JsonSearchBookmarksBackup
-import ua.com.radiokot.photoprism.features.gallery.logic.UnsupportedVersionException
+import ua.com.radiokot.photoprism.features.gallery.search.logic.JsonSearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.search.logic.UnsupportedVersionException
 import java.io.ByteArrayOutputStream
 
 class JsonSearchBookmarkBackupTest : KoinComponent {

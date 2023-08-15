@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -37,7 +37,11 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.logic.TvDetector
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity

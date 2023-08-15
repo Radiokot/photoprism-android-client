@@ -1,9 +1,7 @@
-package ua.com.radiokot.photoprism.features.gallery.data.model
+package ua.com.radiokot.photoprism.features.gallery.search.people.data.model
 
 import ua.com.radiokot.photoprism.api.faces.model.PhotoPrismFace
 import ua.com.radiokot.photoprism.api.subjects.model.PhotoPrismSubject
-import ua.com.radiokot.photoprism.features.gallery.data.model.Person.Companion.FACE_ID_LENGTH
-import ua.com.radiokot.photoprism.features.gallery.data.model.Person.Companion.SUBJECT_UID_LENGTH
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 /**

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.logic
+package ua.com.radiokot.photoprism.features.gallery.search.logic
 
 import android.app.UiModeManager
 import android.content.Context

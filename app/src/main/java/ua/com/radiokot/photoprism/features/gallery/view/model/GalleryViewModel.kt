@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File

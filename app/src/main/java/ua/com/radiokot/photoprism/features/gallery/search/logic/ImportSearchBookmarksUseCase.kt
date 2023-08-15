@@ -1,9 +1,8 @@
-package ua.com.radiokot.photoprism.features.gallery.logic
+package ua.com.radiokot.photoprism.features.gallery.search.logic
 
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers

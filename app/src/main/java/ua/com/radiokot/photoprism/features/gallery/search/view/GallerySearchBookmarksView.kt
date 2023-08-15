@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
@@ -12,8 +12,8 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchBookmarksBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.SearchBookmarkItem
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkItem
 
 class GallerySearchBookmarksView(
     private val view: ViewGallerySearchBookmarksBinding,

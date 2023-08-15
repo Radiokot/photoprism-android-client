@@ -1,6 +1,7 @@
-package ua.com.radiokot.photoprism.features.gallery.data.model
+package ua.com.radiokot.photoprism.features.gallery.search.albums.data.model
 
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
+import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.*
 

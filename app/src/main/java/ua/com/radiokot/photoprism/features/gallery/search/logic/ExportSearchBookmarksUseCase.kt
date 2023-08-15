@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.logic
+package ua.com.radiokot.photoprism.features.gallery.search.logic
 
 import android.content.Intent
 import io.reactivex.rxjava3.core.Single
@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

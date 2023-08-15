@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.logic
+package ua.com.radiokot.photoprism.features.gallery.search.logic
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

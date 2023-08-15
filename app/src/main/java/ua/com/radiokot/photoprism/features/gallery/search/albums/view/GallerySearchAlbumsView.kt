@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view
+package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
@@ -8,31 +8,31 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.scope.Scope
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchPeopleBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchAlbumsBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySearchPeopleViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.PersonListItem
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 
-class GallerySearchPeopleView(
-    private val view: ViewGallerySearchPeopleBinding,
-    private val viewModel: GallerySearchPeopleViewModel,
+class GallerySearchAlbumsView(
+    private val view: ViewGallerySearchAlbumsBinding,
+    private val viewModel: GallerySearchAlbumsViewModel,
     lifecycleOwner: LifecycleOwner,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
         get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-    private val log = kLogger("GallerySearchPeopleView")
+    private val log = kLogger("GallerySearchAlbumsView")
 
-    private val adapter = ItemAdapter<PersonListItem>()
+    private val adapter = ItemAdapter<AlbumListItem>()
 
     init {
         subscribeToState()
     }
 
     private var isListInitialized = false
-    fun initListOnce() = view.peopleRecyclerView.post {
+    fun initListOnce() = view.albumsRecyclerView.post {
         if (isListInitialized) {
             return@post
         }
@@ -40,19 +40,19 @@ class GallerySearchPeopleView(
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: PersonListItem, _ ->
-                viewModel.onPersonItemClicked(item)
+            onClickListener = { _, _, item: AlbumListItem, _ ->
+                viewModel.onAlbumItemClicked(item)
                 true
             }
         }
 
-        with(view.peopleRecyclerView) {
+        with(view.albumsRecyclerView) {
             adapter = listAdapter
             // Layout manager is set in XML.
         }
 
-        view.reloadPeopleButton.setOnClickListener {
-            viewModel.onReloadPeopleClicked()
+        view.albumsRecyclerView.setOnClickListener {
+            viewModel.onReloadAlbumsClicked()
         }
 
         isListInitialized = true
@@ -67,22 +67,22 @@ class GallerySearchPeopleView(
 
             adapter.setNewList(
                 when (state) {
-                    is GallerySearchPeopleViewModel.State.Ready ->
-                        state.people
+                    is GallerySearchAlbumsViewModel.State.Ready ->
+                        state.albums
 
                     else ->
                         emptyList()
                 }
             )
 
-            view.loadingPeopleTextView.isVisible =
-                state is GallerySearchPeopleViewModel.State.Loading
+            view.loadingAlbumsTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Loading
 
-            view.reloadPeopleButton.isVisible =
-                state is GallerySearchPeopleViewModel.State.LoadingFailed
+            view.reloadAlbumsButton.isVisible =
+                state is GallerySearchAlbumsViewModel.State.LoadingFailed
 
-            view.noPeopleFoundTextView.isVisible =
-                state is GallerySearchPeopleViewModel.State.Ready && state.people.isEmpty()
+            view.noAlbumsFoundTextView.isVisible =
+                state is GallerySearchAlbumsViewModel.State.Ready && state.albums.isEmpty()
 
             log.debug {
                 "subscribeToState(): handled_new_state:" +

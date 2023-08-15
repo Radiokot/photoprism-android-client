@@ -9,7 +9,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.doOnLayout
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,6 +40,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
+import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel

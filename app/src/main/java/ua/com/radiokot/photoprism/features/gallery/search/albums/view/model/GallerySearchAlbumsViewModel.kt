@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.view.model
+package ua.com.radiokot.photoprism.features.gallery.search.albums.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
-import ua.com.radiokot.photoprism.features.gallery.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 /**
