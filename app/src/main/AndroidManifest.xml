@@ -92,6 +92,12 @@
             android:exported="false"
             android:resizeableActivity="true" />
 
+        <activity
+            android:name=".features.gallery.search.albums.view.AlbumsOverviewActivity"
+            android:exported="false"
+            android:label="@string/albums"
+            android:resizeableActivity="true" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

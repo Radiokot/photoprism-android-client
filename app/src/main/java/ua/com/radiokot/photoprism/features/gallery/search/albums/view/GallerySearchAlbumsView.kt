@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
+import android.content.Intent
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -29,10 +30,11 @@ class GallerySearchAlbumsView(
 
     init {
         subscribeToState()
+        subscribeToEvents()
     }
 
     private var isListInitialized = false
-    fun initListOnce() = view.albumsRecyclerView.post {
+    fun initOnce() = view.albumsRecyclerView.post {
         if (isListInitialized) {
             return@post
         }
@@ -51,8 +53,12 @@ class GallerySearchAlbumsView(
             // Layout manager is set in XML.
         }
 
-        view.albumsRecyclerView.setOnClickListener {
+        view.reloadAlbumsButton.setOnClickListener {
             viewModel.onReloadAlbumsClicked()
+        }
+
+        view.titleLayout.setOnClickListener {
+            viewModel.onSeeAllClicked()
         }
 
         isListInitialized = true
@@ -93,5 +99,31 @@ class GallerySearchAlbumsView(
         viewModel.isViewVisible
             .subscribeBy { view.root.isVisible = it }
             .autoDispose(this)
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            GallerySearchAlbumsViewModel.Event.OpenAlbumsOverview ->
+                openAlbumsOverview()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }.autoDispose(this)
+
+    private fun openAlbumsOverview() {
+        log.debug {
+            "goToEnvConnection(): going_to_env_connection"
+        }
+
+        val context = view.root.context
+        context.startActivity(Intent(context, AlbumsOverviewActivity::class.java))
     }
 }

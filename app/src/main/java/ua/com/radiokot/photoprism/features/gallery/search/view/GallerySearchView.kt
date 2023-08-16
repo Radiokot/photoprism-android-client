@@ -136,7 +136,7 @@ class GallerySearchView(
                     // Slightly delay initialization to ease the transition animation.
                     searchView.post {
                         bookmarksView.initListOnce()
-                        albumsView.initListOnce()
+                        albumsView.initOnce()
                         peopleView.initListOnce()
                     }
                 }
@@ -145,7 +145,7 @@ class GallerySearchView(
                     // If the view is initialized while the configuration view is already shown,
                     // albums must be initialized as well.
                     bookmarksView.initListOnce()
-                    albumsView.initListOnce()
+                    albumsView.initOnce()
                     peopleView.initListOnce()
                 }
 

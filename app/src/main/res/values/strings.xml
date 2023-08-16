@@ -130,4 +130,6 @@
     <string name="show_albums_explanation">Show albums and folders on the search screen</string>
     <string name="see_all_albums">See all</string>
     <string name="see_all_people">See all</string>
+    <string name="search_albums">Search</string>
+    <string name="failed_to_load_albums">Failed to load albums</string>
 </resources>

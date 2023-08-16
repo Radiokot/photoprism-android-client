@@ -4,11 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 
 /**
  * A viewmodel that controls list of selectable albums for the gallery search.
@@ -24,6 +25,8 @@ class GallerySearchAlbumsViewModel(
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
+    private val eventsSubject = PublishSubject.create<Event>()
+    val events = eventsSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
     val isViewVisible = searchPreferences.showAlbums.toMainThreadObservable()
 
@@ -137,6 +140,14 @@ class GallerySearchAlbumsViewModel(
         update()
     }
 
+    fun onSeeAllClicked() {
+        log.debug {
+            "onSeeAllClicked(): opening_overview"
+        }
+
+        eventsSubject.onNext(Event.OpenAlbumsOverview)
+    }
+
     fun getAlbumTitle(uid: String): String? =
         albumsRepository.getLoadedAlbum(uid)?.title
 
@@ -147,5 +158,9 @@ class GallerySearchAlbumsViewModel(
         ) : State
 
         object LoadingFailed : State
+    }
+
+    sealed interface Event {
+        object OpenAlbumsOverview: Event
     }
 }
