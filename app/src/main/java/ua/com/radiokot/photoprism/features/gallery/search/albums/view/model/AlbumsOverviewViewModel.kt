@@ -98,7 +98,7 @@ class AlbumsOverviewViewModel(
                     AlbumListItem(
                         source = album,
                         // TODO: Add selection
-                        isAlbumSelected = false
+                        isAlbumSelected = false,
                     )
                 }
             ))

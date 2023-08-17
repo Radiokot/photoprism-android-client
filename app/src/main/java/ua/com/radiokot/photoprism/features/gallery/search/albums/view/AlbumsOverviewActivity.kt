@@ -1,7 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
@@ -25,6 +28,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumsOverviewViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
+import kotlin.math.roundToInt
 
 class AlbumsOverviewActivity : BaseActivity() {
     private val log = kLogger("AlbumsOverviewActivity")
@@ -83,7 +87,27 @@ class AlbumsOverviewActivity : BaseActivity() {
             }
 
             adapter = albumsAdapter
-            layoutManager = GridLayoutManager(context, spanCount)
+
+            // Add the row spacing and make the items fill the column width
+            // by overriding the layout manager layout params factory.
+            layoutManager = object : GridLayoutManager(context, spanCount) {
+                val rowSpacing: Int =
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        8f,
+                        resources.displayMetrics
+                    ).roundToInt()
+
+                override fun generateLayoutParams(
+                    c: Context,
+                    attrs: AttributeSet
+                ): RecyclerView.LayoutParams {
+                    return super.generateLayoutParams(c, attrs).apply {
+                        width = RecyclerView.LayoutParams.MATCH_PARENT
+                        bottomMargin = rowSpacing
+                    }
+                }
+            }
         }
     }
 
