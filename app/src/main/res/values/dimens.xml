@@ -15,6 +15,7 @@
     <dimen name="media_viewer_buttons_horizontal_spacing">0dp</dimen>
     <dimen name="media_viewer_buttons_layout_horizontal_spacing">0dp</dimen>
     <dimen name="list_item_album_width">96dp</dimen>
+    <dimen name="list_item_album_margin_end">8dp</dimen>
     <dimen name="list_item_person_width">80dp</dimen>
     <dimen name="list_item_person_image_size">72dp</dimen>
     <dimen name="selection_bottom_app_bar_height">56dp</dimen>

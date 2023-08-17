@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +18,7 @@ import com.google.android.material.color.MaterialColors
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -28,7 +29,6 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumsOverviewViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
-import kotlin.math.roundToInt
 
 class AlbumsOverviewActivity : BaseActivity() {
     private val log = kLogger("AlbumsOverviewActivity")
@@ -92,11 +92,7 @@ class AlbumsOverviewActivity : BaseActivity() {
             // by overriding the layout manager layout params factory.
             layoutManager = object : GridLayoutManager(context, spanCount) {
                 val rowSpacing: Int =
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        8f,
-                        resources.displayMetrics
-                    ).roundToInt()
+                    resources.getDimensionPixelSize(R.dimen.list_item_album_margin_end)
 
                 override fun generateLayoutParams(
                     c: Context,
@@ -108,6 +104,22 @@ class AlbumsOverviewActivity : BaseActivity() {
                     }
                 }
             }
+
+            FastScrollerBuilder(this)
+                .useMd2Style()
+                .setTrackDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.fast_scroll_track
+                    )!!
+                )
+                .setThumbDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.fast_scroll_thumb
+                    )!!
+                )
+                .build()
         }
     }
 
