@@ -70,6 +70,7 @@ data class AlbumListItem(
                 .into(view.imageView)
 
             view.titleTextView.text = item.title
+            view.titleTextView.isSelected = true
 
             with(view.listItemAlbum) {
                 setCardBackgroundColor(
