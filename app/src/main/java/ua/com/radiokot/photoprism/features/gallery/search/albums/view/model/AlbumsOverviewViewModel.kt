@@ -20,6 +20,7 @@ class AlbumsOverviewViewModel(
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
+    val selectedAlbumUid = MutableLiveData<String?>()
 
     /**
      * Raw input of the search view.
@@ -29,6 +30,22 @@ class AlbumsOverviewViewModel(
     init {
         subscribeToRepository()
         subscribeToFilter()
+        subscribeToAlbumSelection()
+
+        update()
+    }
+
+    fun update(force: Boolean = false) {
+        log.debug {
+            "update(): updating:" +
+                    "\nforce=$force"
+        }
+
+        if (force) {
+            albumsRepository.update()
+        } else {
+            albumsRepository.updateIfNotFresh()
+        }
     }
 
     private fun subscribeToRepository() {
@@ -73,6 +90,15 @@ class AlbumsOverviewViewModel(
             .autoDispose(this)
     }
 
+    private fun subscribeToAlbumSelection() {
+        selectedAlbumUid.observeForever {
+            val currentState = stateSubject.value
+            if (currentState is State.Ready) {
+                postReadyState()
+            }
+        }
+    }
+
     private fun postReadyState() {
         val repositoryAlbums = albumsRepository.itemsList
         val filter = filterInput.value?.takeIf(String::isNotEmpty)
@@ -83,10 +109,12 @@ class AlbumsOverviewViewModel(
                 }
             else
                 repositoryAlbums
+        val selectedAlbumUid = selectedAlbumUid.value
 
         log.debug {
             "postReadyState(): posting_ready_state:" +
                     "\nalbumsCount=${repositoryAlbums.size}," +
+                    "\nselectedAlbumUid=$selectedAlbumUid," +
                     "\nfilter=$filter," +
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
         }
@@ -97,11 +125,47 @@ class AlbumsOverviewViewModel(
                 albums = filteredRepositoryAlbums.map { album ->
                     AlbumListItem(
                         source = album,
-                        // TODO: Add selection
-                        isAlbumSelected = false,
+                        isAlbumSelected = album.uid == selectedAlbumUid,
                     )
                 }
             ))
+    }
+
+    fun onAlbumItemClicked(item: AlbumListItem) {
+        val currentState = stateSubject.value
+        check(currentState is State.Ready) {
+            "Albums are clickable only in the ready state"
+        }
+
+        log.debug {
+            "onAlbumItemClicked(): album_item_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item.source != null) {
+            val uid = item.source.uid
+
+            val newSelectedAlbumUid: String? =
+                if (selectedAlbumUid.value != uid)
+                    uid
+                else
+                    null
+
+            log.debug {
+                "onAlbumItemClicked(): setting_selected_album_uid:" +
+                        "\nnewUid=$newSelectedAlbumUid"
+            }
+
+            selectedAlbumUid.value = newSelectedAlbumUid
+        }
+    }
+
+    fun onRetryClicked() {
+        log.debug {
+            "onRetryClicked(): retry_clicked"
+        }
+
+        update()
     }
 
     sealed interface State {

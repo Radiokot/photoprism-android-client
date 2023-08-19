@@ -108,8 +108,8 @@ class GallerySearchAlbumsView(
         }
 
         when (event) {
-            GallerySearchAlbumsViewModel.Event.OpenAlbumsOverview ->
-                openAlbumsOverview()
+            is GallerySearchAlbumsViewModel.Event.OpenAlbumsOverview ->
+                openAlbumsOverview(event.selectedAlbumUid)
         }
 
         log.debug {
@@ -118,12 +118,20 @@ class GallerySearchAlbumsView(
         }
     }.autoDispose(this)
 
-    private fun openAlbumsOverview() {
+    private fun openAlbumsOverview(selectedAlbumUid: String?) {
         log.debug {
-            "goToEnvConnection(): going_to_env_connection"
+            "openAlbumsOverview(): opening_overview:" +
+                    "\nselectedAlbumUid=$selectedAlbumUid"
         }
 
         val context = view.root.context
-        context.startActivity(Intent(context, AlbumsOverviewActivity::class.java))
+        context.startActivity(
+            Intent(context, AlbumsOverviewActivity::class.java)
+                .putExtras(
+                    AlbumsOverviewActivity.getBundle(
+                        selectedAlbumUid = selectedAlbumUid,
+                    )
+                )
+        )
     }
 }

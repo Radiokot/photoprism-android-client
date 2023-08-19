@@ -45,6 +45,8 @@ class AlbumsOverviewActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        viewModel.selectedAlbumUid.value = intent.getStringExtra(SELECTED_ALBUM_UID_EXTRA)
+
         // Init the list once it is laid out.
         view.albumsRecyclerView.doOnPreDraw {
             initList()
@@ -59,7 +61,7 @@ class AlbumsOverviewActivity : BaseActivity() {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             onClickListener = { _, _, item: AlbumListItem, _ ->
-                // TODO
+                viewModel.onAlbumItemClicked(item)
                 true
             }
         }
@@ -150,9 +152,7 @@ class AlbumsOverviewActivity : BaseActivity() {
                     context = view.errorView.context,
                     messageRes = R.string.failed_to_load_albums,
                     retryButtonTextRes = R.string.try_again,
-                    retryButtonClickListener = {
-                        // TODO add
-                    }
+                    retryButtonClickListener = viewModel::onRetryClicked
                 ))
             }
 
@@ -212,7 +212,12 @@ class AlbumsOverviewActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private companion object {
+    companion object {
         private const val FALLBACK_LIST_SIZE = 100
+        private const val SELECTED_ALBUM_UID_EXTRA = "selected_album_uid"
+
+        fun getBundle(selectedAlbumUid: String?) = Bundle().apply {
+            putString(SELECTED_ALBUM_UID_EXTRA, selectedAlbumUid)
+        }
     }
 }

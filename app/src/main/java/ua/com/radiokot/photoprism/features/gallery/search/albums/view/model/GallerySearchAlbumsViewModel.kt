@@ -145,7 +145,11 @@ class GallerySearchAlbumsViewModel(
             "onSeeAllClicked(): opening_overview"
         }
 
-        eventsSubject.onNext(Event.OpenAlbumsOverview)
+        eventsSubject.onNext(
+            Event.OpenAlbumsOverview(
+                selectedAlbumUid = selectedAlbumUid.value,
+            )
+        )
     }
 
     fun getAlbumTitle(uid: String): String? =
@@ -161,6 +165,8 @@ class GallerySearchAlbumsViewModel(
     }
 
     sealed interface Event {
-        object OpenAlbumsOverview: Event
+        class OpenAlbumsOverview(
+            val selectedAlbumUid: String?,
+        ) : Event
     }
 }
