@@ -15,13 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/albums" />
 
-    <ua.com.radiokot.photoprism.view.ErrorView
-        android:id="@+id/error_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
@@ -46,4 +39,10 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ua.com.radiokot.photoprism.view.ErrorView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 </androidx.constraintlayout.widget.ConstraintLayout>
