@@ -13,7 +13,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -34,7 +33,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
@@ -87,7 +86,7 @@ class GalleryActivity : BaseActivity() {
             viewModel = viewModel.searchViewModel,
             fragmentManager = supportFragmentManager,
             menuRes = R.menu.gallery,
-            lifecycleOwner = this
+            activity = this,
         )
     }
     private val fastScrollView: GalleryFastScrollView by lazy {
@@ -295,7 +294,9 @@ class GalleryActivity : BaseActivity() {
 
                 is GalleryViewModel.Event.EnsureListItemVisible -> {
                     view.galleryRecyclerView.post {
-                        ensureGalleryListItemVisibility(event.listItemIndex)
+                        view.galleryRecyclerView.ensureItemIsVisible(
+                            itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
+                        )
                     }
                 }
 
@@ -683,41 +684,6 @@ class GalleryActivity : BaseActivity() {
         with(view.galleryRecyclerView) {
             scrollToPosition(0)
             endlessScrollListener.resetPageCount(0)
-        }
-    }
-
-    private fun ensureGalleryListItemVisibility(galleryListItemIndex: Int) {
-        val itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(galleryListItemIndex)
-
-        val layoutManager = (view.galleryRecyclerView.layoutManager as? LinearLayoutManager)
-            .checkNotNull {
-                "The recycler must have a layout manager at this moment"
-            }
-
-        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-        val lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
-
-        if (itemGlobalPosition !in firstVisibleItemPosition..lastVisibleItemPosition) {
-            log.debug {
-                "ensureGalleryListItemVisibility(): scrolling_to_make_visible:" +
-                        "\ngalleryListItemIndex=$galleryListItemIndex," +
-                        "\nitemGlobalPosition=$itemGlobalPosition"
-            }
-
-            view.galleryRecyclerView.scrollToPosition(itemGlobalPosition)
-        } else {
-            log.debug {
-                "ensureGalleryListItemVisibility(): item_is_already_visible:" +
-                        "\ngalleryListItemIndex=$galleryListItemIndex," +
-                        "\nitemGlobalPosition=$itemGlobalPosition"
-            }
-        }
-
-        // Move the focus to the corresponding item.
-        // It only does this when another item was focused before,
-        // e.g. when navigating using a keyboard.
-        view.galleryRecyclerView.post {
-            layoutManager.findViewByPosition(itemGlobalPosition)?.requestFocus()
         }
     }
 

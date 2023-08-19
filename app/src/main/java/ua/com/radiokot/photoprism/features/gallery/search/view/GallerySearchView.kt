@@ -13,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
@@ -59,7 +60,8 @@ class GallerySearchView(
     private val fragmentManager: FragmentManager,
     @MenuRes
     private val menuRes: Int?,
-    lifecycleOwner: LifecycleOwner,
+    private val activity: AppCompatActivity,
+    lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
         get() = getKoin().getScope(DI_SCOPE_SESSION)
@@ -103,6 +105,7 @@ class GallerySearchView(
         this.albumsView = GallerySearchAlbumsView(
             view = configurationView.albumsView,
             viewModel = viewModel.albumsViewModel,
+            activity = activity,
             lifecycleOwner = this,
         )
 

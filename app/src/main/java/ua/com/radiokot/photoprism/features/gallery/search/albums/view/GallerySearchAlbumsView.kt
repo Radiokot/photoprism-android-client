@@ -1,6 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
+import android.app.Activity
 import android.content.Intent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +16,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchAlbumsBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
@@ -19,7 +24,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.Gall
 class GallerySearchAlbumsView(
     private val view: ViewGallerySearchAlbumsBinding,
     private val viewModel: GallerySearchAlbumsViewModel,
-    lifecycleOwner: LifecycleOwner,
+    activity: AppCompatActivity,
+    lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
         get() = getKoin().getScope(DI_SCOPE_SESSION)
@@ -27,6 +33,10 @@ class GallerySearchAlbumsView(
     private val log = kLogger("GallerySearchAlbumsView")
 
     private val adapter = ItemAdapter<AlbumListItem>()
+    private val albumsOverviewLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onAlbumsOverviewResult
+    )
 
     init {
         subscribeToState()
@@ -108,8 +118,15 @@ class GallerySearchAlbumsView(
         }
 
         when (event) {
-            is GallerySearchAlbumsViewModel.Event.OpenAlbumsOverview ->
+            is GallerySearchAlbumsViewModel.Event.OpenAlbumsOverviewForResult ->
                 openAlbumsOverview(event.selectedAlbumUid)
+
+            is GallerySearchAlbumsViewModel.Event.EnsureListItemVisible ->
+                view.albumsRecyclerView.post {
+                    view.albumsRecyclerView.ensureItemIsVisible(
+                        itemGlobalPosition = adapter.getGlobalPosition(event.listItemIndex)
+                    )
+                }
         }
 
         log.debug {
@@ -124,14 +141,22 @@ class GallerySearchAlbumsView(
                     "\nselectedAlbumUid=$selectedAlbumUid"
         }
 
-        val context = view.root.context
-        context.startActivity(
-            Intent(context, AlbumsOverviewActivity::class.java)
+        albumsOverviewLauncher.launch(
+            Intent(view.root.context, AlbumsOverviewActivity::class.java)
                 .putExtras(
                     AlbumsOverviewActivity.getBundle(
                         selectedAlbumUid = selectedAlbumUid,
                     )
                 )
         )
+    }
+
+    private fun onAlbumsOverviewResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onAlbumsOverviewReturnedNewSelection(
+                newSelectedAlbumUid = AlbumsOverviewActivity.getSelectedAlbumUid(bundle)
+            )
+        }
     }
 }

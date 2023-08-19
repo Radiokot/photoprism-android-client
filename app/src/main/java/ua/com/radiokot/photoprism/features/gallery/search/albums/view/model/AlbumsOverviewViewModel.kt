@@ -54,6 +54,7 @@ class AlbumsOverviewViewModel(
     private fun subscribeToRepository() {
         albumsRepository.items
             .filter { !albumsRepository.isNeverUpdated }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { postAlbumItems() }
             .autoDispose(this)
 
@@ -91,6 +92,7 @@ class AlbumsOverviewViewModel(
             }
             // Only react to the albums are loaded.
             .filter { itemsList.value != null }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { postAlbumItems() }
             .autoDispose(this)
     }
@@ -103,9 +105,6 @@ class AlbumsOverviewViewModel(
         }
     }
 
-    /**
-     * Posts filtered album items in the main thread.
-     */
     private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
         val filter = filterInput.value?.takeIf(String::isNotEmpty)
@@ -126,16 +125,15 @@ class AlbumsOverviewViewModel(
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
         }
 
-        itemsList.postValue(
+        itemsList.value =
             filteredRepositoryAlbums.map { album ->
                 AlbumListItem(
                     source = album,
                     isAlbumSelected = album.uid == selectedAlbumUid,
                 )
             }
-        )
 
-        mainError.postValue(
+        mainError.value =
             when {
                 filteredRepositoryAlbums.isEmpty() ->
                     Error.NothingFound
@@ -144,7 +142,6 @@ class AlbumsOverviewViewModel(
                     // Dismiss the main error when there are items.
                     null
             }
-        )
     }
 
     fun onAlbumItemClicked(item: AlbumListItem) {
@@ -168,6 +165,12 @@ class AlbumsOverviewViewModel(
             }
 
             selectedAlbumUid.value = newSelectedAlbumUid
+
+            log.debug {
+                "onAlbumItemClicked(): finishing"
+            }
+
+            eventsSubject.onNext(Event.FinishWithResult(newSelectedAlbumUid))
         }
     }
 
@@ -193,6 +196,10 @@ class AlbumsOverviewViewModel(
          * Retry is possible: the [onRetryClicked] method should be called.
          */
         object ShowFloatingLoadingFailedError : Event
+
+        class FinishWithResult(
+            val selectedAlbumUid: String?,
+        ) : Event
     }
 
     sealed interface Error {

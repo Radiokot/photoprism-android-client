@@ -146,10 +146,36 @@ class GallerySearchAlbumsViewModel(
         }
 
         eventsSubject.onNext(
-            Event.OpenAlbumsOverview(
+            Event.OpenAlbumsOverviewForResult(
                 selectedAlbumUid = selectedAlbumUid.value,
             )
         )
+    }
+
+    fun onAlbumsOverviewReturnedNewSelection(newSelectedAlbumUid: String?) {
+        log.debug {
+            "onAlbumsOverviewReturnedNewSelection(): setting_selected_album_uid:" +
+                    "\nnewUid=$newSelectedAlbumUid"
+        }
+
+        selectedAlbumUid.value = newSelectedAlbumUid
+
+        // If something is selected, ensure that it is visible.
+        val currentState = stateSubject.value
+        if (newSelectedAlbumUid != null && currentState is State.Ready) {
+            val newSelectedAlbumIndex =
+                currentState.albums
+                    .indexOfFirst { it.source?.uid == newSelectedAlbumUid }
+
+            if (newSelectedAlbumIndex != -1) {
+                log.debug {
+                    "onAlbumsOverviewResult(): ensure_new_selected_item_visible:" +
+                            "\nnewSelectedAlbumIndex=$newSelectedAlbumIndex"
+                }
+
+                eventsSubject.onNext(Event.EnsureListItemVisible(newSelectedAlbumIndex))
+            }
+        }
     }
 
     fun getAlbumTitle(uid: String): String? =
@@ -165,8 +191,18 @@ class GallerySearchAlbumsViewModel(
     }
 
     sealed interface Event {
-        class OpenAlbumsOverview(
+        /**
+         * Open albums overview to get the result.
+         *
+         * [onAlbumsOverviewReturnedNewSelection] must be called when the result is obtained.
+         */
+        class OpenAlbumsOverviewForResult(
             val selectedAlbumUid: String?,
         ) : Event
+
+        /**
+         * Ensure that the given item of the item list is visible on the screen.
+         */
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 }

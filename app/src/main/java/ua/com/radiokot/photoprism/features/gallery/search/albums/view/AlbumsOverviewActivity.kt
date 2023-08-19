@@ -1,6 +1,8 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.AttributeSet
@@ -181,6 +183,9 @@ class AlbumsOverviewActivity : BaseActivity() {
         when (event) {
             AlbumsOverviewViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
+
+            is AlbumsOverviewViewModel.Event.FinishWithResult ->
+                finishWithResult(event.selectedAlbumUid)
         }
 
         log.debug {
@@ -197,6 +202,21 @@ class AlbumsOverviewActivity : BaseActivity() {
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
             .show()
+    }
+
+    private fun finishWithResult(selectedAlbumUid: String?) {
+        log.debug {
+            "finishWithResult(): finishing:" +
+                    "\nselectedAlbumUid=$selectedAlbumUid"
+        }
+
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                createResult(selectedAlbumUid)
+            )
+        )
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -237,5 +257,13 @@ class AlbumsOverviewActivity : BaseActivity() {
         fun getBundle(selectedAlbumUid: String?) = Bundle().apply {
             putString(SELECTED_ALBUM_UID_EXTRA, selectedAlbumUid)
         }
+
+        private fun createResult(selectedAlbumUid: String?) = Bundle().apply {
+            putString(SELECTED_ALBUM_UID_EXTRA, selectedAlbumUid)
+        }
+
+        fun getSelectedAlbumUid(bundle: Bundle): String? =
+            bundle.getString(SELECTED_ALBUM_UID_EXTRA, "")
+                .takeIf(String::isNotEmpty)
     }
 }
