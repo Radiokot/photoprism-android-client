@@ -15,6 +15,7 @@ import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -22,6 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityAlbumsOverviewBinding
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
@@ -53,6 +55,7 @@ class AlbumsOverviewActivity : BaseActivity() {
         initSwipeRefresh()
 
         subscribeToData()
+        subscribeToEvents()
     }
 
     private fun initList() {
@@ -139,37 +142,61 @@ class AlbumsOverviewActivity : BaseActivity() {
     }
 
     private fun subscribeToData() {
-        viewModel.albums.observe(this) { albumItems ->
-            adapter.setNewList(albumItems)
-
-            if (albumItems.isEmpty()) {
-                view.errorView.showError(
-                    ErrorView.Error.EmptyView(
-                        context = view.errorView.context,
-                        messageRes = R.string.no_albums_found,
-                    )
-                )
-            } else {
-                view.errorView.hide()
-            }
-        }
+        viewModel.itemsList.observe(this, adapter::setNewList)
 
         viewModel.isLoading.observe(this, view.swipeRefreshLayout::setRefreshing)
 
-        viewModel.isLoadingFailed.observe(this) { isLoadingFailed ->
-            if (isLoadingFailed) {
-                view.errorView.showError(
-                    ErrorView.Error.General(
-                        context = view.errorView.context,
-                        messageRes = R.string.failed_to_load_albums,
-                        retryButtonTextRes = R.string.try_again,
-                        retryButtonClickListener = viewModel::onRetryClicked
+        viewModel.mainError.observe(this) { mainError ->
+            when (mainError) {
+                AlbumsOverviewViewModel.Error.LoadingFailed ->
+                    view.errorView.showError(
+                        ErrorView.Error.General(
+                            context = view.errorView.context,
+                            messageRes = R.string.failed_to_load_albums,
+                            retryButtonTextRes = R.string.try_again,
+                            retryButtonClickListener = viewModel::onRetryClicked
+                        )
                     )
-                )
-            } else {
-                view.errorView.hide()
+
+                AlbumsOverviewViewModel.Error.NothingFound ->
+                    view.errorView.showError(
+                        ErrorView.Error.EmptyView(
+                            context = view.errorView.context,
+                            messageRes = R.string.no_albums_found,
+                        )
+                    )
+
+                null ->
+                    view.errorView.hide()
             }
         }
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            AlbumsOverviewViewModel.Event.ShowFloatingLoadingFailedError ->
+                showFloatingLoadingFailedError()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }.autoDispose(this)
+
+    private fun showFloatingLoadingFailedError() {
+        Snackbar.make(
+            view.swipeRefreshLayout,
+            getString(R.string.failed_to_load_albums),
+            Snackbar.LENGTH_SHORT
+        )
+            .setAction(R.string.try_again) { viewModel.onRetryClicked() }
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

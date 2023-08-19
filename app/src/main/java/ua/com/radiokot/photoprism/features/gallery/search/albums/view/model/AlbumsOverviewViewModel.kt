@@ -4,8 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import java.util.concurrent.TimeUnit
@@ -16,10 +18,12 @@ class AlbumsOverviewViewModel(
 ) : ViewModel() {
     private val log = kLogger("AlbumsOverviewVM")
 
+    private val eventsSubject = PublishSubject.create<Event>()
+    val events = eventsSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
     val isLoading = MutableLiveData(false)
-    val albums = MutableLiveData<List<AlbumListItem>>()
-    val isLoadingFailed = MutableLiveData(false)
+    val itemsList = MutableLiveData<List<AlbumListItem>>()
+    val mainError = MutableLiveData<Error?>(null)
 
     /**
      * Raw input of the search view.
@@ -60,18 +64,16 @@ class AlbumsOverviewViewModel(
                     "subscribeToRepository(): albums_loading_failed"
                 }
 
-                if (albums.value == null) {
-                    isLoadingFailed.value = true
+                if (itemsList.value == null) {
+                    mainError.value = Error.LoadingFailed
                 } else {
-                    isLoadingFailed.value = false
-                    // TODO show floating error
+                    eventsSubject.onNext(Event.ShowFloatingLoadingFailedError)
                 }
             }
             .autoDispose(this)
 
         albumsRepository.loading
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(isLoading::setValue)
+            .subscribe(isLoading::postValue)
             .autoDispose(this)
     }
 
@@ -88,14 +90,14 @@ class AlbumsOverviewViewModel(
                     Observable.timer(400, TimeUnit.MILLISECONDS)
             }
             // Only react to the albums are loaded.
-            .filter { albums.value != null }
+            .filter { itemsList.value != null }
             .subscribe { postAlbumItems() }
             .autoDispose(this)
     }
 
     private fun subscribeToAlbumSelection() {
         selectedAlbumUid.observeForever {
-            if (albums.value != null) {
+            if (itemsList.value != null) {
                 postAlbumItems()
             }
         }
@@ -124,12 +126,23 @@ class AlbumsOverviewViewModel(
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
         }
 
-        albums.postValue(
+        itemsList.postValue(
             filteredRepositoryAlbums.map { album ->
                 AlbumListItem(
                     source = album,
                     isAlbumSelected = album.uid == selectedAlbumUid,
                 )
+            }
+        )
+
+        mainError.postValue(
+            when {
+                filteredRepositoryAlbums.isEmpty() ->
+                    Error.NothingFound
+
+                else ->
+                    // Dismiss the main error when there are items.
+                    null
             }
         )
     }
@@ -163,7 +176,7 @@ class AlbumsOverviewViewModel(
             "onRetryClicked(): updating"
         }
 
-        update()
+        update(force = true)
     }
 
     fun onSwipeRefreshPulled() {
@@ -172,5 +185,26 @@ class AlbumsOverviewViewModel(
         }
 
         update(force = true)
+    }
+
+    sealed interface Event {
+        /**
+         * Show a dismissible floating error saying that the loading is failed.
+         * Retry is possible: the [onRetryClicked] method should be called.
+         */
+        object ShowFloatingLoadingFailedError : Event
+    }
+
+    sealed interface Error {
+        /**
+         * The loading is failed and could be retried.
+         * The [onRetryClicked] method should be called.
+         */
+        object LoadingFailed : Error
+
+        /**
+         * No albums found for the filter or there are simply no albums.
+         */
+        object NothingFound : Error
     }
 }
