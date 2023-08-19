@@ -4,10 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import java.util.concurrent.TimeUnit
@@ -18,9 +16,10 @@ class AlbumsOverviewViewModel(
 ) : ViewModel() {
     private val log = kLogger("AlbumsOverviewVM")
 
-    private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
-    val state = stateSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
+    val isLoading = MutableLiveData(false)
+    val albums = MutableLiveData<List<AlbumListItem>>()
+    val isLoadingFailed = MutableLiveData(false)
 
     /**
      * Raw input of the search view.
@@ -50,14 +49,8 @@ class AlbumsOverviewViewModel(
 
     private fun subscribeToRepository() {
         albumsRepository.items
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { albums ->
-                if (albums.isEmpty() && albumsRepository.isNeverUpdated) {
-                    stateSubject.onNext(State.Loading)
-                } else {
-                    postReadyState()
-                }
-            }
+            .filter { !albumsRepository.isNeverUpdated }
+            .subscribe { postAlbumItems() }
             .autoDispose(this)
 
         albumsRepository.errors
@@ -67,8 +60,18 @@ class AlbumsOverviewViewModel(
                     "subscribeToRepository(): albums_loading_failed"
                 }
 
-                stateSubject.onNext(State.LoadingFailed)
+                if (albums.value == null) {
+                    isLoadingFailed.value = true
+                } else {
+                    isLoadingFailed.value = false
+                    // TODO show floating error
+                }
             }
+            .autoDispose(this)
+
+        albumsRepository.loading
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(isLoading::setValue)
             .autoDispose(this)
     }
 
@@ -84,22 +87,24 @@ class AlbumsOverviewViewModel(
                 else
                     Observable.timer(400, TimeUnit.MILLISECONDS)
             }
-            // Only react to the input in the ready state.
-            .filter { stateSubject.value is State.Ready }
-            .subscribe { postReadyState() }
+            // Only react to the albums are loaded.
+            .filter { albums.value != null }
+            .subscribe { postAlbumItems() }
             .autoDispose(this)
     }
 
     private fun subscribeToAlbumSelection() {
         selectedAlbumUid.observeForever {
-            val currentState = stateSubject.value
-            if (currentState is State.Ready) {
-                postReadyState()
+            if (albums.value != null) {
+                postAlbumItems()
             }
         }
     }
 
-    private fun postReadyState() {
+    /**
+     * Posts filtered album items in the main thread.
+     */
+    private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
         val filter = filterInput.value?.takeIf(String::isNotEmpty)
         val filteredRepositoryAlbums =
@@ -112,31 +117,24 @@ class AlbumsOverviewViewModel(
         val selectedAlbumUid = selectedAlbumUid.value
 
         log.debug {
-            "postReadyState(): posting_ready_state:" +
+            "postAlbumItems(): posting_items:" +
                     "\nalbumsCount=${repositoryAlbums.size}," +
                     "\nselectedAlbumUid=$selectedAlbumUid," +
                     "\nfilter=$filter," +
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
         }
 
-        stateSubject.onNext(
-            State.Ready(
-                filter = filter,
-                albums = filteredRepositoryAlbums.map { album ->
-                    AlbumListItem(
-                        source = album,
-                        isAlbumSelected = album.uid == selectedAlbumUid,
-                    )
-                }
-            ))
+        albums.postValue(
+            filteredRepositoryAlbums.map { album ->
+                AlbumListItem(
+                    source = album,
+                    isAlbumSelected = album.uid == selectedAlbumUid,
+                )
+            }
+        )
     }
 
     fun onAlbumItemClicked(item: AlbumListItem) {
-        val currentState = stateSubject.value
-        check(currentState is State.Ready) {
-            "Albums are clickable only in the ready state"
-        }
-
         log.debug {
             "onAlbumItemClicked(): album_item_clicked:" +
                     "\nitem=$item"
@@ -162,19 +160,17 @@ class AlbumsOverviewViewModel(
 
     fun onRetryClicked() {
         log.debug {
-            "onRetryClicked(): retry_clicked"
+            "onRetryClicked(): updating"
         }
 
         update()
     }
 
-    sealed interface State {
-        object Loading : State
-        class Ready(
-            val filter: String?,
-            val albums: List<AlbumListItem>,
-        ) : State
+    fun onSwipeRefreshPulled() {
+        log.debug {
+            "onRetryClicked(): force_updating"
+        }
 
-        object LoadingFailed : State
+        update(force = true)
     }
 }

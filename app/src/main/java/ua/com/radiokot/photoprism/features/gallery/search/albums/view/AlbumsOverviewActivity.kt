@@ -17,13 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityAlbumsOverviewBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
@@ -52,8 +50,9 @@ class AlbumsOverviewActivity : BaseActivity() {
             initList()
         }
         initErrorView()
+        initSwipeRefresh()
 
-        subscribeToState()
+        subscribeToData()
     }
 
     private fun initList() {
@@ -129,57 +128,49 @@ class AlbumsOverviewActivity : BaseActivity() {
         view.errorView.replaces(view.albumsRecyclerView)
     }
 
-    private fun subscribeToState() = viewModel.state.subscribeBy { state ->
-        log.debug {
-            "subscribeToState(): received_new_state:" +
-                    "\nstate=$state"
-        }
-
-        adapter.setNewList(
-            when (state) {
-                is AlbumsOverviewViewModel.State.Ready ->
-                    state.albums
-
-                else ->
-                    emptyList()
-            }
+    private fun initSwipeRefresh() {
+        view.swipeRefreshLayout.setColorSchemeColors(
+            MaterialColors.getColor(
+                view.swipeRefreshLayout,
+                com.google.android.material.R.attr.colorPrimary,
+            )
         )
+        view.swipeRefreshLayout.setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+    }
 
-        // Error view.
-        when (state) {
-            AlbumsOverviewViewModel.State.LoadingFailed -> {
-                view.errorView.showError(ErrorView.Error.General(
-                    context = view.errorView.context,
-                    messageRes = R.string.failed_to_load_albums,
-                    retryButtonTextRes = R.string.try_again,
-                    retryButtonClickListener = viewModel::onRetryClicked
-                ))
-            }
+    private fun subscribeToData() {
+        viewModel.albums.observe(this) { albumItems ->
+            adapter.setNewList(albumItems)
 
-            is AlbumsOverviewViewModel.State.Ready -> {
-                if (state.albums.isEmpty()) {
-                    view.errorView.showError(
-                        ErrorView.Error.EmptyView(
-                            context = view.errorView.context,
-                            messageRes = R.string.no_albums_found,
-                        )
+            if (albumItems.isEmpty()) {
+                view.errorView.showError(
+                    ErrorView.Error.EmptyView(
+                        context = view.errorView.context,
+                        messageRes = R.string.no_albums_found,
                     )
-                } else {
-                    view.errorView.hide()
-                }
-            }
-
-            else -> {
+                )
+            } else {
                 view.errorView.hide()
             }
         }
 
-        log.debug {
-            "subscribeToState(): handled_new_state:" +
-                    "\nstate=$state"
-        }
-    }.autoDispose(this)
+        viewModel.isLoading.observe(this, view.swipeRefreshLayout::setRefreshing)
 
+        viewModel.isLoadingFailed.observe(this) { isLoadingFailed ->
+            if (isLoadingFailed) {
+                view.errorView.showError(
+                    ErrorView.Error.General(
+                        context = view.errorView.context,
+                        messageRes = R.string.failed_to_load_albums,
+                        retryButtonTextRes = R.string.try_again,
+                        retryButtonClickListener = viewModel::onRetryClicked
+                    )
+                )
+            } else {
+                view.errorView.hide()
+            }
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.albums, menu)

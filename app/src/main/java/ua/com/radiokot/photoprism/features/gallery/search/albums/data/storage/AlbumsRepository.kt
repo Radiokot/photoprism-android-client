@@ -7,8 +7,8 @@ import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
