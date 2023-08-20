@@ -123,4 +123,8 @@
     <string name="show_people_explanation">εμφάνιση ατόμων και νέων προσώπων στην οθόνη αναζήτησης</string>
     <string name="show_albums">@string/albums</string>
     <string name="show_albums_explanation">εμφάνιση άλμπουμ και φακέλων στην οθόνη αναζήτησης</string>
+    <string name="see_all_albums">Δείτε όλα</string>
+    <string name="see_all_people">Δείτε όλα</string>
+    <string name="search_albums">Αναζήτηση</string>
+    <string name="failed_to_load_albums">Απέτυχε να φορτώσει άλμπουμ</string>
 </resources>

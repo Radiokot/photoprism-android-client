@@ -124,4 +124,8 @@
     <string name="show_people_explanation">Показувати людей та нові обличча на екрані пошуку</string>
     <string name="show_albums">@string/albums</string>
     <string name="show_albums_explanation">Показувати альбоми та папки на екрані пошуку</string>
+    <string name="see_all_albums">Показати всі</string>
+    <string name="see_all_people">Показати всіх</string>
+    <string name="search_albums">Пошук</string>
+    <string name="failed_to_load_albums">Не вдалося завантажити альбоми</string>
 </resources>
