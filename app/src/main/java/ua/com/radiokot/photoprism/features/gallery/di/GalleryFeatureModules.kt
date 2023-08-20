@@ -180,11 +180,8 @@ val galleryFeatureModules: List<Module> = listOf(
             viewModel {
                 AlbumsOverviewViewModel(
                     albumsRepository = get(),
-                    filterPredicate = { album: Album, filter: String ->
-                        SearchPredicates.generalCondition(
-                            query = filter,
-                            album.title,
-                        )
+                    searchPredicate = { album: Album, query: String ->
+                        SearchPredicates.generalCondition(query, album.title)
                     }
                 )
             }

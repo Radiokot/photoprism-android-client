@@ -58,6 +58,9 @@ class AlbumsOverviewActivity : BaseActivity() {
 
         subscribeToData()
         subscribeToEvents()
+
+        // Allow the view model to intercept back press.
+        onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
     private fun initList() {
@@ -186,6 +189,9 @@ class AlbumsOverviewActivity : BaseActivity() {
 
             is AlbumsOverviewViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedAlbumUid)
+
+            is AlbumsOverviewViewModel.Event.Finish ->
+                finish()
         }
 
         log.debug {
@@ -244,7 +250,20 @@ class AlbumsOverviewActivity : BaseActivity() {
 
             // Directly bind the input.
             findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-                .bindTextTwoWay(viewModel.filterInput, this@AlbumsOverviewActivity)
+                .bindTextTwoWay(viewModel.searchInput, this@AlbumsOverviewActivity)
+
+            // Bind the collapse/expand state.
+            viewModel.isSearchExpanded.observe(this@AlbumsOverviewActivity) { isExpanded ->
+                // This also triggers the following listeners.
+                isIconified = !isExpanded
+            }
+            setOnSearchClickListener {
+                viewModel.onSearchIconClicked()
+            }
+            setOnCloseListener {
+                viewModel.onSearchCloseClicked()
+                false
+            }
         }
 
         return super.onCreateOptionsMenu(menu)

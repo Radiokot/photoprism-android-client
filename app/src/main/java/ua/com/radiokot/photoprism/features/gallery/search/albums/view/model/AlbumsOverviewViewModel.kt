@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view.model
 
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class AlbumsOverviewViewModel(
     private val albumsRepository: AlbumsRepository,
-    private val filterPredicate: (album: Album, filter: String) -> Boolean,
+    private val searchPredicate: (album: Album, query: String) -> Boolean,
 ) : ViewModel() {
     private val log = kLogger("AlbumsOverviewVM")
 
@@ -24,15 +25,19 @@ class AlbumsOverviewViewModel(
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<AlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
+    val isSearchExpanded = MutableLiveData(false)
+    val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() = onBackPressed()
+    }
 
     /**
      * Raw input of the search view.
      */
-    val filterInput = MutableLiveData("")
+    val searchInput = MutableLiveData("")
 
     init {
         subscribeToRepository()
-        subscribeToFilter()
+        subscribeToSearch()
         subscribeToAlbumSelection()
 
         update()
@@ -78,11 +83,12 @@ class AlbumsOverviewViewModel(
             .autoDispose(this)
     }
 
-    private fun subscribeToFilter() {
+    private fun subscribeToSearch() {
         Observable
             .create { emitter ->
-                filterInput.observeForever(emitter::onNext)
+                searchInput.observeForever(emitter::onNext)
             }
+            .distinctUntilChanged()
             .debounce { value ->
                 // Apply debounce to the input unless it is empty (input is cleared).
                 if (value.isEmpty())
@@ -107,11 +113,11 @@ class AlbumsOverviewViewModel(
 
     private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
-        val filter = filterInput.value?.takeIf(String::isNotEmpty)
+        val searchQuery = searchInput.value?.takeIf(String::isNotEmpty)
         val filteredRepositoryAlbums =
-            if (filter != null)
+            if (searchQuery != null)
                 repositoryAlbums.filter { album ->
-                    filterPredicate(album, filter)
+                    searchPredicate(album, searchQuery)
                 }
             else
                 repositoryAlbums
@@ -121,7 +127,7 @@ class AlbumsOverviewViewModel(
             "postAlbumItems(): posting_items:" +
                     "\nalbumsCount=${repositoryAlbums.size}," +
                     "\nselectedAlbumUid=$selectedAlbumUid," +
-                    "\nfilter=$filter," +
+                    "\nsearchQuery=$searchQuery," +
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
         }
 
@@ -167,7 +173,7 @@ class AlbumsOverviewViewModel(
             selectedAlbumUid.value = newSelectedAlbumUid
 
             log.debug {
-                "onAlbumItemClicked(): finishing"
+                "onAlbumItemClicked(): finishing_with_result"
             }
 
             eventsSubject.onNext(Event.FinishWithResult(newSelectedAlbumUid))
@@ -190,6 +196,57 @@ class AlbumsOverviewViewModel(
         update(force = true)
     }
 
+    fun onSearchIconClicked() {
+        if (isSearchExpanded.value != true) {
+            log.debug {
+                "onSearchIconClicked(): expanding_search"
+            }
+
+            isSearchExpanded.value = true
+        }
+    }
+
+    fun onSearchCloseClicked() {
+        if (isSearchExpanded.value != false) {
+            log.debug {
+                "onSearchCloseClicked(): closing_search"
+            }
+
+            closeAndClearSearch()
+        }
+    }
+
+    private fun closeAndClearSearch() {
+        // Because of the SearchView internal logic, order matters.
+        // First clear, then collapse. Otherwise it won't collapse.
+        searchInput.value = ""
+        isSearchExpanded.value = false
+
+        log.debug {
+            "closeAndClearSearch(): closed_and_cleared"
+        }
+    }
+
+    private fun onBackPressed() {
+        log.debug {
+            "onBackPressed(): handling_back_press"
+        }
+
+        when {
+            isSearchExpanded.value == true -> {
+                closeAndClearSearch()
+            }
+
+            else -> {
+                log.debug {
+                    "onBackPressed(): finishing_without_result"
+                }
+
+                eventsSubject.onNext(Event.Finish)
+            }
+        }
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
@@ -197,9 +254,17 @@ class AlbumsOverviewViewModel(
          */
         object ShowFloatingLoadingFailedError : Event
 
+        /**
+         * Set an OK result with the [selectedAlbumUid] and finish.
+         */
         class FinishWithResult(
             val selectedAlbumUid: String?,
         ) : Event
+
+        /**
+         * Finish without setting a result.
+         */
+        object Finish : Event
     }
 
     sealed interface Error {
