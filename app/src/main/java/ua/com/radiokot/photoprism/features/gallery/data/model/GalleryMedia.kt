@@ -201,7 +201,10 @@ class GalleryMedia(
 
         class Live(
             override val avcPreviewUrl: String,
-        ) : TypeData(TypeName.LIVE), ViewableAsVideo
+            hash: String,
+            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
+        ) : TypeData(TypeName.LIVE), ViewableAsVideo,
+            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
 
         class Video(
             override val avcPreviewUrl: String,
@@ -240,6 +243,8 @@ class GalleryMedia(
 
                     TypeName.LIVE.value -> Live(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        hash = source.hash,
+                        mediaPreviewUrlFactory = previewUrlFactory,
                     )
 
                     TypeName.VIDEO.value -> Video(
