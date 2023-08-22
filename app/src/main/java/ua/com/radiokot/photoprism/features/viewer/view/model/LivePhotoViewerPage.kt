@@ -57,6 +57,9 @@ class LivePhotoViewerPage(
                 view.errorTextView.visibility = View.VISIBLE
             }
         }
+        private val playerListener = TheOnlyPlayerPlayingChangeListener {
+            view.videoView.postDelayed(::fadeIfCloseToTheEnd, 50)
+        }
 
         override fun attachToWindow(item: LivePhotoViewerPage) {
             view.videoView.useController = false
@@ -89,17 +92,32 @@ class LivePhotoViewerPage(
             }
             prepare()
 
-            player.addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    if (playbackState == Player.STATE_ENDED) {
-                        view.photoView.fadeIn()
-                    }
-                }
-            })
+            // Make the still image fade in when the video is close to the end.
+            // The current position needs to be continuously polled when playing,
+            // as there is no live listener.
+            player.addListener(playerListener)
         }
 
-        override fun detachFromWindow(item: LivePhotoViewerPage) =
+        private fun fadeIfCloseToTheEnd() {
+            val player = player
+                ?: return
+
+            if (player.isPlaying) {
+                val currentPosition = player.currentPosition
+                val duration = player.contentDuration
+
+                if (duration > 0 && duration - currentPosition < FADE_DURATION_MS) {
+                    view.photoView.fadeIn(FADE_DURATION_MS)
+                } else {
+                    view.videoView.postDelayed(::fadeIfCloseToTheEnd, 50)
+                }
+            }
+        }
+
+        override fun detachFromWindow(item: LivePhotoViewerPage) {
             onDetachFromWindow(item)
+            player?.removeListener(playerListener)
+        }
 
         override fun bindView(item: LivePhotoViewerPage, payloads: List<Any>) {
             view.errorTextView.visibility = View.GONE
@@ -121,6 +139,26 @@ class LivePhotoViewerPage(
             picasso.cancelRequest(view.photoView)
             view.photoView.clearAnimation()
         }
+    }
+
+    private class TheOnlyPlayerPlayingChangeListener(
+        private val listener: (isPlaying: Boolean) -> Unit,
+    ) : Player.Listener {
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) =
+            listener(isPlaying)
+
+        override fun equals(other: Any?): Boolean {
+            return other is TheOnlyPlayerPlayingChangeListener
+        }
+
+        override fun hashCode(): Int {
+            return 444
+        }
+    }
+
+    private companion object {
+        const val FADE_DURATION_MS = 200
     }
 }
 
