@@ -2,23 +2,15 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.net.Uri
 import android.view.View
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.audio.AudioSink
-import com.google.android.exoplayer2.decoder.DecoderException
 import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.LayoutVideoPlayerControlsBinding
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
-import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayer
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
+import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
 
 class VideoViewerPage(
     previewUrl: String,
@@ -37,48 +29,13 @@ class VideoViewerPage(
         get() = R.layout.pager_item_media_viewer_video
 
     override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(v)
+        ViewHolder(PagerItemMediaViewerVideoBinding.bind(v))
 
-    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<VideoViewerPage>(itemView) {
-        val view = PagerItemMediaViewerVideoBinding.bind(itemView)
-        val playerControlsView: LayoutVideoPlayerControlsBinding by lazy {
-            LayoutVideoPlayerControlsBinding.bind(
-                view.videoView.findViewById(R.id.player_controls_layout)
-            )
-        }
-        var playerCache: VideoPlayerCache? = null
-        var fatalPlaybackErrorListener: (VideoViewerPage) -> Unit = {}
-
-        private val lifecycleObserver = object : DefaultLifecycleObserver {
-            private var playerHasBeenPaused = false
-
-            override fun onPause(owner: LifecycleOwner) {
-                val player = view.videoView.player
-                    ?: return
-
-                view.videoView.post {
-                    // Only pause if the owner is not destroyed.
-                    if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
-                        && player.isPlaying
-                    ) {
-                        player.pause()
-                        playerHasBeenPaused = true
-                    }
-                }
-            }
-
-            override fun onResume(owner: LifecycleOwner) {
-                val player = view.videoView.player
-                    ?: return
-
-                if (player.playbackState != Player.STATE_IDLE && playerHasBeenPaused) {
-                    player.playWhenReady = true
-                }
-            }
-        }
-
-        fun bindToLifecycle(lifecycle: Lifecycle) =
-            lifecycle.addObserver(lifecycleObserver)
+    class ViewHolder(
+        val view: PagerItemMediaViewerVideoBinding,
+        delegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
+    ) : FastAdapter.ViewHolder<VideoViewerPage>(view.root),
+        VideoPlayerViewHolder by delegate {
 
         override fun attachToWindow(item: VideoViewerPage) {
             if (item.needsVideoControls) {
@@ -90,16 +47,14 @@ class VideoViewerPage(
                 view.videoView.useController = false
             }
 
-            val playerCache = this.playerCache.checkNotNull {
-                "Player cache must be set"
-            }
-
-            val player = playerCache.getPlayer(key = item.mediaId)
-            setUpPlayer(player, item)
-            view.videoView.player = player
+            onAttachToWindow(
+                mediaId = item.mediaId,
+                item = item,
+            )
+            player?.let { setUpPlayer(it, item) }
         }
 
-        private fun setUpPlayer(player: VideoPlayer, item: VideoViewerPage) = with(player) {
+        private fun setUpPlayer(player: Player, item: VideoViewerPage) = with(player) {
             if (currentMediaItem?.mediaId != item.mediaId) {
                 setMediaItem(
                     MediaItem.Builder()
@@ -122,50 +77,16 @@ class VideoViewerPage(
                 playWhenReady = true
             }
             prepare()
-
-            val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
-                fatalPlaybackErrorListener(item)
-            }
-            player.removeListener(theOnlyFatalExceptionListener)
-            player.addListener(theOnlyFatalExceptionListener)
         }
 
-        override fun detachFromWindow(item: VideoViewerPage) {
-            view.videoView.player?.apply {
-                stop()
-                seekToDefaultPosition()
-            }
-        }
+        override fun detachFromWindow(item: VideoViewerPage) =
+            onDetachFromWindow(item)
 
         // Video player must be set up only once it is attached.
         override fun bindView(item: VideoViewerPage, payloads: List<Any>) {
         }
 
         override fun unbindView(item: VideoViewerPage) {
-        }
-
-        /**
-         * An error listener that triggers when a fatal playback exception occurs.
-         * The player can only have one of such listener as all the instances are equal.
-         */
-        private class TheOnlyPlayerFatalPlaybackExceptionListener(
-            private val onError: (Throwable) -> Unit,
-        ) : Player.Listener {
-            override fun onPlayerError(error: PlaybackException) {
-                when (val cause = error.cause) {
-                    is DecoderException,
-                    is AudioSink.InitializationException ->
-                        onError(cause)
-                }
-            }
-
-            override fun equals(other: Any?): Boolean {
-                return other is TheOnlyPlayerFatalPlaybackExceptionListener
-            }
-
-            override fun hashCode(): Int {
-                return 333
-            }
         }
     }
 }

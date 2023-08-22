@@ -363,7 +363,7 @@ class MediaViewerViewModel(
         }
     }
 
-    fun onVideoPlayerFatalPlaybackError(page: VideoViewerPage) {
+    fun onVideoPlayerFatalPlaybackError(page: MediaViewerPage) {
         val source = page.source
 
         log.error {

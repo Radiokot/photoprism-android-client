@@ -201,11 +201,9 @@ class MediaViewerActivity : BaseActivity() {
 
             addEventHook(object : EventHook<MediaViewerPage> {
                 override fun onBind(viewHolder: ViewHolder): View? {
-                    if (viewHolder !is VideoViewerPage.ViewHolder) {
-                        return null
+                    if (viewHolder is VideoPlayerViewHolder) {
+                        setUpVideoViewer(viewHolder)
                     }
-
-                    setUpVideoViewer(viewHolder)
 
                     return null
                 }
@@ -417,51 +415,50 @@ class MediaViewerActivity : BaseActivity() {
             resources.getDimensionPixelSize(R.dimen.swipe_to_dismiss_distance_threshold)
     }
 
-    private fun setUpVideoViewer(viewHolder: VideoViewerPage.ViewHolder) {
+    private fun setUpVideoViewer(viewHolder: VideoPlayerViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
-        viewHolder.bindToLifecycle(this.lifecycle)
+        viewHolder.bindPlayerToLifecycle(this@MediaViewerActivity.lifecycle)
 
-        val view = viewHolder.view
-        val playerControlsView = viewHolder.playerControlsView
+        val playerControlsView = viewHolder.playerControlsLayout
 
-        viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
-            // Use fade animation rather than videoPlayer controller visibility methods
-            // for consistency.
-            playerControlsView.root.clearAnimation()
-            playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
-        }
+        if (playerControlsView != null) {
+            viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
+                // Use fade animation rather than videoPlayer controller visibility methods
+                // for consistency.
+                playerControlsView.root.clearAnimation()
+                playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
+            }
 
-        this.view.buttonsLayout.doOnNextLayout { buttonsLayout ->
-            val buttonsLayoutParams = buttonsLayout.layoutParams as MarginLayoutParams
+            // Apply insets.
+            this.view.buttonsLayout.doOnNextLayout { buttonsLayout ->
+                val buttonsLayoutParams = buttonsLayout.layoutParams as MarginLayoutParams
 
-            view.videoView.findViewById<View>(R.id.player_progress_layout)
-                .also { playerProgressLayout ->
-                    val extraBottomMargin = buttonsLayout.height + buttonsLayoutParams.bottomMargin
-                    val extraLeftMargin = buttonsLayoutParams.leftMargin
-                    val extraRightMargin = buttonsLayoutParams.rightMargin
+                val extraBottomMargin = buttonsLayout.height + buttonsLayoutParams.bottomMargin
+                val extraLeftMargin = buttonsLayoutParams.leftMargin
+                val extraRightMargin = buttonsLayoutParams.rightMargin
 
-                    playerProgressLayout.updateLayoutParams {
-                        this as MarginLayoutParams
+                playerControlsView.playerProgressLayout.updateLayoutParams {
+                    this as MarginLayoutParams
 
-                        bottomMargin += extraBottomMargin
-                        leftMargin += extraLeftMargin
-                        rightMargin += extraRightMargin
+                    bottomMargin += extraBottomMargin
+                    leftMargin += extraLeftMargin
+                    rightMargin += extraRightMargin
 
-                        log.debug {
-                            "setUpVideoViewer(): applied_controls_insets_margin:" +
-                                    "\nleft=$leftMargin," +
-                                    "\nright=$rightMargin," +
-                                    "\nbottom=$bottomMargin"
-                        }
+                    log.debug {
+                        "setUpVideoViewer(): applied_controls_insets_margin:" +
+                                "\nleft=$leftMargin," +
+                                "\nright=$rightMargin," +
+                                "\nbottom=$bottomMargin"
                     }
                 }
+            }
+
+            // Make arrow keys swipes work when play/pause buttons are in focus.
+            playerControlsView.exoPlay.setOnKeyListener(keyboardNavigationKeyListener)
+            playerControlsView.exoPause.setOnKeyListener(keyboardNavigationKeyListener)
         }
 
-        viewHolder.fatalPlaybackErrorListener = viewModel::onVideoPlayerFatalPlaybackError
-
-        // Make arrow keys swipes work when play/pause buttons are in focus.
-        playerControlsView.exoPlay.setOnKeyListener(keyboardNavigationKeyListener)
-        playerControlsView.exoPause.setOnKeyListener(keyboardNavigationKeyListener)
+        viewHolder.setOnFatalPlaybackErrorListener(viewModel::onVideoPlayerFatalPlaybackError)
     }
 
     private fun subscribeToData() {

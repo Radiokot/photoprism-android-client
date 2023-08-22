@@ -22,9 +22,28 @@ sealed class MediaViewerPage(
             imageViewSize: Size,
         ): MediaViewerPage {
             return when (source.media) {
+                is GalleryMedia.TypeData.Live ->
+                    LivePhotoViewerPage(
+                        photoPreviewUrl = source.media.getPreviewUrl(
+                            max(
+                                imageViewSize.width,
+                                imageViewSize.height
+                            )
+                        ),
+                        videoPreviewUrl = source.media.avcPreviewUrl,
+                        imageViewSize = imageViewSize,
+                        thumbnailUrl = source.smallThumbnailUrl,
+                        source = source,
+                    )
+
                 is GalleryMedia.TypeData.ViewableAsImage ->
                     ImageViewerPage(
-                        previewUrl = source.media.getPreviewUrl(max(imageViewSize.width, imageViewSize.height)),
+                        previewUrl = source.media.getPreviewUrl(
+                            max(
+                                imageViewSize.width,
+                                imageViewSize.height
+                            )
+                        ),
                         imageViewSize = imageViewSize,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,
@@ -33,8 +52,7 @@ sealed class MediaViewerPage(
                 is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewerPage(
                         previewUrl = source.media.avcPreviewUrl,
-                        isLooped = source.media is GalleryMedia.TypeData.Live
-                                || source.media is GalleryMedia.TypeData.Animated,
+                        isLooped = source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,
