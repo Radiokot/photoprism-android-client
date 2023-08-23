@@ -3,11 +3,12 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.net.Uri
 import android.util.Size
 import android.view.View
+import androidx.core.view.isVisible
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
-import com.squareup.picasso.Callback.EmptyCallback
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
@@ -52,14 +53,33 @@ class LivePhotoViewerPage(
 
         private val picasso: Picasso by inject()
 
-        private val imageLoadingCallback = object : EmptyCallback() {
+        private val imageLoadingCallback = object : Callback {
+            override fun onSuccess() {
+                isPhotoReady = true
+                playIfContentIsReady()
+            }
+
             override fun onError(e: Exception?) {
-                view.errorTextView.visibility = View.VISIBLE
+                view.progressIndicator.hide()
+                view.errorTextView.isVisible = true
             }
         }
-        private val playerListener = TheOnlyPlayerPlayingChangeListener {
-            view.videoView.postDelayed(::fadeIfCloseToTheEnd, 50)
+        private val playerListener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (isPlaying) {
+                    view.videoView.postDelayed(this@ViewHolder::fadeIfCloseToTheEnd, 50)
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    isVideoReady = true
+                    playIfContentIsReady()
+                }
+            }
         }
+        private var isVideoReady = false
+        private var isPhotoReady = false
 
         override fun attachToWindow(item: LivePhotoViewerPage) {
             view.videoView.useController = false
@@ -86,16 +106,22 @@ class LivePhotoViewerPage(
                 repeatMode = Player.REPEAT_MODE_OFF
             }
 
-            // Only play automatically on init.
-            if (!isPlaying && playbackState == Player.STATE_IDLE) {
-                playWhenReady = true
-            }
-            prepare()
+            playWhenReady = false
 
             // Make the still image fade in when the video is close to the end.
             // The current position needs to be continuously polled when playing,
             // as there is no live listener.
-            player.addListener(playerListener)
+            addListener(playerListener)
+
+            prepare()
+        }
+
+        private fun playIfContentIsReady() {
+            if (isPhotoReady && isVideoReady) {
+                view.videoView.isVisible = true
+                view.progressIndicator.hide()
+                player?.play()
+            }
         }
 
         private fun fadeIfCloseToTheEnd() {
@@ -120,9 +146,19 @@ class LivePhotoViewerPage(
         }
 
         override fun bindView(item: LivePhotoViewerPage, payloads: List<Any>) {
-            view.errorTextView.visibility = View.GONE
-            // Photo to be shown when the video part is ended.
-            view.photoView.visibility = View.GONE
+            isPhotoReady = false
+            isVideoReady = false
+
+            val playbackState = player?.playbackState
+
+            view.errorTextView.isVisible = false
+            view.photoView.isVisible = playbackState == Player.STATE_ENDED
+            view.videoView.isVisible = false
+            if (view.photoView.isVisible || view.videoView.isVisible) {
+                view.progressIndicator.hide()
+            } else {
+                view.progressIndicator.show()
+            }
 
             picasso
                 .load(item.photoPreviewUrl)
@@ -139,26 +175,10 @@ class LivePhotoViewerPage(
             picasso.cancelRequest(view.photoView)
             view.photoView.clearAnimation()
         }
-    }
 
-    private class TheOnlyPlayerPlayingChangeListener(
-        private val listener: (isPlaying: Boolean) -> Unit,
-    ) : Player.Listener {
-
-        override fun onIsPlayingChanged(isPlaying: Boolean) =
-            listener(isPlaying)
-
-        override fun equals(other: Any?): Boolean {
-            return other is TheOnlyPlayerPlayingChangeListener
+        private companion object {
+            const val FADE_DURATION_MS = 200
         }
-
-        override fun hashCode(): Int {
-            return 444
-        }
-    }
-
-    private companion object {
-        const val FADE_DURATION_MS = 200
     }
 }
 
