@@ -7,6 +7,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFac
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
+import java.util.concurrent.TimeUnit
 
 /**
  * A merged gallery media entry.
@@ -201,10 +202,21 @@ class GalleryMedia(
 
         class Live(
             override val avcPreviewUrl: String,
+            /**
+             * Non-zero duration of the full video in milliseconds,
+             * or null if it couldn't be determined.
+             */
+            val fullDurationMs: Long?,
             hash: String,
             mediaPreviewUrlFactory: MediaPreviewUrlFactory,
         ) : TypeData(TypeName.LIVE), ViewableAsVideo,
-            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
+            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory) {
+            init {
+                require((fullDurationMs ?: 0L) != 0L) {
+                    "The full duration must be either null or positive"
+                }
+            }
+        }
 
         class Video(
             override val avcPreviewUrl: String,
@@ -243,6 +255,10 @@ class GalleryMedia(
 
                     TypeName.LIVE.value -> Live(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        fullDurationMs = source.files
+                            .find { it.duration != null && it.duration > 0 }
+                            ?.duration
+                            ?.let(TimeUnit.NANOSECONDS::toMillis),
                         hash = source.hash,
                         mediaPreviewUrlFactory = previewUrlFactory,
                     )

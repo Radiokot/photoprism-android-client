@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
 
 class LivePhotoViewerPage(
     videoPreviewUrl: String,
+    val fullVideoDurationMs: Long?,
     val photoPreviewUrl: String,
     val imageViewSize: Size,
     thumbnailUrl: String,
@@ -90,14 +91,21 @@ class LivePhotoViewerPage(
                 item = item,
             ).apply {
                 if (currentMediaItem?.mediaId != item.mediaId) {
+                    // Start playback close to the end, like in iOS gallery.
+                    val startPositionMs = ((item.fullVideoDurationMs ?: 0) - PLAYBACK_DURATION_MS)
+                        .coerceAtLeast(0)
+
                     setMediaItem(
                         MediaItem.Builder()
                             .setMediaId(item.mediaId)
                             .setUri(item.videoPreviewUri)
+                            .setClippingConfiguration(MediaItem.ClippingConfiguration.Builder()
+                                .setStartPositionMs(startPositionMs)
+                                .build()
+                            )
                             // Assumption: PhotoPrism previews are always "video/mp4".
                             .setMimeType(MimeTypes.VIDEO_MP4)
-                            .build(),
-                        // TODO: Set start time close to the end.
+                            .build()
                     )
 
                     repeatMode = Player.REPEAT_MODE_OFF
@@ -109,7 +117,7 @@ class LivePhotoViewerPage(
                 addListener(playerListener)
             }
 
-            when (val playbackState =player.playbackState) {
+            when (val playbackState = player.playbackState) {
                 // Idle
                 Player.STATE_IDLE,
                 Player.STATE_BUFFERING -> {
@@ -194,6 +202,7 @@ class LivePhotoViewerPage(
 
         private companion object {
             const val FADE_DURATION_MS = 200
+            const val PLAYBACK_DURATION_MS = 400 + FADE_DURATION_MS
         }
     }
 }

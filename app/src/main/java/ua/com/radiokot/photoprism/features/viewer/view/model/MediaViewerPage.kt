@@ -31,6 +31,7 @@ sealed class MediaViewerPage(
                             )
                         ),
                         videoPreviewUrl = source.media.avcPreviewUrl,
+                        fullVideoDurationMs = source.media.fullDurationMs,
                         imageViewSize = imageViewSize,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,

@@ -36,5 +36,7 @@ constructor(
         val mime: String,
         @JsonProperty("Size")
         val size: Long,
+        @JsonProperty("Duration")
+        val duration: Long?,
     )
 }
