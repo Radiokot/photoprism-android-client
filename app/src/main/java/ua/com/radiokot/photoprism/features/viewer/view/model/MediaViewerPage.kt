@@ -21,8 +21,12 @@ sealed class MediaViewerPage(
             source: GalleryMedia,
             imageViewSize: Size,
         ): MediaViewerPage {
-            return when (source.media) {
-                is GalleryMedia.TypeData.Live ->
+            return when {
+                source.media is GalleryMedia.TypeData.Live && source.media.isRealLivePhoto ->
+                    // Only use the live photo viewer for real live photos.
+                    //
+                    // Short videos treated by PhotoPrism as live photos
+                    // miss the live photo magic and should be shown as a video.
                     LivePhotoViewerPage(
                         photoPreviewUrl = source.media.getPreviewUrl(
                             max(
@@ -37,7 +41,17 @@ sealed class MediaViewerPage(
                         source = source,
                     )
 
-                is GalleryMedia.TypeData.ViewableAsImage ->
+                source.media is GalleryMedia.TypeData.ViewableAsVideo ->
+                    VideoViewerPage(
+                        previewUrl = source.media.avcPreviewUrl,
+                        isLooped = source.media is GalleryMedia.TypeData.Live
+                                || source.media is GalleryMedia.TypeData.Animated,
+                        needsVideoControls = source.media is GalleryMedia.TypeData.Video,
+                        thumbnailUrl = source.smallThumbnailUrl,
+                        source = source,
+                    )
+
+                source.media is GalleryMedia.TypeData.ViewableAsImage ->
                     ImageViewerPage(
                         previewUrl = source.media.getPreviewUrl(
                             max(
@@ -46,15 +60,6 @@ sealed class MediaViewerPage(
                             )
                         ),
                         imageViewSize = imageViewSize,
-                        thumbnailUrl = source.smallThumbnailUrl,
-                        source = source,
-                    )
-
-                is GalleryMedia.TypeData.ViewableAsVideo ->
-                    VideoViewerPage(
-                        previewUrl = source.media.avcPreviewUrl,
-                        isLooped = source.media is GalleryMedia.TypeData.Animated,
-                        needsVideoControls = source.media is GalleryMedia.TypeData.Video,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,
                     )

@@ -207,6 +207,12 @@ class GalleryMedia(
              * or null if it couldn't be determined.
              */
             val fullDurationMs: Long?,
+            /**
+             * Whether it is a real live photo with a high quality still image,
+             * or just a short video treated by PhotoPrism as a live photo
+             * having the still image generated from the first frame.
+             */
+            val isRealLivePhoto: Boolean,
             hash: String,
             mediaPreviewUrlFactory: MediaPreviewUrlFactory,
         ) : TypeData(TypeName.LIVE), ViewableAsVideo,
@@ -255,11 +261,17 @@ class GalleryMedia(
 
                     TypeName.LIVE.value -> Live(
                         avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        // Find the duration among video files.
                         fullDurationMs = source.files
                             .find { it.duration != null && it.duration > 0 }
                             ?.duration
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
                         hash = source.hash,
+                        // Short videos treated by PhotoPrism as live photos
+                        // have generated primary file
+                        // hence miss the true live photo magic ✨
+                        isRealLivePhoto = !source.files
+                            .any { it.primary && it.root == "sidecar" },
                         mediaPreviewUrlFactory = previewUrlFactory,
                     )
 

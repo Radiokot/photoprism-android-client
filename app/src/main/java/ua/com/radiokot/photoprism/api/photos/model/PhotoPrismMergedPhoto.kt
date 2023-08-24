@@ -38,5 +38,9 @@ constructor(
         val size: Long,
         @JsonProperty("Duration")
         val duration: Long?,
+        @JsonProperty("Primary")
+        val primary: Boolean,
+        @JsonProperty("Root")
+        val root: String,
     )
 }
