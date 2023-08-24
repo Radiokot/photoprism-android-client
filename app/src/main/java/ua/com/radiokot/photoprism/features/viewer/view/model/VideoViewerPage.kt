@@ -47,11 +47,11 @@ class VideoViewerPage(
                 view.videoView.useController = false
             }
 
-            onAttachToWindow(
+            val player = onAttachToWindow(
                 mediaId = item.mediaId,
                 item = item,
             )
-            player?.let { setUpPlayer(it, item) }
+            setUpPlayer(player, item)
         }
 
         private fun setUpPlayer(player: Player, item: VideoViewerPage) = with(player) {
@@ -70,6 +70,8 @@ class VideoViewerPage(
                         Player.REPEAT_MODE_ONE
                     else
                         Player.REPEAT_MODE_OFF
+
+                volume = 1f
             }
 
             // Only play automatically on init.

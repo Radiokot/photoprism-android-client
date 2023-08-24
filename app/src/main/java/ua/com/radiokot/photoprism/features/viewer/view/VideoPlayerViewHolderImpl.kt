@@ -68,7 +68,7 @@ class VideoPlayerViewHolderImpl(
     override fun onAttachToWindow(
         mediaId: String,
         item: MediaViewerPage
-    ) {
+    ): Player {
         val player = playerCache.getPlayer(key = mediaId)
         videoView.player = player
 
@@ -77,6 +77,8 @@ class VideoPlayerViewHolderImpl(
         }
         player.removeListener(theOnlyFatalExceptionListener)
         player.addListener(theOnlyFatalExceptionListener)
+
+        return player
     }
 
     override fun onDetachFromWindow(item: MediaViewerPage) {

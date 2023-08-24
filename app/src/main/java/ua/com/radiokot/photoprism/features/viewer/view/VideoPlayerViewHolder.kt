@@ -13,7 +13,7 @@ interface VideoPlayerViewHolder {
     fun onAttachToWindow(
         mediaId: String,
         item: MediaViewerPage,
-    )
+    ): Player
 
     fun onDetachFromWindow(item: MediaViewerPage)
     fun bindPlayerToLifecycle(lifecycle: Lifecycle)
