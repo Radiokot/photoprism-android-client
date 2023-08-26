@@ -14,21 +14,27 @@ import ua.com.radiokot.photoprism.databinding.LayoutVideoPlayerControlsBinding
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 
 class VideoPlayerViewHolderImpl(
-    val videoView: PlayerView,
+    override val playerView: PlayerView,
 ) : VideoPlayerViewHolder {
-    override val player: Player?
-        get() = videoView.player
 
-    var fatalPlaybackErrorListener: (MediaViewerPage) -> Unit = {}
+    private var fatalPlaybackErrorListener: (MediaViewerPage) -> Unit = {}
 
-    private val lifecycleObserver = object : DefaultLifecycleObserver {
+    /**
+     * An observer which pauses playback when the screen is paused (but not destroyed)
+     * and resumes it when the screen is resumed.
+     *
+     * This has nothing to do with the screen rotation.
+     */
+    private val pauseLifecycleObserver = object : DefaultLifecycleObserver {
         private var playerHasBeenPaused = false
 
         override fun onPause(owner: LifecycleOwner) {
-            val player = videoView.player
-                ?: return
+            playerHasBeenPaused = false
 
-            videoView.post {
+            val player = playerView.player
+                ?: return // It's ok if there is no player at this moment for some reason.
+
+            playerView.post {
                 // Only pause if the owner is not destroyed.
                 if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
                     && player.isPlaying
@@ -40,8 +46,8 @@ class VideoPlayerViewHolderImpl(
         }
 
         override fun onResume(owner: LifecycleOwner) {
-            val player = videoView.player
-                ?: return
+            val player = playerView.player
+                ?: return // It's ok if there is no player at this moment, it may be creation.
 
             if (player.playbackState != Player.STATE_IDLE && playerHasBeenPaused) {
                 player.playWhenReady = true
@@ -50,7 +56,7 @@ class VideoPlayerViewHolderImpl(
     }
 
     override val playerControlsLayout: LayoutVideoPlayerControlsBinding? by lazy {
-        videoView.findViewById<View>(R.id.player_controls_layout)
+        playerView.findViewById<View>(R.id.player_controls_layout)
             ?.let(LayoutVideoPlayerControlsBinding::bind)
     }
 
@@ -62,34 +68,21 @@ class VideoPlayerViewHolderImpl(
         }
 
     override fun bindPlayerToLifecycle(lifecycle: Lifecycle) {
-        lifecycle.addObserver(lifecycleObserver)
-    }
-
-    override fun onAttachToWindow(
-        mediaId: String,
-        item: MediaViewerPage
-    ): Player {
-        val player = playerCache.getPlayer(key = mediaId)
-        videoView.player = player
-
-        val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
-            fatalPlaybackErrorListener(item)
-        }
-        player.removeListener(theOnlyFatalExceptionListener)
-        player.addListener(theOnlyFatalExceptionListener)
-
-        return player
-    }
-
-    override fun onDetachFromWindow(item: MediaViewerPage) {
-        player?.apply {
-            stop()
-            seekToDefaultPosition()
-        }
+        lifecycle.addObserver(pauseLifecycleObserver)
     }
 
     override fun setOnFatalPlaybackErrorListener(listener: (source: MediaViewerPage) -> Unit) {
         fatalPlaybackErrorListener = listener
+    }
+
+    override fun enableFatalPlaybackErrorListener(item: MediaViewerPage) {
+        playerView.player?.apply {
+            val theOnlyFatalExceptionListener = TheOnlyPlayerFatalPlaybackExceptionListener {
+                fatalPlaybackErrorListener(item)
+            }
+            removeListener(theOnlyFatalExceptionListener)
+            addListener(theOnlyFatalExceptionListener)
+        }
     }
 
     /**

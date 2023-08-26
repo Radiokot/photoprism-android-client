@@ -86,10 +86,10 @@ class LivePhotoViewerPage(
             view.videoView.useController = false
             view.errorTextView.isVisible = false
 
-            val player = onAttachToWindow(
-                mediaId = item.mediaId,
-                item = item,
-            ).apply {
+            playerCache.getPlayer(key = item.mediaId).apply {
+                playerView.player = this
+                enableFatalPlaybackErrorListener(item)
+
                 if (currentMediaItem?.mediaId != item.mediaId) {
                     // Start playback close to the end, like in iOS gallery.
                     val startPositionMs = ((item.fullVideoDurationMs ?: 0) - PLAYBACK_DURATION_MS)
@@ -99,9 +99,10 @@ class LivePhotoViewerPage(
                         MediaItem.Builder()
                             .setMediaId(item.mediaId)
                             .setUri(item.videoPreviewUri)
-                            .setClippingConfiguration(MediaItem.ClippingConfiguration.Builder()
-                                .setStartPositionMs(startPositionMs)
-                                .build()
+                            .setClippingConfiguration(
+                                MediaItem.ClippingConfiguration.Builder()
+                                    .setStartPositionMs(startPositionMs)
+                                    .build()
                             )
                             // Assumption: PhotoPrism previews are always "video/mp4".
                             .setMimeType(MimeTypes.VIDEO_MP4)
@@ -115,39 +116,39 @@ class LivePhotoViewerPage(
                 playWhenReady = false
                 removeListener(playerListener)
                 addListener(playerListener)
-            }
 
-            when (val playbackState = player.playbackState) {
-                // Idle
-                Player.STATE_IDLE,
-                Player.STATE_BUFFERING -> {
-                    isVideoReady = false
+                when (val playbackState = playbackState) {
+                    // Idle
+                    Player.STATE_IDLE,
+                    Player.STATE_BUFFERING -> {
+                        isVideoReady = false
 
-                    view.videoView.isVisible = false
-                    view.photoView.isVisible = false
-                    view.progressIndicator.show()
+                        view.videoView.isVisible = false
+                        view.photoView.isVisible = false
+                        view.progressIndicator.show()
 
-                    if (playbackState == Player.STATE_IDLE) {
-                        player.prepare()
+                        if (playbackState == Player.STATE_IDLE) {
+                            prepare()
+                        }
                     }
-                }
 
-                Player.STATE_READY -> {
-                    isVideoReady = true
+                    Player.STATE_READY -> {
+                        isVideoReady = true
 
-                    view.videoView.isVisible = true
-                    view.photoView.isVisible = false
-                    view.progressIndicator.hide()
+                        view.videoView.isVisible = true
+                        view.photoView.isVisible = false
+                        view.progressIndicator.hide()
 
-                    playIfContentIsReady()
-                }
+                        playIfContentIsReady()
+                    }
 
-                Player.STATE_ENDED -> {
-                    isVideoReady = true
+                    Player.STATE_ENDED -> {
+                        isVideoReady = true
 
-                    view.videoView.isVisible = false
-                    view.photoView.isVisible = true
-                    view.progressIndicator.hide()
+                        view.videoView.isVisible = false
+                        view.photoView.isVisible = true
+                        view.progressIndicator.hide()
+                    }
                 }
             }
         }
@@ -156,12 +157,12 @@ class LivePhotoViewerPage(
             if (isPhotoReady && isVideoReady) {
                 view.videoView.isVisible = true
                 view.progressIndicator.hide()
-                player?.play()
+                playerView.player?.play()
             }
         }
 
         private fun fadeIfCloseToTheEnd() {
-            val player = player
+            val player = playerView.player
                 ?: return
 
             if (player.isPlaying) {
@@ -176,9 +177,18 @@ class LivePhotoViewerPage(
             }
         }
 
-        override fun detachFromWindow(item: LivePhotoViewerPage) {
-            player?.removeListener(playerListener)
-            onDetachFromWindow(item)
+        // This method is called on swipe but not on screen destroy.
+        // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
+        override fun detachFromWindow(item: LivePhotoViewerPage) = with(playerView.player!!) {
+            removeListener(playerListener)
+
+            // Stop playback once the page is swiped.
+            stop()
+
+            // Seek to default position to start playback from the beginning
+            // when swiping back to this page.
+            // This seems the only right place to call this method.
+            seekToDefaultPosition()
         }
 
         override fun bindView(item: LivePhotoViewerPage, payloads: List<Any>) {
@@ -198,6 +208,8 @@ class LivePhotoViewerPage(
         override fun unbindView(item: LivePhotoViewerPage) {
             picasso.cancelRequest(view.photoView)
             view.photoView.clearAnimation()
+            playerView.player = null
+            playerCache.releasePlayer(key = item.mediaId)
         }
 
         private companion object {

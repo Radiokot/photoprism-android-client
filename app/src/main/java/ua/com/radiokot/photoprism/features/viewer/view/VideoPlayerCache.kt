@@ -12,4 +12,13 @@ interface VideoPlayerCache {
     fun getPlayer(
         key: Any,
     ): VideoPlayer
+
+    /**
+     * Releases the cached player and removes it from the cache.
+     *
+     * @param key an object with consistent hash code
+     */
+    fun releasePlayer(
+        key: Any,
+    )
 }

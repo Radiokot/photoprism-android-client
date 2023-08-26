@@ -37,7 +37,53 @@ class VideoViewerPage(
     ) : FastAdapter.ViewHolder<VideoViewerPage>(view.root),
         VideoPlayerViewHolder by delegate {
 
-        override fun attachToWindow(item: VideoViewerPage) {
+        override fun attachToWindow(item: VideoViewerPage) = with(playerView.player!!) {
+            if (!isPlaying) {
+                when (playbackState) {
+                    // When the player is stopped.
+                    Player.STATE_IDLE -> {
+                        prepare()
+                        playWhenReady = true
+                    }
+
+                    // When the player is loading.
+                    Player.STATE_BUFFERING -> {
+                        playWhenReady = true
+                    }
+
+                    // When the player is ready.
+                    Player.STATE_READY -> {
+                        play()
+                    }
+
+                    // When the video is ended.
+                    Player.STATE_ENDED -> {
+                        seekToDefaultPosition()
+                        play()
+                    }
+                }
+            }
+        }
+
+        // This method is called on swipe but not on screen destroy.
+        // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
+        override fun detachFromWindow(item: VideoViewerPage) = with(playerView.player!!) {
+            // Stop playback once the page is swiped.
+            stop()
+
+            // Seek to default position to start playback from the beginning
+            // when swiping back to this page.
+            // This seems the only right place to call this method.
+            seekToDefaultPosition()
+        }
+
+        override fun bindView(
+            item: VideoViewerPage,
+            payloads: List<Any>,
+        ) = with(playerCache.getPlayer(key = item.mediaId)) {
+            playerView.player = this
+            enableFatalPlaybackErrorListener(item)
+
             if (item.needsVideoControls) {
                 view.videoView.useController = true
                 // If need to use the controller, show it manually.
@@ -47,14 +93,7 @@ class VideoViewerPage(
                 view.videoView.useController = false
             }
 
-            val player = onAttachToWindow(
-                mediaId = item.mediaId,
-                item = item,
-            )
-            setUpPlayer(player, item)
-        }
-
-        private fun setUpPlayer(player: Player, item: VideoViewerPage) = with(player) {
+            // Only set up the player if its media item is changed.
             if (currentMediaItem?.mediaId != item.mediaId) {
                 setMediaItem(
                     MediaItem.Builder()
@@ -65,30 +104,23 @@ class VideoViewerPage(
                         .build()
                 )
 
+                volume = 1f
                 repeatMode =
                     if (item.isLooped)
                         Player.REPEAT_MODE_ONE
                     else
                         Player.REPEAT_MODE_OFF
 
-                volume = 1f
+                // Start loading media on bind,
+                // but prevent playback start until attached to the window.
+                prepare()
+                playWhenReady = false
             }
-
-            // Only play automatically on init.
-            if (!isPlaying && playbackState == Player.STATE_IDLE) {
-                playWhenReady = true
-            }
-            prepare()
-        }
-
-        override fun detachFromWindow(item: VideoViewerPage) =
-            onDetachFromWindow(item)
-
-        // Video player must be set up only once it is attached.
-        override fun bindView(item: VideoViewerPage, payloads: List<Any>) {
         }
 
         override fun unbindView(item: VideoViewerPage) {
+            playerView.player = null
+            playerCache.releasePlayer(key = item.mediaId)
         }
     }
 }

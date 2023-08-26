@@ -88,8 +88,6 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             viewModel {
                 VideoPlayerCacheViewModel(
                     videoPlayerFactory = get(),
-                    // 2 is enough for pages swiping.
-                    cacheMaxSize = 2,
                 )
             }
         }
