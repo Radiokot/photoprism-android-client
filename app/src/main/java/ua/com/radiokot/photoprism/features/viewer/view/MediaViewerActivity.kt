@@ -297,7 +297,7 @@ class MediaViewerActivity : BaseActivity() {
             )
         }
 
-        view.buttonsLayout.doOnNextLayout { buttonsLayout ->
+        view.buttonsLayout.doOnPreDraw { buttonsLayout ->
             val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
 
             buttonsLayout.updateLayoutParams {
