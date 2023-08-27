@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Albums overview screen for the search, where you can see all the albums in grid view, 
 quickly scroll from top to bottom and filter the items by name
+- Enhanced live photos viewer which fades the video into the high-quality still image.
+It works with
+[Samsung live photos](https://github.com/photoprism/photoprism/issues/439#issuecomment-1687885285) 
+and manually uploaded
+[JPEG+MP4 batches](https://github.com/Radiokot/photoprism-android-client/issues/77#issuecomment-1682631862)
+and does not affect short videos treated by PhotoPrism as live photos. 
+Until the autumn PhotoPrism release,  you can test this feature on the
+[public demo](https://demo.photoprism.app/library/browse)
 - Ability to change the app language from system settings on Android 13
 
 ### Changed
