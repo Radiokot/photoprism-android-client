@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.util.Size
 import android.view.View
+import com.github.chrisbanes.photoview.PhotoView
 import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -31,11 +32,17 @@ class ImageViewerPage(
 
     class ViewHolder(
         itemView: View,
-    ) : FastAdapter.ViewHolder<ImageViewerPage>(itemView), KoinScopeComponent {
+    ) : FastAdapter.ViewHolder<ImageViewerPage>(itemView),
+        KoinScopeComponent,
+        ZoomablePhotoViewHolder {
+
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
         val view = PagerItemMediaViewerImageBinding.bind(itemView)
+        override val photoView: PhotoView
+            get() = view.photoView
+
         private val picasso: Picasso by inject()
 
         private val imageLoadingCallback = object : Callback {

@@ -97,8 +97,8 @@ class MediaViewerActivity : BaseActivity() {
                 view.viewPager.recyclerView
                     .findViewHolderForAdapterPosition(view.viewPager.currentItem)
 
-            return currentPageViewHolder is ImageViewerPage.ViewHolder
-                    && currentPageViewHolder.view.photoView.scale != 1f
+            return currentPageViewHolder is ZoomablePhotoViewHolder
+                    && currentPageViewHolder.isScaled
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -182,16 +182,20 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             addClickListener(
-                resolveView = { viewHolder: ViewHolder ->
+                resolveView = { null },
+                resolveViews = { viewHolder: ViewHolder ->
                     when (viewHolder) {
-                        is ImageViewerPage.ViewHolder ->
-                            viewHolder.view.photoView
+                        is FadeEndLivePhotoViewerPage.ViewHolder ->
+                            listOf(viewHolder.playerView, viewHolder.photoView)
 
-                        is VideoViewerPage.ViewHolder ->
-                            viewHolder.view.videoView
+                        is VideoPlayerViewHolder ->
+                            listOf(viewHolder.playerView)
+
+                        is ZoomablePhotoViewHolder ->
+                            listOf(viewHolder.photoView)
 
                         else ->
-                            viewHolder.itemView
+                            listOf(viewHolder.itemView)
                     }
                 },
                 onClick = { _, _, _, _ ->

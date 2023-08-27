@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Size
 import android.view.View
 import androidx.core.view.isVisible
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.MimeTypes
@@ -47,10 +48,14 @@ class FadeEndLivePhotoViewerPage(
         videoPlayerVHDelegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
     ) : FastAdapter.ViewHolder<FadeEndLivePhotoViewerPage>(view.root),
         VideoPlayerViewHolder by videoPlayerVHDelegate,
+        ZoomablePhotoViewHolder,
         KoinScopeComponent {
 
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
+
+        override val photoView: PhotoView
+            get() = view.photoView
 
         private val picasso: Picasso by inject()
 
@@ -132,6 +137,10 @@ class FadeEndLivePhotoViewerPage(
 
             if (duration > 0 && duration - currentPosition < FADE_DURATION_MS) {
                 view.photoView.fadeIn(FADE_DURATION_MS)
+                view.photoView.postDelayed(
+                    { view.videoView.isVisible = false },
+                    FADE_DURATION_MS.toLong()
+                )
             } else {
                 // Retry with delay.
                 view.videoView.postDelayed(::fadeIfCloseToTheEndOrTryLater, 50)
@@ -140,7 +149,9 @@ class FadeEndLivePhotoViewerPage(
 
         // This method is called on swipe but not on screen destroy.
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
-        override fun detachFromWindow(item: FadeEndLivePhotoViewerPage) = with(playerView.player!!) {
+        override fun detachFromWindow(
+            item: FadeEndLivePhotoViewerPage
+        ) = with(playerView.player!!) {
             // Stop playback once the page is swiped.
             stop()
 
@@ -148,6 +159,12 @@ class FadeEndLivePhotoViewerPage(
             // when swiping back to this page.
             // This seems the only right place to call this method.
             seekToDefaultPosition()
+
+            // Reset the photo scale to avoid fading to a zoomed image on replay.
+            photoView.scale = 1f
+
+            // Stop any animations.
+            photoView.clearAnimation()
         }
 
         override fun bindView(
@@ -204,7 +221,6 @@ class FadeEndLivePhotoViewerPage(
 
         override fun unbindView(item: FadeEndLivePhotoViewerPage) {
             picasso.cancelRequest(view.photoView)
-            view.photoView.clearAnimation()
             playerView.player = null
             playerCache.releasePlayer(key = item.mediaId)
         }
