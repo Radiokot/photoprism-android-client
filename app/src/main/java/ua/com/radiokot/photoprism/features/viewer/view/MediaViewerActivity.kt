@@ -159,6 +159,8 @@ class MediaViewerActivity : BaseActivity() {
         startIndex: Int,
         savedInstanceState: Bundle?,
     ) = with(view.viewPager) {
+        // Reset the image view size until it is obtained.
+        viewModel.imageViewSize = Size(0, 0)
         window.decorView.viewTreeObserver.addOnGlobalLayoutListener {
             // Image view size is the window size multiplied by a zoom factor.
             viewModel.imageViewSize = Size(

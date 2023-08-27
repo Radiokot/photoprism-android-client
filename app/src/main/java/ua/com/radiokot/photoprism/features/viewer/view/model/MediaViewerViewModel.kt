@@ -154,8 +154,12 @@ class MediaViewerViewModel(
     private fun broadcastItemsFromRepository() {
         if (imageViewSize.width == 0 || imageViewSize.height == 0) {
             log.warn {
-                "broadcastItemsFromRepository(): skip_without_image_view_size"
+                "broadcastItemsFromRepository(): broadcasting_null_without_image_view_size"
             }
+
+            // When the image view size is unknown, new items can't be broadcast
+            // while the existing are outdated.
+            itemsList.value = null
             return
         }
 
@@ -169,6 +173,12 @@ class MediaViewerViewModel(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
                     )
+            }
+            .also {
+                log.debug {
+                    "broadcastItemsFromRepository(): broadcasting:" +
+                            "\nitemsCount=${it.size}"
+                }
             }
     }
 
