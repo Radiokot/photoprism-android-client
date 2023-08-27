@@ -38,31 +38,33 @@ class VideoViewerPage(
         VideoPlayerViewHolder by delegate {
 
         override fun attachToWindow(item: VideoViewerPage) = with(playerView.player!!) {
-            if (!isPlaying) {
-                when (playbackState) {
-                    // When the player is stopped.
-                    Player.STATE_IDLE -> {
-                        prepare()
-                        playWhenReady = true
-                    }
+            if (isPlaying) {
+                return@with
+            }
 
-                    // When the player is loading.
-                    Player.STATE_BUFFERING -> {
-                        playWhenReady = true
-                    }
+            when (playbackState) {
+                // When the player is stopped.
+                Player.STATE_IDLE -> {
+                    prepare()
+                    playWhenReady = true
+                }
 
-                    // When the player is ready.
-                    Player.STATE_READY -> {
-                        play()
-                    }
+                // When the player is loading.
+                Player.STATE_BUFFERING -> {
+                    playWhenReady = true
+                }
 
-                    // When the video is ended.
-                    // Occurs when the screen is re-created,
-                    // as the player is stopped beforehand in other cases.
-                    Player.STATE_ENDED -> {
-                        seekToDefaultPosition()
-                        play()
-                    }
+                // When the player is ready.
+                Player.STATE_READY -> {
+                    play()
+                }
+
+                // When the video is ended.
+                // Occurs when the screen is re-created,
+                // as the player is stopped beforehand in other cases.
+                Player.STATE_ENDED -> {
+                    seekToDefaultPosition()
+                    play()
                 }
             }
         }
