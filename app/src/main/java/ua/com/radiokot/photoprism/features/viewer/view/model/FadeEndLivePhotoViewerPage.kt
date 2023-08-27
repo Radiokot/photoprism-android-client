@@ -14,7 +14,7 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerLivePhotoBinding
+import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerFadeEndLivePhotoBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
@@ -22,7 +22,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
 
-class LivePhotoViewerPage(
+class FadeEndLivePhotoViewerPage(
     videoPreviewUrl: String,
     val fullVideoDurationMs: Long?,
     val photoPreviewUrl: String,
@@ -34,18 +34,18 @@ class LivePhotoViewerPage(
     val mediaId: String = identifier.toString()
 
     override val type: Int
-        get() = R.id.pager_item_media_viewer_live_photo
+        get() = R.id.pager_item_media_viewer_fade_end_live_photo
 
     override val layoutRes: Int
-        get() = R.layout.pager_item_media_viewer_live_photo
+        get() = R.layout.pager_item_media_viewer_fade_end_live_photo
 
     override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(PagerItemMediaViewerLivePhotoBinding.bind(v))
+        ViewHolder(PagerItemMediaViewerFadeEndLivePhotoBinding.bind(v))
 
     class ViewHolder(
-        private val view: PagerItemMediaViewerLivePhotoBinding,
+        private val view: PagerItemMediaViewerFadeEndLivePhotoBinding,
         videoPlayerVHDelegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
-    ) : FastAdapter.ViewHolder<LivePhotoViewerPage>(view.root),
+    ) : FastAdapter.ViewHolder<FadeEndLivePhotoViewerPage>(view.root),
         VideoPlayerViewHolder by videoPlayerVHDelegate,
         KoinScopeComponent {
 
@@ -64,7 +64,7 @@ class LivePhotoViewerPage(
             }
         }
 
-        override fun attachToWindow(item: LivePhotoViewerPage) = with(playerView.player!!) {
+        override fun attachToWindow(item: FadeEndLivePhotoViewerPage) = with(playerView.player!!) {
             // The view state must be reset firstly on attach.
             view.progressIndicator.show()
             view.photoView.isVisible = false
@@ -140,7 +140,7 @@ class LivePhotoViewerPage(
 
         // This method is called on swipe but not on screen destroy.
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
-        override fun detachFromWindow(item: LivePhotoViewerPage) = with(playerView.player!!) {
+        override fun detachFromWindow(item: FadeEndLivePhotoViewerPage) = with(playerView.player!!) {
             // Stop playback once the page is swiped.
             stop()
 
@@ -151,7 +151,7 @@ class LivePhotoViewerPage(
         }
 
         override fun bindView(
-            item: LivePhotoViewerPage,
+            item: FadeEndLivePhotoViewerPage,
             payloads: List<Any>,
         ) = with(playerCache.getPlayer(key = item.mediaId)) {
             playerView.player = this
@@ -202,7 +202,7 @@ class LivePhotoViewerPage(
                 .into(view.photoView, imageLoadingCallback)
         }
 
-        override fun unbindView(item: LivePhotoViewerPage) {
+        override fun unbindView(item: FadeEndLivePhotoViewerPage) {
             picasso.cancelRequest(view.photoView)
             view.photoView.clearAnimation()
             playerView.player = null

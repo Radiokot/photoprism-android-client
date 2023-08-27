@@ -27,7 +27,7 @@ sealed class MediaViewerPage(
                     //
                     // Short videos treated by PhotoPrism as live photos
                     // miss the live photo magic and should be shown as a video.
-                    LivePhotoViewerPage(
+                    FadeEndLivePhotoViewerPage(
                         photoPreviewUrl = source.media.getPreviewUrl(
                             max(
                                 imageViewSize.width,
