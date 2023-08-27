@@ -207,12 +207,7 @@ class GalleryMedia(
              * or null if it couldn't be determined.
              */
             val fullDurationMs: Long?,
-            /**
-             * Whether it is a real live photo with a high quality still image,
-             * or just a short video treated by PhotoPrism as a live photo
-             * having the still image generated from the first frame.
-             */
-            val isRealLivePhoto: Boolean,
+            val kind: Kind,
             hash: String,
             mediaPreviewUrlFactory: MediaPreviewUrlFactory,
         ) : TypeData(TypeName.LIVE), ViewableAsVideo,
@@ -221,6 +216,21 @@ class GalleryMedia(
                 require((fullDurationMs ?: 0L) != 0L) {
                     "The full duration must be either null or positive"
                 }
+            }
+
+            sealed class Kind {
+                /**
+                 * Just a short video treated by PhotoPrism as a live photo
+                 * having the still image generated from the first frame.
+                 */
+                object ShortVideo : Kind()
+
+                /**
+                 * Real live photo with with a high quality still image
+                 * taken at the end of the video, for example Samsung.
+                 * This kind has the true live photo magic ✨
+                 */
+                object FadeEnd : Kind()
             }
         }
 
@@ -267,11 +277,13 @@ class GalleryMedia(
                             ?.duration
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
                         hash = source.hash,
-                        // Short videos treated by PhotoPrism as live photos
-                        // have generated primary file
-                        // hence miss the true live photo magic ✨
-                        isRealLivePhoto = !source.files
-                            .any { it.primary && it.root == "sidecar" },
+                        kind = when {
+                            source.files.any { it.primary && it.root == "sidecar" } ->
+                                Live.Kind.ShortVideo
+
+                            else ->
+                                Live.Kind.FadeEnd
+                        },
                         mediaPreviewUrlFactory = previewUrlFactory,
                     )
 

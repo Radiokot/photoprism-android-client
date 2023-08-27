@@ -22,11 +22,8 @@ sealed class MediaViewerPage(
             imageViewSize: Size,
         ): MediaViewerPage {
             return when {
-                source.media is GalleryMedia.TypeData.Live && source.media.isRealLivePhoto ->
-                    // Only use the live photo viewer for real live photos.
-                    //
-                    // Short videos treated by PhotoPrism as live photos
-                    // miss the live photo magic and should be shown as a video.
+                source.media is GalleryMedia.TypeData.Live
+                        && source.media.kind is GalleryMedia.TypeData.Live.Kind.FadeEnd ->
                     FadeEndLivePhotoViewerPage(
                         photoPreviewUrl = source.media.getPreviewUrl(
                             max(
