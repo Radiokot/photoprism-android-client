@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Albums overview screen for the search, where you can see all the albums in grid view, 
 quickly scroll from top to bottom and filter the items by name
+- Ability to change the app language from system settings on Android 13
 
 ### Changed
 - Added more vertical space to the search configuration screen

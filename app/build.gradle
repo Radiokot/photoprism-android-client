@@ -25,7 +25,8 @@ android {
         versionCode 26
         versionName "1.16.1"
 
-        resConfigs "en", "tr", "el", "it", "zh", "ru", "uk"
+        // Must be aligned with @xml/locale_config and values-*.
+        resConfigs "en", "el", "it", "ru", "tr", "uk", "zh"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
