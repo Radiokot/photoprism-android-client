@@ -57,6 +57,8 @@ class VideoViewerPage(
                     }
 
                     // When the video is ended.
+                    // Occurs when the screen is re-created,
+                    // as the player is stopped beforehand in other cases.
                     Player.STATE_ENDED -> {
                         seekToDefaultPosition()
                         play()

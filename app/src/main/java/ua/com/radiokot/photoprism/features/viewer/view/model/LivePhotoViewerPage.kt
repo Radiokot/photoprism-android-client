@@ -44,9 +44,9 @@ class LivePhotoViewerPage(
 
     class ViewHolder(
         private val view: PagerItemMediaViewerLivePhotoBinding,
-        delegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
+        videoPlayerVHDelegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
     ) : FastAdapter.ViewHolder<LivePhotoViewerPage>(view.root),
-        VideoPlayerViewHolder by delegate,
+        VideoPlayerViewHolder by videoPlayerVHDelegate,
         KoinScopeComponent {
 
         override val scope: Scope
@@ -55,133 +55,92 @@ class LivePhotoViewerPage(
         private val picasso: Picasso by inject()
 
         private val imageLoadingCallback = object : Callback {
-            override fun onSuccess() {
-                isPhotoReady = true
+            override fun onSuccess() =
                 playIfContentIsReady()
-            }
 
             override fun onError(e: Exception?) {
                 view.progressIndicator.hide()
                 view.errorTextView.isVisible = true
             }
         }
-        private val playerListener = object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                if (isPlaying) {
-                    view.videoView.postDelayed(this@ViewHolder::fadeIfCloseToTheEnd, 50)
-                }
-            }
 
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
-                    isVideoReady = true
-                    playIfContentIsReady()
-                }
-            }
-        }
-        private var isVideoReady = false
-        private var isPhotoReady = false
-
-        override fun attachToWindow(item: LivePhotoViewerPage) {
-            view.videoView.useController = false
+        override fun attachToWindow(item: LivePhotoViewerPage) = with(playerView.player!!) {
+            // The view state must be reset firstly on attach.
+            view.progressIndicator.show()
+            view.photoView.isVisible = false
+            view.videoView.isVisible = false
             view.errorTextView.isVisible = false
 
-            playerCache.getPlayer(key = item.mediaId).apply {
-                playerView.player = this
-                enableFatalPlaybackErrorListener(item)
-
-                if (currentMediaItem?.mediaId != item.mediaId) {
-                    // Start playback close to the end, like in iOS gallery.
-                    val startPositionMs = ((item.fullVideoDurationMs ?: 0) - PLAYBACK_DURATION_MS)
-                        .coerceAtLeast(0)
-
-                    setMediaItem(
-                        MediaItem.Builder()
-                            .setMediaId(item.mediaId)
-                            .setUri(item.videoPreviewUri)
-                            .setClippingConfiguration(
-                                MediaItem.ClippingConfiguration.Builder()
-                                    .setStartPositionMs(startPositionMs)
-                                    .build()
-                            )
-                            // Assumption: PhotoPrism previews are always "video/mp4".
-                            .setMimeType(MimeTypes.VIDEO_MP4)
-                            .build()
-                    )
-
-                    repeatMode = Player.REPEAT_MODE_OFF
-                    volume = 0f
+            when (playbackState) {
+                // When the player is stopped or buffering.
+                Player.STATE_IDLE,
+                Player.STATE_BUFFERING -> {
+                    addListener(object : Player.Listener {
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            if (playbackState == Player.STATE_READY) {
+                                removeListener(this)
+                                playIfContentIsReady()
+                            }
+                        }
+                    })
+                    if (playbackState == Player.STATE_IDLE) {
+                        prepare()
+                    }
                 }
 
-                playWhenReady = false
-                removeListener(playerListener)
-                addListener(playerListener)
+                // When the player is ready.
+                Player.STATE_READY -> {
+                    playIfContentIsReady()
+                }
 
-                when (val playbackState = playbackState) {
-                    // Idle
-                    Player.STATE_IDLE,
-                    Player.STATE_BUFFERING -> {
-                        isVideoReady = false
-
-                        view.videoView.isVisible = false
-                        view.photoView.isVisible = false
-                        view.progressIndicator.show()
-
-                        if (playbackState == Player.STATE_IDLE) {
-                            prepare()
-                        }
-                    }
-
-                    Player.STATE_READY -> {
-                        isVideoReady = true
-
-                        view.videoView.isVisible = true
-                        view.photoView.isVisible = false
-                        view.progressIndicator.hide()
-
-                        playIfContentIsReady()
-                    }
-
-                    Player.STATE_ENDED -> {
-                        isVideoReady = true
-
-                        view.videoView.isVisible = false
-                        view.photoView.isVisible = true
-                        view.progressIndicator.hide()
-                    }
+                // When the video is ended.
+                // Occurs when the screen is re-created,
+                // as the player is stopped beforehand in other cases.
+                Player.STATE_ENDED -> {
+                    // Immediately show the still image.
+                    view.progressIndicator.hide()
+                    view.photoView.isVisible = true
                 }
             }
         }
 
         private fun playIfContentIsReady() {
-            if (isPhotoReady && isVideoReady) {
-                view.videoView.isVisible = true
-                view.progressIndicator.hide()
-                playerView.player?.play()
-            }
-        }
-
-        private fun fadeIfCloseToTheEnd() {
             val player = playerView.player
                 ?: return
 
-            if (player.isPlaying) {
-                val currentPosition = player.currentPosition
-                val duration = player.contentDuration
+            val isPhotoReady = view.photoView.drawable != null
+            val isVideoReady = player.playbackState == Player.STATE_READY
+            val isAttached = view.root.isAttachedToWindow
 
-                if (duration > 0 && duration - currentPosition < FADE_DURATION_MS) {
-                    view.photoView.fadeIn(FADE_DURATION_MS)
-                } else {
-                    view.videoView.postDelayed(::fadeIfCloseToTheEnd, 50)
-                }
+            if (isPhotoReady && isVideoReady && isAttached) {
+                view.progressIndicator.hide()
+                view.videoView.isVisible = true
+                player.play()
+                fadeIfCloseToTheEndOrTryLater()
+            }
+        }
+
+        private fun fadeIfCloseToTheEndOrTryLater() {
+            val player = playerView.player
+            if (!playerView.isAttachedToWindow || player == null) {
+                // Do not retry if the view is outdated.
+                return
+            }
+
+            val currentPosition = player.currentPosition
+            val duration = player.contentDuration
+
+            if (duration > 0 && duration - currentPosition < FADE_DURATION_MS) {
+                view.photoView.fadeIn(FADE_DURATION_MS)
+            } else {
+                // Retry with delay.
+                view.videoView.postDelayed(::fadeIfCloseToTheEndOrTryLater, 50)
             }
         }
 
         // This method is called on swipe but not on screen destroy.
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
         override fun detachFromWindow(item: LivePhotoViewerPage) = with(playerView.player!!) {
-            removeListener(playerListener)
-
             // Stop playback once the page is swiped.
             stop()
 
@@ -191,9 +150,47 @@ class LivePhotoViewerPage(
             seekToDefaultPosition()
         }
 
-        override fun bindView(item: LivePhotoViewerPage, payloads: List<Any>) {
-            isPhotoReady = false
+        override fun bindView(
+            item: LivePhotoViewerPage,
+            payloads: List<Any>,
+        ) = with(playerCache.getPlayer(key = item.mediaId)) {
+            playerView.player = this
+            enableFatalPlaybackErrorListener(item)
 
+            // Setting to false hides the controller automatically.
+            view.videoView.useController = false
+
+            // Only set up the player if its media item is changed.
+            if (currentMediaItem?.mediaId != item.mediaId) {
+                // Start playback close to the end, like in iOS gallery.
+                val startPositionMs = ((item.fullVideoDurationMs ?: 0) - PLAYBACK_DURATION_MS)
+                    .coerceAtLeast(0)
+
+                setMediaItem(
+                    MediaItem.Builder()
+                        .setMediaId(item.mediaId)
+                        .setClippingConfiguration(
+                            MediaItem.ClippingConfiguration.Builder()
+                                .setStartPositionMs(startPositionMs)
+                                .build()
+                        )
+                        .setUri(item.videoPreviewUri)
+                        // Assumption: PhotoPrism previews are always "video/mp4".
+                        .setMimeType(MimeTypes.VIDEO_MP4)
+                        .build()
+                )
+
+                volume = 0f
+                repeatMode = Player.REPEAT_MODE_OFF
+
+                // Start loading media on bind,
+                // but prevent playback start until attached to the window
+                // and the still image is ready.
+                prepare()
+                playWhenReady = false
+            }
+
+            view.photoView.setImageDrawable(null)
             picasso
                 .load(item.photoPreviewUrl)
                 .hardwareConfigIfAvailable()
