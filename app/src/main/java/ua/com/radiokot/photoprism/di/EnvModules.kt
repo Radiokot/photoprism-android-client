@@ -171,6 +171,10 @@ val envModules = listOf(
                     )
                 }
 
+                // Note: Cache only works properly if there are no redirects in the library URL.
+                // For example, https://try.photoprism.app redirects to https://demo.photoprism.app
+                // so calls are always sent to the server to get the redirect and only then
+                // the cache candidate is obtained and returned.
                 val cacheControl = CacheControl.Builder()
                     // Assumption: PhotoPrism content identified by hash is immutable.
                     .immutable()
