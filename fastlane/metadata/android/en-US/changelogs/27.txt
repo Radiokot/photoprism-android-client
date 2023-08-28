@@ -1,0 +1,13 @@
+Full changelog:
+https://github.com/Radiokot/photoprism-android-client/blob/main/CHANGELOG.md
+
+Added:
+- Albums overview screen for the search, where you can see all the albums in grid view,
+quickly scroll from top to bottom and filter the items by name
+- Enhanced live photos viewer which fades the video into the high-quality still image.
+Check out PhotoPrism developer preview to test Samsung live photos
+- Ability to change the app language from system settings on Android 13
+
+Changed:
+- Added more vertical space to the search configuration screen
+- Make long album names scroll like a ticker
