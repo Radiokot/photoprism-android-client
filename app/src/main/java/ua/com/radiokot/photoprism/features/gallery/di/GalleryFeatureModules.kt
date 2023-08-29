@@ -128,7 +128,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     previewUrlFactory = get(),
                     types = listOf("album", "folder"),
                     comparator = compareByDescending(Album::isFavorite)
-                        .thenByDescending(Album::updatedAt)
+                        .thenBy(Album::title)
                 )
             } bind AlbumsRepository::class
 

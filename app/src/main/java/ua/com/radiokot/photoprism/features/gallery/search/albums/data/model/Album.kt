@@ -1,9 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.data.model
 
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
-import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import java.util.*
 
 class Album(
     /*
@@ -18,7 +16,6 @@ class Album(
     val uid: String,
     val smallThumbnailUrl: String,
     val isFavorite: Boolean,
-    val updatedAt: Date,
 ) {
 
     constructor(
@@ -30,7 +27,6 @@ class Album(
         uid = source.uid,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.thumb),
         isFavorite = source.favorite,
-        updatedAt = parsePhotoPrismDate(source.updatedAt)!!,
     )
 
     override fun equals(other: Any?): Boolean {
