@@ -3,6 +3,8 @@ package ua.com.radiokot.photoprism.features.gallery.search.people.data.model
 import ua.com.radiokot.photoprism.api.faces.model.PhotoPrismFace
 import ua.com.radiokot.photoprism.api.subjects.model.PhotoPrismSubject
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isFaceId
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isSubjectUid
 
 /**
  * A person recognized by the library.
@@ -27,6 +29,7 @@ class Person(
      * Whether this is a known person (subject) or just a face.
      */
     val isFace: Boolean,
+    val photoCount: Int,
 ) {
     val hasName: Boolean = name != null
 
@@ -39,6 +42,7 @@ class Person(
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(personSubject.thumb),
         isFavorite = personSubject.favorite,
         isFace = false,
+        photoCount = personSubject.photoCount,
     ) {
         require(personSubject.type == "person") {
             "Expected person subject"
@@ -54,6 +58,7 @@ class Person(
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(face.thumb),
         isFavorite = false,
         isFace = true,
+        photoCount = face.samples,
     ) {
         require(face.thumb.isNotEmpty()) {
             "The face must have a thumb, make sure it is requested with markers"

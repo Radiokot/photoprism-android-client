@@ -12,4 +12,6 @@ constructor(
     val thumb: String,
     @JsonProperty("Name")
     val name: String,
+    @JsonProperty("Samples")
+    val samples: Int,
 )

@@ -8,8 +8,8 @@ import ua.com.radiokot.photoprism.api.subjects.service.PhotoPrismSubjectsService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
@@ -25,8 +25,10 @@ class PeopleRepository(
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Person>() {
     private val comparator =
-        compareByDescending(Person::hasName)
-            .thenByDescending(Person::isFavorite)
+        compareByDescending(Person::isFavorite)
+            .thenByDescending(Person::hasName)
+            .thenByDescending(Person::photoCount)
+            .thenBy(Person::name)
 
     override fun getCollection(): Single<List<Person>> {
         return Single.zip(

@@ -16,4 +16,6 @@ constructor(
     val name: String,
     @JsonProperty("Favorite")
     val favorite: Boolean,
+    @JsonProperty("PhotoCount")
+    val photoCount: Int,
 )
