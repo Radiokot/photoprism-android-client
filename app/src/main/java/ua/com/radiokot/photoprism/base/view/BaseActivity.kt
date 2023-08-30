@@ -108,7 +108,7 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
 //        )
 //            .subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
 //            .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
-//            .filter { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+//            .filter { lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED) }
 //            .subscribe {
 //                val focusedView = window.currentFocus
 //                val activity = this::class.java.name

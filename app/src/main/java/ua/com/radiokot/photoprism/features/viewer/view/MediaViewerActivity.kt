@@ -11,6 +11,7 @@ import android.view.View
 import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
@@ -47,15 +48,14 @@ import java.io.File
 import kotlin.math.roundToInt
 
 class MediaViewerActivity : BaseActivity() {
+    private val log = kLogger("MMediaViewerActivity")
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: MediaViewerViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
-    private val log = kLogger("MMediaViewerActivity")
-
-    private val viewerPagesAdapter = ItemAdapter<MediaViewerPage>()
-
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
 
+    private val viewerPagesAdapter = ItemAdapter<MediaViewerPage>()
+    private lateinit var toolbarBackButton: ImageButton
     private val mediaFileSelectionView: MediaFileSelectionView by lazy {
         MediaFileSelectionView(
             fragmentManager = supportFragmentManager,
@@ -86,7 +86,10 @@ class MediaViewerActivity : BaseActivity() {
                     onSwipeToDismissGoing()
                 }
             },
-        )
+        ).apply {
+            distanceThreshold =
+                resources.getDimensionPixelSize(R.dimen.swipe_to_dismiss_distance_threshold)
+        }
     }
     private val swipeDirectionDetector: SwipeDirectionDetector by lazy {
         SwipeDirectionDetector(this)
@@ -152,7 +155,6 @@ class MediaViewerActivity : BaseActivity() {
         initFullScreenToggle()
         initCustomTabs()
         initKeyboardNavigation()
-        initSwipeToDismiss()
     }
 
     private fun initPager(
@@ -342,20 +344,40 @@ class MediaViewerActivity : BaseActivity() {
         if (keyCode !in setOf(
                 KeyEvent.KEYCODE_DPAD_RIGHT,
                 KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_ENTER
-            ) || keyCode == KeyEvent.KEYCODE_ENTER && parentView is Button
+                KeyEvent.KEYCODE_DPAD_UP,
+                KeyEvent.KEYCODE_ENTER,
+                KeyEvent.KEYCODE_DPAD_CENTER,
+            ) || keyCode in setOf(
+                KeyEvent.KEYCODE_ENTER,
+                KeyEvent.KEYCODE_DPAD_CENTER
+            ) && parentView is Button
         ) {
+            log.debug {
+                "initKeyboardNavigation(): press_ignored"
+            }
+
             return@OnKeyListener false
         }
 
         // Ignore all the irrelevant events, but return true to avoid focus loss.
-        if (event.action != KeyEvent.ACTION_UP || !event.hasNoModifiers()) {
+        if (event.action != KeyEvent.ACTION_DOWN || !event.hasNoModifiers()) {
             return@OnKeyListener true
         }
 
         // Swipe pages when pressing left and right arrow buttons.
         // Call page click by pressing Enter (OK).
         when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (view.toolbar.isVisible) {
+                    log.debug {
+                        "initKeyboardNavigation(): focus_toolbar_back_by_key:" +
+                                "\nkey=up"
+                    }
+
+                    focusToolbarBackButton()
+                }
+            }
+
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 log.debug {
                     "initKeyboardNavigation(): swipe_page_by_key:" +
@@ -380,7 +402,8 @@ class MediaViewerActivity : BaseActivity() {
                 )
             }
 
-            KeyEvent.KEYCODE_ENTER -> {
+            KeyEvent.KEYCODE_ENTER,
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
                 log.debug {
                     "initKeyboardNavigation(): click_page_by_enter"
                 }
@@ -413,12 +436,48 @@ class MediaViewerActivity : BaseActivity() {
         // to not mess with the keyboard navigation.
         view.toolbar.forEach { toolbarView ->
             toolbarView.isFocusable = false
+            if (toolbarView is ImageButton) {
+                toolbarBackButton = toolbarView.apply {
+
+                    // Intercept keys to manually release the back button focus,
+                    // since Android fails doing it.
+                    setOnKeyListener { _, keyCode, event ->
+                        // Ignore all the irrelevant keys.
+                        if (keyCode !in setOf(
+                                KeyEvent.KEYCODE_DPAD_RIGHT,
+                                KeyEvent.KEYCODE_DPAD_LEFT,
+                                KeyEvent.KEYCODE_DPAD_UP,
+                                KeyEvent.KEYCODE_DPAD_DOWN
+                            )
+                        ) {
+                            return@setOnKeyListener false
+                        }
+
+                        // Ignore all the irrelevant events, but return true to avoid focus loss.
+                        if (event.action != KeyEvent.ACTION_DOWN || !event.hasNoModifiers()) {
+                            return@setOnKeyListener true
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                            unFocusToolbarBackButton()
+                        }
+
+                        return@setOnKeyListener true
+                    }
+                }
+            }
         }
     }
 
-    private fun initSwipeToDismiss() {
-        swipeToDismissHandler.distanceThreshold =
-            resources.getDimensionPixelSize(R.dimen.swipe_to_dismiss_distance_threshold)
+    private fun focusToolbarBackButton() = with(toolbarBackButton) {
+        isFocusableInTouchMode = true
+        requestFocus(View.FOCUS_UP)
+    }
+
+    private fun unFocusToolbarBackButton() = with(toolbarBackButton) {
+        isFocusable = false
+        isFocusableInTouchMode = false
+        view.keyboardNavigationFocusView.requestFocus(View.FOCUS_DOWN)
     }
 
     private fun setUpVideoViewer(viewHolder: VideoPlayerViewHolder) {
