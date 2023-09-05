@@ -46,8 +46,10 @@ import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksB
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
@@ -182,6 +184,15 @@ val galleryFeatureModules: List<Module> = listOf(
                     albumsRepository = get(),
                     searchPredicate = { album: Album, query: String ->
                         SearchPredicates.generalCondition(query, album.title)
+                    }
+                )
+            }
+
+            viewModel {
+                PeopleOverviewViewModel(
+                    peopleRepository = get(),
+                    searchPredicate = { person: Person, query: String ->
+                        SearchPredicates.generalCondition(query, person.name)
                     }
                 )
             }

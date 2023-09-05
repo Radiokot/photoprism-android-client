@@ -100,6 +100,13 @@
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".features.gallery.search.people.view.PeopleOverviewActivity"
+            android:exported="false"
+            android:label="@string/people"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

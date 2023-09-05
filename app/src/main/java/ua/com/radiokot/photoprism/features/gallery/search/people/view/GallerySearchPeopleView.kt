@@ -1,5 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.search.people.view
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +16,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchPeopleBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
@@ -18,7 +24,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.Pers
 class GallerySearchPeopleView(
     private val view: ViewGallerySearchPeopleBinding,
     private val viewModel: GallerySearchPeopleViewModel,
-    lifecycleOwner: LifecycleOwner,
+    activity: AppCompatActivity,
+    lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
         get() = getKoin().getScope(DI_SCOPE_SESSION)
@@ -26,9 +33,14 @@ class GallerySearchPeopleView(
     private val log = kLogger("GallerySearchPeopleView")
 
     private val adapter = ItemAdapter<PersonListItem>()
+    private val peopleOverviewLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onPeopleOverviewResult
+    )
 
     init {
         subscribeToState()
+        subscribeToEvents()
     }
 
     private var isListInitialized = false
@@ -53,6 +65,10 @@ class GallerySearchPeopleView(
 
         view.reloadPeopleButton.setOnClickListener {
             viewModel.onReloadPeopleClicked()
+        }
+
+        view.titleLayout.setOnClickListener {
+            viewModel.onSeeAllClicked()
         }
 
         isListInitialized = true
@@ -93,5 +109,54 @@ class GallerySearchPeopleView(
         viewModel.isViewVisible
             .subscribeBy { view.root.isVisible = it }
             .autoDispose(this)
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            is GallerySearchPeopleViewModel.Event.OpenPeopleOverviewForResult ->
+                openPeopleOverview(event.selectedPersonIds)
+
+            is GallerySearchPeopleViewModel.Event.EnsureListItemVisible ->
+                view.peopleRecyclerView.post {
+                    view.peopleRecyclerView.ensureItemIsVisible(
+                        itemGlobalPosition = adapter.getGlobalPosition(event.listItemIndex)
+                    )
+                }
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }.autoDispose(this)
+
+    private fun openPeopleOverview(selectedPersonIds: Set<String>) {
+        log.debug {
+            "openPeopleOverview(): opening_overview:" +
+                    "\nselectedPeopleCount=${selectedPersonIds.size}"
+        }
+
+        peopleOverviewLauncher.launch(
+            Intent(view.root.context, PeopleOverviewActivity::class.java)
+                .putExtras(
+                    PeopleOverviewActivity.getBundle(
+                        selectedPersonIds = selectedPersonIds,
+                    )
+                )
+        )
+    }
+
+    private fun onPeopleOverviewResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onPeopleOverviewReturnedNewSelection(
+                newSelectedPersonIds = PeopleOverviewActivity.getSelectedPersonIds(bundle)
+            )
+        }
     }
 }

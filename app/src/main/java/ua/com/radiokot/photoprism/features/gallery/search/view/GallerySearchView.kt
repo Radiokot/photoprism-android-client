@@ -38,8 +38,8 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -100,6 +100,7 @@ class GallerySearchView(
         this.peopleView = GallerySearchPeopleView(
             view = configurationView.peopleView,
             viewModel = viewModel.peopleViewModel,
+            activity = activity,
             lifecycleOwner = this,
         )
         this.albumsView = GallerySearchAlbumsView(

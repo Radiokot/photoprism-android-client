@@ -4,12 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 
 class GallerySearchPeopleViewModel(
     private val peopleRepository: PeopleRepository,
@@ -18,6 +19,8 @@ class GallerySearchPeopleViewModel(
     private val log = kLogger("GallerySearchPeopleVM")
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
     val state = stateSubject.toMainThreadObservable()
+    private val eventsSubject = PublishSubject.create<Event>()
+    val events = eventsSubject.toMainThreadObservable()
     val isViewVisible = searchPreferences.showPeople.toMainThreadObservable()
 
     /**
@@ -117,7 +120,7 @@ class GallerySearchPeopleViewModel(
             val id = item.source.id
             val currentlySelectedPersonIds = selectedPersonIds.value!!
 
-            if (currentlySelectedPersonIds.contains(id)) {
+            if (id in currentlySelectedPersonIds) {
                 log.debug {
                     "onPersonItemClicked(): unselect:" +
                             "\npersonId=$id"
@@ -141,6 +144,47 @@ class GallerySearchPeopleViewModel(
         update()
     }
 
+
+    fun onSeeAllClicked() {
+        log.debug {
+            "onSeeAllClicked(): opening_overview"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenPeopleOverviewForResult(
+                selectedPersonIds = selectedPersonIds.value!!,
+            )
+        )
+    }
+
+    fun onPeopleOverviewReturnedNewSelection(newSelectedPersonIds: Set<String>) {
+        log.debug {
+            "onPeopleOverviewReturnedNewSelection(): setting_selected_person_ids:" +
+                    "\nnewSelectedCount=${newSelectedPersonIds.size}"
+        }
+
+        selectedPersonIds.value = newSelectedPersonIds
+
+        // If people selected, ensure the last selected person is visible.
+        // As there may be multiple people selected, ensuring visibility of the last one
+        // increases the chance of also seeing someone else selected nearby.
+        val currentState = stateSubject.value
+        if (newSelectedPersonIds.isNotEmpty() && currentState is State.Ready) {
+            val lastSelectedPersonIndex =
+                currentState.people
+                    .indexOfLast { it.source?.id in newSelectedPersonIds }
+
+            if (lastSelectedPersonIndex != -1) {
+                log.debug {
+                    "onPeopleOverviewReturnedNewSelection(): ensure_last_selected_item_visible:" +
+                            "\nlastSelectedPersonIndex=$lastSelectedPersonIndex"
+                }
+
+                eventsSubject.onNext(Event.EnsureListItemVisible(lastSelectedPersonIndex))
+            }
+        }
+    }
+
     fun getPersonThumbnail(uid: String): String? =
         peopleRepository.getLoadedPerson(uid)?.smallThumbnailUrl
 
@@ -151,5 +195,21 @@ class GallerySearchPeopleViewModel(
         ) : State
 
         object LoadingFailed : State
+    }
+
+    sealed interface Event {
+        /**
+         * Open people overview to get the result.
+         *
+         * [onPeopleOverviewReturnedNewSelection] must be called when the result is obtained.
+         */
+        class OpenPeopleOverviewForResult(
+            val selectedPersonIds: Set<String>,
+        ) : Event
+
+        /**
+         * Ensure that the given item of the item list is visible on the screen.
+         */
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 }
