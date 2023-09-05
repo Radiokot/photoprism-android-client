@@ -107,7 +107,7 @@ class GallerySearchAlbumsView(
         }.autoDispose(this)
 
         viewModel.isViewVisible
-            .subscribeBy { view.root.isVisible = it }
+            .subscribe(view.root::isVisible::set)
             .autoDispose(this)
     }
 

@@ -93,8 +93,7 @@ class GallerySearchBookmarksView(
             }
         }
 
-        viewModel.isBookmarksSectionVisible
-            .observe(this) { view.root.isVisible = it }
+        viewModel.isBookmarksSectionVisible.observe(this, view.root::isVisible::set)
     }
 
     private fun subscribeToState() {

@@ -323,9 +323,10 @@ class GallerySearchView(
             }
         }
 
-        viewModel.areSomeTypesUnavailable.observe(this) { areSomeTypesUnavailable ->
-            configurationView.typesNotAvailableNotice.isVisible = areSomeTypesUnavailable
-        }
+        viewModel.areSomeTypesUnavailable.observe(
+            this,
+            configurationView.typesNotAvailableNotice::isVisible::set
+        )
     }
 
     private fun subscribeToState() {
