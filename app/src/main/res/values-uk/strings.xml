@@ -128,4 +128,5 @@
     <string name="see_all_people">Показати всіх</string>
     <string name="search_albums">Пошук</string>
     <string name="failed_to_load_albums">Не вдалося завантажити альбоми</string>
+    <string name="failed_to_load_people">Не вдалося завантажити людей</string>
 </resources>

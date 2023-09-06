@@ -128,4 +128,5 @@
     <string name="see_all_people">Tüm gör</string>
     <string name="search_albums">Arama</string>
     <string name="failed_to_load_albums">Albümler yüklenemedi</string>
+    <string name="failed_to_load_people">Kişiler yüklenemedi</string>
 </resources>

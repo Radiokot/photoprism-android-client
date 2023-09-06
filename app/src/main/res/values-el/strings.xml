@@ -127,4 +127,5 @@
     <string name="see_all_people">Δείτε όλα</string>
     <string name="search_albums">Αναζήτηση</string>
     <string name="failed_to_load_albums">Απέτυχε να φορτώσει άλμπουμ</string>
+    <string name="failed_to_load_people">Απέτυχε να φορτώσει άτομα</string>
 </resources>

@@ -128,4 +128,5 @@
     <string name="see_all_people">Vedi tutte</string>
     <string name="search_albums">Cerca</string>
     <string name="failed_to_load_albums">Mancato caricamento degli album</string>
+    <string name="failed_to_load_people">Mancato caricamento di persone</string>
 </resources>
