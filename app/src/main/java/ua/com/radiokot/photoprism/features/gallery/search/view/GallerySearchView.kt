@@ -46,6 +46,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
+import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
 import ua.com.radiokot.photoprism.util.images.CenterVerticalImageSpan
 import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
 import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
@@ -187,9 +188,9 @@ class GallerySearchView(
 
         // Override the default back click listener
         // to make the ViewModel in charge of the state.
-        searchView.toolbar.setNavigationOnClickListener {
+        searchView.toolbar.setNavigationOnClickListener(ThrottleOnClickListener{
             viewModel.onConfigurationBackClicked()
-        }
+        })
 
         with(searchBar) {
             setHint(
