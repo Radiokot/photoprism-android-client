@@ -3,17 +3,12 @@ package ua.com.radiokot.photoprism.features.gallery.search.people.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.Menu
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
-import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
@@ -26,8 +21,10 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPeopleOverviewBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
+import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
 import ua.com.radiokot.photoprism.view.ErrorView
@@ -246,45 +243,14 @@ class PeopleOverviewActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.albums, menu)
+        menuInflater.inflate(R.menu.search_overview, menu)
 
-        // TODO Create a component for search view
         // Set up the search.
         with(menu?.findItem(R.id.search_view)?.actionView as SearchView) {
             queryHint = getString(R.string.enter_the_query)
-
-            // Apply the correct color for the search close button.
-            with(findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)) {
-                ImageViewCompat.setImageTintList(
-                    this, ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                            view.toolbar, com.google.android.material.R.attr.colorOnSurfaceVariant
-                        )
-                    )
-                )
-            }
-
-            // Remove the underline.
-            with(findViewById<View>(androidx.appcompat.R.id.search_plate)) {
-                background = null
-            }
-
-            // Directly bind the input.
-            findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-                .bindTextTwoWay(viewModel.searchInput, this@PeopleOverviewActivity)
-
-            // Bind the collapse/expand state.
-            viewModel.isSearchExpanded.observe(this@PeopleOverviewActivity) { isExpanded ->
-                // This also triggers the following listeners.
-                isIconified = !isExpanded
-            }
-            setOnSearchClickListener {
-                viewModel.onSearchIconClicked()
-            }
-            setOnCloseListener {
-                viewModel.onSearchCloseClicked()
-                false
-            }
+            fixCloseButtonColor()
+            hideUnderline()
+            bindToViewModel(viewModel, this@PeopleOverviewActivity)
         }
 
         return super.onCreateOptionsMenu(menu)

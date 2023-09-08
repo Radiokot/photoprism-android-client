@@ -4,19 +4,21 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
-import java.util.concurrent.TimeUnit
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModelImpl
 
 class AlbumsOverviewViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
-) : ViewModel() {
+) : ViewModel(),
+    SearchViewViewModel by SearchViewViewModelImpl() {
+
     private val log = kLogger("AlbumsOverviewVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
@@ -25,15 +27,9 @@ class AlbumsOverviewViewModel(
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<AlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
-    val isSearchExpanded = MutableLiveData(false)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
-
-    /**
-     * Raw input of the search view.
-     */
-    val searchInput = MutableLiveData("")
 
     init {
         subscribeToRepository()
@@ -84,18 +80,7 @@ class AlbumsOverviewViewModel(
     }
 
     private fun subscribeToSearch() {
-        Observable
-            .create { emitter ->
-                searchInput.observeForever(emitter::onNext)
-            }
-            .distinctUntilChanged()
-            .debounce { value ->
-                // Apply debounce to the input unless it is empty (input is cleared).
-                if (value.isEmpty())
-                    Observable.just(0L)
-                else
-                    Observable.timer(400, TimeUnit.MILLISECONDS)
-            }
+        searchInputObservable
             // Only react to the albums are loaded.
             .filter { itemsList.value != null }
             .observeOn(AndroidSchedulers.mainThread())
@@ -113,7 +98,7 @@ class AlbumsOverviewViewModel(
 
     private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
-        val searchQuery = searchInput.value?.takeIf(String::isNotEmpty)
+        val searchQuery = currentSearchInput
         val filteredRepositoryAlbums =
             if (searchQuery != null)
                 repositoryAlbums.filter { album ->
@@ -194,37 +179,6 @@ class AlbumsOverviewViewModel(
         }
 
         update(force = true)
-    }
-
-    fun onSearchIconClicked() {
-        if (isSearchExpanded.value != true) {
-            log.debug {
-                "onSearchIconClicked(): expanding_search"
-            }
-
-            isSearchExpanded.value = true
-        }
-    }
-
-    fun onSearchCloseClicked() {
-        if (isSearchExpanded.value != false) {
-            log.debug {
-                "onSearchCloseClicked(): closing_search"
-            }
-
-            closeAndClearSearch()
-        }
-    }
-
-    private fun closeAndClearSearch() {
-        // Because of the SearchView internal logic, order matters.
-        // First clear, then collapse. Otherwise it won't collapse.
-        searchInput.value = ""
-        isSearchExpanded.value = false
-
-        log.debug {
-            "closeAndClearSearch(): closed_and_cleared"
-        }
     }
 
     private fun onBackPressed() {
