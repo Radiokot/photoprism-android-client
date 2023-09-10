@@ -139,14 +139,14 @@ class PeopleOverviewActivity : BaseActivity() {
         view.errorView.replaces(view.peopleRecyclerView)
     }
 
-    private fun initSwipeRefresh() {
-        view.swipeRefreshLayout.setColorSchemeColors(
+    private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
+        setColorSchemeColors(
             MaterialColors.getColor(
-                view.swipeRefreshLayout,
+                this,
                 com.google.android.material.R.attr.colorPrimary,
             )
         )
-        view.swipeRefreshLayout.setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+        setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 
     private fun initButtons() {

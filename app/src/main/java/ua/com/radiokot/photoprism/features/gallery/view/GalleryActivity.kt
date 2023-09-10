@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -151,6 +152,7 @@ class GalleryActivity : BaseActivity() {
         initSearch()
         initErrorView()
         initMultipleSelection()
+        initSwipeRefresh()
 
         // Init the list once it is laid out.
         view.galleryRecyclerView.doOnPreDraw {
@@ -171,6 +173,11 @@ class GalleryActivity : BaseActivity() {
                     )
                 )
             )
+
+            // Do not show refreshing if there are no gallery items,
+            // as in this case the loading footer is on top and visible.
+            view.swipeRefreshLayout.isRefreshing =
+                isLoading && galleryItemsAdapter.adapterItemCount > 0
         }
 
         val galleryItemsDiffCallback = GalleryListItemDiffCallback()
@@ -575,6 +582,21 @@ class GalleryActivity : BaseActivity() {
                 viewModel.onDownloadedFilesShared()
             }.autoDispose(this)
         }
+    }
+
+    private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
+        setColorSchemeColors(
+            MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorPrimary,
+            )
+        )
+        setProgressViewOffset(
+            false,
+            view.galleryRecyclerView.paddingTop,
+            view.galleryRecyclerView.paddingTop + progressViewEndOffset
+        )
+        setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {

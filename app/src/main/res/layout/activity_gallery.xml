@@ -6,18 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".features.gallery.view.GalleryActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/gallery_recycler_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
-        android:paddingTop="?actionBarSize"
-        android:paddingBottom="@dimen/selection_bottom_app_bar_height"
         app:layout_behavior="@string/searchbar_scrolling_view_behavior"
-        tools:ignore="PrivateResource"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:listitem="@layout/list_item_gallery_media" />
+        tools:ignore="PrivateResource">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/gallery_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
+            android:paddingTop="?actionBarSize"
+            android:paddingBottom="@dimen/selection_bottom_app_bar_height"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/list_item_gallery_media" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ua.com.radiokot.photoprism.view.ErrorView
         android:id="@+id/error_view"

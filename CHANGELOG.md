@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - People overview screen for the search, where you can see all the people and faces in grid view, 
 quickly scroll from top to bottom and filter the items by name
+- Pull to refresh gesture on the main screen
 
 ## [1.17.0] - 2023-08-28
 

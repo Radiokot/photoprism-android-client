@@ -954,6 +954,14 @@ class GalleryViewModel(
         switchToViewing()
     }
 
+    fun onSwipeRefreshPulled() {
+        log.debug {
+            "onSwipeRefreshPulled(): force_updating"
+        }
+
+        update(force = true)
+    }
+
     sealed interface State {
         /**
          * Viewing the gallery content.

@@ -175,7 +175,7 @@ class AlbumsOverviewViewModel(
 
     fun onSwipeRefreshPulled() {
         log.debug {
-            "onRetryClicked(): force_updating"
+            "onSwipeRefreshPulled(): force_updating"
         }
 
         update(force = true)
