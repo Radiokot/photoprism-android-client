@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".features.gallery.view.GalleryActivity">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,7 +23,7 @@
             android:paddingBottom="@dimen/selection_bottom_app_bar_height"
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/list_item_gallery_media" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 
     <ua.com.radiokot.photoprism.view.ErrorView
         android:id="@+id/error_view"

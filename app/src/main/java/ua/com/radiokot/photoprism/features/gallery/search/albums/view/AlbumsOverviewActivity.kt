@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -134,12 +133,6 @@ class AlbumsOverviewActivity : BaseActivity() {
     }
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
-        setColorSchemeColors(
-            MaterialColors.getColor(
-                this,
-                com.google.android.material.R.attr.colorPrimary,
-            )
-        )
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 

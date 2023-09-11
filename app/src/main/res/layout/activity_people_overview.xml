@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/people" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -36,8 +36,7 @@
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/list_item_person"
             tools:spanCount="3" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 
     <!-- Invisible visibility is important for this FAB.
     Without it there is no initial show animation.
