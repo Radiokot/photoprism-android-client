@@ -32,4 +32,6 @@
          When the distance is fixed and not calculated as a view height fraction,
          doesn't matter whether you run the app on a large tablet or a small phone. -->
     </dimen>
+    <dimen name="gallery_swipe_refresh_start_offset">64dp</dimen>
+    <dimen name="gallery_swipe_refresh_end_offset">32dp</dimen>
 </resources>

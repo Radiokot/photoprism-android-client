@@ -586,9 +586,11 @@ class GalleryActivity : BaseActivity() {
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
         setProgressViewOffset(
             false,
-            view.galleryRecyclerView.paddingTop,
-            view.galleryRecyclerView.paddingTop + progressViewEndOffset
-        )
+            progressViewStartOffset
+                    + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_start_offset),
+            progressViewEndOffset
+                    + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_end_offset),
+            )
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 
