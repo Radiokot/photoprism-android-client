@@ -9,6 +9,8 @@ import com.google.android.material.color.MaterialColors
  * A [SwipeRefreshLayout] which is aware of current theme attributes.
  *
  * - Progress drawable color is set to the theme primary color;
+ * - Circle background color is set to the theme floating background color,
+ * which looks good in both light and dark themes;
  */
 class ThemedSwipeRefreshLayout
 @JvmOverloads
@@ -22,6 +24,13 @@ constructor(
             MaterialColors.getColor(
                 this,
                 com.google.android.material.R.attr.colorPrimary,
+            )
+        )
+
+        setProgressBackgroundColorSchemeColor(
+            MaterialColors.getColor(
+                this,
+                com.google.android.material.R.attr.colorBackgroundFloating,
             )
         )
     }
