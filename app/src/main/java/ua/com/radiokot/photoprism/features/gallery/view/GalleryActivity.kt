@@ -175,8 +175,11 @@ class GalleryActivity : BaseActivity() {
 
             // Do not show refreshing if there are no gallery items,
             // as in this case the loading footer is on top and visible.
-            view.swipeRefreshLayout.isRefreshing =
-                isLoading && galleryItemsAdapter.adapterItemCount > 0
+            // It also must not be shown if the recycler is not on the top,
+            // for example, when loading subsequent pages.
+            view.swipeRefreshLayout.isRefreshing = isLoading
+                    && galleryItemsAdapter.adapterItemCount > 0
+                    && !view.galleryRecyclerView.canScrollVertically(-1)
         }
 
         val galleryItemsDiffCallback = GalleryListItemDiffCallback()
