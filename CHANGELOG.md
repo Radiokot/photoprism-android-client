@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Albums and folders are now ordered alphabetically, keeping the favorites at the beginning
 - People and faces are now ordered by photo count, keeping the favorites at the beginning
+- Made image placeholders darker in dark theme
 
 ### Added
 - People overview screen for the search, where you can see all the people and faces in grid view, 

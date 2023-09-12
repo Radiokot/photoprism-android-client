@@ -1,8 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -91,7 +89,6 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 get() = getKoin().getScope(DI_SCOPE_SESSION)
 
             val view = ListItemGalleryMediaBinding.bind(itemView)
-            private val imageLoadingPlaceholder = ColorDrawable(Color.LTGRAY)
             private val selectedImageViewColorFilter: Int =
                 ColorUtils.setAlphaComponent(
                     MaterialColors.getColor(
@@ -136,7 +133,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                                 noFade()
                                 noPlaceholder()
                             } else {
-                                placeholder(imageLoadingPlaceholder)
+                                placeholder(R.drawable.image_placeholder)
                             }
                         }
                         .fit()
