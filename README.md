@@ -46,10 +46,10 @@ When a new version of PhotoPrism comes out, the app may break.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/40500387?s=100" alt="Seth For Privacy" height=70 />](https://github.com/sethforprivacy)
 [<img src="https://avatars.githubusercontent.com/u/111684368?s=100" alt="C-Iaens" height=70 />](https://github.com/C-Iaens)
 [<img src="https://avatars.githubusercontent.com/u/6351543?s=100" alt="Tobias Fiechter" height=70 />](https://github.com/tobiasfiechter)
-[<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/52239579?s=100" alt="ippocratis" height=70 />](https://github.com/ippocratis)
 <br>
 *I am very grateful to everyone supporting this project ♥ To join this public sponsors list, [make a donation](https://radiokot.com.ua/tip) with your preferred payment method and email me the transaction reference. &emsp;*
