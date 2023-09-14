@@ -5,6 +5,7 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
@@ -85,11 +86,7 @@ val mediaViewerFeatureModules: List<Module> = listOf(
                 )
             } bind VideoPlayerFactory::class
 
-            viewModel {
-                VideoPlayerCacheViewModel(
-                    videoPlayerFactory = get(),
-                )
-            }
+            viewModelOf(::VideoPlayerCacheViewModel)
         }
     }
 )

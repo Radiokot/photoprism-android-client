@@ -3,7 +3,11 @@ package ua.com.radiokot.photoprism.features.gallery.di
 import android.net.Uri
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -74,11 +78,9 @@ val galleryFeatureModules: List<Module> = listOf(
             )
         } bind FileReturnIntentCreator::class
 
-        single {
-            TvDetectorImpl(
-                context = androidContext(),
-            )
-        } bind TvDetector::class
+        singleOf(::TvDetectorImpl) {
+            bind<TvDetector>()
+        }
 
         scope<EnvSession> {
             scoped {
@@ -107,12 +109,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 )
             } bind MediaWebUrlFactory::class
 
-            scoped {
-                DownloadFileUseCase.Factory(
-                    observableDownloader = get(),
-                    context = get(),
-                )
-            } bind DownloadFileUseCase.Factory::class
+            scopedOf(DownloadFileUseCase::Factory)
 
             scoped {
                 SimpleGalleryMediaRepository.Factory(
@@ -134,50 +131,19 @@ val galleryFeatureModules: List<Module> = listOf(
                 )
             } bind AlbumsRepository::class
 
-            scoped {
-                PeopleRepository(
-                    photoPrismFacesService = get(),
-                    photoPrismSubjectsService = get(),
-                    previewUrlFactory = get(),
-                )
-            } bind PeopleRepository::class
+            scopedOf(::PeopleRepository)
 
             // Downloader must be session-scoped to have the correct
             // HTTP client (e.g. for mTLS)
-            scoped {
-                OkHttpObservableDownloader(
-                    httpClient = get()
-                )
-            } bind ObservableDownloader::class
-
-            viewModel {
-                DownloadMediaFileViewModel(
-                    downloadFileUseCaseFactory = get(),
-                )
+            scopedOf(::OkHttpObservableDownloader) {
+                bind<ObservableDownloader>()
             }
 
-            viewModel {
-                GallerySearchAlbumsViewModel(
-                    albumsRepository = get(),
-                    searchPreferences = get(),
-                )
-            }
+            viewModelOf(::DownloadMediaFileViewModel)
 
-            viewModel {
-                GallerySearchPeopleViewModel(
-                    peopleRepository = get(),
-                    searchPreferences = get(),
-                )
-            }
-
-            viewModel {
-                GallerySearchViewModel(
-                    bookmarksRepository = get(),
-                    albumsViewModel = get(),
-                    peopleViewModel = get(),
-                    searchPreferences = get(),
-                )
-            }
+            viewModelOf(::GallerySearchAlbumsViewModel)
+            viewModelOf(::GallerySearchPeopleViewModel)
+            viewModelOf(::GallerySearchViewModel)
 
             viewModel {
                 AlbumsOverviewViewModel(
@@ -230,11 +196,7 @@ val galleryFeatureModules: List<Module> = listOf(
             )
         } bind SearchBookmarksRepository::class
 
-        viewModel {
-            SearchBookmarkDialogViewModel(
-                bookmarksRepository = get(),
-            )
-        }
+        viewModelOf(::SearchBookmarkDialogViewModel)
     },
 
     module {
