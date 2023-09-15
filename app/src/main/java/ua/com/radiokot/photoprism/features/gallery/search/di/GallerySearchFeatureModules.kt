@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferencesOnPrefs
@@ -82,10 +83,15 @@ val gallerySearchFeatureModules: List<Module> = listOf(
                 AlbumsRepository(
                     photoPrismAlbumsService = get(),
                     previewUrlFactory = get(),
-                    types = listOf("album", "folder"),
-                    comparator = compareByDescending(Album::isFavorite)
-                        .thenBy(Album::title)
-                )
+                ).also { repository ->
+                    val searchPreferences = get<SearchPreferences>()
+
+                    // Subscribe the repo to the folders preference.
+                    searchPreferences
+                        .showAlbumFolders
+                        .subscribe(repository::includeFolders::set)
+                        .autoDispose(this@scoped)
+                }
             } bind AlbumsRepository::class
 
             viewModelOf(::GallerySearchAlbumsViewModel)

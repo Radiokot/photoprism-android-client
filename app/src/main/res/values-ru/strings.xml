@@ -123,10 +123,12 @@
     <string name="show_people">@string/people</string>
     <string name="show_people_explanation">Показывать людей и новые лица на экране поиска</string>
     <string name="show_albums">@string/albums</string>
-    <string name="show_albums_explanation">Показывать альбомы и папки на экране поиска</string>
+    <string name="show_albums_explanation">Показывать альбомы на экране поиска</string>
     <string name="see_all_albums">Показать все</string>
     <string name="see_all_people">Показать всех</string>
     <string name="search_albums">Поиск</string>
     <string name="failed_to_load_albums">Не удалось загрузить альбомы</string>
     <string name="failed_to_load_people">Не удалось загрузить людей</string>
+    <string name="show_album_folders">Папки</string>
+    <string name="show_album_folders_explanation">Показывать папки в списке альбомов</string>
 </resources>

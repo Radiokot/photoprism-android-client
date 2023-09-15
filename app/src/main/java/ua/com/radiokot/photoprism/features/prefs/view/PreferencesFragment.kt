@@ -17,6 +17,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import okio.buffer
 import okio.sink
 import okio.source
@@ -150,30 +151,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
 
         with(requirePreference(R.string.pk_show_people)) {
             this as SwitchPreferenceCompat
-
-            searchPreferences.showPeople
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(onNext = this::setChecked)
-                .autoDispose(this@PreferencesFragment)
-
-            setOnPreferenceChangeListener { _, newValue ->
-                searchPreferences.showPeople.onNext(newValue == true)
-                true
-            }
+            bindToSubject(searchPreferences.showPeople)
         }
 
         with(requirePreference(R.string.pk_show_albums)) {
             this as SwitchPreferenceCompat
+            bindToSubject(searchPreferences.showAlbums)
+        }
 
-            searchPreferences.showAlbums
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(onNext = this::setChecked)
-                .autoDispose(this@PreferencesFragment)
-
-            setOnPreferenceChangeListener { _, newValue ->
-                searchPreferences.showAlbums.onNext(newValue == true)
-                true
-            }
+        with(requirePreference(R.string.pk_show_album_folders)) {
+            this as SwitchPreferenceCompat
+            bindToSubject(searchPreferences.showAlbumFolders)
         }
 
         with(requirePreference(R.string.pk_import_bookmarks)) {
@@ -509,6 +497,19 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         val key = getString(keyId)
         return findPreference<Preference>(key).checkNotNull {
             "Required preference '$key' not found"
+        }
+    }
+
+    private fun SwitchPreferenceCompat.bindToSubject(subject: BehaviorSubject<Boolean>) {
+        subject
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onNext = this::setChecked)
+            // View lifecycle owner is not available at the init time.
+            .autoDispose(this@PreferencesFragment)
+
+        setOnPreferenceChangeListener { _, newValue ->
+            subject.onNext(newValue == true)
+            true
         }
     }
 

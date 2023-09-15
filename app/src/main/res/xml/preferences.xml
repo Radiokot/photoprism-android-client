@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
@@ -38,6 +39,15 @@
             app:persistent="false"
             app:summary="@string/show_albums_explanation"
             app:title="@string/show_albums"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+        <SwitchPreferenceCompat
+            android:title="@string/show_album_folders"
+            app:dependency="@string/pk_show_albums"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_show_album_folders"
+            app:persistent="false"
+            app:summary="@string/show_album_folders_explanation"
             app:widgetLayout="@layout/preference_material_switch" />
 
     </PreferenceCategory>

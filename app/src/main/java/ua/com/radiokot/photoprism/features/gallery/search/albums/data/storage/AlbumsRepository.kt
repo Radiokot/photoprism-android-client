@@ -13,17 +13,42 @@ import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
  * A repository for albums which the gallery content can be filtered by.
- * Combines albums of multiple [types].
+ * Combines albums of multiple types.
  *
- * @param types types of albums to combine in the desired order, e.g. ["albums", "folders"]
- * @param comparator used to sort collected albums of given [types]
+ * @see includeFolders
  */
 class AlbumsRepository(
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
     private val previewUrlFactory: MediaPreviewUrlFactory,
-    private val types: Collection<String>,
-    private val comparator: Comparator<Album>?,
 ) : SimpleCollectionRepository<Album>() {
+    private val comparator: Comparator<Album> =
+        compareByDescending(Album::isFavorite)
+            .thenBy(Album::title)
+
+    private val types: MutableSet<String> = mutableSetOf(
+        ALBUM_TYPE,
+        FOLDER_TYPE,
+    )
+
+    /**
+     * Whether or not to load folders.
+     * If changed, causes data invalidation and update if ever updated.
+     */
+    var includeFolders: Boolean
+        get() = FOLDER_TYPE in types
+        set(include) {
+            val wasIncluded = includeFolders
+            if (include) {
+                types += FOLDER_TYPE
+            } else {
+                types -= FOLDER_TYPE
+            }
+            if (wasIncluded != include) {
+                invalidate()
+                updateIfEverUpdated()
+            }
+        }
+
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
             .collect<MutableList<Album>>(
@@ -31,11 +56,7 @@ class AlbumsRepository(
                 { collectedAlbums, albums -> collectedAlbums.addAll(albums) }
             )
             .map { collectedAlbums ->
-                if (comparator != null) {
-                    collectedAlbums.sortWith(comparator)
-                }
-
-                collectedAlbums as List<Album>
+                collectedAlbums.sortedWith(comparator)
             }
 
     /**
@@ -82,5 +103,7 @@ class AlbumsRepository(
 
     private companion object {
         private const val PAGE_LIMIT = 30
+        private const val ALBUM_TYPE = "album"
+        private const val FOLDER_TYPE = "folder"
     }
 }

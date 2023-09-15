@@ -123,10 +123,12 @@
     <string name="show_people">@string/people</string>
     <string name="show_people_explanation">Mostra persone e volti nuovi nella schermata di cerca</string>
     <string name="show_albums">@string/albums</string>
-    <string name="show_albums_explanation">Mostra album e cartelle nella schermata di cerca</string>
+    <string name="show_albums_explanation">Mostra gli album nella schermata di cerca</string>
     <string name="see_all_albums">Vedi tutti</string>
     <string name="see_all_people">Vedi tutte</string>
     <string name="search_albums">Cerca</string>
     <string name="failed_to_load_albums">Mancato caricamento degli album</string>
     <string name="failed_to_load_people">Mancato caricamento di persone</string>
+    <string name="show_album_folders">Cartelle</string>
+    <string name="show_album_folders_explanation">Mostra le cartelle nell\'elenco degli album</string>
 </resources>

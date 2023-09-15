@@ -13,40 +13,45 @@ class SearchPreferencesOnPrefs(
 ) : SearchPreferences {
     private val log = kLogger("SearchPreferencesOnPrefs")
 
-    private val showPeopleKey = "${keyPrefix}_show_people"
-    private val showAlbumsKey = "${keyPrefix}_show_albums"
-
     @SuppressLint("CheckResult")
-    override val showPeople =
-        BehaviorSubject.createDefault(
-            preferences.getBoolean(showPeopleKey, true)
-        ).apply {
+    private fun getBooleanSubject(
+        name: String,
+        key: String,
+        default: Boolean,
+    ): BehaviorSubject<Boolean> =
+        BehaviorSubject.createDefault(preferences.getBoolean(key, default)).apply {
             skip(1).subscribeBy { newValue ->
                 log.debug {
-                    "showPeople::onNext(): set_value:" +
+                    "$name::onNext(): set_value:" +
                             "\nvalue=$newValue"
                 }
 
                 preferences.edit {
-                    putBoolean(showPeopleKey, newValue)
+                    putBoolean(key, newValue)
                 }
             }
         }
+
+    override val showPeople: BehaviorSubject<Boolean> =
+        getBooleanSubject(
+            name = "showPeople",
+            key = "${keyPrefix}_show_albums",
+            default = true,
+        )
 
     @SuppressLint("CheckResult")
-    override val showAlbums =
-        BehaviorSubject.createDefault(
-            preferences.getBoolean(showAlbumsKey, true)
-        ).apply {
-            skip(1).subscribeBy { newValue ->
-                log.debug {
-                    "showAlbums::onNext(): set_value:" +
-                            "\nvalue=$newValue"
-                }
+    override val showAlbums: BehaviorSubject<Boolean> =
+        getBooleanSubject(
+            name = "showAlbums",
+            key = "${keyPrefix}_show_albums",
+            default = true,
+        )
 
-                preferences.edit {
-                    putBoolean(showAlbumsKey, newValue)
-                }
-            }
-        }
+    @SuppressLint("CheckResult")
+    override val showAlbumFolders: BehaviorSubject<Boolean> =
+        getBooleanSubject(
+            name = "showAlbumFolders",
+            key = "${keyPrefix}_show_album_folders",
+            default = true,
+        )
 }

@@ -127,10 +127,12 @@
     <string name="show_people">@string/people</string>
     <string name="show_people_explanation">Show people and new faces on the search screen</string>
     <string name="show_albums">@string/albums</string>
-    <string name="show_albums_explanation">Show albums and folders on the search screen</string>
+    <string name="show_albums_explanation">Show albums on the search screen</string>
     <string name="see_all_albums">See all</string>
     <string name="see_all_people">See all</string>
     <string name="search_albums">Search</string>
     <string name="failed_to_load_albums">Failed to load albums</string>
     <string name="failed_to_load_people">Failed to load people</string>
+    <string name="show_album_folders">Folders</string>
+    <string name="show_album_folders_explanation">Show folders in the album list</string>
 </resources>

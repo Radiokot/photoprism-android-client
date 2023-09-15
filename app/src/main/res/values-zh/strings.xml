@@ -123,10 +123,12 @@
     <string name="show_people">@string/people</string>
     <string name="show_people_explanation">在搜索屏幕上显示人员和新面孔</string>
     <string name="show_albums">@string/albums</string>
-    <string name="show_albums_explanation">在搜索屏幕上显示相册和文件夹</string>
+    <string name="show_albums_explanation">在搜索屏幕上显示相册</string>
     <string name="see_all_albums">查看所有</string>
     <string name="see_all_people">查看所有</string>
     <string name="search_albums">搜索</string>
     <string name="failed_to_load_albums">载入相册失败</string>
     <string name="failed_to_load_people">加载人员失败</string>
+    <string name="show_album_folders">文件夹</string>
+    <string name="show_album_folders_explanation">在相册列表中显示文件夹</string>
 </resources>

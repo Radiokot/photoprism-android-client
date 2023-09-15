@@ -10,6 +10,8 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.Subject
+import org.koin.core.scope.Scope
+import org.koin.core.scope.ScopeCallback
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 import kotlin.reflect.cast
@@ -66,4 +68,20 @@ fun <T : Disposable> T.autoDispose(viewModel: ViewModel) = apply {
             dispose()
         }
     }
+}
+
+private class ScopeDisposable(obj: Disposable) :
+    ScopeCallback, Disposable by obj {
+    override fun onScopeClose(scope: Scope) {
+        if (!isDisposed) {
+            dispose()
+        }
+    }
+}
+
+/**
+ * Ensures that the disposable is disposed at [scope] closing.
+ */
+fun <T : Disposable> T.autoDispose(scope: Scope) = apply {
+    scope.registerCallback(ScopeDisposable(this))
 }
