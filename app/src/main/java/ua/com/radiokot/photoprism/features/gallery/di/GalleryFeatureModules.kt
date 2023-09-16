@@ -30,6 +30,8 @@ import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaDownload
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.di.gallerySearchFeatureModules
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TestLabDetector
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TestLabDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -58,6 +60,10 @@ val galleryFeatureModules: List<Module> = listOf(
 
         singleOf(::TvDetectorImpl) {
             bind<TvDetector>()
+        }
+
+        singleOf(::TestLabDetectorImpl) {
+            bind<TestLabDetector>()
         }
 
         scope<EnvSession> {
