@@ -11,9 +11,9 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchBookmarksBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkItem
+import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
 
 class GallerySearchBookmarksView(
     private val view: ViewGallerySearchBookmarksBinding,
@@ -22,8 +22,6 @@ class GallerySearchBookmarksView(
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
         get() = getKoin().getScope(DI_SCOPE_SESSION)
-
-    private val log = kLogger("GallerySearchBookmarksView")
 
     init {
         subscribeToData()
@@ -58,10 +56,10 @@ class GallerySearchBookmarksView(
             setMargins(0, 0, chipSpacing, chipSpacing)
         }
 
-        val bookmarkChipClickListener = View.OnClickListener { chip ->
+        val bookmarkChipClickListener = ThrottleOnClickListener { chip ->
             viewModel.onBookmarkChipClicked(chip.tag as SearchBookmarkItem)
         }
-        val bookmarkChipEditClickListener = View.OnClickListener { chip ->
+        val bookmarkChipEditClickListener = ThrottleOnClickListener { chip ->
             viewModel.onBookmarkChipEditClicked(chip.tag as SearchBookmarkItem)
         }
         val bookmarkChipLongClickListener = View.OnLongClickListener { chip ->
