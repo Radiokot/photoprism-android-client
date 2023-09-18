@@ -75,6 +75,15 @@ android {
         }
     }
 
+    bundle {
+        language {
+            // Prevent Google Play from erasing string resources for languages
+            // different from the current. Allows setting any of available languages
+            // after installation.
+            enableSplit = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
