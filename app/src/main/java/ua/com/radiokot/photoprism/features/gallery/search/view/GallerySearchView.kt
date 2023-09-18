@@ -173,13 +173,17 @@ class GallerySearchView(
         }
 
         with(searchView.editText) {
+            val searchButtonClickListener = ThrottleOnClickListener {
+                viewModel.onSearchClicked()
+            }
+
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
                     log.debug {
                         "initSearchBarAndView(): edit_text_search_key_pressed"
                     }
 
-                    viewModel.onSearchClicked()
+                    searchButtonClickListener.onClick(this)
                 }
 
                 false
