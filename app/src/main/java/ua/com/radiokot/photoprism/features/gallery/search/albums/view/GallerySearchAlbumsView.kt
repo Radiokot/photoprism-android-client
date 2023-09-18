@@ -67,7 +67,7 @@ class GallerySearchAlbumsView(
             viewModel.onReloadAlbumsClicked()
         }
 
-        view.titleLayout.setOnClickListener {
+        view.albumsTitleLayout.setOnClickListener {
             viewModel.onSeeAllClicked()
         }
 

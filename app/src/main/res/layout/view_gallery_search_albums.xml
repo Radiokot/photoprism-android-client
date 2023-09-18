@@ -7,7 +7,7 @@
     tools:showIn="@layout/view_gallery_search_configuration">
 
     <LinearLayout
-        android:id="@+id/title_layout"
+        android:id="@+id/albums_title_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"

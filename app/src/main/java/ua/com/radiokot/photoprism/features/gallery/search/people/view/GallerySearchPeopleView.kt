@@ -67,7 +67,7 @@ class GallerySearchPeopleView(
             viewModel.onReloadPeopleClicked()
         }
 
-        view.titleLayout.setOnClickListener {
+        view.peopleTitleLayout.setOnClickListener {
             viewModel.onSeeAllClicked()
         }
 
