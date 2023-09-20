@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Ability to disable showing folders in the album list
 
+### Changed
+- Improved visibility of selected items
+
 ## [1.18.0] - 2023-09-13
 
 ### Changed

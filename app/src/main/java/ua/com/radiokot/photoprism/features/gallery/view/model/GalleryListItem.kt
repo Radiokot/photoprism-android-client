@@ -93,9 +93,9 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 ColorUtils.setAlphaComponent(
                     MaterialColors.getColor(
                         view.imageView,
-                        com.google.android.material.R.attr.colorSurfaceInverse
+                        com.google.android.material.R.attr.colorPrimary
                     ),
-                    150
+                    100
                 )
             private val defaultImageViewShape =
                 ShapeAppearanceModel.builder().build()
@@ -169,6 +169,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                     else
                         defaultImageViewShape
 
+                view.root.isSelected = item.isMediaSelected
+
                 if (item.isMediaSelected) {
                     view.imageView.setColorFilter(selectedImageViewColorFilter)
                     if (view.imageView.scaleX != selectedImageViewScale) {
@@ -178,6 +180,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                             setImageScale(selectedImageViewScale)
                         }
                     }
+                    view.root.isSelected = true
                 } else {
                     view.imageView.clearColorFilter()
                     if (view.imageView.scaleX != 1f) {

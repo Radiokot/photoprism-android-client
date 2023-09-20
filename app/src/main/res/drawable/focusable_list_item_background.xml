@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
-        <color android:color="?colorSecondaryContainer" />
+        <color android:color="?colorControlHighlight" />
+    </item>
+
+    <item android:state_selected="true">
+        <layer-list>
+            <item android:bottom="2dp" android:left="2dp" android:right="2dp" android:top="2dp">
+                <shape android:shape="rectangle">
+                    <corners android:radius="14dp" />
+                    <solid android:color="?colorSecondaryContainer" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
 </selector>
