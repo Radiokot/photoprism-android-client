@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.viewer.view
+package ua.com.radiokot.photoprism.features.viewer.logic
 
 fun interface VideoPlayerFactory {
     /**

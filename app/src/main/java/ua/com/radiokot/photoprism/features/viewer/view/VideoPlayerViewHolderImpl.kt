@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.decoder.DecoderException
 import com.google.android.exoplayer2.ui.PlayerView
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.LayoutVideoPlayerControlsBinding
+import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerCache
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 
 class VideoPlayerViewHolderImpl(

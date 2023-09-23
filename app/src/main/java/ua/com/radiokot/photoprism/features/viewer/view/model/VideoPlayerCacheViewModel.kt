@@ -2,9 +2,9 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import androidx.lifecycle.ViewModel
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayer
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerCache
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayer
+import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerCache
+import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 
 /**
  * A view model that implements activity-scoped [VideoPlayerCache] based on a map.

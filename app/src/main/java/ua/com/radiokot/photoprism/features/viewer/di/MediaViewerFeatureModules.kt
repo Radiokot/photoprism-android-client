@@ -22,8 +22,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.view.DefaultVideoPlayerFactory
-import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.util.MediaCacheUtil

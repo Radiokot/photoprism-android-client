@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.viewer.view
+package ua.com.radiokot.photoprism.features.viewer.logic
 
 /**
  * A cache for video players that allows fast players reuse and seamless video view recreation.
