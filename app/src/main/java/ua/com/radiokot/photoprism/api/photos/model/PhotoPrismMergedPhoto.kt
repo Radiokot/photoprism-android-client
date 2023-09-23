@@ -22,6 +22,8 @@ constructor(
     val title: String,
     @JsonProperty("Files")
     val files: List<File>,
+    @JsonProperty("CameraMake")
+    val cameraMake: String?,
 ) {
     class File(
         @JsonProperty("Hash")

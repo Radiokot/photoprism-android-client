@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Ability to disable showing folders in the album list
+- Support of Google motion photos in the enhanced live photo viewer
 
 ### Changed
 - Improved visibility of selected items

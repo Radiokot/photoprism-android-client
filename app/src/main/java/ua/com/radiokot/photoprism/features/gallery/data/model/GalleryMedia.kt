@@ -230,7 +230,19 @@ class GalleryMedia(
                  * taken at the end of the video, for example Samsung.
                  * This kind has the true live photo magic ✨
                  */
-                object FadeEnd : Kind()
+                object Samsung : Kind()
+
+                /**
+                 * Google motion photo with a high quality still image
+                 * taken, however, not during the video but before it.
+                 * Not much live photo magic here 😒
+                 */
+                object Google: Kind()
+
+                /**
+                 * Unknown kind of live photo.
+                 */
+                object Other: Kind()
             }
         }
 
@@ -281,8 +293,14 @@ class GalleryMedia(
                             source.files.any { it.primary && it.root == "sidecar" } ->
                                 Live.Kind.ShortVideo
 
+                            source.cameraMake == "Samsung" ->
+                                Live.Kind.Samsung
+
+                            source.cameraMake == "Google" ->
+                                Live.Kind.Google
+
                             else ->
-                                Live.Kind.FadeEnd
+                                Live.Kind.Other
                         },
                         mediaPreviewUrlFactory = previewUrlFactory,
                     )
