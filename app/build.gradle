@@ -22,8 +22,8 @@ android {
         applicationId "ua.com.radiokot.photoprism"
         minSdk 21
         targetSdk 33
-        versionCode 28
-        versionName "1.18.0"
+        versionCode 29
+        versionName "1.19.0"
 
         // Must be aligned with @xml/locale_config and values-*.
         resConfigs "en", "el", "it", "ru", "tr", "uk", "zh"

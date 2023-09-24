@@ -10,4 +10,4 @@ It does not support all the official web app functionality, but nevertheless has
 - Support of mTLS (mutual TLS) and HTTP basic authentication
 - TV compatibility to easily browse your library with a remote-control
 
-The gallery is confirmed to work with PhotoPrism versions from July 19, 2023 down to October 9, 2021
+The gallery is confirmed to work with PhotoPrism versions from September 23, 2023 down to October 9, 2021

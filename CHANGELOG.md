@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.19.0] - 2023-09-24
 
 ### Added
 - Ability to disable showing folders in the album list
@@ -339,7 +339,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.18.0(28)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...HEAD
+[1.19.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.18.0(28)...1.19.0(29)
 [1.18.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.17.0(27)...1.18.0(28)
 [1.17.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.1(26)...1.17.0(27)
 [1.16.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.0(25)...1.16.1(26)
