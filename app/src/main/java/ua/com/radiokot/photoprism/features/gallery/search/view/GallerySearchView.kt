@@ -39,7 +39,6 @@ import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
-import ua.com.radiokot.photoprism.features.gallery.search.logic.TestLabDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
@@ -75,7 +74,6 @@ class GallerySearchView(
         .checkNotNull { "Missing search filters guide URL" }
     private val picasso: Picasso by inject()
     private val tvDetector: TvDetector by inject()
-    private val testLabDetector: TestLabDetector by inject()
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
@@ -199,10 +197,6 @@ class GallerySearchView(
         })
 
         with(searchBar) {
-            // Hide the bar from the goddamn Google TV reviewers
-            // until it is ready for d-pad.
-            isVisible = !testLabDetector.isRunningInTestLab
-
             setHint(
                 if (tvDetector.isRunningOnTv)
                     R.string.use_mouse_to_search_the_library
