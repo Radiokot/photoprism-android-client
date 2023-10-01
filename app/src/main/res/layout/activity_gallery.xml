@@ -61,6 +61,7 @@
         android:contentDescription="@string/done_selecting"
         android:tooltipText="@string/done_selecting"
         android:visibility="invisible"
+        app:elevation="0dp"
         app:layout_anchor="@id/selection_bottom_app_bar"
         app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
         app:srcCompat="@drawable/ic_done"
@@ -90,7 +91,10 @@
         android:layout_height="@dimen/selection_bottom_app_bar_height"
         android:layout_gravity="bottom"
         android:alpha="0.9"
+        app:fabAlignmentMode="end"
+        app:fabAlignmentModeEndMargin="18dp"
         app:fabAnchorMode="cradle"
+        app:menuAlignmentMode="auto"
         app:navigationContentDescription="@string/clear_selection"
         app:navigationIcon="@drawable/ic_close">
 
