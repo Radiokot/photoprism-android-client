@@ -84,13 +84,13 @@ class GalleryViewModel(
         switchToViewing()
     }
 
-    fun initSelectionOnce(
+    fun initSelectionForAppOnce(
         requestedMimeType: String?,
         allowMultiple: Boolean,
     ) {
         if (isInitialized) {
             log.debug {
-                "initSelection(): already_initialized"
+                "initSelectionForAppOnce(): already_initialized"
             }
 
             return
@@ -123,14 +123,14 @@ class GalleryViewModel(
         }
 
         log.debug {
-            "initSelection(): initialized_selection:" +
+            "initSelectionForAppOnce(): initialized_selection:" +
                     "\nrequestedMimeType=$requestedMimeType," +
                     "\nallowMultiple=$allowMultiple," +
                     "\nallowedMediaTypes=$allowedMediaTypes"
         }
 
         stateSubject.onNext(
-            State.Selecting.ToReturn(
+            State.Selecting.ForOtherApp(
                 allowedMediaTypes = allowedMediaTypes,
                 allowMultiple = allowMultiple,
             )
@@ -144,14 +144,14 @@ class GalleryViewModel(
     fun initViewingOnce() {
         if (isInitialized) {
             log.debug {
-                "initViewing(): already_initialized"
+                "initViewingOnce(): already_initialized"
             }
 
             return
         }
 
         log.debug {
-            "initViewing(): initialized_viewing"
+            "initViewingOnce(): initialized_viewing"
         }
 
         stateSubject.onNext(State.Viewing)
@@ -171,7 +171,7 @@ class GalleryViewModel(
     private fun resetRepositoryToInitial() {
         val currentState = stateSubject.value
 
-        if (currentState is State.Selecting.ToReturn) {
+        if (currentState is State.Selecting.ForOtherApp) {
             val searchConfig =
                 SearchConfig.DEFAULT
                     .withOnlyAllowedMediaTypes(currentState.allowedMediaTypes)
@@ -203,7 +203,7 @@ class GalleryViewModel(
                 is GallerySearchViewModel.State.Applied -> {
                     val currentState = stateSubject.value
                     val searchConfigToApply: SearchConfig =
-                        if (currentState is State.Selecting.ToReturn) {
+                        if (currentState is State.Selecting.ForOtherApp) {
                             // If we are selecting the content,
                             // make sure we do not apply search that overcomes the allowed media types.
                             state.search.config.withOnlyAllowedMediaTypes(
@@ -577,9 +577,9 @@ class GalleryViewModel(
 
         when (stateSubject.value.checkNotNull()) {
             State.Viewing -> {
-                log.debug { "onItemLongClicked(): switching_to_selecting_to_share" }
+                log.debug { "onItemLongClicked(): switching_to_selecting_for_user" }
 
-                switchToSelectingToShare(media)
+                switchToSelectingForUser(media)
             }
 
             else -> {
@@ -592,12 +592,12 @@ class GalleryViewModel(
     /**
      * @param target an entry the user interacted with initiating the switch.
      */
-    private fun switchToSelectingToShare(target: GalleryMedia) {
+    private fun switchToSelectingForUser(target: GalleryMedia) {
         assert(stateSubject.value is State.Viewing) {
             "Switching to selecting is only possible while viewing"
         }
 
-        stateSubject.onNext(State.Selecting.ToShare)
+        stateSubject.onNext(State.Selecting.ForUser)
 
         // Automatically select the target media.
         toggleMediaMultipleSelection(target)
@@ -747,7 +747,7 @@ class GalleryViewModel(
                 }
 
                 when (selectingState) {
-                    is State.Selecting.ToReturn -> {
+                    is State.Selecting.ForOtherApp -> {
                         log.debug {
                             "downloadMultipleSelectionFilesAndFinishSelection(): returning_files:" +
                                     "\ndownloadedFiles=${downloadedFiles.size}"
@@ -756,7 +756,7 @@ class GalleryViewModel(
                         eventsSubject.onNext(Event.ReturnDownloadedFiles(downloadedFiles))
                     }
 
-                    is State.Selecting.ToShare -> {
+                    is State.Selecting.ForUser -> {
                         log.debug {
                             "downloadMultipleSelectionFilesAndFinishSelection(): sharing_files:" +
                                     "\ndownloadedFiles=${downloadedFiles.size}"
@@ -857,13 +857,13 @@ class GalleryViewModel(
         }
 
         when (currentState) {
-            is State.Selecting.ToReturn -> {
+            is State.Selecting.ForOtherApp -> {
                 log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
 
                 clearMultipleSelection()
             }
 
-            State.Selecting.ToShare -> {
+            State.Selecting.ForUser -> {
                 log.debug { "onClearMultipleSelectionClicked(): switching_to_viewing" }
 
                 switchToViewing()
@@ -940,7 +940,7 @@ class GalleryViewModel(
     }
 
     private fun switchToViewing() {
-        assert(stateSubject.value is State.Selecting.ToShare) {
+        assert(stateSubject.value is State.Selecting.ForUser) {
             "Switching to viewing is only possible while selecting to share"
         }
 
@@ -981,7 +981,7 @@ class GalleryViewModel(
             /**
              * Selecting to return the files to the requesting app.
              */
-            class ToReturn(
+            class ForOtherApp(
                 /**
                  * Non-empty optional set of allowed media types (e.g. only images)
                  */
@@ -1000,7 +1000,7 @@ class GalleryViewModel(
             /**
              * Selecting to share the files with any app of the user's choice.
              */
-            object ToShare : Selecting(
+            object ForUser : Selecting(
                 allowMultiple = true,
             )
         }

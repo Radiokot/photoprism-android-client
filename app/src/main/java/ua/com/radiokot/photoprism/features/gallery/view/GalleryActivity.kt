@@ -122,7 +122,7 @@ class GalleryActivity : BaseActivity() {
                 return
             }
 
-            viewModel.initSelectionOnce(
+            viewModel.initSelectionForAppOnce(
                 requestedMimeType = intent.type,
                 allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
             )
@@ -349,12 +349,12 @@ class GalleryActivity : BaseActivity() {
 
             with(view.doneSelectingFab) {
                 when (state) {
-                    is GalleryViewModel.State.Selecting.ToReturn -> {
+                    is GalleryViewModel.State.Selecting.ForOtherApp -> {
                         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_done))
                         contentDescription = getString(R.string.done_selecting)
                     }
 
-                    is GalleryViewModel.State.Selecting.ToShare -> {
+                    is GalleryViewModel.State.Selecting.ForUser -> {
                         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_share))
                         contentDescription = getString(R.string.share)
                     }
