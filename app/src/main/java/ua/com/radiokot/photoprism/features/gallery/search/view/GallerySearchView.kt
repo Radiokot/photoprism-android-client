@@ -234,19 +234,18 @@ class GallerySearchView(
             // Otherwise, this ding dong tries to animate the menu which makes
             // all the items visible during the animation 🤦🏻‍
             SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
-            with(searchBar.menu) {
-                findItem(R.id.reset_search)?.setOnMenuItemClickListener {
-                    viewModel.onResetClicked()
-                    true
+            searchBar.setOnMenuItemClickListener {menuItem ->
+                when (menuItem.itemId) {
+                    R.id.reset_search->
+                        viewModel.onResetClicked()
+
+                    R.id.add_search_bookmark ->
+                        viewModel.onAddBookmarkClicked()
+
+                    R.id.edit_search_bookmark->
+                        viewModel.onEditBookmarkClicked()
                 }
-                findItem(R.id.add_search_bookmark)?.setOnMenuItemClickListener {
-                    viewModel.onAddBookmarkClicked()
-                    true
-                }
-                findItem(R.id.edit_search_bookmark)?.setOnMenuItemClickListener {
-                    viewModel.onEditBookmarkClicked()
-                    true
-                }
+                true
             }
         }
 
