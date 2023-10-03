@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Auto screen turn-off when playing video
 
+### Added
+- Support of Apple live photos uploaded as HEIC+MOV bundle
+
 ## [1.19.0] - 2023-09-24
 
 ### Added

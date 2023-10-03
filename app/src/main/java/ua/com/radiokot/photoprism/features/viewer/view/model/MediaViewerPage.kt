@@ -19,16 +19,12 @@ sealed class MediaViewerPage(
     companion object {
         private val FADE_END_LIVE_PHOTO_KINDS = setOf(
             GalleryMedia.TypeData.Live.Kind.Samsung,
+            GalleryMedia.TypeData.Live.Kind.Apple,
             GalleryMedia.TypeData.Live.Kind.Google,
         )
-
-        // Samsung has the true live photo magic so the video part is very brief.
-        private const val LIVE_PLAYBACK_DURATION_MS_SAMSUNG =
+        private const val FADE_END_PLAYBACK_DURATION_MS_SHORT =
             400L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
-
-        // Google has no live photo magic but the fade end looks good with it anyway,
-        // so the video is played for quite a while.
-        private const val LIVE_PLAYBACK_DURATION_MS_GOOGLE =
+        private const val FADE_END_PLAYBACK_DURATION_MS_LONG =
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
 
         fun fromGalleryMedia(
@@ -43,11 +39,25 @@ sealed class MediaViewerPage(
                     val videoPreviewStartMs: Long? =
                         when (source.media.kind) {
                             GalleryMedia.TypeData.Live.Kind.Samsung ->
-                                (source.media.fullDurationMs - LIVE_PLAYBACK_DURATION_MS_SAMSUNG)
+                                (source.media.fullDurationMs - FADE_END_PLAYBACK_DURATION_MS_SHORT)
+                                    .coerceAtLeast(0)
+
+                            GalleryMedia.TypeData.Live.Kind.Apple ->
+                                (source.media.fullDurationMs / 2 - FADE_END_PLAYBACK_DURATION_MS_SHORT)
                                     .coerceAtLeast(0)
 
                             GalleryMedia.TypeData.Live.Kind.Google ->
-                                (source.media.fullDurationMs - LIVE_PLAYBACK_DURATION_MS_GOOGLE)
+                                (source.media.fullDurationMs - FADE_END_PLAYBACK_DURATION_MS_LONG)
+                                    .coerceAtLeast(0)
+
+                            else ->
+                                null
+                        }
+
+                    val videoPreviewEndMs: Long? =
+                        when (source.media.kind) {
+                            GalleryMedia.TypeData.Live.Kind.Apple ->
+                                (source.media.fullDurationMs / 2)
                                     .coerceAtLeast(0)
 
                             else ->
@@ -63,7 +73,7 @@ sealed class MediaViewerPage(
                         ),
                         videoPreviewUrl = source.media.avcPreviewUrl,
                         videoPreviewStartMs = videoPreviewStartMs,
-                        videoPreviewEndMs = null,
+                        videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
                         thumbnailUrl = source.smallThumbnailUrl,
                         source = source,

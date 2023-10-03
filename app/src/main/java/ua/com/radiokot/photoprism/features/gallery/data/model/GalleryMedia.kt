@@ -227,22 +227,36 @@ class GalleryMedia(
 
                 /**
                  * Real live photo with with a high quality still image
-                 * taken at the end of the video, for example Samsung.
+                 * taken at the end of the video.
                  * This kind has the true live photo magic ✨
+                 *
+                 * [Samsung: Motion Photos](https://www.samsung.com/au/support/mobile-devices/motion-photos/)
                  */
                 object Samsung : Kind()
 
                 /**
-                 * Google motion photo with a high quality still image
-                 * taken, however, not during the video but before it.
-                 * Not much live photo magic here 😒
+                 * Real live photo with a high quality still image
+                 * taken at the middle of the 3 second the video.
+                 * This kind has the true live photo magic ✨
+                 *
+                 * [Apple: Live Photos](https://support.apple.com/en-gb/HT207310)
                  */
-                object Google: Kind()
+                object Apple : Kind()
+
+                /**
+                 * Google motion still photo with a high quality still image
+                 * taken, however, not during the video but before it.
+                 * To get the magical effect, it must be played with a motion still
+                 * stabilization, which the gallery is not capable of doing.
+                 *
+                 * [Google: Motion Stills](https://blog.research.google/2018/03/behind-motion-photos-technology-in.html)
+                 */
+                object Google : Kind()
 
                 /**
                  * Unknown kind of live photo.
                  */
-                object Other: Kind()
+                object Other : Kind()
             }
         }
 
@@ -290,11 +304,24 @@ class GalleryMedia(
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
                         hash = source.hash,
                         kind = when {
-                            source.files.any { it.primary && it.root == "sidecar" } ->
+                            source.files.let { files ->
+                                val videoFile = files.find { it.video }
+                                val primaryFile = files.find { it.primary && it != videoFile }
+
+                                // Short videos have primary image file
+                                // generated from the video file,
+                                // while real live photos have the preview generated
+                                // from the image file or don't have it at all.
+                                primaryFile != null && videoFile != null
+                                        && primaryFile.name.startsWith(videoFile.name)
+                            } ->
                                 Live.Kind.ShortVideo
 
                             source.cameraMake == "Samsung" ->
                                 Live.Kind.Samsung
+
+                            source.cameraMake == "Apple" ->
+                                Live.Kind.Apple
 
                             source.cameraMake == "Google" ->
                                 Live.Kind.Google
