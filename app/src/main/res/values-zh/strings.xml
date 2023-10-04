@@ -131,4 +131,5 @@
     <string name="failed_to_load_people">加载人员失败</string>
     <string name="show_album_folders">文件夹</string>
     <string name="show_album_folders_explanation">在相册列表中显示文件夹</string>
+    <string name="files_saved_to_downloads">文件已保存到 Downloads</string>
 </resources>

@@ -42,6 +42,7 @@ class GalleryViewModel(
     private val dateHeaderUtcMonthYearDateFormat: DateFormat,
     private val dateHeaderUtcMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
+    private val externalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
@@ -712,7 +713,9 @@ class GalleryViewModel(
     private fun downloadAndReturnFile(file: GalleryMedia.File) {
         downloadMediaFileViewModel.downloadFile(
             file = file,
-            destination = File(internalDownloadsDir, "downloaded"),
+            destination = downloadMediaFileViewModel.getInternalDownloadDestination(
+                downloadsDirectory = internalDownloadsDir,
+            ),
             onSuccess = { destinationFile ->
                 eventsSubject.onNext(
                     Event.ReturnDownloadedFiles(
@@ -726,15 +729,30 @@ class GalleryViewModel(
         )
     }
 
-    private fun downloadMultipleSelectionFilesAndFinishSelection() {
-        val selectingState = checkNotNull(stateSubject.value as? State.Selecting) {
-            "Selection can only be finished in the corresponding state"
-        }
-
+    private fun downloadMultipleSelectionFiles(
+        intent: DownloadSelectedFilesIntent,
+    ) {
         val filesAndDestinations =
             multipleSelectionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
-                mediaFile to File(internalDownloadsDir, "downloaded_$i")
+                when (intent) {
+                    DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE ->
+                        mediaFile to downloadMediaFileViewModel.getExternalDownloadDestination(
+                            downloadsDirectory = externalDownloadsDir,
+                            file = mediaFile,
+                        )
+
+                    else ->
+                        mediaFile to downloadMediaFileViewModel.getInternalDownloadDestination(
+                            downloadsDirectory = internalDownloadsDir,
+                            index = i,
+                        )
+                }
             }
+
+        log.debug {
+            "downloadMultipleSelectionFiles(): start_downloading_files:" +
+                    "\nintent=$intent"
+        }
 
         downloadMediaFileViewModel.downloadFiles(
             filesAndDestinations = filesAndDestinations,
@@ -746,23 +764,29 @@ class GalleryViewModel(
                     )
                 }
 
-                when (selectingState) {
-                    is State.Selecting.ForOtherApp -> {
+                when (intent) {
+                    DownloadSelectedFilesIntent.RETURN -> {
                         log.debug {
-                            "downloadMultipleSelectionFilesAndFinishSelection(): returning_files:" +
+                            "downloadMultipleSelectionFiles(): returning_files:" +
                                     "\ndownloadedFiles=${downloadedFiles.size}"
                         }
 
                         eventsSubject.onNext(Event.ReturnDownloadedFiles(downloadedFiles))
                     }
 
-                    is State.Selecting.ForUser -> {
+                    DownloadSelectedFilesIntent.SHARE -> {
                         log.debug {
-                            "downloadMultipleSelectionFilesAndFinishSelection(): sharing_files:" +
+                            "downloadMultipleSelectionFiles(): sharing_files:" +
                                     "\ndownloadedFiles=${downloadedFiles.size}"
                         }
 
                         eventsSubject.onNext(Event.ShareDownloadedFiles(downloadedFiles))
+                    }
+
+                    DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE -> {
+                        eventsSubject.onNext(Event.ShowFilesDownloadedMessage)
+
+                        switchToViewing()
                     }
                 }
             }
@@ -879,19 +903,80 @@ class GalleryViewModel(
 
     fun onDoneMultipleSelectionClicked() {
         val currentState = stateSubject.value
-        check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Done multiple selection button is only clickable in the corresponding state"
+        check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
+            "Done multiple selection button is only clickable when selecting multiple for other app"
         }
 
         check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
             "Done multiple selection button is only clickable when something is selected"
         }
 
-        log.debug {
-            "onDoneMultipleSelectionClicked(): start_downloading_multiple_selection_files"
+        downloadMultipleSelectionFiles(
+            intent = DownloadSelectedFilesIntent.RETURN,
+        )
+    }
+
+    fun onShareMultipleSelectionClicked() {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting.ForUser) {
+            "Share multiple selection button is only clickable when selecting"
         }
 
-        downloadMultipleSelectionFilesAndFinishSelection()
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+            "Share multiple selection button is only clickable when something is selected"
+        }
+
+        downloadMultipleSelectionFiles(
+            intent = DownloadSelectedFilesIntent.SHARE,
+        )
+    }
+
+    fun onDownloadMultipleSelectionClicked() {
+        val currentState = stateSubject.value
+        check(currentState is State.Selecting.ForUser) {
+            "Download multiple selection button is only clickable when selecting"
+        }
+
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+            "Download multiple selection button is only clickable when something is selected"
+        }
+
+        if (downloadMediaFileViewModel.isExternalDownloadStoragePermissionRequired) {
+            log.debug {
+                "onDownloadMultipleSelectionClicked(): must_check_storage_permission"
+            }
+
+            eventsSubject.onNext(Event.CheckStoragePermission)
+        } else {
+            log.debug {
+                "onDownloadMultipleSelectionClicked(): no_need_to_check_storage_permission"
+            }
+
+            downloadMultipleSelectionFiles(
+                intent = DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE,
+            )
+        }
+    }
+
+    fun onStoragePermissionResult(isGranted: Boolean) {
+        log.debug {
+            "onStoragePermissionResult(): received_result:" +
+                    "\nisGranted=$isGranted"
+        }
+
+        when (val state = stateSubject.value!!) {
+            is State.Selecting.ForUser ->
+                if (isGranted) {
+                    downloadMultipleSelectionFiles(
+                        intent = DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE,
+                    )
+                } else {
+                    eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
+                }
+
+            else ->
+                error("Can't handle storage permission in $state state")
+        }
     }
 
     fun onScreenResumedAfterMovedBackWithBackButton() {
@@ -1062,6 +1147,16 @@ class GalleryViewModel(
          * Close the screen and go to the connection.
          */
         object GoToEnvConnection : Event
+
+        object ShowFilesDownloadedMessage : Event
+
+        /**
+         * Check the external storage write permission reporting the result
+         * to the [onStoragePermissionResult] method.
+         */
+        object CheckStoragePermission : Event
+
+        object ShowMissingStoragePermissionMessage : Event
     }
 
     sealed interface Error {
@@ -1128,5 +1223,12 @@ class GalleryViewModel(
          */
         class Other(repository: SimpleGalleryMediaRepository) :
             MediaRepositoryChange(repository)
+    }
+
+    private enum class DownloadSelectedFilesIntent {
+        RETURN,
+        SHARE,
+        DOWNLOAD_TO_EXTERNAL_STORAGE,
+        ;
     }
 }

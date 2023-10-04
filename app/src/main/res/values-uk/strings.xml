@@ -131,4 +131,5 @@
     <string name="failed_to_load_people">Не вдалося завантажити людей</string>
     <string name="show_album_folders">Папки</string>
     <string name="show_album_folders_explanation">Показувати папки у списку альбомів</string>
+    <string name="files_saved_to_downloads">Файли збережено в Завантаження</string>
 </resources>

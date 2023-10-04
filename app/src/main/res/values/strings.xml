@@ -135,4 +135,5 @@
     <string name="failed_to_load_people">Failed to load people</string>
     <string name="show_album_folders">Folders</string>
     <string name="show_album_folders_explanation">Show folders in the album list</string>
+    <string name="files_saved_to_downloads">Files have been saved to the Downloads</string>
 </resources>

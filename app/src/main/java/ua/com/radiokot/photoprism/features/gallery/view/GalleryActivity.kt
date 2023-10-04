@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -7,8 +9,8 @@ import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -85,7 +87,7 @@ class GalleryActivity : BaseActivity() {
         GallerySearchView(
             viewModel = viewModel.searchViewModel,
             fragmentManager = supportFragmentManager,
-            menuRes = R.menu.gallery,
+            menuRes = R.menu.gallery_search,
             activity = this,
         )
     }
@@ -99,6 +101,12 @@ class GalleryActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onViewerResult,
     )
+    private val storagePermissionsLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            this::onStoragePermissionResult
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -257,11 +265,6 @@ class GalleryActivity : BaseActivity() {
                     getString(R.string.select_content)
                 else
                     count.toString()
-            if (count > 0) {
-                view.doneSelectingFab.show()
-            } else {
-                view.doneSelectingFab.hide()
-            }
         }
     }
 
@@ -312,6 +315,23 @@ class GalleryActivity : BaseActivity() {
                 is GalleryViewModel.Event.GoToEnvConnection -> {
                     goToEnvConnection()
                 }
+
+
+                is GalleryViewModel.Event.ShowFilesDownloadedMessage -> {
+                    showFloatingMessage(
+                        message = getString(R.string.files_saved_to_downloads),
+                    )
+                }
+
+                is GalleryViewModel.Event.CheckStoragePermission -> {
+                    checkStoragePermission()
+                }
+
+                is GalleryViewModel.Event.ShowMissingStoragePermissionMessage -> {
+                    showFloatingMessage(
+                        message = getString(R.string.error_storage_permission_is_required),
+                    )
+                }
             }
 
             log.debug {
@@ -336,36 +356,39 @@ class GalleryActivity : BaseActivity() {
                     getString(R.string.library)
             }
 
-            // The bottom bar visibility must be switched between Visible and Invisible,
-            // because Gone for an unknown reason causes FAB misplacement
-            // when switching from Viewing to Selecting 🤷🏻
-            view.selectionBottomAppBar.isInvisible =
-                state is GalleryViewModel.State.Viewing
-            view.selectionBottomAppBar.navigationIcon =
-                if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
-                    ContextCompat.getDrawable(this, R.drawable.ic_close)
-                else
-                    null
+            with(view.selectionBottomAppBar) {
+                // The bottom bar visibility must be switched between Visible and Invisible,
+                // because Gone for an unknown reason causes FAB misplacement
+                // when switching from Viewing to Selecting 🤷🏻
+                isInvisible =
+                    state is GalleryViewModel.State.Viewing
 
-            with(view.doneSelectingFab) {
-                when (state) {
-                    is GalleryViewModel.State.Selecting.ForOtherApp -> {
-                        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_done))
-                        contentDescription = getString(R.string.done_selecting)
-                    }
+                navigationIcon =
+                    if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
+                        ContextCompat.getDrawable(this@GalleryActivity, R.drawable.ic_close)
+                    else
+                        null
 
-                    is GalleryViewModel.State.Selecting.ForUser -> {
-                        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_share))
-                        contentDescription = getString(R.string.share)
-                    }
+                @SuppressLint("RestrictedApi")
+                if (state is GalleryViewModel.State.Selecting.ForUser) {
+                    inflateMenu(R.menu.gallery_selecting_for_user)
+                } else {
+                    menu.clear()
+                }
+            }
 
-                    else -> {
-                        setImageDrawable(null)
-                        contentDescription = null
+            // The FAB is only used when selecting for other app,
+            // as selecting for user allows more than 1 action.
+            if (state is GalleryViewModel.State.Selecting.ForOtherApp) {
+                viewModel.multipleSelectionItemsCount.observe(this@GalleryActivity) { count ->
+                    if (count > 0) {
+                        view.doneSelectingFab.show()
+                    } else {
+                        view.doneSelectingFab.hide()
                     }
                 }
-
-                ViewCompat.setTooltipText(this, contentDescription)
+            } else {
+                view.doneSelectingFab.hide()
             }
 
             log.debug {
@@ -571,8 +594,22 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initMultipleSelection() {
-        view.selectionBottomAppBar.setNavigationOnClickListener {
-            viewModel.onClearMultipleSelectionClicked()
+        with(view.selectionBottomAppBar) {
+            setNavigationOnClickListener {
+                viewModel.onClearMultipleSelectionClicked()
+            }
+
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.share ->
+                        viewModel.onShareMultipleSelectionClicked()
+
+                    R.id.download ->
+                        viewModel.onDownloadMultipleSelectionClicked()
+                }
+
+                true
+            }
         }
 
         view.doneSelectingFab.setOnClickListener {
@@ -593,7 +630,7 @@ class GalleryActivity : BaseActivity() {
                     + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_start_offset),
             progressViewEndOffset
                     + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_end_offset),
-            )
+        )
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 
@@ -711,6 +748,19 @@ class GalleryActivity : BaseActivity() {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
+    }
+
+    private fun showFloatingMessage(message: String) {
+        Snackbar.make(view.galleryRecyclerView, message, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    private fun checkStoragePermission() {
+        storagePermissionsLauncher.launch(Unit)
+    }
+
+    private fun onStoragePermissionResult(isGranted: Boolean) {
+        viewModel.onStoragePermissionResult(isGranted)
     }
 
     private fun goToWelcomeScreen() {

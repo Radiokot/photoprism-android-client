@@ -11,6 +11,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
@@ -124,6 +125,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     dateHeaderUtcMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
                     dateHeaderUtcMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
+                    externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                     downloadMediaFileViewModel = get(),
                     searchViewModel = get(),
                     fastScrollViewModel = get(),

@@ -44,5 +44,7 @@ constructor(
         val primary: Boolean,
         @JsonProperty("Root")
         val root: String,
+        @JsonProperty("Video")
+        val video: Boolean,
     )
 }

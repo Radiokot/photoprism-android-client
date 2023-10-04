@@ -130,4 +130,5 @@
     <string name="failed_to_load_people">Απέτυχε να φορτώσει άτομα</string>
     <string name="show_album_folders">φάκελοι</string>
     <string name="show_album_folders_explanation">εμφάνιση φακέλων στη λίστα άλμπουμ</string>
+    <string name="files_saved_to_downloads">τα αρχεία έχουν αποθηκευτεί στις Λήψεις</string>
 </resources>

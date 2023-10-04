@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -27,6 +28,9 @@ class DownloadMediaFileViewModel(
     override val downloadEvents: Observable<DownloadProgressViewModel.Event> = downloadEventsSubject
 
     private var lastDownloadedFile: DownloadedFile? = null
+
+    val isExternalDownloadStoragePermissionRequired: Boolean
+        get() = Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)
 
     private var downloadDisposable: Disposable? = null
     fun downloadFile(
@@ -222,6 +226,50 @@ class DownloadMediaFileViewModel(
         downloadDisposable?.dispose()
         downloadStateSubject.onNext(DownloadProgressViewModel.State.Idle)
     }
+
+    /**
+     * @return a [File] destination to download the [file] with its original name.
+     * If such a file already exists and not accessible, a suffix is added to avoid overwriting.
+     */
+    fun getExternalDownloadDestination(
+        downloadsDirectory: File,
+        file: GalleryMedia.File,
+    ): File {
+        val fileByExactName = File(downloadsDirectory, File(file.name).name)
+
+        return if (!fileByExactName.exists() || fileByExactName.canRead() && fileByExactName.canWrite())
+        // Return a file with the exact name (as is) if it doesn't exist or accessible if it does.
+            fileByExactName
+        else
+        // Otherwise return a file with a random unique name suffix.
+            File(
+                downloadsDirectory,
+                File(file.name)
+                    .let {
+                        it.nameWithoutExtension +
+                                "_${System.currentTimeMillis()}" +
+                                if (it.extension.isNotEmpty())
+                                    ".${it.extension}"
+                                else
+                                    ""
+                    }
+            )
+    }
+
+    /**
+     * @return a [File] destination to download a file into the app internal storage,
+     * when the name doesn't matter.
+     *
+     * @param index optional file index if downloading multiple files in a row
+     */
+    fun getInternalDownloadDestination(
+        downloadsDirectory: File,
+        index: Int? = null,
+    ) =
+        if (index == null)
+            File(downloadsDirectory, "downloaded")
+        else
+            File(downloadsDirectory, "downloaded_$index")
 
     private class DownloadedFile(
         val url: String,
