@@ -18,13 +18,8 @@ import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
-typealias ConnectUseCaseProvider = (
-    connection: EnvConnectionParams,
-    auth: EnvAuth,
-) -> ConnectToEnvUseCase
-
 class EnvConnectionViewModel(
-    private val connectUseCaseProvider: ConnectUseCaseProvider,
+    private val connectToEnvUseCaseFactory: ConnectToEnvUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
@@ -177,8 +172,12 @@ class EnvConnectionViewModel(
                     "\nauth=$auth"
         }
 
-        connectUseCaseProvider(connectionParams, auth)
-            .perform()
+        connectToEnvUseCaseFactory
+            .get(
+                connection = connectionParams,
+                auth = auth,
+            )
+            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {

@@ -218,7 +218,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         log.debug { "disconnect(): begin_disconnect" }
 
         get<DisconnectFromEnvUseCase>()
-            .perform()
+            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -243,7 +243,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         log.debug { "exportBookmarks(): begin_export" }
 
         get<ExportSearchBookmarksUseCase>()
-            .perform()
+            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -376,7 +376,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
                 fileUri = fileUri,
             )
         }
-            .perform()
+            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(

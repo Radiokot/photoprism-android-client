@@ -107,7 +107,7 @@ val envConnectionFeatureModules: List<Module> = listOf(
 
         viewModel {
             EnvConnectionViewModel(
-                connectUseCaseProvider = { connectionParams, auth ->
+                connectToEnvUseCaseFactory = { connectionParams, auth ->
                     get(_q<ConnectToEnvUseCaseParams>()) {
                         ConnectToEnvUseCaseParams(
                             connectionParams = connectionParams,

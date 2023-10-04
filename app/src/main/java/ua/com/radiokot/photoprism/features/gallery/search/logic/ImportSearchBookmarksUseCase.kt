@@ -26,7 +26,7 @@ class ImportSearchBookmarksUseCase(
 ) {
     private lateinit var readBookmarks: List<SearchBookmark>
 
-    fun perform(): Single<List<SearchBookmark>> {
+    operator fun invoke(): Single<List<SearchBookmark>> {
         return checkFile()
             .flatMap { readBackup() }
             .doOnSuccess { readBookmarks = it }

@@ -19,7 +19,7 @@ class DisconnectFromEnvUseCase(
 ) {
     private val log = kLogger("DisconnectFromEnvUseCase")
 
-    fun perform() = Completable.defer {
+    operator fun invoke() = Completable.defer {
         envSessionHolder.clear()
 
         log.debug { "perform(): session_holder_cleared" }

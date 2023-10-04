@@ -24,7 +24,7 @@ class DownloadFileUseCase(
 ) {
     private val log = kLogger("DownloadFileUseCase")
 
-    fun perform(): Observable<ObservableDownloader.Progress> {
+    operator fun invoke(): Observable<ObservableDownloader.Progress> {
         return observableDownloader
             .download(
                 url = url,

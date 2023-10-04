@@ -38,7 +38,7 @@ class ConnectToEnvUseCase(
 
     private lateinit var session: EnvSession
 
-    fun perform(): Single<EnvSession> {
+    operator fun invoke(): Single<EnvSession> {
         return getSession()
             .doOnSuccess {
                 session = it
@@ -117,5 +117,12 @@ class ConnectToEnvUseCase(
                         "\npersistence=$this"
             }
         }
+    }
+
+    fun interface Factory {
+        fun get(
+            connection: EnvConnectionParams,
+            auth: EnvAuth,
+        ): ConnectToEnvUseCase
     }
 }

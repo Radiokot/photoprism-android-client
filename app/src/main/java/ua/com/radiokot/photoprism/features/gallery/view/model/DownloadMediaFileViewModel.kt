@@ -70,7 +70,7 @@ class DownloadMediaFileViewModel(
                 destination = destination,
                 mimeType = file.mimeType,
             )
-            .perform()
+            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -144,7 +144,7 @@ class DownloadMediaFileViewModel(
                         destination = destination,
                         mimeType = file.mimeType,
                     )
-                    .perform()
+                    .invoke()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {

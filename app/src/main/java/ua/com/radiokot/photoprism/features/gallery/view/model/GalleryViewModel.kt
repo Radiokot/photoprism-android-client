@@ -999,8 +999,7 @@ class GalleryViewModel(
     fun onErrorDisconnectClicked() {
         log.debug { "onErrorDisconnectClicked(): begin_disconnect" }
 
-        disconnectFromEnvUseCase
-            .perform()
+        disconnectFromEnvUseCase()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(

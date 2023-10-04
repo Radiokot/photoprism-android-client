@@ -31,7 +31,7 @@ class ExportSearchBookmarksUseCase(
     private lateinit var bookmarks: List<SearchBookmark>
     private lateinit var outputFile: File
 
-    fun perform(): Single<Intent> {
+    operator fun invoke(): Single<Intent> {
         return collectBookmarks()
             .doOnSuccess { bookmarks = it }
             .flatMap { getOutputFile() }

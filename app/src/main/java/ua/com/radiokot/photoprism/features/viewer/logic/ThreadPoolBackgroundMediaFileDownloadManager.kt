@@ -44,7 +44,7 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                         destination = destination,
                         mimeType = file.mimeType
                     )
-                    .perform()
+                    .invoke()
                     .subscribeOn(scheduler)
                     .map { progress ->
                         BackgroundMediaFileDownloadManager.Status.InProgress(
