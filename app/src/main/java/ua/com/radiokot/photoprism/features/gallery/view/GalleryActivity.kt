@@ -804,7 +804,9 @@ class GalleryActivity : BaseActivity() {
         if (keyCode in setOf(
                 KeyEvent.KEYCODE_SETTINGS,
                 KeyEvent.KEYCODE_MENU,
-                KeyEvent.KEYCODE_BOOKMARK
+                KeyEvent.KEYCODE_BOOKMARK,
+                KeyEvent.KEYCODE_TV_INPUT_COMPOSITE_1, // "Context menu" button
+                KeyEvent.KEYCODE_CHANNEL_DOWN,
             )
         ) {
             viewModel.onPreferencesButtonClicked()
