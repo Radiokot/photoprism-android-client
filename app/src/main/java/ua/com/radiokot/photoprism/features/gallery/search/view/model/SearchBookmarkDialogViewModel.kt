@@ -56,6 +56,8 @@ class SearchBookmarkDialogViewModel(
             isSaveButtonEnabled.value = canSave
         }
 
+        isInitialized = true
+
         log.debug {
             "initOnce(): initialized:" +
                     "\nstate=${stateSubject.value}"

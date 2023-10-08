@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Auto screen turn-off when playing video
+- Selection reset on the people overview screen when changing the orientation
 
 ### Added
 - Support of Apple live photos uploaded as HEIC+MOV bundle

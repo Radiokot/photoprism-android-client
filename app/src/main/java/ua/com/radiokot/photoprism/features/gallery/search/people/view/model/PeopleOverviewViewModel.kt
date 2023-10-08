@@ -20,6 +20,7 @@ class PeopleOverviewViewModel(
     SearchViewViewModel by SearchViewViewModelImpl() {
 
     private val log = kLogger("PeopleOverviewVM")
+    private var isInitialized: Boolean = false
 
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
@@ -46,13 +47,19 @@ class PeopleOverviewViewModel(
         update()
     }
 
-    fun init(currentlySelectedPersonIds: Set<String>) {
+    fun initOnce(currentlySelectedPersonIds: Set<String>) {
+        if (isInitialized) {
+            return
+        }
+
         val initialSelection = currentlySelectedPersonIds.toSet()
         initialSelectedPersonIds = initialSelection
         selectedPersonIds.value = initialSelection
 
+        isInitialized = true
+
         log.debug {
-            "init(): initialized:" +
+            "initOnce(): initialized:" +
                     "\ncurrentlySelectedPeopleCount=${initialSelection.size}"
         }
     }

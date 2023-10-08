@@ -94,10 +94,6 @@ class MediaViewerViewModel(
         areActionsEnabled: Boolean,
     ) {
         if (isInitialized) {
-            log.debug {
-                "init(): already_initialized"
-            }
-
             return
         }
 
@@ -110,14 +106,14 @@ class MediaViewerViewModel(
         this.areActionsEnabled = areActionsEnabled
         initControlsVisibility()
 
+        isInitialized = true
+
         log.debug {
-            "init(): initialized:" +
+            "initOnce(): initialized:" +
                     "\nrepositoryParam=$repositoryParams"
         }
 
         update()
-
-        isInitialized = true
     }
 
     private fun initControlsVisibility() {

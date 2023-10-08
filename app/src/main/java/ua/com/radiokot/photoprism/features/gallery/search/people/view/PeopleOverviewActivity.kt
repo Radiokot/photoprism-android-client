@@ -43,7 +43,7 @@ class PeopleOverviewActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        viewModel.init(
+        viewModel.initOnce(
             currentlySelectedPersonIds =
             requireNotNull(intent.getStringArrayExtra(SELECTED_PERSON_IDS_EXTRA)?.toSet()) {
                 "No $SELECTED_PERSON_IDS_EXTRA specified"
