@@ -799,21 +799,29 @@ class GalleryActivity : BaseActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
         // Hope it works for TV remotes, I can't test it.
-        if (keyCode in setOf(
-                KeyEvent.KEYCODE_SETTINGS,
-                KeyEvent.KEYCODE_MENU,
-                KeyEvent.KEYCODE_BOOKMARK,
-                KeyEvent.KEYCODE_TV_INPUT_COMPOSITE_1, // "Context menu" button
-                KeyEvent.KEYCODE_CHANNEL_DOWN,
-            )
-        ) {
+        in setOf(
+            KeyEvent.KEYCODE_SETTINGS,
+            KeyEvent.KEYCODE_MENU,
+            KeyEvent.KEYCODE_BOOKMARK,
+            KeyEvent.KEYCODE_TV_INPUT_COMPOSITE_1, // "Context menu" button
+            KeyEvent.KEYCODE_CHANNEL_DOWN,
+        ) -> {
             viewModel.onPreferencesButtonClicked()
-            return true
+            true
         }
 
-        return super.onKeyDown(keyCode, event)
+        in setOf(
+            KeyEvent.KEYCODE_SEARCH,
+            KeyEvent.KEYCODE_CHANNEL_UP,
+        ) -> {
+            view.searchBar.callOnClick()
+            true
+        }
+
+        else ->
+            super.onKeyDown(keyCode, event)
     }
 
     private val GalleryViewModel.Error.localizedMessage: String
