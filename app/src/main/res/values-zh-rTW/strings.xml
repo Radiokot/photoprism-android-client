@@ -1,4 +1,6 @@
 <resources>
+    <!-- Chinese Han Traditional. Taivan region because "-Hant" is not allowed as a dir name -->
+
     <string name="app_name">PhotoPrism Gallery</string>
     <string name="language_code">zh</string>
 

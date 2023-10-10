@@ -1,4 +1,6 @@
 <resources>
+    <!-- Chinese Han Simplified -->
+
     <string name="app_name">PhotoPrism Gallery</string>
     <string name="language_code">zh</string>
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Must be aligned with build.gradle resConfig and values-*. -->
+
     <locale android:name="en" /> <!-- Default -->
     <locale android:name="el" />
     <locale android:name="it" />
@@ -7,5 +9,5 @@
     <locale android:name="tr" />
     <locale android:name="uk" />
     <locale android:name="zh" />
-    <locale android:name="zh-Hant" />
+    <locale android:name="zh-Hant" /> <!-- To be a separate item, "-Hant" is used instead of "-rTW" -->
 </locale-config>
