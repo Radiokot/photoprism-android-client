@@ -22,7 +22,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F) and [HTTP basic authentication](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
-- TV compatibility to easily browse your library with a remote-control ([how to install](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
+- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now. [How to install](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
 
 The gallery is not intended to sync content with the library. 
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
