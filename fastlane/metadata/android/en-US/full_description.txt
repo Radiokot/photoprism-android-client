@@ -8,6 +8,6 @@ It does not support all the official web app functionality, but nevertheless has
 - Endless session without the need to re-enter the password
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
-- TV compatibility to easily browse your library with a remote-control
+- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now)
 
-The gallery is confirmed to work with PhotoPrism versions from September 23, 2023 down to October 9, 2021
+The gallery is confirmed to work with PhotoPrism versions from October 11, 2023 down to October 9, 2021
