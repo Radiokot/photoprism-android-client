@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support of Apple live photos uploaded as HEIC+MOV bundle
 - Ability to download gallery items selected with a long press
 - Exit the selection mode when unselecting the last selected gallery item
+- Dynamic selection of the video preview format (AVC, HEVC, VP8, VP9, AV1). 
+For example, if the video is in HEVC and your device supports HEVC, 
+it will be played as HEVC instead of transcoding to AVC
 
 ## [1.19.0] - 2023-09-24
 

@@ -146,40 +146,40 @@ class GalleryMedia(
 
     sealed class TypeData(val typeName: TypeName) {
         interface ViewableAsImage {
-            fun getPreviewUrl(maxViewSize: Int): String
+            fun getImagePreviewUrl(maxViewSize: Int): String
         }
 
         private class ViewableAsImageWithUrlFactory(
             private val hash: String,
             private val mediaPreviewUrlFactory: MediaPreviewUrlFactory,
         ) : ViewableAsImage {
-            override fun getPreviewUrl(maxViewSize: Int): String =
+            override fun getImagePreviewUrl(maxViewSize: Int): String =
                 when {
                     maxViewSize < 1000 ->
-                        mediaPreviewUrlFactory.getPreview720Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview720Url(hash)
 
                     maxViewSize < 1500 ->
-                        mediaPreviewUrlFactory.getPreview1280Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview1280Url(hash)
 
                     maxViewSize < 2000 ->
-                        mediaPreviewUrlFactory.getPreview1920Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview1920Url(hash)
 
                     maxViewSize < 2500 ->
-                        mediaPreviewUrlFactory.getPreview2048Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview2048Url(hash)
 
                     maxViewSize < 4000 ->
-                        mediaPreviewUrlFactory.getPreview3840Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview3840Url(hash)
 
                     maxViewSize < 4500 ->
-                        mediaPreviewUrlFactory.getPreview4096Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview4096Url(hash)
 
                     else ->
-                        mediaPreviewUrlFactory.getPreview7680Url(hash)
+                        mediaPreviewUrlFactory.getImagePreview7680Url(hash)
                 }
         }
 
         interface ViewableAsVideo {
-            val avcPreviewUrl: String
+            val videoPreviewUrl: String
         }
 
         object Unknown : TypeData(TypeName.UNKNOWN)
@@ -197,11 +197,11 @@ class GalleryMedia(
             ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
 
         class Animated(
-            override val avcPreviewUrl: String,
+            override val videoPreviewUrl: String,
         ) : TypeData(TypeName.ANIMATED), ViewableAsVideo
 
         class Live(
-            override val avcPreviewUrl: String,
+            override val videoPreviewUrl: String,
             /**
              * Non-zero duration of the full video in milliseconds,
              * or null if it couldn't be determined.
@@ -261,7 +261,7 @@ class GalleryMedia(
         }
 
         class Video(
-            override val avcPreviewUrl: String,
+            override val videoPreviewUrl: String,
         ) : TypeData(TypeName.VIDEO), ViewableAsVideo
 
         class Vector(
@@ -292,11 +292,11 @@ class GalleryMedia(
                     )
 
                     TypeName.ANIMATED.value -> Animated(
-                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
                     )
 
                     TypeName.LIVE.value -> Live(
-                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
                         // Find the duration among video files.
                         fullDurationMs = source.files
                             .find { it.duration != null && it.duration > 0 }
@@ -304,16 +304,17 @@ class GalleryMedia(
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
                         hash = source.hash,
                         kind = when {
-                            source.files.let { files ->
-                                val videoFile = files.find { it.video }
-                                val primaryFile = files.find { it.primary && it != videoFile }
+                            source.let {
+                                val videoFile = it.videoFile
+                                val mainFile = it.mainFile
 
                                 // Short videos have primary image file
                                 // generated from the video file,
                                 // while real live photos have the preview generated
                                 // from the image file or don't have it at all.
-                                primaryFile != null && videoFile != null
-                                        && primaryFile.name.startsWith(videoFile.name)
+                                mainFile != null && videoFile != null && videoFile != mainFile
+                                        && mainFile.name.startsWith(videoFile.name)
+
                             } ->
                                 Live.Kind.ShortVideo
 
@@ -333,7 +334,7 @@ class GalleryMedia(
                     )
 
                     TypeName.VIDEO.value -> Video(
-                        avcPreviewUrl = previewUrlFactory.getMp4PreviewUrl(source.hash),
+                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
                     )
 
                     TypeName.VECTOR.value -> Vector(

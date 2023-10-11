@@ -4,7 +4,6 @@ import android.net.Uri
 import android.view.View
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
@@ -103,8 +102,6 @@ class VideoViewerPage(
                     MediaItem.Builder()
                         .setMediaId(item.mediaId)
                         .setUri(item.previewUri)
-                        // Assumption: PhotoPrism previews are always "video/mp4".
-                        .setMimeType(MimeTypes.VIDEO_MP4)
                         .build()
                 )
 

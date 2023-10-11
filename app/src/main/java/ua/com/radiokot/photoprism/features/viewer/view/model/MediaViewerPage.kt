@@ -65,13 +65,13 @@ sealed class MediaViewerPage(
                         }
 
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = source.media.getPreviewUrl(
+                        photoPreviewUrl = source.media.getImagePreviewUrl(
                             max(
                                 imageViewSize.width,
                                 imageViewSize.height
                             )
                         ),
-                        videoPreviewUrl = source.media.avcPreviewUrl,
+                        videoPreviewUrl = source.media.videoPreviewUrl,
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
@@ -82,7 +82,7 @@ sealed class MediaViewerPage(
 
                 source.media is GalleryMedia.TypeData.ViewableAsVideo ->
                     VideoViewerPage(
-                        previewUrl = source.media.avcPreviewUrl,
+                        previewUrl = source.media.videoPreviewUrl,
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
@@ -92,7 +92,7 @@ sealed class MediaViewerPage(
 
                 source.media is GalleryMedia.TypeData.ViewableAsImage ->
                     ImageViewerPage(
-                        previewUrl = source.media.getPreviewUrl(
+                        previewUrl = source.media.getImagePreviewUrl(
                             max(
                                 imageViewSize.width,
                                 imageViewSize.height

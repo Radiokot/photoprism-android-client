@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.util.MimeTypes
 import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -192,8 +191,6 @@ class FadeEndLivePhotoViewerPage(
                                 .build()
                         )
                         .setUri(item.videoPreviewUri)
-                        // Assumption: PhotoPrism previews are always "video/mp4".
-                        .setMimeType(MimeTypes.VIDEO_MP4)
                         .build()
                 )
 
