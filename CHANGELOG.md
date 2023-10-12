@@ -5,12 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.20.0] - 2023-10-12
 
 ### Fixed
 - Auto screen turn-off when playing video
 - Selection reset on the people overview screen when changing the orientation
-- Traditional Chinese translation
 
 ### Added
 - Support of Apple live photos uploaded as HEIC+MOV bundle
@@ -19,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dynamic selection of the video preview format (AVC, HEVC, VP8, VP9, AV1). 
 For example, if the video is in HEVC and your device supports HEVC, 
 it will be played as HEVC instead of transcoding to AVC
+- Traditional Chinese translation
 
 ## [1.19.0] - 2023-09-24
 
@@ -354,7 +354,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.0(30)...HEAD
+[1.20.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...1.20.0(30)
 [1.19.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.18.0(28)...1.19.0(29)
 [1.18.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.17.0(27)...1.18.0(28)
 [1.17.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.1(26)...1.17.0(27)

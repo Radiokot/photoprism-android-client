@@ -15,15 +15,16 @@ if (keystorePropertiesFile.exists()) {
 def fileProviderAuthority = ""
 
 android {
-    namespace 'ua.com.radiokot.photoprism'
+    namespace "ua.com.radiokot.photoprism"
     compileSdk 33
 
     defaultConfig {
-        applicationId "ua.com.radiokot.photoprism"
         minSdk 21
         targetSdk 33
-        versionCode 29
-        versionName "1.19.0"
+
+        applicationId "ua.com.radiokot.photoprism"
+        versionCode 30
+        versionName "1.20.0"
 
         // Must be aligned with @xml/locale_config and values-*.
         resConfigs "en", "el", "it", "ru", "tr", "uk", "zh", "zh-rTW"
