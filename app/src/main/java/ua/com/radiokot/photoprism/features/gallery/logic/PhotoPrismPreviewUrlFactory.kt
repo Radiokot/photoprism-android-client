@@ -53,17 +53,19 @@ class PhotoPrismPreviewUrlFactory(
         val fileCodec = file.codec ?: ""
         val previewFormat = when {
             (fileCodec == "hvc1" || fileCodec == "hev1")
-                    && videoFormatSupport.canPlayHevc(file.width, file.height) ->
+                    && videoFormatSupport.canPlayHevc(file.width, file.height, file.fps) ->
                 "hevc"
 
-            fileCodec == "vp8" && videoFormatSupport.canPlayVp8(file.width, file.height) ->
+            fileCodec == "vp8"
+                    && videoFormatSupport.canPlayVp8(file.width, file.height, file.fps) ->
                 "vp8"
 
-            fileCodec == "vp9" && videoFormatSupport.canPlayVp9(file.width, file.height) ->
+            fileCodec == "vp9"
+                    && videoFormatSupport.canPlayVp9(file.width, file.height, file.fps) ->
                 "vp9"
 
             (fileCodec == "av01" || fileCodec == "av1c")
-                    && videoFormatSupport.canPlayAv1(file.width, file.height) ->
+                    && videoFormatSupport.canPlayAv1(file.width, file.height, file.fps) ->
                 "av01"
 
             // WebM and OGV seems not supported.

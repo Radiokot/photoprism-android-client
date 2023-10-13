@@ -84,5 +84,7 @@ constructor(
         val width: Int?,
         @JsonProperty("Height")
         val height: Int?,
+        @JsonProperty("FPS")
+        val fps: Double?,
     )
 }

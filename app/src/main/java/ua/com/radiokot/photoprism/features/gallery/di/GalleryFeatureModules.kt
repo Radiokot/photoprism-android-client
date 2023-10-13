@@ -24,7 +24,7 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaCodecListVideoFormatSupport
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaCodecVideoFormatSupport
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
@@ -69,7 +69,7 @@ val galleryFeatureModules: List<Module> = listOf(
                 PhotoPrismPreviewUrlFactory(
                     apiUrl = session.envConnectionParams.apiUrl.toString(),
                     previewToken = session.previewToken,
-                    videoFormatSupport = MediaCodecListVideoFormatSupport()
+                    videoFormatSupport = MediaCodecVideoFormatSupport()
                 )
             } bind MediaPreviewUrlFactory::class
 
