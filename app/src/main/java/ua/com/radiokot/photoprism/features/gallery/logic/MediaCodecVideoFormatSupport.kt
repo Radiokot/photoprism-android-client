@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.logic
 import android.media.MediaFormat
 import android.os.Build
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil
+import ua.com.radiokot.photoprism.extension.tryOrNull
 
 class MediaCodecVideoFormatSupport : VideoFormatSupport {
     override fun canPlayHevc(width: Int, height: Int, fps: Double?) =
@@ -38,7 +39,7 @@ class MediaCodecVideoFormatSupport : VideoFormatSupport {
         )
 
     private fun isDecodingSupported(mimeType: String, width: Int, height: Int, fps: Double?) =
-        MediaCodecUtil.getDecoderInfo(mimeType, false, false)
+        tryOrNull { MediaCodecUtil.getDecoderInfo(mimeType, false, false) }
             ?.capabilities
             ?.videoCapabilities
             ?.run {
