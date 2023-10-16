@@ -80,11 +80,5 @@ constructor(
         val codec: String?,
         @JsonProperty("Sidecar")
         val sidecar: Boolean,
-        @JsonProperty("Width")
-        val width: Int?,
-        @JsonProperty("Height")
-        val height: Int?,
-        @JsonProperty("FPS")
-        val fps: Double?,
     )
 }

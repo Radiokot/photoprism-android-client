@@ -45,27 +45,22 @@ class PhotoPrismPreviewUrlFactory(
     override fun getVideoPreviewUrl(mergedPhoto: PhotoPrismMergedPhoto): String {
         // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L489
 
-        val file = mergedPhoto.videoFile
-        if (file?.width == null || file.height == null) {
-            return "$previewUrlBase/videos/${mergedPhoto.hash}/$previewToken/avc"
-        }
+        val videoFile = mergedPhoto.videoFile
+            ?: return "$previewUrlBase/videos/${mergedPhoto.hash}/$previewToken/avc"
 
-        val fileCodec = file.codec ?: ""
+        val videoCodec = videoFile.codec ?: ""
+
         val previewFormat = when {
-            (fileCodec == "hvc1" || fileCodec == "hev1")
-                    && videoFormatSupport.canPlayHevc(file.width, file.height, file.fps) ->
+            (videoCodec == "hvc1" || videoCodec == "hev1") && videoFormatSupport.canPlayHevc() ->
                 "hevc"
 
-            fileCodec == "vp8"
-                    && videoFormatSupport.canPlayVp8(file.width, file.height, file.fps) ->
+            videoCodec == "vp8" && videoFormatSupport.canPlayVp8() ->
                 "vp8"
 
-            fileCodec == "vp9"
-                    && videoFormatSupport.canPlayVp9(file.width, file.height, file.fps) ->
+            videoCodec == "vp9" && videoFormatSupport.canPlayVp9() ->
                 "vp9"
 
-            (fileCodec == "av01" || fileCodec == "av1c")
-                    && videoFormatSupport.canPlayAv1(file.width, file.height, file.fps) ->
+            (videoCodec == "av01" || videoCodec == "av1c") && videoFormatSupport.canPlayAv1() ->
                 "av01"
 
             // WebM and OGV seems not supported.
@@ -74,6 +69,6 @@ class PhotoPrismPreviewUrlFactory(
                 "avc"
         }
 
-        return "$previewUrlBase/videos/${file.hash}/$previewToken/$previewFormat"
+        return "$previewUrlBase/videos/${videoFile.hash}/$previewToken/$previewFormat"
     }
 }
