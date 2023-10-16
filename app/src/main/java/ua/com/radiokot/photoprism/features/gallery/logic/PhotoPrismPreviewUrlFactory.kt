@@ -1,12 +1,15 @@
 package ua.com.radiokot.photoprism.features.gallery.logic
 
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
+import ua.com.radiokot.photoprism.extension.kLogger
 
 class PhotoPrismPreviewUrlFactory(
     apiUrl: String,
     private val previewToken: String,
     private val videoFormatSupport: VideoFormatSupport,
 ) : MediaPreviewUrlFactory {
+    private val log = kLogger("PPPreviewUrlFactory")
+
     private val previewUrlBase = "${apiUrl}v1"
 
     override fun getSmallThumbnailUrl(hash: String): String =
@@ -46,7 +49,15 @@ class PhotoPrismPreviewUrlFactory(
         // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L489
 
         val videoFile = mergedPhoto.videoFile
-            ?: return "$previewUrlBase/videos/${mergedPhoto.hash}/$previewToken/avc"
+        // Valid case for live photos.
+            ?: return "$previewUrlBase/videos/${mergedPhoto.hash}/$previewToken/$DEFAULT_VIDEO_PREVIEW_FORMAT"
+                .also {
+                    log.debug {
+                        "getVideoPreviewUrl(): no_video_file_found:" +
+                                "\nphotoUid=${mergedPhoto.uid}," +
+                                "\npreviewFormat=$DEFAULT_VIDEO_PREVIEW_FORMAT"
+                    }
+                }
 
         val videoCodec = videoFile.codec ?: ""
 
@@ -66,9 +77,21 @@ class PhotoPrismPreviewUrlFactory(
             // WebM and OGV seems not supported.
 
             else ->
-                "avc"
+                DEFAULT_VIDEO_PREVIEW_FORMAT
         }
 
         return "$previewUrlBase/videos/${videoFile.hash}/$previewToken/$previewFormat"
+            .also { result ->
+                log.debug {
+                    "getVideoPreviewUrl(): preview_url_created:" +
+                            "\nphotoUid=${mergedPhoto.uid}," +
+                            "\nvideoCodec=$videoCodec," +
+                            "\npreviewFormat=$previewFormat"
+                }
+            }
+    }
+
+    private companion object {
+        private const val DEFAULT_VIDEO_PREVIEW_FORMAT = "avc"
     }
 }
