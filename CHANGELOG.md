@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Refusing to play non-AVC videos with resolution exceeding reported device capabilities.
-In fact, such videos can be played well.
+In fact, such videos can be played well
+- Some rare content selection bugs
 
 ## [1.20.1] - 2023-10-14
 
