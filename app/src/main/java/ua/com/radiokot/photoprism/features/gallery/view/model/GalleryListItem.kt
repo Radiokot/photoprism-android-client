@@ -116,9 +116,15 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             private val picasso: Picasso by inject()
 
             init {
+                // Dispatch selection checkbox clicks to the root view
+                // and prevent them from changing the checkbox selection state
+                // by disabling isClickable – although it is disabled,
+                // the click listener is called anyway.
+                // isClickable must only be disabled after setting the listener.
                 view.selectionCheckBox.setOnClickListener {
                     view.root.callOnClick()
                 }
+                view.selectionCheckBox.isClickable = false
             }
 
             override fun bindView(item: Media, payloads: List<Any>) {
