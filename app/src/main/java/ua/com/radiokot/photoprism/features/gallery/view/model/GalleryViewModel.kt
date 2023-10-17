@@ -535,17 +535,6 @@ class GalleryViewModel(
             is State.Selecting -> {
                 if (state.allowMultiple) {
                     toggleMediaMultipleSelection(media)
-
-                    // If the last selected item has been unselected,
-                    // automatically switch back to viewing.
-                    // But only if was selecting for user.
-                    if (state is State.Selecting.ForUser
-                        && multipleSelectionFilesByMediaUid.isEmpty()
-                    ) {
-                        log.debug { "onItemClicked(): unselected_last_switching_to_viewing" }
-
-                        switchToViewing()
-                    }
                 } else {
                     selectMedia(media)
                 }
@@ -684,6 +673,16 @@ class GalleryViewModel(
         log.debug {
             "removeMediaFromMultipleSelection(): media_removed:" +
                     "\nmediaUid=$mediaUid"
+        }
+
+        // If the last selected item has been removed, automatically switch back to viewing.
+        // But only if was selecting for user.
+        if (multipleSelectionFilesByMediaUid.isEmpty()
+            && currentState is State.Selecting.ForUser
+        ) {
+            log.debug { "removeMediaFromMultipleSelection(): unselected_last_switching_to_viewing" }
+
+            switchToViewing()
         }
 
         postGalleryItems()
