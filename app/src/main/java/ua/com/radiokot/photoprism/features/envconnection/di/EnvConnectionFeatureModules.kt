@@ -14,7 +14,9 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.di.EnvSessionCreatorParams
+import ua.com.radiokot.photoprism.di.IMAGE_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
+import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.di.envModules
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
@@ -102,6 +104,10 @@ val envConnectionFeatureModules: List<Module> = listOf(
                 envSessionHolder = get(),
                 envSessionPersistence = getOrNull(_q<EnvSession>()),
                 envAuthPersistence = get(_q<EnvAuth>()),
+                cacheDirectories = listOf(
+                    get(named(IMAGE_CACHE_DIRECTORY)),
+                    get(named(VIDEO_CACHE_DIRECTORY)),
+                ),
             )
         } bind DisconnectFromEnvUseCase::class
 

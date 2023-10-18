@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 In fact, such videos can be played well
 - Some rare content selection bugs
 
+### Changed
+- Media cache is now cleared when disconnecting from the library
+
 ## [1.20.1] - 2023-10-14
 
 ### Fixed
