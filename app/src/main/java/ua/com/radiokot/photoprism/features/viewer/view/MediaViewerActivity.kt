@@ -269,31 +269,31 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     private fun initButtons() {
-        view.shareButton.setOnClickListener {
+        view.shareButton.setThrottleOnClickListener {
             viewModel.onShareClicked(
                 position = view.viewPager.currentItem,
             )
         }
 
-        view.openInButton.setOnClickListener {
+        view.openInButton.setThrottleOnClickListener {
             viewModel.onOpenInClicked(
                 position = view.viewPager.currentItem,
             )
         }
 
-        view.downloadButton.setOnClickListener {
+        view.downloadButton.setThrottleOnClickListener {
             viewModel.onDownloadClicked(
                 position = view.viewPager.currentItem,
             )
         }
 
-        view.cancelDownloadButton.setOnClickListener {
+        view.cancelDownloadButton.setThrottleOnClickListener {
             viewModel.onCancelDownloadClicked(
                 position = view.viewPager.currentItem,
             )
         }
 
-        view.openInWebViewerButton.setOnClickListener {
+        view.openInWebViewerButton.setThrottleOnClickListener {
             viewModel.onOpenInWebViewerClicked(
                 position = view.viewPager.currentItem,
             )

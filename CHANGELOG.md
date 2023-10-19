@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refusing to play non-AVC videos with resolution exceeding reported device capabilities.
 In fact, such videos can be played well
 - Some rare content selection bugs
+- The "Cancel download" button in the media viewer getting stuck after clicking it
+- Crash when spamming the "Download" button in the media viewer
 
 ### Changed
 - Media cache is now cleared when disconnecting from the library

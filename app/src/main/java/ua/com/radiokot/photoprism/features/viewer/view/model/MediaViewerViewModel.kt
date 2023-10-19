@@ -256,10 +256,6 @@ class MediaViewerViewModel(
     }
 
     fun onCancelDownloadClicked(position: Int) {
-        check(isCancelDownloadButtonVisible.value == true) {
-            "The button can't be clicked while it is not visible"
-        }
-
         val item = galleryMediaRepository.itemsList[position]
 
         log.debug {
@@ -522,14 +518,16 @@ class MediaViewerViewModel(
     private fun subscribeToMediaBackgroundDownloadStatus(
         statusObservable: Observable<out BackgroundMediaFileDownloadManager.Status>,
     ) {
+        val resetDownloadViews = {
+            isCancelDownloadButtonVisible.value = false
+            isDownloadCompletedIconVisible.value = false
+        }
+
         backgroundDownloadProgressDisposable?.dispose()
         backgroundDownloadProgressDisposable = statusObservable
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                // Default state.
-                isCancelDownloadButtonVisible.value = false
-                isDownloadCompletedIconVisible.value = false
-            }
+            .doOnSubscribe { resetDownloadViews() }
+            .doOnDispose(resetDownloadViews)
             .subscribeBy(
                 onNext = { status ->
                     isCancelDownloadButtonVisible.value =
