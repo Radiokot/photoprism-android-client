@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Observable
 import okio.Sink
 import okio.sink
 import java.io.File
+import java.io.FileNotFoundException
 
 interface ObservableDownloader {
     /**
@@ -26,7 +27,11 @@ interface ObservableDownloader {
         destination: File,
         append: Boolean = false,
     ): Observable<Progress> =
-        download(url, destination.sink(append))
+        try {
+            download(url, destination.sink(append))
+        } catch (fileNotFoundException: FileNotFoundException) {
+            Observable.error(fileNotFoundException)
+        }
 
     class Progress(
         /**
