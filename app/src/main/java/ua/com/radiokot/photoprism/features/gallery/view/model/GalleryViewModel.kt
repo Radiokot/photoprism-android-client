@@ -509,6 +509,8 @@ class GalleryViewModel(
         } else {
             currentMediaRepository.update()
         }
+
+        fastScrollViewModel.updateBubbles()
     }
 
     fun loadMore() {

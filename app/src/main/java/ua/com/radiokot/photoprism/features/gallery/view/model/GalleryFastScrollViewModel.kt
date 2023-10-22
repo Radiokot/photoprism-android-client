@@ -84,7 +84,7 @@ class GalleryFastScrollViewModel(
                         "\nmediaRepository=$mediaRepository"
             }
             currentMediaRepository = mediaRepository
-            updateBubbles(mediaRepository)
+            updateBubbles()
         } else {
             log.debug {
                 "setMediaRepository(): already_set"
@@ -93,7 +93,10 @@ class GalleryFastScrollViewModel(
     }
 
     private var bubblesUpdateDisposable: Disposable? = null
-    private fun updateBubbles(mediaRepository: SimpleGalleryMediaRepository) {
+    fun updateBubbles() {
+        val mediaRepository = currentMediaRepository
+            ?: return
+
         bubblesUpdateDisposable?.dispose()
         bubblesUpdateDisposable = mediaRepository.getNewestAndOldestLocalDates()
             .observeOn(AndroidSchedulers.mainThread())
