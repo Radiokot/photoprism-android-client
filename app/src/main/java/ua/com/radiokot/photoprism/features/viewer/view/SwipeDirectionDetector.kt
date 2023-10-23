@@ -32,20 +32,20 @@ class SwipeDirectionDetector(
     private var startY: Float = 0f
     private var isDetected: Boolean = false
 
-    var detectedDirection: SwipeDirection = SwipeDirection.NotDetected
+    var detectedDirection: SwipeDirection = SwipeDirection.NOT_DETECTED
         private set
 
     fun handleTouchEvent(event: MotionEvent) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                detectedDirection = SwipeDirection.NotDetected
+                detectedDirection = SwipeDirection.NOT_DETECTED
                 startX = event.x
                 startY = event.y
             }
 
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
                 if (!isDetected) {
-                    detectedDirection = SwipeDirection.NotDetected
+                    detectedDirection = SwipeDirection.NOT_DETECTED
                 }
                 startY = 0.0f
                 startX = startY
