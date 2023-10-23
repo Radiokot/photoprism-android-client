@@ -25,6 +25,9 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import ua.com.radiokot.photoprism.R
 
+/**
+ * @see shouldHandleTouch
+ */
 class SwipeToDismissHandler(
     private val swipeView: View,
     private val onDismiss: () -> Unit,
@@ -41,6 +44,12 @@ class SwipeToDismissHandler(
             .toLong()
     }
 
+    /**
+     * @return **true** if the event should be handled by [onTouch].
+     */
+    fun shouldHandleTouch(event: MotionEvent): Boolean =
+        event.action in SUPPORTED_EVENTS
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         when (event.action) {
@@ -52,7 +61,8 @@ class SwipeToDismissHandler(
                 return true
             }
 
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
                 if (isTracking) {
                     isTracking = false
                     onTrackingEnd(v.height)
@@ -101,6 +111,15 @@ class SwipeToDismissHandler(
             .setInterpolator(AccelerateInterpolator())
             .setUpdateListener { onSwipeViewMove(swipeView.translationY, distanceThreshold) }
             .start()
+    }
+
+    private companion object {
+        private val SUPPORTED_EVENTS = setOf(
+            MotionEvent.ACTION_DOWN,
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL,
+            MotionEvent.ACTION_MOVE,
+        )
     }
 }
 

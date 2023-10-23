@@ -786,20 +786,20 @@ class MediaViewerActivity : BaseActivity() {
         swipeDirectionDetector.handleTouchEvent(event)
 
         // Do not allow swipe to dismiss if currently viewing a scaled photo.
-        if (!isScaled) {
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                swipeToDismissHandler.onTouch(view.root, event)
-            } else if (event.action == MotionEvent.ACTION_UP) {
-                swipeToDismissHandler.onTouch(view.root, event)
-            }
-
-            // If swipe in required direction is detected,
-            // dispatch further touch events to the handler.
+        if (!isScaled && swipeToDismissHandler.shouldHandleTouch(event)) {
             val detectedSwipeDirection = swipeDirectionDetector.detectedDirection
             if (detectedSwipeDirection == SwipeDirection.Up
                 || detectedSwipeDirection == SwipeDirection.Down
             ) {
+                // If swipe in required direction is detected,
+                // dispatch further touch events to the handler.
                 return swipeToDismissHandler.onTouch(view.root, event)
+            } else {
+                // If no swipe direction is detected,
+                // let the system dispatch the event but
+                // send it to the handler in order to prepare it
+                // for possible further swipe.
+                swipeToDismissHandler.onTouch(view.root, event)
             }
         }
 
