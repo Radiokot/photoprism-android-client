@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 class SwipeDirectionDetector(
     context: Context,
 ) {
-    private val touchSlop: Int = android.view.ViewConfiguration.get(context).scaledTouchSlop
+    private val touchSlop: Int = android.view.ViewConfiguration.get(context).scaledTouchSlop * 2
     private var startX: Float = 0f
     private var startY: Float = 0f
     private var isDetected: Boolean = false

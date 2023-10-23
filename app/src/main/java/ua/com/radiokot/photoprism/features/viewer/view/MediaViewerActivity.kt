@@ -787,16 +787,17 @@ class MediaViewerActivity : BaseActivity() {
 
         // Do not allow swipe to dismiss if currently viewing a scaled photo.
         if (!isScaled && swipeToDismissHandler.shouldHandleTouch(event)) {
-            if (swipeDirectionDetector.detectedDirection in SWIPE_TO_DISMISS_DIRECTIONS) {
-                // If swipe in required direction is detected,
-                // dispatch further touch events to the handler.
-                return swipeToDismissHandler.onTouch(view.root, event)
-            } else {
-                // If no swipe direction is detected,
-                // let the system dispatch the event but
-                // send it to the handler in order to prepare it
+            if (event.action != MotionEvent.ACTION_MOVE) {
+                // When not dragging, let the system dispatch the event
+                // but send it to the handler in order to prepare it
                 // for possible further swipe.
                 swipeToDismissHandler.onTouch(view.root, event)
+            } else if (event.action == MotionEvent.ACTION_MOVE
+                && swipeDirectionDetector.detectedDirection in SWIPE_TO_DISMISS_DIRECTIONS
+            ) {
+                // When dragging and the swipe in required direction is detected,
+                // dispatch further touch events to the handler.
+                return swipeToDismissHandler.onTouch(view.root, event)
             }
         }
 
