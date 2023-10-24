@@ -94,15 +94,9 @@ class MediaViewerActivity : BaseActivity() {
     private val swipeDirectionDetector: SwipeDirectionDetector by lazy {
         SwipeDirectionDetector(this)
     }
-    private val isScaled: Boolean
-        get() {
-            val currentPageViewHolder: ViewHolder? =
-                view.viewPager.recyclerView
-                    .findViewHolderForAdapterPosition(view.viewPager.currentItem)
-
-            return currentPageViewHolder is ZoomablePhotoViewHolder
-                    && currentPageViewHolder.isScaled
-        }
+    private val zoomableView: ZoomableView?
+        get() = view.viewPager.recyclerView
+            .findViewHolderForAdapterPosition(view.viewPager.currentItem) as? ZoomableView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -190,13 +184,13 @@ class MediaViewerActivity : BaseActivity() {
                 resolveViews = { viewHolder: ViewHolder ->
                     when (viewHolder) {
                         is FadeEndLivePhotoViewerPage.ViewHolder ->
-                            listOf(viewHolder.playerView, viewHolder.photoView)
+                            listOf(viewHolder.view.videoView, viewHolder.view.photoView)
 
-                        is VideoPlayerViewHolder ->
-                            listOf(viewHolder.playerView)
+                        is VideoViewerPage.ViewHolder ->
+                            listOf(viewHolder.view.videoView)
 
-                        is ZoomablePhotoViewHolder ->
-                            listOf(viewHolder.photoView)
+                        is ImageViewerPage.ViewHolder ->
+                            listOf(viewHolder.view.photoView)
 
                         else ->
                             listOf(viewHolder.itemView)
@@ -785,16 +779,28 @@ class MediaViewerActivity : BaseActivity() {
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         swipeDirectionDetector.handleTouchEvent(event)
 
-        // Do not allow swipe to dismiss if currently viewing a scaled photo.
-        if (!isScaled && swipeToDismissHandler.shouldHandleTouch(event)) {
+        val zoomableView = this.zoomableView
+        val isZoomed = zoomableView?.isZoomed == true
+
+        // Do not allow page swipe if currently viewing a zoomed photo
+        // unless it can't be panned further.
+        // There is a handler for this in PhotoViewAttacher:120, but it is faulty.
+        view.viewPager.isUserInputEnabled =
+            zoomableView == null
+                    || !isZoomed
+                    || swipeDirectionDetector.detectedDirection == SwipeDirection.RIGHT
+                    && !zoomableView.canPanHorizontally(-1)
+                    || swipeDirectionDetector.detectedDirection == SwipeDirection.LEFT
+                    && !zoomableView.canPanHorizontally(1)
+
+        // Do not allow swipe to dismiss if currently viewing a zoomed photo.
+        if (!isZoomed && swipeToDismissHandler.shouldHandleTouch(event)) {
             if (event.action != MotionEvent.ACTION_MOVE) {
                 // When not dragging, let the system dispatch the event
                 // but send it to the handler in order to prepare it
                 // for possible further swipe.
                 swipeToDismissHandler.onTouch(view.root, event)
-            } else if (event.action == MotionEvent.ACTION_MOVE
-                && swipeDirectionDetector.detectedDirection in SWIPE_TO_DISMISS_DIRECTIONS
-            ) {
+            } else if (swipeDirectionDetector.detectedDirection in SWIPE_TO_DISMISS_DIRECTIONS) {
                 // When dragging and the swipe in required direction is detected,
                 // dispatch further touch events to the handler.
                 return swipeToDismissHandler.onTouch(view.root, event)

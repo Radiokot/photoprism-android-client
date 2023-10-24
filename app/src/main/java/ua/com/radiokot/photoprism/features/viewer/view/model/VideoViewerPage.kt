@@ -32,11 +32,10 @@ class VideoViewerPage(
 
     class ViewHolder(
         val view: PagerItemMediaViewerVideoBinding,
-        delegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
     ) : FastAdapter.ViewHolder<VideoViewerPage>(view.root),
-        VideoPlayerViewHolder by delegate {
+        VideoPlayerViewHolder by VideoPlayerViewHolderImpl(view.videoView) {
 
-        override fun attachToWindow(item: VideoViewerPage) = with(playerView.player!!) {
+        override fun attachToWindow(item: VideoViewerPage) = with(view.videoView.player!!) {
             if (isPlaying) {
                 return@with
             }
@@ -70,7 +69,7 @@ class VideoViewerPage(
 
         // This method is called on swipe but not on screen destroy.
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
-        override fun detachFromWindow(item: VideoViewerPage) = with(playerView.player!!) {
+        override fun detachFromWindow(item: VideoViewerPage) = with(view.videoView.player!!) {
             // Stop playback once the page is swiped.
             stop()
 
@@ -84,7 +83,7 @@ class VideoViewerPage(
             item: VideoViewerPage,
             payloads: List<Any>,
         ) = with(playerCache.getPlayer(key = item.mediaId)) {
-            playerView.player = this
+            view.videoView.player = this
             enableFatalPlaybackErrorListener(item)
 
             if (item.needsVideoControls) {
@@ -120,7 +119,7 @@ class VideoViewerPage(
         }
 
         override fun unbindView(item: VideoViewerPage) {
-            playerView.player = null
+            view.videoView.player = null
             playerCache.releasePlayer(key = item.mediaId)
         }
     }

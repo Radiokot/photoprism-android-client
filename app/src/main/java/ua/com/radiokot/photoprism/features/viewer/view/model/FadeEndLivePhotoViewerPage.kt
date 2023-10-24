@@ -4,7 +4,6 @@ import android.net.Uri
 import android.util.Size
 import android.view.View
 import androidx.core.view.isVisible
-import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.mikepenz.fastadapter.FastAdapter
@@ -21,6 +20,8 @@ import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
+import ua.com.radiokot.photoprism.features.viewer.view.ZoomablePhotoView
+import ua.com.radiokot.photoprism.features.viewer.view.ZoomableView
 
 class FadeEndLivePhotoViewerPage(
     videoPreviewUrl: String,
@@ -44,18 +45,14 @@ class FadeEndLivePhotoViewerPage(
         ViewHolder(PagerItemMediaViewerFadeEndLivePhotoBinding.bind(v))
 
     class ViewHolder(
-        private val view: PagerItemMediaViewerFadeEndLivePhotoBinding,
-        videoPlayerVHDelegate: VideoPlayerViewHolder = VideoPlayerViewHolderImpl(view.videoView),
+        val view: PagerItemMediaViewerFadeEndLivePhotoBinding,
     ) : FastAdapter.ViewHolder<FadeEndLivePhotoViewerPage>(view.root),
-        VideoPlayerViewHolder by videoPlayerVHDelegate,
-        ZoomablePhotoViewHolder,
+        VideoPlayerViewHolder by VideoPlayerViewHolderImpl(view.videoView),
+        ZoomableView by ZoomablePhotoView(view.photoView),
         KoinScopeComponent {
 
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
-
-        override val photoView: PhotoView
-            get() = view.photoView
 
         private val picasso: Picasso by inject()
 
@@ -69,7 +66,7 @@ class FadeEndLivePhotoViewerPage(
             }
         }
 
-        override fun attachToWindow(item: FadeEndLivePhotoViewerPage) = with(playerView.player!!) {
+        override fun attachToWindow(item: FadeEndLivePhotoViewerPage) = with(view.videoView.player!!) {
             // The view state must be reset firstly on attach.
             view.progressIndicator.show()
             view.photoView.isVisible = false
@@ -110,7 +107,7 @@ class FadeEndLivePhotoViewerPage(
         }
 
         private fun playIfContentIsReady() {
-            val player = playerView.player
+            val player = view.videoView.player
                 ?: return
 
             val isPhotoReady = view.photoView.drawable != null
@@ -126,8 +123,8 @@ class FadeEndLivePhotoViewerPage(
         }
 
         private fun fadeIfCloseToTheEndOrTryLater() {
-            val player = playerView.player
-            if (!playerView.isAttachedToWindow || player == null) {
+            val player = view.videoView.player
+            if (!view.videoView.isAttachedToWindow || player == null) {
                 // Do not retry if the view is outdated.
                 return
             }
@@ -151,7 +148,7 @@ class FadeEndLivePhotoViewerPage(
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
         override fun detachFromWindow(
             item: FadeEndLivePhotoViewerPage
-        ) = with(playerView.player!!) {
+        ) = with(view.videoView.player!!) {
             // Stop playback once the page is swiped.
             stop()
 
@@ -161,17 +158,17 @@ class FadeEndLivePhotoViewerPage(
             seekToDefaultPosition()
 
             // Reset the photo scale to avoid fading to a zoomed image on replay.
-            photoView.scale = 1f
+            view.photoView.scale = 1f
 
             // Stop any animations.
-            photoView.clearAnimation()
+            view.photoView.clearAnimation()
         }
 
         override fun bindView(
             item: FadeEndLivePhotoViewerPage,
             payloads: List<Any>,
         ) = with(playerCache.getPlayer(key = item.mediaId)) {
-            playerView.player = this
+            view.videoView.player = this
             enableFatalPlaybackErrorListener(item)
 
             // Setting to false hides the controller automatically.
@@ -218,14 +215,13 @@ class FadeEndLivePhotoViewerPage(
 
         override fun unbindView(item: FadeEndLivePhotoViewerPage) {
             picasso.cancelRequest(view.photoView)
-            playerView.player = null
+            view.videoView.player = null
             playerCache.releasePlayer(key = item.mediaId)
         }
     }
 
     companion object {
         const val FADE_DURATION_MS = 200
-        const val PLAYBACK_DURATION_MS = 400 + FADE_DURATION_MS
     }
 }
 

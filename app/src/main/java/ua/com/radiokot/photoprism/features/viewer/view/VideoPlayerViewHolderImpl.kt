@@ -15,7 +15,7 @@ import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerCache
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 
 class VideoPlayerViewHolderImpl(
-    override val playerView: PlayerView,
+    val playerView: PlayerView,
 ) : VideoPlayerViewHolder {
 
     private var fatalPlaybackErrorListener: (MediaViewerPage) -> Unit = {}

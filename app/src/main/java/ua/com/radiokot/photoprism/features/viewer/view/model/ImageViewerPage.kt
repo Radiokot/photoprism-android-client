@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.util.Size
 import android.view.View
-import com.github.chrisbanes.photoview.PhotoView
 import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -14,6 +13,8 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.ZoomablePhotoView
+import ua.com.radiokot.photoprism.features.viewer.view.ZoomableView
 
 class ImageViewerPage(
     val previewUrl: String,
@@ -28,20 +29,16 @@ class ImageViewerPage(
         get() = R.layout.pager_item_media_viewer_image
 
     override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(v)
+        ViewHolder(PagerItemMediaViewerImageBinding.bind(v))
 
     class ViewHolder(
-        itemView: View,
-    ) : FastAdapter.ViewHolder<ImageViewerPage>(itemView),
+        val view: PagerItemMediaViewerImageBinding,
+    ) : FastAdapter.ViewHolder<ImageViewerPage>(view.root),
         KoinScopeComponent,
-        ZoomablePhotoViewHolder {
+        ZoomableView by ZoomablePhotoView(view.photoView) {
 
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
-
-        val view = PagerItemMediaViewerImageBinding.bind(itemView)
-        override val photoView: PhotoView
-            get() = view.photoView
 
         private val picasso: Picasso by inject()
 
