@@ -14,6 +14,7 @@ In fact, such videos can be played well
 - The "Cancel download" button in the media viewer getting stuck after clicking it
 - Crash when spamming the "Download" button in the media viewer
 - Not updating dates on the gallery scroll bar when refreshing the content
+- Occasional weird behavior of photo zoom
 
 ### Changed
 - Media cache is now cleared when disconnecting from the library
