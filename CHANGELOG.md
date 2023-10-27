@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.3] - 2023-10-27
+
+### Fixed
+- Not playing some HEVC videos (instant stop)
+
 ## [1.20.2] - 2023-10-25
 
 ### Fixed
@@ -373,7 +378,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.2(32)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.3(33)...HEAD
+[1.20.3]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.2(32)...1.20.3(33)
 [1.20.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.1(31)...1.20.2(32)
 [1.20.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.0(30)...1.20.1(31)
 [1.20.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...1.20.0(30)
