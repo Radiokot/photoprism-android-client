@@ -21,7 +21,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 class MediaFileListItem(
     val name: String,
     val thumbnailUrl: String,
-    val size: String,
+    val size: String?,
     val mimeType: String,
     val source: GalleryMedia.File?,
 ) : AbstractItem<MediaFileListItem.ViewHolder>(), Parcelable {
@@ -33,7 +33,7 @@ class MediaFileListItem(
         name = source.name,
         thumbnailUrl = source.smallThumbnailUrl,
         mimeType = source.mimeType,
-        size = Formatter.formatFileSize(context, source.sizeBytes),
+        size = source.sizeBytes?.let { Formatter.formatFileSize(context, it) },
         source = source,
     )
 

@@ -365,7 +365,7 @@ class GalleryMedia(
          */
         val mediaUid: String,
         val mimeType: String,
-        val sizeBytes: Long,
+        val sizeBytes: Long?,
         /**
          * Direct URL to the small square static thumbnail.
          */
@@ -383,7 +383,7 @@ class GalleryMedia(
             name = source.name,
             uid = source.uid,
             mediaUid = source.photoUid,
-            mimeType = source.mime,
+            mimeType = source.mime ?: "application/octet-stream",
             sizeBytes = source.size,
             smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
             downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
