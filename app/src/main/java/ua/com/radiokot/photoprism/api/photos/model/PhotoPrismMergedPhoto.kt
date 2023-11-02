@@ -27,6 +27,8 @@ constructor(
     val files: List<File>,
     @JsonProperty("CameraMake")
     val cameraMake: String?,
+    @JsonProperty("Favorite")
+    val favorite: Boolean,
 ) {
     val mainFile: File?
         // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L520

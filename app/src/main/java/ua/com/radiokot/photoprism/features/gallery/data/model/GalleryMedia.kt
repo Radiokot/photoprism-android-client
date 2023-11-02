@@ -53,6 +53,10 @@ class GalleryMedia(
      * Direct URL to open this media in the web viewer.
      */
     val webViewUrl: String,
+    /**
+     * Whether the entry is liked (added to favorites) or not.
+     */
+    var isFavorite: Boolean,
     files: List<File>,
 ) {
     /**
@@ -78,6 +82,7 @@ class GalleryMedia(
         title = source.title,
         smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
+        isFavorite = source.favorite,
         files = source.files.map { photoPrismFile ->
             File(
                 source = photoPrismFile,

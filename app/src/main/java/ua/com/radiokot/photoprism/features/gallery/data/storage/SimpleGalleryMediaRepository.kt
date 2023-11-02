@@ -5,6 +5,7 @@ import androidx.collection.LruCache
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
@@ -220,6 +221,26 @@ class SimpleGalleryMediaRepository(
             }
         }
     }
+
+    fun setFavorite(
+        itemUid: String,
+        isFavorite: Boolean,
+    ): Completable = {
+        if (isFavorite)
+            photoPrismPhotosService.likePhoto(itemUid)
+        else
+            photoPrismPhotosService.dislikePhoto(itemUid)
+    }
+        .toCompletable()
+        .doOnComplete {
+            itemsList
+                .find { it.uid == itemUid }
+                ?.also { itemToChange ->
+                    // Update the state locally.
+                    itemToChange.isFavorite = true
+                    broadcast()
+                }
+        }
 
     override fun update(): Completable {
         newestAndOldestDates = null
