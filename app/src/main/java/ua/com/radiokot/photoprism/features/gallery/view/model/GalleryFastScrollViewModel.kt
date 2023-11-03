@@ -103,6 +103,17 @@ class GalleryFastScrollViewModel(
             .doOnSubscribe {
                 bubbles.value = emptyList()
             }
+            .doOnSuccess { (newestDate, oldestDate) ->
+                log.debug {
+                    "updateBubbles(): got_dates:" +
+                            "\nnewest=$newestDate," +
+                            "\noldest=$oldestDate"
+                }
+
+                // Create bubbles here to gracefully handle possible errors.
+                // Yet, the cause of weird dates needs to be investigated.
+                createBubbles(newestDate, oldestDate)
+            }
             .subscribeBy(
                 onError = { error ->
                     log.error(error) { "updateBubbles(): error_occurred" }
@@ -110,15 +121,6 @@ class GalleryFastScrollViewModel(
                 onComplete = {
                     log.debug { "updateBubbles(): no_dates_available" }
                 },
-                onSuccess = { (newestDate, oldestDate) ->
-                    log.debug {
-                        "updateBubbles(): got_dates:" +
-                                "\nnewest=$newestDate," +
-                                "\noldest=$oldestDate"
-                    }
-
-                    createBubbles(newestDate, oldestDate)
-                }
             )
     }
 

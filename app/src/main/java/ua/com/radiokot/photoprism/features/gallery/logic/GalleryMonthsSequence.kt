@@ -11,7 +11,9 @@ class GalleryMonthsSequence(
 ) : Sequence<GalleryMonth> {
 
     init {
-        require(startLocalDate <= endLocalDate)
+        require(startLocalDate <= endLocalDate) {
+            "The start date must not be after the end one: $startLocalDate > $endLocalDate"
+        }
     }
 
     private val calendar = startLocalDate.getCalendar().apply {
