@@ -24,6 +24,8 @@
     <string name="share">Share</string>
     <string name="download">Download</string>
     <string name="open_with">Open with</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
     <string name="failed_to_load_the_preview">Failed to load the preview</string>
     <string name="failed_to_load_the_thumbnail">Failed to load the thumbnail</string>
     <string name="today">Today</string>

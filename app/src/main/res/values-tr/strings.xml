@@ -22,6 +22,8 @@
     <string name="share">Paylaş</string>
     <string name="download">İndir</string>
     <string name="open_with">İle aç</string>
+    <string name="add_to_favorites">Favorilere ekle</string>
+    <string name="remove_from_favorites">Favorilerden çıkar</string>
     <string name="failed_to_load_the_preview">Önizleme yüklenemedi</string>
     <string name="failed_to_load_the_thumbnail">Küçük resim yüklenemedi</string>
     <string name="today">Bugün</string>

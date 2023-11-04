@@ -237,7 +237,7 @@ class SimpleGalleryMediaRepository(
                 .find { it.uid == itemUid }
                 ?.also { itemToChange ->
                     // Update the state locally.
-                    itemToChange.isFavorite = true
+                    itemToChange.isFavorite = isFavorite
                     broadcast()
                 }
         }

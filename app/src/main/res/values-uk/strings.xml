@@ -22,6 +22,8 @@
     <string name="share">Відправити</string>
     <string name="download">Завантажити</string>
     <string name="open_with">Відкрити за допомогою</string>
+    <string name="add_to_favorites">Додати до вибраного</string>
+    <string name="remove_from_favorites">Видалити з вибраного</string>
     <string name="failed_to_load_the_preview">Не вдалося завантажити вміст</string>
     <string name="failed_to_load_the_thumbnail">Не вдалося завантажити мініатюру</string>
     <string name="today">Сьогодні</string>

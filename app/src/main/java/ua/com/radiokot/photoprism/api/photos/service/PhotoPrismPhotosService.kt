@@ -32,12 +32,12 @@ interface PhotoPrismPhotosService {
     @POST("v1/photos/{photoUid}/like")
     fun likePhoto(
         @Path("photoUid") photoUid: String,
-    ): Unit
+    ): Any // There must be some non-void return type because of Retrofit assertions.
 
     @kotlin.jvm.Throws(IOException::class)
     @Headers("Accept: application/json")
     @DELETE("v1/photos/{photoUid}/like")
     fun dislikePhoto(
         @Path("photoUid") photoUid: String,
-    ): Unit
+    ): Any // There must be some non-void return type because of Retrofit assertions.
 }

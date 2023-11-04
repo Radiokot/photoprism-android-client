@@ -24,6 +24,8 @@
     <string name="share">分享</string>
     <string name="download">下載</string>
     <string name="open_with">打開方式</string>
+    <string name="add_to_favorites">加入收藏夾</string>
+    <string name="remove_from_favorites">從收藏夾中刪除</string>
     <string name="failed_to_load_the_preview">預覽載入失敗</string>
     <string name="failed_to_load_the_thumbnail">縮圖載入失敗</string>
     <string name="today">今天</string>

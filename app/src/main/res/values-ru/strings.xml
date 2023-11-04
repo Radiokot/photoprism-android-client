@@ -22,6 +22,8 @@
     <string name="share">Отправить</string>
     <string name="download">Скачать</string>
     <string name="open_with">Открыть с помощью</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="remove_from_favorites">Удалить из избранного</string>
     <string name="failed_to_load_the_preview">Не удалось загрузить содержимое</string>
     <string name="failed_to_load_the_thumbnail">Не удалось загрузить миниатюру</string>
     <string name="today">Сегодня</string>

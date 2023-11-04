@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Ability to like/dislike content 
+
+### Changed
+- "Open in" and "Open in web viewer" media viewer actions are now located in the header menu
+
 ### Fixed
 - Not loading gallery content if there is a file without type (`FileType`)
 

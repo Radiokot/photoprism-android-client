@@ -130,25 +130,14 @@
             tools:targetApi="o" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/open_in_button"
+            android:id="@+id/favorite_button"
             style="?materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
-            android:contentDescription="@string/open_with"
-            android:tooltipText="@string/open_with"
-            app:icon="@drawable/ic_open_in"
-            tools:targetApi="o" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/open_in_web_viewer_button"
-            style="?materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
-            android:contentDescription="@string/open_in_web_viewer"
-            android:tooltipText="@string/open_in_web_viewer"
-            app:icon="@drawable/ic_web"
+            android:contentDescription="@string/add_to_favorites"
+            android:tooltipText="@string/add_to_favorites"
+            app:icon="@drawable/ic_favorite"
             tools:targetApi="o" />
 
     </com.google.android.flexbox.FlexboxLayout>

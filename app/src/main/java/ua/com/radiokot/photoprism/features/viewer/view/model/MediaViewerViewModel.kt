@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -20,6 +21,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
 import java.text.DateFormat
@@ -33,6 +35,7 @@ class MediaViewerViewModel(
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val utcDateTimeDateFormat: DateFormat,
     private val utcDateTimeYearDateFormat: DateFormat,
+    private val setGalleryMediaFavoriteUseCaseFactory: SetGalleryMediaFavoriteUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -57,6 +60,7 @@ class MediaViewerViewModel(
     val isDownloadCompletedIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val title: MutableLiveData<String> = MutableLiveData()
     val subtitle: MutableLiveData<String> = MutableLiveData()
+    val isFavorite: MutableLiveData<Boolean> = MutableLiveData()
 
     /**
      * Size of the image viewing area in px.
@@ -264,6 +268,48 @@ class MediaViewerViewModel(
 
         backgroundMediaFileDownloadManager.cancel(item.uid)
         unsubscribeFromDownloadProgress()
+    }
+
+    fun onFavoriteClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+        // Switch currently shown favorite state.
+        val toSetFavorite = isFavorite.value != true
+
+        log.debug {
+            "onFavoriteClicked(): switching_favorite:" +
+                    "\nitem=$item," +
+                    "\ntoSetFavorite=$toSetFavorite"
+        }
+
+        setGalleryMediaFavoriteUseCaseFactory.get(
+            mediaUid = item.uid,
+            isFavorite = toSetFavorite,
+            currentGalleryMediaRepository = galleryMediaRepository,
+        )
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                // Change the value immediately for pleasant user experience.
+                isFavorite.value = toSetFavorite
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onFavoriteClicked(): failed_switching_favorite:" +
+                                "\nitem=$item," +
+                                "\ntoSetFavorite=$toSetFavorite"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onFavoriteClicked(): successfully_switched_favorite:" +
+                                "\nitem=$item," +
+                                "\ntoSetFavorite=$toSetFavorite"
+                    }
+                }
+            )
+            .autoDispose(this)
     }
 
     fun onPageClicked() {
@@ -507,6 +553,7 @@ class MediaViewerViewModel(
             statusObservable = backgroundMediaFileDownloadManager.getStatus(item.uid)
         )
         updateTitleAndSubtitle(item)
+        isFavorite.value = item.isFavorite
 
         // When switching to a video (not live photo or GIF), go full screen if currently is not.
         if (item.media is GalleryMedia.TypeData.Video && isFullScreen.value == false) {

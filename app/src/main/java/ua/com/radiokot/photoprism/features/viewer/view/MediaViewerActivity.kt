@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnKeyListener
@@ -15,6 +17,7 @@ import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -269,12 +272,6 @@ class MediaViewerActivity : BaseActivity() {
             )
         }
 
-        view.openInButton.setThrottleOnClickListener {
-            viewModel.onOpenInClicked(
-                position = view.viewPager.currentItem,
-            )
-        }
-
         view.downloadButton.setThrottleOnClickListener {
             viewModel.onDownloadClicked(
                 position = view.viewPager.currentItem,
@@ -287,8 +284,8 @@ class MediaViewerActivity : BaseActivity() {
             )
         }
 
-        view.openInWebViewerButton.setThrottleOnClickListener {
-            viewModel.onOpenInWebViewerClicked(
+        view.favoriteButton.setThrottleOnClickListener {
+            viewModel.onFavoriteClicked(
                 position = view.viewPager.currentItem,
             )
         }
@@ -474,6 +471,30 @@ class MediaViewerActivity : BaseActivity() {
         view.keyboardNavigationFocusView.requestFocus(View.FOCUS_DOWN)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.media_viewer, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.open_in -> {
+            viewModel.onOpenInClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        R.id.open_in_web_viewer -> {
+            viewModel.onOpenInWebViewerClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        else ->
+            false
+    }
+
     private fun setUpVideoViewer(viewHolder: VideoPlayerViewHolder) {
         viewHolder.playerCache = videoPlayerCacheViewModel
         viewHolder.bindPlayerToLifecycle(this@MediaViewerActivity.lifecycle)
@@ -596,6 +617,25 @@ class MediaViewerActivity : BaseActivity() {
             this,
             view.toolbar::setSubtitle
         )
+
+        viewModel.isFavorite.observe(this) { isFavorite ->
+            view.favoriteButton.contentDescription =
+                getString(
+                    if (isFavorite)
+                        R.string.remove_from_favorites
+                    else
+                        R.string.add_to_favorites
+                )
+            ViewCompat.setTooltipText(view.favoriteButton, view.favoriteButton.contentDescription)
+            view.favoriteButton.icon =
+                ContextCompat.getDrawable(
+                    this,
+                    if (isFavorite)
+                        R.drawable.ic_favorite_filled
+                    else
+                        R.drawable.ic_favorite
+                )
+        }
     }
 
     @Suppress("DEPRECATION")

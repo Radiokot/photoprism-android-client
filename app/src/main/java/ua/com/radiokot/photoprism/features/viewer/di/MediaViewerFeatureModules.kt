@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -21,8 +22,9 @@ import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
+import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
@@ -63,6 +65,7 @@ val mediaViewerFeatureModules: List<Module> = listOf(
                     backgroundMediaFileDownloadManager = get(),
                     utcDateTimeDateFormat = get(named(UTC_DATE_TIME_DATE_FORMAT)),
                     utcDateTimeYearDateFormat = get(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)),
+                    setGalleryMediaFavoriteUseCaseFactory = get(),
                 )
             }
 
@@ -87,6 +90,8 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             } bind VideoPlayerFactory::class
 
             viewModelOf(::VideoPlayerCacheViewModel)
+
+            scopedOf(SetGalleryMediaFavoriteUseCase::Factory)
         }
     }
 )

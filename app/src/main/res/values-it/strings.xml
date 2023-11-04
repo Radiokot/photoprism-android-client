@@ -22,6 +22,8 @@
     <string name="share">Condividi</string>
     <string name="download">Scarica</string>
     <string name="open_with">Apri con</string>
+    <string name="add_to_favorites">Aggiungi ai preferiti</string>
+    <string name="remove_from_favorites">Rimuovi dai preferiti</string>
     <string name="failed_to_load_the_preview">Caricamento dell\'anteprima non riuscito</string>
     <string name="failed_to_load_the_thumbnail">Caricamento della miniatura non riuscito</string>
     <string name="today">Oggi</string>
