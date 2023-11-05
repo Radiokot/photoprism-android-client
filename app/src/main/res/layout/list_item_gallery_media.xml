@@ -29,12 +29,26 @@
         android:layout_height="23dp"
         android:layout_margin="5dp"
         android:alpha="0.75"
-        android:background="@drawable/media_type_background"
+        android:background="@drawable/list_item_gallery_media_indicator_background"
         android:padding="4dp"
         app:layout_constraintStart_toStartOf="@id/image_view"
         app:layout_constraintTop_toTopOf="@id/image_view"
         app:tint="@android:color/white"
         tools:src="@drawable/ic_sledding" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/favorite_image_view"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_margin="5dp"
+        android:alpha="0.75"
+        android:background="@drawable/list_item_gallery_media_indicator_background"
+        android:paddingHorizontal="4dp"
+        android:paddingTop="1dp"
+        app:layout_constraintEnd_toEndOf="@id/image_view"
+        app:layout_constraintTop_toTopOf="@id/image_view"
+        app:srcCompat="@drawable/ic_favorite_filled"
+        app:tint="@android:color/white" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_button"

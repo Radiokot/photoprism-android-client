@@ -28,6 +28,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.util.ItemViewFactory
 import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
 
@@ -42,7 +43,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val isViewButtonVisible: Boolean,
         val isSelectionViewVisible: Boolean,
         val isMediaSelected: Boolean,
+        val isFavorite: Boolean,
         val source: GalleryMedia?,
+        /**
+         * Do not forget to update [GalleryListItemDiffCallback]
+         * when changing fields.
+         */
     ) : GalleryListItem() {
         constructor(
             source: GalleryMedia,
@@ -65,6 +71,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             isViewButtonVisible = isViewButtonVisible,
             isSelectionViewVisible = isSelectionViewVisible,
             isMediaSelected = isMediaSelected,
+            isFavorite = source.isFavorite,
             source = source,
         )
 
@@ -164,9 +171,10 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                             null
                 }
 
+                view.favoriteImageView.isVisible = item.isFavorite
                 view.viewButton.isVisible = item.isViewButtonVisible
-                view.selectionCheckBox.isVisible = item.isSelectionViewVisible
 
+                view.selectionCheckBox.isVisible = item.isSelectionViewVisible
                 view.selectionCheckBox.isChecked = item.isMediaSelected
 
                 view.imageView.shapeAppearanceModel =
