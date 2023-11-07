@@ -61,6 +61,7 @@
     <string name="how_to_search_the_library">Arama filtrelerini kullanmak</string>
     <string name="some_types_are_not_available_when_selecting">Yalnızca istekte bulunan uygulama tarafından desteklenen türler mevcuttur</string>
     <string name="include_private_content">Gizli içeriği dahil et</string>
+    <string name="only_favorite_content">Sadece favoriler</string>
     <string name="client_certificate_optional">İstemci sertifikası (isteğe bağlı)</string>
     <string name="clear">Temizle</string>
     <string name="how_to_use_client_certificate">İstemci sertifikaları nasıl kullanılır</string>

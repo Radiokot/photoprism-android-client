@@ -61,6 +61,7 @@
     <string name="how_to_search_the_library">Come cercare nella libreria</string>
     <string name="some_types_are_not_available_when_selecting">Solo i tipi supportati dall\'app sono disponibili</string>
     <string name="include_private_content">Includi contenuti privati</string>
+    <string name="only_favorite_content">Solo i preferiti</string>
     <string name="client_certificate_optional">Certificato client (opzionale)</string>
     <string name="clear">Pulisci</string>
     <string name="how_to_use_client_certificate">Come usare i certificati client</string>

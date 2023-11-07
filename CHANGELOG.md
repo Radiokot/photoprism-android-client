@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Ability to like/dislike content 
+- Ability to see only favorite content on the search screen 
 
 ### Changed
 - "Open in" and "Open in web viewer" media viewer actions are now located in the header menu

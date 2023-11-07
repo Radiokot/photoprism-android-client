@@ -63,6 +63,7 @@
     <string name="how_to_search_the_library">如何搜索图书馆</string>
     <string name="some_types_are_not_available_when_selecting">只有应用程序支持的类型才可用</string>
     <string name="include_private_content">包含私有内容</string>
+    <string name="only_favorite_content">仅收藏</string>
     <string name="client_certificate_optional">客户端证书 (optional)</string>
     <string name="clear">清除</string>
     <string name="how_to_use_client_certificate">如何使用客户端证书</string>

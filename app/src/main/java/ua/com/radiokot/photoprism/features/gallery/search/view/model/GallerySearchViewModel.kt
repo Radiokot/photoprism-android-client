@@ -51,7 +51,7 @@ class GallerySearchViewModel(
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
 
     // Current search configuration values.
-    // Values are set to searchDefaults values in onConfigurationViewOpening()
+    // Values are set to searchDefaults values in switchToConfiguring()
 
     /**
      * Set of the selected media types, or **null** if nothing is selected.
@@ -59,6 +59,7 @@ class GallerySearchViewModel(
     val selectedMediaTypes = MutableLiveData<Set<GalleryMedia.TypeName>?>()
     val userQuery = MutableLiveData<String>()
     val includePrivateContent = MutableLiveData<Boolean>()
+    val onlyFavorite = MutableLiveData<Boolean>()
     private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
     private val selectedPersonIds = peopleViewModel.selectedPersonIds
 
@@ -70,13 +71,14 @@ class GallerySearchViewModel(
         selectedMediaTypes.observeForever(updateApplyButtonEnabled)
         userQuery.observeForever(updateApplyButtonEnabled)
         includePrivateContent.observeForever(updateApplyButtonEnabled)
+        onlyFavorite.observeForever(updateApplyButtonEnabled)
         selectedAlbumUid.observeForever(updateApplyButtonEnabled)
         selectedPersonIds.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
         // External data is updated on config view opening as well.
-        // ::onConfigurationViewOpening.
+        // ::switchToConfiguring.
         updateExternalData()
     }
 
@@ -85,6 +87,7 @@ class GallerySearchViewModel(
             return selectedMediaTypes.value != searchDefaults.mediaTypes
                     || userQuery.value != searchDefaults.userQuery
                     || includePrivateContent.value != searchDefaults.includePrivate
+                    || onlyFavorite.value != searchDefaults.onlyFavorite
                     || selectedAlbumUid.value != searchDefaults.albumUid
                     || selectedPersonIds.value != searchDefaults.personIds
         }
@@ -168,6 +171,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = state.search.config.mediaTypes
                 userQuery.value = state.search.config.userQuery
                 includePrivateContent.value = state.search.config.includePrivate
+                onlyFavorite.value = state.search.config.onlyFavorite
                 selectedAlbumUid.value = state.search.config.albumUid
                 selectedPersonIds.value = state.search.config.personIds
 
@@ -187,6 +191,7 @@ class GallerySearchViewModel(
                 selectedMediaTypes.value = searchDefaults.mediaTypes
                 userQuery.value = searchDefaults.userQuery
                 includePrivateContent.value = searchDefaults.includePrivate
+                onlyFavorite.value = searchDefaults.onlyFavorite
                 selectedAlbumUid.value = searchDefaults.albumUid
                 selectedPersonIds.value = searchDefaults.personIds
 
@@ -247,6 +252,7 @@ class GallerySearchViewModel(
             personIds = selectedPersonIds.value!!,
             beforeLocal = null,
             includePrivate = includePrivateContent.value == true,
+            onlyFavorite = onlyFavorite.value == true,
         )
         val bookmark = bookmarksRepository.findByConfig(config)
         val appliedSearch =
@@ -366,6 +372,7 @@ class GallerySearchViewModel(
             ?.intersect(availableMediaTypes.value!!)
         userQuery.value = bookmark.searchConfig.userQuery
         includePrivateContent.value = bookmark.searchConfig.includePrivate
+        onlyFavorite.value = bookmark.searchConfig.onlyFavorite
         selectedAlbumUid.value = bookmark.searchConfig.albumUid
         selectedPersonIds.value = bookmark.searchConfig.personIds
 

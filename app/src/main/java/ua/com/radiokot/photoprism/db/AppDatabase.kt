@@ -8,12 +8,13 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmarksDbE
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksDbDao
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [
         SearchBookmarksDbEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
     ],
     exportSchema = true,
 )

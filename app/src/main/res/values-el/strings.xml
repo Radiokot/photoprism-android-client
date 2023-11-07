@@ -60,6 +60,7 @@
     <string name="how_to_search_the_library">πώς να κάνετε αναζήτηση στη βιβλιοθήκη</string>
     <string name="some_types_are_not_available_when_selecting">Διατίθενται μόνο τύποι που υποστηρίζονται από την αιτούσα εφαρμογή</string>
     <string name="include_private_content">συμπερίληψη ιδιωτικού περιεχομένου</string>
+    <string name="only_favorite_content">μόνο τα αγαπημένα</string>
     <string name="client_certificate_optional">πιστοποιητικό χρήστη (προαιρετικό)</string>
     <string name="clear">καθαρισμός</string>
     <string name="how_to_use_client_certificate">πως να χρησιμοποιήσετε τα πιστοποιητικά χρήστη</string>

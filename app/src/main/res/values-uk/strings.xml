@@ -61,6 +61,7 @@
     <string name="how_to_search_the_library">Як шукати в бібліотеці</string>
     <string name="some_types_are_not_available_when_selecting">Доступні тільки типи, які підтримує запитуючий застосунок</string>
     <string name="include_private_content">Показати приватний вміст</string>
+    <string name="only_favorite_content">Тільки вибране</string>
     <string name="client_certificate_optional">Клієнтський сертифікат (опціонально)</string>
     <string name="clear">Почистити</string>
     <string name="how_to_use_client_certificate">Як використовувати клієнтські сертифікати</string>

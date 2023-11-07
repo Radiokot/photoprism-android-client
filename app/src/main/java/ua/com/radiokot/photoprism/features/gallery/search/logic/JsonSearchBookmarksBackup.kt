@@ -94,6 +94,8 @@ class JsonSearchBookmarksBackup(
             val mediaTypes: List<String>?,
             @JsonProperty("ip")
             val includePrivate: Boolean,
+            @JsonProperty("of")
+            val onlyFavorite: Boolean?,
             @JsonProperty("a")
             val albumUid: String?,
             @JsonProperty("pe")
@@ -107,6 +109,7 @@ class JsonSearchBookmarksBackup(
                 mediaTypes = source.searchConfig.mediaTypes
                     ?.map(GalleryMedia.TypeName::toString),
                 includePrivate = source.searchConfig.includePrivate,
+                onlyFavorite = source.searchConfig.onlyFavorite,
                 albumUid = source.searchConfig.albumUid,
                 personIds = source.searchConfig.personIds,
             )
@@ -121,6 +124,7 @@ class JsonSearchBookmarksBackup(
                         ?.map { GalleryMedia.TypeName.valueOf(it) }
                         ?.toSet(),
                     includePrivate = includePrivate,
+                    onlyFavorite = onlyFavorite == true,
                     beforeLocal = null,
                     albumUid = albumUid,
                     personIds = personIds,
@@ -163,6 +167,7 @@ class JsonSearchBookmarksBackup(
                         ?.map { GalleryMedia.TypeName.valueOf(it) }
                         ?.toSet(),
                     includePrivate = includePrivate,
+                    onlyFavorite = false,
                     beforeLocal = null,
                     albumUid = albumUid,
                     personIds = emptySet()
@@ -206,6 +211,7 @@ class JsonSearchBookmarksBackup(
                         ?.map { GalleryMedia.TypeName.valueOf(it) }
                         ?.toSet(),
                     includePrivate = includePrivate,
+                    onlyFavorite = false,
                     beforeLocal = null,
                     albumUid = albumUid,
                     personIds = emptySet(),

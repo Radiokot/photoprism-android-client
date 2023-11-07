@@ -27,6 +27,7 @@ data class SearchConfig(
     val beforeLocal: LocalDate?,
     val userQuery: String,
     val includePrivate: Boolean,
+    val onlyFavorite: Boolean,
 ) : Parcelable {
     /**
      * @return copy of the config which doesn't overcome the allowed media types,
@@ -95,6 +96,10 @@ data class SearchConfig(
 
         queryBuilder.append(" public:${!includePrivate}")
 
+        if (onlyFavorite) {
+            queryBuilder.append(" favorite:true")
+        }
+
         if (albumUid != null) {
             queryBuilder.append(" album:$albumUid")
         }
@@ -126,6 +131,7 @@ data class SearchConfig(
             beforeLocal = null,
             userQuery = "",
             includePrivate = false,
+            onlyFavorite = false,
         )
 
         private const val DAY_MS = 86400000L

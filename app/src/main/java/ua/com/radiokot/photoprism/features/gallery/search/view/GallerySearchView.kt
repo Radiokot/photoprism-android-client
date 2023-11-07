@@ -216,6 +216,7 @@ class GallerySearchView(
         }
 
         configurationView.privateContentSwitch.bindCheckedTwoWay(viewModel.includePrivateContent)
+        configurationView.onlyFavoriteSwitch.bindCheckedTwoWay(viewModel.onlyFavorite)
 
         configurationView.searchButton.setThrottleOnClickListener {
             viewModel.onSearchClicked()
@@ -484,6 +485,10 @@ class GallerySearchView(
 
                 if (search.config.includePrivate) {
                     appendIcon(R.drawable.ic_eye_off)
+                }
+
+                if (search.config.onlyFavorite) {
+                    appendIcon(R.drawable.ic_favorite)
                 }
 
                 // If an album is selected, show icon and, if possible, the title.

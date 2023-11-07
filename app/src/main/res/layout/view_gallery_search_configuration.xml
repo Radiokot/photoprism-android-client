@@ -73,6 +73,15 @@
                 android:text="@string/include_private_content"
                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/only_favorite_switch"
+                style="@style/Widget.Material3.CompoundButton.CheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/only_favorite_content"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
         </LinearLayout>
     </ua.com.radiokot.photoprism.view.ZeroTopFadingEdgeNestedScrollView>
 

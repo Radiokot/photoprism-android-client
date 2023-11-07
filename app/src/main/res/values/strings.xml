@@ -63,6 +63,7 @@
     <string name="how_to_search_the_library">How to search the library</string>
     <string name="some_types_are_not_available_when_selecting">Only types supported by the requesting app are available</string>
     <string name="include_private_content">Include private content</string>
+    <string name="only_favorite_content">Only favorite</string>
     <string name="client_certificate_optional">Client certificate (optional)</string>
     <string name="clear">Clear</string>
     <string name="how_to_use_client_certificate">How to use client certificates</string>

@@ -61,6 +61,7 @@
     <string name="how_to_search_the_library">Как искать в библиотеке</string>
     <string name="some_types_are_not_available_when_selecting">Доступные только типы, которые поддерживает запрашивающее приложение</string>
     <string name="include_private_content">Показать приватное содержимое</string>
+    <string name="only_favorite_content">Только избранное</string>
     <string name="client_certificate_optional">Клиентский сертификат (опционально)</string>
     <string name="clear">Очистить</string>
     <string name="how_to_use_client_certificate">Как использовать клиентские сертификаты</string>

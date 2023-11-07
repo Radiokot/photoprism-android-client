@@ -23,6 +23,7 @@ data class SearchBookmark(
             beforeLocal = null,
             userQuery = dbEntity.userQuery ?: "",
             includePrivate = dbEntity.includePrivate,
+            onlyFavorite = dbEntity.onlyFavorite,
         )
     )
 
@@ -33,6 +34,7 @@ data class SearchBookmark(
         userQuery = searchConfig.userQuery,
         mediaTypes = searchConfig.mediaTypes?.map(GalleryMedia.TypeName::toString),
         includePrivate = searchConfig.includePrivate,
+        onlyFavorite = searchConfig.onlyFavorite,
         albumUid = searchConfig.albumUid,
         personIds = searchConfig.personIds.toList(),
     )
