@@ -168,12 +168,8 @@ class GallerySearchViewModel(
     private fun switchToConfiguring() {
         when (val state = stateSubject.value!!) {
             is State.Applied -> {
-                selectedMediaTypes.value = state.search.config.mediaTypes
-                userQuery.value = state.search.config.userQuery
-                includePrivateContent.value = state.search.config.includePrivate
-                onlyFavorite.value = state.search.config.onlyFavorite
-                selectedAlbumUid.value = state.search.config.albumUid
-                selectedPersonIds.value = state.search.config.personIds
+                // Set up the UI with the already applied configuration.
+                configureSearch(state.search.config)
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring:" +
@@ -188,12 +184,8 @@ class GallerySearchViewModel(
             }
 
             State.NoSearch -> {
-                selectedMediaTypes.value = searchDefaults.mediaTypes
-                userQuery.value = searchDefaults.userQuery
-                includePrivateContent.value = searchDefaults.includePrivate
-                onlyFavorite.value = searchDefaults.onlyFavorite
-                selectedAlbumUid.value = searchDefaults.albumUid
-                selectedPersonIds.value = searchDefaults.personIds
+                // Set up the UI with defaults.
+                configureSearch(searchDefaults)
 
                 log.debug {
                     "switchToConfiguringSearch(): switching_to_configuring"
@@ -211,6 +203,18 @@ class GallerySearchViewModel(
         }
 
         updateExternalData()
+    }
+
+    /**
+     * Set all the UI to the corresponding configuration.
+     */
+    private fun configureSearch(searchConfig: SearchConfig) {
+        selectedMediaTypes.value = searchConfig.mediaTypes
+        userQuery.value = searchConfig.userQuery
+        includePrivateContent.value = searchConfig.includePrivate
+        onlyFavorite.value = searchConfig.onlyFavorite
+        selectedAlbumUid.value = searchConfig.albumUid
+        selectedPersonIds.value = searchConfig.personIds
     }
 
     fun updateExternalData(force: Boolean = false) {
@@ -366,15 +370,14 @@ class GallerySearchViewModel(
     }
 
     private fun configureAndApplySearchFromBookmark(bookmark: SearchBookmark) {
-        selectedMediaTypes.value = bookmark.searchConfig.mediaTypes
-            // A bookmark may have more media types than allowed now
-            // (due to the intent filter).
-            ?.intersect(availableMediaTypes.value!!)
-        userQuery.value = bookmark.searchConfig.userQuery
-        includePrivateContent.value = bookmark.searchConfig.includePrivate
-        onlyFavorite.value = bookmark.searchConfig.onlyFavorite
-        selectedAlbumUid.value = bookmark.searchConfig.albumUid
-        selectedPersonIds.value = bookmark.searchConfig.personIds
+        configureSearch(
+            bookmark.searchConfig.copy(
+                mediaTypes = bookmark.searchConfig.mediaTypes
+                    // A bookmark may have more media types than allowed now
+                    // (due to the intent filter).
+                    ?.intersect(availableMediaTypes.value!!)
+            )
+        )
 
         log.debug {
             "applySearchFromBookmark(): configured_search_from_bookmark:" +
