@@ -36,8 +36,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.VIDEO,
                     ),
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
+                    onlyFavorite = false,
                     albumUid = "ars1juz1456bluxz",
                     personIds = emptySet(),
                 )
@@ -49,8 +51,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 searchConfig = SearchConfig(
                     mediaTypes = null,
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "",
                     includePrivate = false,
+                    onlyFavorite = false,
                     albumUid = null,
                     personIds = setOf("p2132523232"),
                 )
@@ -62,8 +66,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 searchConfig = SearchConfig(
                     mediaTypes = emptySet(),
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "",
                     includePrivate = false,
+                    onlyFavorite = true,
                     albumUid = null,
                     personIds = setOf("p2132523232", "pwr9hh8ef9w3"),
                 )
@@ -86,7 +92,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         val outputJson = String(outputStream.toByteArray(), Charsets.UTF_8)
 
         Assert.assertEquals(
-            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}""",
+            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"of":false,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"of":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"of":true,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}""",
             outputJson,
         )
     }
@@ -96,7 +102,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         val backup = getKoin().get<JsonSearchBookmarksBackup>()
 
         val inputJson =
-            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}"""
+            """{"v":3,"d":{"b":[{"id":1,"p":1.0,"n":"My camera","q":"quality:3 oleg&cam","mt":["RAW","VIDEO"],"ip":true,"of":false,"a":"ars1juz1456bluxz","pe":[]},{"id":2,"p":3.141592653589793,"n":"Интересные фото \uD83C\uDF55","q":"","mt":null,"ip":false,"of":false,"a":null,"pe":["p2132523232"]},{"id":3,"p":25.5,"n":"media types empty","q":"","mt":[],"ip":false,"of":true,"a":null,"pe":["p2132523232","pwr9hh8ef9w3"]}]}}"""
         val inputStream = inputJson.byteInputStream(Charsets.UTF_8)
         val imported = backup.readBackup(inputStream)
 
@@ -135,8 +141,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.VIDEO,
                     ),
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
+                    onlyFavorite = false,
                     albumUid = "ars1juz1456bluxz",
                     personIds = emptySet(),
                 )
@@ -184,8 +192,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                         GalleryMedia.TypeName.VIDEO,
                     ),
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "quality:3 oleg&cam",
                     includePrivate = true,
+                    onlyFavorite = false,
                     albumUid = "ars1juz1456bluxz",
                     personIds = emptySet(),
                 )
@@ -197,8 +207,10 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
                 searchConfig = SearchConfig(
                     mediaTypes = null,
                     beforeLocal = null,
+                    afterLocal = null,
                     userQuery = "",
                     includePrivate = false,
+                    onlyFavorite = false,
                     albumUid = null,
                     personIds = emptySet(),
                 )
