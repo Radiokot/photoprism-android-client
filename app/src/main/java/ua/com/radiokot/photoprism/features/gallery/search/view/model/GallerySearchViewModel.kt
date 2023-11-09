@@ -255,6 +255,7 @@ class GallerySearchViewModel(
             albumUid = selectedAlbumUid.value,
             personIds = selectedPersonIds.value!!,
             beforeLocal = null,
+            afterLocal = null,
             includePrivate = includePrivateContent.value == true,
             onlyFavorite = onlyFavorite.value == true,
         )

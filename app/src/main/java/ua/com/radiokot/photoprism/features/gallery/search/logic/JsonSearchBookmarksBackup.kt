@@ -126,6 +126,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     onlyFavorite = onlyFavorite == true,
                     beforeLocal = null,
+                    afterLocal = null,
                     albumUid = albumUid,
                     personIds = personIds,
                 )
@@ -169,6 +170,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     onlyFavorite = false,
                     beforeLocal = null,
+                    afterLocal = null,
                     albumUid = albumUid,
                     personIds = emptySet()
                 )
@@ -213,6 +215,7 @@ class JsonSearchBookmarksBackup(
                     includePrivate = includePrivate,
                     onlyFavorite = false,
                     beforeLocal = null,
+                    afterLocal = null,
                     albumUid = albumUid,
                     personIds = emptySet(),
                 )

@@ -107,9 +107,10 @@ class SimpleGalleryMediaRepository(
                         )
                     }
                     .filter { entry ->
-                        // Precise post filter by the "before" date, workaround for PhotoPrism filtering.
-                        // Ignore entries taken at or after the specified local time.
-                        params.postFilterBefore == null || entry.takenAtLocal < params.postFilterBefore
+                        // Precise post filter by "before" and "after" dates,
+                        // workaround for PhotoPrism filtering.
+                        (params.postFilterBefore == null || entry.takenAtLocal < params.postFilterBefore)
+                                && (params.postFilterAfter == null || entry.takenAtLocal > params.postFilterAfter)
                     }
             }
             .doOnSuccess { successfullyLoadedItems ->
@@ -261,11 +262,14 @@ class SimpleGalleryMediaRepository(
      * @param query user query
      * @param postFilterBefore local time to apply post filtering of the items,
      * as PhotoPrism is incapable of precise local time filtering.
+     * @param postFilterAfter local time to apply post filtering of the items,
+     * as PhotoPrism is incapable of precise local time filtering.
      */
     @Parcelize
     data class Params(
         val query: String? = null,
         val postFilterBefore: LocalDate? = null,
+        val postFilterAfter: LocalDate? = null,
     ) : Parcelable
 
     class Factory(
@@ -281,6 +285,7 @@ class SimpleGalleryMediaRepository(
             val params = Params(
                 query = config.getPhotoPrismQuery(),
                 postFilterBefore = config.beforeLocal,
+                postFilterAfter = config.afterLocal,
             )
 
             return get(params)

@@ -21,6 +21,7 @@ data class SearchBookmark(
             albumUid = dbEntity.albumUid,
             personIds = dbEntity.personIds.toSet(),
             beforeLocal = null,
+            afterLocal = null,
             userQuery = dbEntity.userQuery ?: "",
             includePrivate = dbEntity.includePrivate,
             onlyFavorite = dbEntity.onlyFavorite,

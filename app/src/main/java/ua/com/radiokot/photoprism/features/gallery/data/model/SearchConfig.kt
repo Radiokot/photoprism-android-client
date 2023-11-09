@@ -22,9 +22,18 @@ data class SearchConfig(
     val personIds: Set<String>,
     /**
      * Local date to find media taken before it.
-     * The filter is applied to [GalleryMedia.takenAtLocal]
+     * Local post filtering by [GalleryMedia.takenAtLocal]
+     * is required to get accurate results,
+     * as PhotoPrism does not take into account the time.
      */
     val beforeLocal: LocalDate?,
+    /**
+     * Local date to find media taken after it.
+     * Local post filtering by [GalleryMedia.takenAtLocal]
+     * is required to get accurate results,
+     * as PhotoPrism does not take into account the time.
+     */
+    val afterLocal: LocalDate?,
     val userQuery: String,
     val includePrivate: Boolean,
     val onlyFavorite: Boolean,
@@ -88,10 +97,22 @@ data class SearchConfig(
             // It also filters by the "TakenAt" date rather than "TakenAtLocal",
             // so an extra day is added to overcome these problems.
             //
-            // When using this workaround workaround, the local post filtering is needed.
+            // When using this workaround, the local post filtering is needed.
             val redundantBefore =
                 LocalDate(beforeLocal.time + DAY_MS)
             queryBuilder.append(" before:\"${formatPhotoPrismDate(redundantBefore)}\"")
+        }
+
+        if (afterLocal != null) {
+            // PhotoPrism "after" filter does not take into account the time.
+            // "after:2023-04-30T22:57:32Z" is treated like "2023-04-30T00:00:00Z".
+            // It also filters by the "TakenAt" date rather than "TakenAtLocal",
+            // so an extra day is subtracted to overcome these problems.
+            //
+            // When using this workaround, the local post filtering is needed.
+            val redundantAfter =
+                LocalDate(afterLocal.time - DAY_MS)
+            queryBuilder.append(" after:\"${formatPhotoPrismDate(redundantAfter)}\"")
         }
 
         queryBuilder.append(" public:${!includePrivate}")
@@ -129,6 +150,7 @@ data class SearchConfig(
             albumUid = null,
             personIds = emptySet(),
             beforeLocal = null,
+            afterLocal = null,
             userQuery = "",
             includePrivate = false,
             onlyFavorite = false,
