@@ -44,9 +44,10 @@ class GetMemoriesUseCase(
 
         photoPrismClientConfigService.getClientConfig()
             .years
-            .sortedDescending()
-            .asSequence()
-            .filter { it < currentYear }
+            ?.sortedDescending()
+            ?.asSequence()
+            ?.filter { it < currentYear }
+            ?: emptySequence()
     }.toSingle()
 
     /**

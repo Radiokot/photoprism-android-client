@@ -13,5 +13,5 @@ constructor(
     @JsonProperty("public")
     val public: Boolean,
     @JsonProperty("years")
-    val years: List<Int>,
+    val years: List<Int>?,
 )
