@@ -22,6 +22,7 @@ import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
@@ -263,6 +264,13 @@ class MediaViewerActivity : BaseActivity() {
             isFocusable = false
             isFocusableInTouchMode = false
         }
+
+        // Add a margin between pages for more pleasant swipe.
+        setPageTransformer(
+            MarginPageTransformer(
+                resources.getDimensionPixelSize(R.dimen.media_viewer_page_margin)
+            )
+        )
     }
 
     private fun initButtons() {
