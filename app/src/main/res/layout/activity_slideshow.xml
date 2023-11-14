@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:background="#f3f3f3"
     tools:context=".features.viewer.slideshow.view.SlideshowActivity">
 
