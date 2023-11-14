@@ -22,6 +22,7 @@ import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
+import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModules
@@ -48,6 +49,7 @@ class PhotoPrismGallery : Application() {
                         + envConnectionFeatureModules
                         + webViewFeatureModules
                         + welcomeScreenFeatureModules
+                        + slideshowFeatureModules
             )
             androidFileProperties("app.properties")
         }

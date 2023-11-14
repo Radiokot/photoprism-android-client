@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
@@ -18,6 +17,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
 import ua.com.radiokot.photoprism.features.viewer.view.ZoomablePhotoView
@@ -46,7 +46,7 @@ class FadeEndLivePhotoViewerPage(
 
     class ViewHolder(
         val view: PagerItemMediaViewerFadeEndLivePhotoBinding,
-    ) : FastAdapter.ViewHolder<FadeEndLivePhotoViewerPage>(view.root),
+    ) : MediaViewerPageViewHolder<FadeEndLivePhotoViewerPage>(view.root),
         VideoPlayerViewHolder by VideoPlayerViewHolderImpl(view.videoView),
         ZoomableView by ZoomablePhotoView(view.photoView),
         KoinScopeComponent {
@@ -67,6 +67,8 @@ class FadeEndLivePhotoViewerPage(
         }
 
         override fun attachToWindow(item: FadeEndLivePhotoViewerPage) = with(view.videoView.player!!) {
+            super.attachToWindow(item)
+
             // The view state must be reset firstly on attach.
             view.progressIndicator.show()
             view.photoView.isVisible = false
@@ -102,6 +104,7 @@ class FadeEndLivePhotoViewerPage(
                     // Immediately show the still image.
                     view.progressIndicator.hide()
                     view.photoView.isVisible = true
+                    onContentPresented()
                 }
             }
         }
@@ -138,6 +141,7 @@ class FadeEndLivePhotoViewerPage(
                     { view.videoView.isVisible = false },
                     FADE_DURATION_MS.toLong()
                 )
+                onContentPresented()
             } else {
                 // Retry with delay.
                 view.videoView.postDelayed(::fadeIfCloseToTheEndOrTryLater, 50)
@@ -168,6 +172,8 @@ class FadeEndLivePhotoViewerPage(
             item: FadeEndLivePhotoViewerPage,
             payloads: List<Any>,
         ) = with(playerCache.getPlayer(key = item.mediaId)) {
+            super.bindView(item, payloads)
+
             view.videoView.player = this
             enableFatalPlaybackErrorListener(item)
 

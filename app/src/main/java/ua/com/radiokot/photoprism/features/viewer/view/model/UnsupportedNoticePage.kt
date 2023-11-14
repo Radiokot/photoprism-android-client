@@ -4,7 +4,6 @@ import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
@@ -15,6 +14,7 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerUnsupportedBin
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 
 class UnsupportedNoticePage(
     @StringRes
@@ -35,7 +35,9 @@ class UnsupportedNoticePage(
 
     class ViewHolder(
         itemView: View,
-    ) : FastAdapter.ViewHolder<UnsupportedNoticePage>(itemView), KoinScopeComponent {
+    ) : MediaViewerPageViewHolder<UnsupportedNoticePage>(itemView),
+        KoinScopeComponent {
+
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
@@ -54,6 +56,8 @@ class UnsupportedNoticePage(
         }
 
         override fun bindView(item: UnsupportedNoticePage, payloads: List<Any>) {
+            super.bindView(item, payloads)
+
             view.progressIndicator.show()
             view.errorTextView.visibility = View.GONE
 
@@ -73,6 +77,8 @@ class UnsupportedNoticePage(
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .into(view.thumbnailImageView, imageLoadingCallback)
+
+            onContentPresented()
         }
 
         override fun unbindView(item: UnsupportedNoticePage) {

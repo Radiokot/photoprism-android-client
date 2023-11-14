@@ -12,4 +12,5 @@ interface VideoPlayerViewHolder {
     fun bindPlayerToLifecycle(lifecycle: Lifecycle)
     fun setOnFatalPlaybackErrorListener(listener: (item: MediaViewerPage) -> Unit)
     fun enableFatalPlaybackErrorListener(item: MediaViewerPage)
+    fun setOnPlaybackEndListener(listener: () -> Unit)
 }

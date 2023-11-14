@@ -1,16 +1,16 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.util.Size
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
 
 sealed class MediaViewerPage(
     val thumbnailUrl: String,
     val source: GalleryMedia?,
-) : AbstractItem<ViewHolder>() {
+) : AbstractItem<MediaViewerPageViewHolder<out MediaViewerPage>>() {
 
     override var identifier: Long
         get() = (thumbnailUrl + type).hashCode().toLong()

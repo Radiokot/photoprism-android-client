@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.util.Size
 import android.view.View
-import com.mikepenz.fastadapter.FastAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
@@ -13,6 +12,7 @@ import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerImageBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.ZoomablePhotoView
 import ua.com.radiokot.photoprism.features.viewer.view.ZoomableView
 
@@ -33,7 +33,7 @@ class ImageViewerPage(
 
     class ViewHolder(
         val view: PagerItemMediaViewerImageBinding,
-    ) : FastAdapter.ViewHolder<ImageViewerPage>(view.root),
+    ) : MediaViewerPageViewHolder<ImageViewerPage>(view.root),
         KoinScopeComponent,
         ZoomableView by ZoomablePhotoView(view.photoView) {
 
@@ -45,15 +45,19 @@ class ImageViewerPage(
         private val imageLoadingCallback = object : Callback {
             override fun onSuccess() {
                 view.progressIndicator.hide()
+                onContentPresented()
             }
 
             override fun onError(e: Exception?) {
                 view.progressIndicator.hide()
                 view.errorTextView.visibility = View.VISIBLE
+                onContentPresented()
             }
         }
 
         override fun bindView(item: ImageViewerPage, payloads: List<Any>) {
+            super.bindView(item, payloads)
+
             view.progressIndicator.show()
             view.errorTextView.visibility = View.GONE
 

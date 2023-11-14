@@ -4,10 +4,10 @@ import android.net.Uri
 import android.view.View
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.mikepenz.fastadapter.FastAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolderImpl
 
@@ -32,10 +32,12 @@ class VideoViewerPage(
 
     class ViewHolder(
         val view: PagerItemMediaViewerVideoBinding,
-    ) : FastAdapter.ViewHolder<VideoViewerPage>(view.root),
+    ) : MediaViewerPageViewHolder<VideoViewerPage>(view.root),
         VideoPlayerViewHolder by VideoPlayerViewHolderImpl(view.videoView) {
 
         override fun attachToWindow(item: VideoViewerPage) = with(view.videoView.player!!) {
+            super.attachToWindow(item)
+
             if (isPlaying) {
                 return@with
             }
@@ -83,8 +85,11 @@ class VideoViewerPage(
             item: VideoViewerPage,
             payloads: List<Any>,
         ) = with(playerCache.getPlayer(key = item.mediaId)) {
+            super.bindView(item, payloads)
+
             view.videoView.player = this
             enableFatalPlaybackErrorListener(item)
+            setOnPlaybackEndListener(::onContentPresented)
 
             if (item.needsVideoControls) {
                 view.videoView.useController = true

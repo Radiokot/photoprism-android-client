@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioSink
@@ -86,6 +87,14 @@ class VideoPlayerViewHolderImpl(
         }
     }
 
+    override fun setOnPlaybackEndListener(listener: () -> Unit) {
+        playerView.player?.apply {
+            val theOnlyPlaybackEndListener = TheOnlyPlaybackEndListener(listener)
+            removeListener(theOnlyPlaybackEndListener)
+            addListener(theOnlyPlaybackEndListener)
+        }
+    }
+
     /**
      * An error listener that triggers when a fatal playback exception occurs.
      * The player can only have one of such listener as all the instances are equal.
@@ -101,12 +110,43 @@ class VideoPlayerViewHolderImpl(
             }
         }
 
-        override fun equals(other: Any?): Boolean {
-            return other is TheOnlyPlayerFatalPlaybackExceptionListener
+        override fun equals(other: Any?): Boolean =
+            other is TheOnlyPlayerFatalPlaybackExceptionListener
+
+        override fun hashCode(): Int =
+            "TheOnlyPlayerFatalPlaybackExceptionListener".hashCode()
+    }
+
+    /**
+     * A playback end listener that triggers once on either regular video playback end
+     * or the first playback end of the looped video.
+     * The player can only have one of such listener as all the instances are equal.
+     */
+    private class TheOnlyPlaybackEndListener(
+        private val onPlaybackEnd: () -> Unit,
+    ) : Player.Listener {
+        private var calledOnce = false
+
+        // Call on playback end for non-looped videos.
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_ENDED && !calledOnce) {
+                onPlaybackEnd()
+                calledOnce = true
+            }
         }
 
-        override fun hashCode(): Int {
-            return 333
+        // Call on media item transition for looped videos.
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT && !calledOnce) {
+                onPlaybackEnd()
+                calledOnce = true
+            }
         }
+
+        override fun equals(other: Any?): Boolean =
+            other is TheOnlyPlaybackEndListener
+
+        override fun hashCode(): Int =
+            "TheOnlyPlaybackEndListener".hashCode()
     }
 }
