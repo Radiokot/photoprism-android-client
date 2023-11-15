@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=8&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=9&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -47,6 +47,7 @@ When a new version of PhotoPrism comes out, the app may break.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/301686?s=100" alt="Michael Mayer" height=70 />](https://github.com/lastzero)
 [<img src="https://avatars.githubusercontent.com/u/2885748?s=100" alt="Neil Castelino" height=70 />](https://github.com/TwistTheNeil)
 [<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/40500387?s=100" alt="Seth For Privacy" height=70 />](https://github.com/sethforprivacy)
