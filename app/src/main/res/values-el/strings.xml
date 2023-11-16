@@ -134,4 +134,5 @@
     <string name="show_album_folders">φάκελοι</string>
     <string name="show_album_folders_explanation">εμφάνιση φακέλων στη λίστα άλμπουμ</string>
     <string name="files_saved_to_downloads">τα αρχεία έχουν αποθηκευτεί στις Λήψεις</string>
+    <string name="start_slideshow">Παρουσίαση διαφανειών</string>
 </resources>

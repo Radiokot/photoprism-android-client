@@ -208,6 +208,20 @@ class MediaViewerViewModel(
         }
     }
 
+    fun onStartSlideshowClicked(position: Int) {
+        log.debug {
+            "onStartSlideshowClicked(): starting_slideshow:" +
+                    "\nposition=$position"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenSlideshow(
+                mediaIndex = position,
+                repositoryParams = galleryMediaRepository.params,
+            )
+        )
+    }
+
     fun onOpenInClicked(position: Int) {
         val item = galleryMediaRepository.itemsList[position]
 
@@ -624,6 +638,10 @@ class MediaViewerViewModel(
         object ShowMissingStoragePermissionMessage : Event
         class ShowStartedDownloadMessage(val destinationFileName: String) : Event
         class OpenWebViewer(val url: String) : Event
+        class OpenSlideshow(
+            val mediaIndex: Int,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
     }
 
     sealed interface State {

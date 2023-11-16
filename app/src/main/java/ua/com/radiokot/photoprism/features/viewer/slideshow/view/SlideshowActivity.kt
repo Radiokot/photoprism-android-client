@@ -1,8 +1,11 @@
 package ua.com.radiokot.photoprism.features.viewer.slideshow.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import android.view.View
+import androidx.activity.result.ActivityResult
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
@@ -236,6 +239,14 @@ class SlideshowActivity : BaseActivity() {
         }
     }
 
+    override fun finish() {
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
+        )
+        super.finish()
+    }
+
     companion object {
         private const val MEDIA_INDEX_KEY = "media-index"
         private const val REPO_PARAMS_KEY = "repo-params"
@@ -251,5 +262,15 @@ class SlideshowActivity : BaseActivity() {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
         }
+
+        /**
+         * @return last viewed media index, if there was one.
+         */
+        fun getResult(result: ActivityResult): Int? =
+            result
+                .takeIf { it.resultCode == Activity.RESULT_OK }
+                ?.data
+                ?.getIntExtra(MEDIA_INDEX_KEY, -1)
+                ?.takeIf { it >= 0 }
     }
 }

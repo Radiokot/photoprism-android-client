@@ -139,4 +139,5 @@
     <string name="show_album_folders">Folders</string>
     <string name="show_album_folders_explanation">Show folders in the album list</string>
     <string name="files_saved_to_downloads">Files have been saved to the Downloads</string>
+    <string name="start_slideshow">Slideshow</string>
 </resources>

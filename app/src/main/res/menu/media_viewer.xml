@@ -4,11 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/start_slideshow"
+        android:icon="@drawable/ic_slideshow"
+        android:title="@string/start_slideshow"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom"
+        tools:ignore="PrivateResource" />
+
+    <item
         android:id="@+id/open_in"
         android:icon="@drawable/ic_open_in"
         android:title="@string/open_with"
         app:iconTint="?colorOnSurfaceVariant"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         tools:ignore="PrivateResource" />
 
     <item
@@ -16,6 +24,6 @@
         android:icon="@drawable/ic_web"
         android:title="@string/open_in_web_viewer"
         app:iconTint="?colorOnSurfaceVariant"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         tools:ignore="PrivateResource" />
 </menu>

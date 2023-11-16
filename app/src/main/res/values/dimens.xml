@@ -35,4 +35,5 @@
     </dimen>
     <dimen name="gallery_swipe_refresh_start_offset">64dp</dimen>
     <dimen name="gallery_swipe_refresh_end_offset">32dp</dimen>
+    <dimen name="menu_icon_margin_horizontal">8dp</dimen>
 </resources>

@@ -135,4 +135,5 @@
     <string name="show_album_folders">Klasörler</string>
     <string name="show_album_folders_explanation">Albüm listesinde klasörleri göster</string>
     <string name="files_saved_to_downloads">Dosyalar İndirilenler\'e kaydedildi</string>
+    <string name="start_slideshow">Slayt gösterisi</string>
 </resources>

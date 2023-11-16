@@ -137,4 +137,5 @@
     <string name="show_album_folders">資料夾</string>
     <string name="show_album_folders_explanation">在相簿列表中顯示資料夾</string>
     <string name="files_saved_to_downloads">檔案已儲存到 Downloads</string>
+    <string name="start_slideshow">幻燈片</string>
 </resources>

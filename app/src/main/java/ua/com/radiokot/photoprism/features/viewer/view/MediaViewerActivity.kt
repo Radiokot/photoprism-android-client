@@ -1,8 +1,10 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.util.Size
 import android.view.KeyEvent
@@ -17,6 +19,7 @@ import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +46,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
+import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -80,7 +84,10 @@ class MediaViewerActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             this::onStoragePermissionResult
         )
-
+    private val slideshowLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onSlideshowResult,
+    )
     private val swipeToDismissHandler: SwipeToDismissHandler by lazy {
         SwipeToDismissHandler(
             swipeView = view.root,
@@ -479,12 +486,38 @@ class MediaViewerActivity : BaseActivity() {
         view.keyboardNavigationFocusView.requestFocus(View.FOCUS_DOWN)
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.media_viewer, menu)
+
+        (menu as? MenuBuilder)?.apply {
+            // Enable icons for overflow menu items.
+            setOptionalIconsVisible(true)
+
+            // Apply horizontal margin for overflow menu item icons for more pleasant look.
+            val iconMarginHorizontal =
+                resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
+            visibleItems.forEach { menuItem ->
+                if (!menuItem.requestsActionButton()) {
+                    menuItem.icon = InsetDrawable(
+                        menuItem.icon,
+                        iconMarginHorizontal, 0, iconMarginHorizontal, 0
+                    )
+                }
+            }
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.start_slideshow -> {
+            viewModel.onStartSlideshowClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
         R.id.open_in -> {
             viewModel.onOpenInClicked(
                 position = view.viewPager.currentItem
@@ -709,6 +742,12 @@ class MediaViewerActivity : BaseActivity() {
                     openWebViewer(
                         url = event.url,
                     )
+
+                is MediaViewerViewModel.Event.OpenSlideshow ->
+                    openSlideshow(
+                        mediaIndex = event.mediaIndex,
+                        repositoryParams = event.repositoryParams,
+                    )
             }
 
             log.debug {
@@ -823,6 +862,20 @@ class MediaViewerActivity : BaseActivity() {
         )
     }
 
+    private fun openSlideshow(
+        mediaIndex: Int,
+        repositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
+        slideshowLauncher.launch(
+            Intent(this, SlideshowActivity::class.java).putExtras(
+                SlideshowActivity.getBundle(
+                    mediaIndex = mediaIndex,
+                    repositoryParams = repositoryParams,
+                )
+            )
+        )
+    }
+
     // Swipe to dismiss happens here.
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         swipeDirectionDetector.handleTouchEvent(event)
@@ -865,6 +918,13 @@ class MediaViewerActivity : BaseActivity() {
         hideSystemUI()
         view.toolbar.alpha = 0f
         view.buttonsLayout.alpha = 0f
+    }
+
+    private fun onSlideshowResult(result: ActivityResult) {
+        val lastViewedMediaIndex = SlideshowActivity.getResult(result)
+            ?: return
+
+        view.viewPager.setCurrentItem(lastViewedMediaIndex, false)
     }
 
     override fun finish() {

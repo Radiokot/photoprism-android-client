@@ -212,6 +212,6 @@ class SlideshowViewModel(
     }
 
     private companion object {
-        private const val IMAGE_PRESENTATION_DURATION_MS = 2000L
+        private const val IMAGE_PRESENTATION_DURATION_MS = 3000L
     }
 }
