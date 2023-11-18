@@ -21,4 +21,22 @@
         android:indeterminate="true"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/start_side_area"
+        android:layout_width="0dp"
+        app:layout_constraintHorizontal_weight="4"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toStartOf="@id/end_side_area"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:background="#a07f0040"/>
+
+    <View
+        android:id="@+id/end_side_area"
+        android:layout_width="0dp"
+        app:layout_constraintHorizontal_weight="7"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/start_side_area"
+        tools:background="#a000507f" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

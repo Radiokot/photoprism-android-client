@@ -23,6 +23,7 @@ import ua.com.radiokot.photoprism.databinding.ActivitySlideshowBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.recyclerView
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.model.SlideshowViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
@@ -82,11 +83,22 @@ class SlideshowActivity : BaseActivity() {
         subscribeToData()
 
         initFullscreen()
+        initStartEndClicks()
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {
         systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         hide(WindowInsetsCompat.Type.systemBars())
+    }
+
+    private fun initStartEndClicks() {
+        // The throttle interval is shorter because such UX implies rapid clicking.
+        view.startSideArea.setThrottleOnClickListener(300) {
+            viewModel.onStartAreaClicked()
+        }
+        view.endSideArea.setThrottleOnClickListener(300) {
+            viewModel.onEndAreaClicked()
+        }
     }
 
     private fun initPager(

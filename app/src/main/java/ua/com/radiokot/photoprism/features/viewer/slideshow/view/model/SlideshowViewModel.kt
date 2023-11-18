@@ -163,16 +163,19 @@ class SlideshowViewModel(
             ?: return
         val currentPage: MediaViewerPage = itemsList.value?.getOrNull(currentPageIndex)
             ?: return
+        val lastPageIndex = itemsList.value?.size?.dec()
+            ?: return
         val nextPageIndex = currentPageIndex + 1
 
         log.debug {
             "onPageContentPresented(): content_presented:" +
                     "\npageIndex=$pageIndex," +
                     "\ncurrentPageIndex=$currentPageIndex," +
+                    "\nlastPageIndex=$lastPageIndex," +
                     "\ncurrentPage=$currentPage"
         }
 
-        if (pageIndex == currentPageIndex) {
+        if (pageIndex == currentPageIndex && currentPageIndex < lastPageIndex) {
             when (currentPage) {
                 is ImageViewerPage,
                 is FadeEndLivePhotoViewerPage,
@@ -189,6 +192,34 @@ class SlideshowViewModel(
                         delayMs = 0,
                     )
             }
+        }
+    }
+
+    fun onStartAreaClicked() {
+        val currentPageIndex = currentPageIndex.value
+            ?: return
+
+        // Switch to the previous page if the current is not the first one.
+        if (currentPageIndex != 0) {
+            scheduleSwitchingPage(
+                destinationPageIndex = currentPageIndex - 1,
+                delayMs = 0,
+            )
+        }
+    }
+
+    fun onEndAreaClicked() {
+        val currentPageIndex = currentPageIndex.value
+            ?: return
+        val lastPageIndex = itemsList.value?.size?.dec()
+            ?: return
+
+        // Switch to the next page if the current is not the last one.
+        if (currentPageIndex < lastPageIndex) {
+            scheduleSwitchingPage(
+                destinationPageIndex = currentPageIndex + 1,
+                delayMs = 0,
+            )
         }
     }
 
@@ -212,6 +243,6 @@ class SlideshowViewModel(
     }
 
     private companion object {
-        private const val IMAGE_PRESENTATION_DURATION_MS = 3000L
+        private const val IMAGE_PRESENTATION_DURATION_MS = 2500L
     }
 }
