@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Slideshow, which can be launched from the media viewer
 
+### Changed
+- Made connection error message more clear when a misconfigured proxy in front of the library
+prevents access to the API
+
 ## [1.21.0] - 2023-11-08
 
 ### Added

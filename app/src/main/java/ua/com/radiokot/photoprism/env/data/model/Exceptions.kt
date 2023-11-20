@@ -15,3 +15,8 @@ class SessionExpiredException(sessionId: String) :
             )
         }...' has expired"
     )
+
+class ProxyBlockingAccessException :
+    IOException(
+        "The proxy in front of the library blocks access to the API"
+    )

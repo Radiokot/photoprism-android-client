@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.envconnection.logic
 
+import com.fasterxml.jackson.core.JsonParseException
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
@@ -9,6 +10,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -24,6 +26,7 @@ typealias PhotoPrismConfigServiceFactory =
  *
  * @see InvalidCredentialsException
  * @see EnvIsNotPublicException
+ * @see ProxyBlockingAccessException
  */
 class ConnectToEnvUseCase(
     private val connectionParams: EnvConnectionParams,
@@ -49,6 +52,16 @@ class ConnectToEnvUseCase(
                 }
             }
             .flatMap { checkEnv() }
+            .onErrorResumeNext { error ->
+                // Handle unexpected HTML response, which can occur
+                // both in session creation and env check.
+                if (error is JsonParseException
+                    && error.message?.contains("character ('<'") == true
+                )
+                    Single.error(ProxyBlockingAccessException())
+                else
+                    Single.error(error)
+            }
             .doOnSuccess {
                 log.debug { "perform(): env_checked" }
             }
