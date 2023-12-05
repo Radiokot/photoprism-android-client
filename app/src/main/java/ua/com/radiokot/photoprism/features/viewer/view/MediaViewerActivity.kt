@@ -108,6 +108,9 @@ class MediaViewerActivity : BaseActivity() {
     private val zoomableView: ZoomableView?
         get() = view.viewPager.recyclerView
             .findViewHolderForAdapterPosition(view.viewPager.currentItem) as? ZoomableView
+    private val windowInsetsController: WindowInsetsControllerCompat by lazy {
+        WindowInsetsControllerCompat(window, window.decorView)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -679,26 +682,13 @@ class MediaViewerActivity : BaseActivity() {
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun hideSystemUI() {
-        WindowInsetsControllerCompat(window, window.decorView)
-            .systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
-
-        val uiOptions = (View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        window.decorView.systemUiVisibility = uiOptions
+    private fun hideSystemUI() = with(windowInsetsController) {
+        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
+        hide(WindowInsetsCompat.Type.systemBars())
     }
 
-    @Suppress("DEPRECATION")
-    private fun showSystemUI() {
-        val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        window.decorView.systemUiVisibility = uiOptions
-    }
+    private fun showSystemUI() =
+        windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
 
     private fun subscribeToEvents() {
         viewModel.events.subscribe { event ->
