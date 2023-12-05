@@ -925,6 +925,10 @@ class MediaViewerActivity : BaseActivity() {
             ?: return
 
         view.viewPager.setCurrentItem(lastViewedMediaIndex, false)
+
+        // Show system UI on this screen
+        // as the user just have done a swipe make it appear.
+        showSystemUI()
     }
 
     override fun finish() {
