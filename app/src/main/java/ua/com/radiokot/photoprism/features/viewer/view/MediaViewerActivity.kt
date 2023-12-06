@@ -536,7 +536,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         else ->
-            false
+            super.onOptionsItemSelected(item)
     }
 
     private fun setUpVideoViewer(viewHolder: VideoPlayerViewHolder) {
