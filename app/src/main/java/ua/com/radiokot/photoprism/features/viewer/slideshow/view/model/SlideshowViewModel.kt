@@ -12,10 +12,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
-import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
-import ua.com.radiokot.photoprism.features.viewer.view.model.UnsupportedNoticePage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
 import java.util.concurrent.TimeUnit
 
@@ -177,19 +174,17 @@ class SlideshowViewModel(
 
         if (pageIndex == currentPageIndex && currentPageIndex < lastPageIndex) {
             when (currentPage) {
-                is ImageViewerPage,
-                is FadeEndLivePhotoViewerPage,
-                is UnsupportedNoticePage ->
-                    scheduleSwitchingPage(
-                        destinationPageIndex = nextPageIndex,
-                        delayMs = IMAGE_PRESENTATION_DURATION_MS,
-                    )
-
                 is VideoViewerPage ->
                     // For videos, switch immediately after playback end.
                     scheduleSwitchingPage(
                         destinationPageIndex = nextPageIndex,
                         delayMs = 0,
+                    )
+
+                else ->
+                    scheduleSwitchingPage(
+                        destinationPageIndex = nextPageIndex,
+                        delayMs = DEFAULT_PRESENTATION_DURATION_MS,
                     )
             }
         }
@@ -243,6 +238,6 @@ class SlideshowViewModel(
     }
 
     private companion object {
-        private const val IMAGE_PRESENTATION_DURATION_MS = 2500L
+        private const val DEFAULT_PRESENTATION_DURATION_MS = 2500L
     }
 }
