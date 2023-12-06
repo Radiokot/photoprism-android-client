@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -30,6 +33,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
+import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
 import kotlin.math.roundToInt
 
 class SlideshowActivity : BaseActivity() {
@@ -83,7 +87,7 @@ class SlideshowActivity : BaseActivity() {
         subscribeToData()
 
         initFullscreen()
-        initStartEndClicks()
+        initStartEndArea()
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {
@@ -91,13 +95,64 @@ class SlideshowActivity : BaseActivity() {
         hide(WindowInsetsCompat.Type.systemBars())
     }
 
-    private fun initStartEndClicks() {
+    private fun initStartEndArea() {
         // The throttle interval is shorter because such UX implies rapid clicking.
         view.startSideArea.setThrottleOnClickListener(300) {
             viewModel.onStartAreaClicked()
         }
         view.endSideArea.setThrottleOnClickListener(300) {
             viewModel.onEndAreaClicked()
+        }
+
+        view.endSideArea.doOnPreDraw {
+            val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
+            val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+            view.startSideArea.updateLayoutParams {
+                this as ViewGroup.MarginLayoutParams
+
+                bottomMargin += insets.bottom
+                if (!isRtl) {
+                    leftMargin += insets.left
+
+                    log.debug {
+                        "initStartEndArea(): applied_start_side_insets_margin:" +
+                                "\nleft=$leftMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+                } else {
+                    rightMargin += insets.right
+
+                    log.debug {
+                        "initStartEndArea(): applied_start_side_insets_margin:" +
+                                "\nright=$rightMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+                }
+            }
+
+            view.endSideArea.updateLayoutParams {
+                this as ViewGroup.MarginLayoutParams
+
+                bottomMargin += insets.bottom
+                if (!isRtl) {
+                    rightMargin += insets.right
+
+                    log.debug {
+                        "initStartEndArea(): applied_end_side_insets_margin:" +
+                                "\nright=$rightMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+                } else {
+                    leftMargin += insets.left
+
+                    log.debug {
+                        "initStartEndArea(): applied_end_side_insets_margin:" +
+                                "\nleft=$leftMargin," +
+                                "\nbottom=$bottomMargin"
+                    }
+                }
+            }
         }
     }
 
