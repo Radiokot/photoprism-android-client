@@ -113,6 +113,12 @@
             android:resizeableActivity="true"
             android:theme="@style/MediaViewerTheme" />
 
+        <activity
+            android:name=".features.viewer.slideshow.view.SlideshowGuideActivity"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:theme="@style/TranslucentGuideTheme" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

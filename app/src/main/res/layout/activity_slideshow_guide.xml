@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.viewer.slideshow.view.SlideshowGuideActivity">
+
+    <TextView
+        android:id="@+id/previous_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:drawablePadding="16dp"
+        android:text="Previous"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        app:drawableTint="?colorOnSurfaceVariant"
+        app:drawableTopCompat="@drawable/ic_touch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/next_text_view"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/next_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:drawablePadding="16dp"
+        android:text="Next"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        app:drawableTint="?colorOnSurfaceVariant"
+        app:drawableTopCompat="@drawable/ic_touch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/previous_text_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/swipe_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:drawablePadding="16dp"
+        android:gravity="center_horizontal"
+        android:text="Show system buttons"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        app:drawableBottomCompat="@drawable/ic_swipe_up"
+        app:drawableTint="?colorOnSurfaceVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/done_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minEms="8"
+        android:text="Got it"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/swipe_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/previous_text_view" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

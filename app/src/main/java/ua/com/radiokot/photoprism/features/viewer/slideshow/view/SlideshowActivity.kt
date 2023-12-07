@@ -88,6 +88,11 @@ class SlideshowActivity : BaseActivity() {
 
         initFullscreen()
         initStartEndArea()
+
+        startActivity(
+            Intent(this, SlideshowGuideActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {

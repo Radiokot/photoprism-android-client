@@ -79,4 +79,13 @@
             but it also adds a significant screen rotation lag,
             since translucency causes the underlying gallery activity to be re-created too.-->
     </style>
+
+    <style name="TranslucentGuideTheme" parent="DarkAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:colorBackground">@color/black_overlay</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/FadeWindowAnimationStyle</item>
+    </style>
+
 </resources>
