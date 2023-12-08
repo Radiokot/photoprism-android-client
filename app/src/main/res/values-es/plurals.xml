@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="many">importados %1$d favoritos</item>
+        <item quantity="one">importado %1$d favorito</item>
+        <item quantity="other">importados %1$d favorits</item>
+    </plurals>
+</resources>
