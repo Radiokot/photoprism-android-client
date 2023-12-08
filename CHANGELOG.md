@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Slideshow, which can be launched from the media viewer
 - Space between pages in the media viewer for better look
+- Spanish translation
 
 ### Changed
 - Made connection error message more clear when a misconfigured proxy in front of the library
