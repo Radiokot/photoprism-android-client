@@ -4,6 +4,7 @@
 
     <locale android:name="en" /> <!-- Default -->
     <locale android:name="el" />
+    <locale android:name="es-rES" />
     <locale android:name="it" />
     <locale android:name="ru" />
     <locale android:name="tr" />
