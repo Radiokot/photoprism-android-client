@@ -65,7 +65,10 @@
     <string name="client_certificate_optional">Certificado del cliente (opcional)</string>
     <string name="clear">Borrar</string>
     <string name="how_to_use_client_certificate">Cómo usar certificados de cliente</string>
-    <string name="p12_certificate_guide">[…]</string>
+    <string name="p12_certificate_guide">
+        1. Descargue su paquete PKCS12 (.p12) en el dispositivo;\n\n
+        2. Instale el paquete abriéndolo desde un explorador de archivos. Utiliza el tipo \"VPN y apps\";\n\n
+        3. Vuelva a la galería y seleccione el certificado instalado.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Aprender más</string>
     <string name="preferences">Preferencias</string>
@@ -93,7 +96,7 @@
     <string name="no_media_found">No se encontró multimedia</string>
     <string name="view_media">Ver</string>
     <string name="open_in_web_viewer">Abrir en el navegador</string>
-    <string name="albums">"Álbumes "</string>
+    <string name="albums">Álbumes</string>
     <string name="loading_albums_progress">@string/loading_data_progress</string>
     <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">No se encontraron álbumes</string>
@@ -104,8 +107,12 @@
     <string name="save_file_to_the_storage">Guardar el fichero en el almacenamiento interno</string>
     <string name="share_the_file">Compartir el fichero</string>
     <string name="download_is_completed">Descarga completada</string>
-    <string name="welcome_title">Bienvenido/a a la galería</string>
-    <string name="welcome_text">Por favor: ten en cuenta que esta no es la aplicación oficial del cliente PhotoPrism.</string>
+    <string name="welcome_title">Bienvenido a la galería</string>
+    <string name="welcome_text">Por favor: ten en cuenta que esta no es la aplicación oficial del cliente PhotoPrism.
+        Lo mantiene Oleg\u00A0Koretsky (Radiokot) y no tiene relación con el equipo central.\n\nSi
+        algo va mal con la aplicación, deja tu opinión en Google Play
+        <a href="#issue">envía un informe de errores</a> o una carta a <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nMuchas gracias.
+    </string>
     <string name="used_open_source_software">Software de código abierto utilizado</string>
     <string name="user_guides">Guía de uso</string>
     <string name="template_preferences_version">%1$s %2$s %3$s Oleg Koretsky y otros colaboradores de GitHub</string>
