@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.slideshow.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Surface
@@ -53,10 +54,12 @@ class SlideshowGuideActivity : BaseActivity() {
         hide(WindowInsetsCompat.Type.systemBars())
     }
 
+    @SuppressLint("RtlHardcoded")
+    @Suppress("DEPRECATION")
     private fun initLandscapeMode() {
         // Put the "swipe" hint at the navigation bar side.
         // For this case RIGHT and LEFT must be used instead of END and START.
-        val rotation = display?.rotation
+        val rotation = windowManager.defaultDisplay?.rotation
         with(view.swipeTextView) {
             if (rotation == Surface.ROTATION_90) {
                 gravity = Gravity.RIGHT
