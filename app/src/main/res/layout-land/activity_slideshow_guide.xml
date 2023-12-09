@@ -6,14 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".features.viewer.slideshow.view.SlideshowGuideActivity">
 
+    <!-- There is a portrait version too -->
+
     <TextView
         android:id="@+id/previous_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:drawablePadding="16dp"
-        android:text="Previous"
+        android:text="@string/slideshow_previous"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableEndCompat="@drawable/ic_touch"
         app:drawableTint="?colorOnSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,23 +24,26 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintWidth_default="wrap" />
 
     <TextView
         android:id="@+id/next_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:drawablePadding="16dp"
-        android:text="Next"
+        android:text="@string/slideshow_next"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableStartCompat="@drawable/ic_touch"
         app:drawableTint="?colorOnSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/previous_text_view"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintWidth_default="wrap" />
 
     <TextView
         android:id="@+id/swipe_text_view"
@@ -47,8 +53,9 @@
         android:layout_marginVertical="48dp"
         android:layout_marginBottom="24dp"
         android:drawablePadding="16dp"
-        android:text="Show system buttons"
+        android:text="@string/slideshow_guide_show_system_buttons"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableTint="?colorOnSurfaceVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/next_text_view"
@@ -60,11 +67,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/done_button"
-        style="@style/Widget.Material3.Button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minEms="8"
-        android:text="Got it"
+        android:text="@string/slideshow_guide_got_it"
+        android:textColor="?colorOnSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

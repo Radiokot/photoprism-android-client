@@ -7,6 +7,7 @@ import android.util.Size
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
@@ -156,6 +157,9 @@ class SlideshowActivity : BaseActivity() {
                 }
             }
         }
+
+        ViewCompat.setTooltipText(view.startSideArea, view.startSideArea.contentDescription)
+        ViewCompat.setTooltipText(view.endSideArea, view.endSideArea.contentDescription)
     }
 
     private fun initPager(

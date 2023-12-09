@@ -135,4 +135,8 @@
     <string name="show_album_folders_explanation">εμφάνιση φακέλων στη λίστα άλμπουμ</string>
     <string name="files_saved_to_downloads">τα αρχεία έχουν αποθηκευτεί στις Λήψεις</string>
     <string name="start_slideshow">Παρουσίαση διαφανειών</string>
+    <string name="slideshow_previous">Προηγούμενο</string>
+    <string name="slideshow_guide_got_it">Το πιασα</string>
+    <string name="slideshow_next">Επόμενο</string>
+    <string name="slideshow_guide_show_system_buttons">Εμφάνιση κουμπιών συστήματος</string>
 </resources>

@@ -136,4 +136,8 @@
     <string name="show_album_folders_explanation">Albüm listesinde klasörleri göster</string>
     <string name="files_saved_to_downloads">Dosyalar İndirilenler\'e kaydedildi</string>
     <string name="start_slideshow">Slayt gösterisi</string>
+    <string name="slideshow_previous">Önceki</string>
+    <string name="slideshow_guide_got_it">Anladım</string>
+    <string name="slideshow_next">Sonraki</string>
+    <string name="slideshow_guide_show_system_buttons">Sistem düğmelerini göster</string>
 </resources>

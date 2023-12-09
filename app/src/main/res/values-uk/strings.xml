@@ -136,4 +136,8 @@
     <string name="show_album_folders_explanation">Показувати папки у списку альбомів</string>
     <string name="files_saved_to_downloads">Файли збережено в Завантаження</string>
     <string name="start_slideshow">Слайд-шоу</string>
+    <string name="slideshow_previous">Попередній</string>
+    <string name="slideshow_guide_got_it">Зрозуміло</string>
+    <string name="slideshow_next">Наступний</string>
+    <string name="slideshow_guide_show_system_buttons">Показати системні кнопки</string>
 </resources>

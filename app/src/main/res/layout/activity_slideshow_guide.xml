@@ -6,36 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".features.viewer.slideshow.view.SlideshowGuideActivity">
 
+    <!-- There is a landscape version too -->
+
     <TextView
         android:id="@+id/previous_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginStart="@dimen/slideshow_guide_prev_next_margin"
         android:drawablePadding="16dp"
-        android:text="@string/previous"
+        android:text="@string/slideshow_previous"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableTint="?colorOnSurfaceVariant"
         app:drawableTopCompat="@drawable/ic_touch"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/next_text_view"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="wrap" />
 
     <TextView
         android:id="@+id/next_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginEnd="@dimen/slideshow_guide_prev_next_margin"
         android:drawablePadding="16dp"
-        android:text="@string/next"
+        android:text="@string/slideshow_next"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableTint="?colorOnSurfaceVariant"
         app:drawableTopCompat="@drawable/ic_touch"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/previous_text_view"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="wrap" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/done_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minEms="8"
+        android:text="@string/slideshow_guide_got_it"
+        android:textColor="?colorOnSurfaceVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/swipe_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/previous_text_view" />
 
     <TextView
         android:id="@+id/swipe_text_view"
@@ -44,25 +64,13 @@
         android:layout_marginBottom="24dp"
         android:drawablePadding="16dp"
         android:gravity="center_horizontal"
-        android:text="@string/show_system_buttons"
+        android:text="@string/slideshow_guide_show_system_buttons"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
         app:drawableBottomCompat="@drawable/ic_swipe_up"
         app:drawableTint="?colorOnSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/done_button"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minEms="8"
-        android:text="@string/got_it"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/swipe_text_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/previous_text_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

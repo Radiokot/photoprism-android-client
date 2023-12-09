@@ -136,4 +136,8 @@
     <string name="show_album_folders_explanation">Mostra le cartelle nell\'elenco degli album</string>
     <string name="files_saved_to_downloads">I file sono stati salvati nei Download</string>
     <string name="start_slideshow">Presentazione</string>
+    <string name="slideshow_previous">Precedente</string>
+    <string name="slideshow_guide_got_it">Capito</string>
+    <string name="slideshow_next">Avanti</string>
+    <string name="slideshow_guide_show_system_buttons">Mostra i pulsanti di sistema</string>
 </resources>

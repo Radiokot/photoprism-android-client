@@ -36,4 +36,6 @@
     <dimen name="gallery_swipe_refresh_start_offset">64dp</dimen>
     <dimen name="gallery_swipe_refresh_end_offset">32dp</dimen>
     <dimen name="menu_icon_margin_horizontal">8dp</dimen>
+    <dimen name="slideshow_guide_text_size">16sp</dimen>
+    <dimen name="slideshow_guide_prev_next_margin">4dp</dimen>
 </resources>

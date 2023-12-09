@@ -4,4 +4,6 @@
     <dimen name="media_viewer_buttons_horizontal_spacing">4dp</dimen>
     <dimen name="media_viewer_buttons_layout_horizontal_spacing">16dp</dimen>
     <dimen name="list_item_album_width">120dp</dimen>
+    <dimen name="slideshow_guide_text_size">20sp</dimen>
+    <dimen name="slideshow_guide_prev_next_margin">16dp</dimen>
 </resources>
