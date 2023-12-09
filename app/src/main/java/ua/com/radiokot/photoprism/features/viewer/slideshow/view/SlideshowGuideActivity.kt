@@ -6,12 +6,22 @@ import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivitySlideshowGuideBinding
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
+import java.util.concurrent.TimeUnit
 
 class SlideshowGuideActivity : BaseActivity() {
     private lateinit var view: ActivitySlideshowGuideBinding
+
+    private val slideshowPreferences: SlideshowPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +35,17 @@ class SlideshowGuideActivity : BaseActivity() {
     }
 
     private fun initButtons() {
-        view.doneButton.setOnClickListener {
-            finish()
-        }
+        // Make the done button clickable after a delay
+        // to avoid miss-clicks.
+        Single.timer(1, TimeUnit.SECONDS)
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                view.doneButton.setThrottleOnClickListener {
+                    slideshowPreferences.isGuideAccepted = true
+                    finish()
+                }
+            }
+            .autoDispose(this)
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {

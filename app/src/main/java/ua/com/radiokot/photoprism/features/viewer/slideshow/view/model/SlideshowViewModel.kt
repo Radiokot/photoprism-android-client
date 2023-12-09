@@ -7,17 +7,21 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
 import java.util.concurrent.TimeUnit
 
 class SlideshowViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
+    private val slideshowPreferences: SlideshowPreferences,
 ) : ViewModel() {
     private val log = kLogger("SlideshowVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -49,6 +53,9 @@ class SlideshowViewModel(
             }
         }
 
+    private val eventsSubject = PublishSubject.create<Event>()
+    val events = eventsSubject.toMainThreadObservable()
+
     fun initOnce(
         startPageIndex: Int,
         repositoryParams: SimpleGalleryMediaRepository.Params,
@@ -64,6 +71,14 @@ class SlideshowViewModel(
         subscribeToRepository()
 
         currentPageIndex.value = startPageIndex
+
+        if (!slideshowPreferences.isGuideAccepted) {
+            log.debug {
+                "initOnce(): opening_guide"
+            }
+
+            eventsSubject.onNext(Event.OpenGuide)
+        }
 
         isInitialized = true
 
@@ -235,6 +250,10 @@ class SlideshowViewModel(
                 currentPageIndex.postValue(destinationPageIndex)
             }
             .autoDispose(this)
+    }
+
+    sealed interface Event {
+        object OpenGuide : Event
     }
 
     private companion object {

@@ -23,6 +23,7 @@ import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivitySlideshowBinding
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.recyclerView
@@ -76,23 +77,19 @@ class SlideshowActivity : BaseActivity() {
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
+        // Init before the subscription.
+        initPager(savedInstanceState)
+
+        subscribeToData()
+        subscribeToEvents()
+
         viewModel.initOnce(
             startPageIndex = mediaIndex,
             repositoryParams = repositoryParams,
         )
 
-        // Init before the subscription.
-        initPager(savedInstanceState)
-
-        subscribeToData()
-
         initFullscreen()
         initStartEndArea()
-
-        startActivity(
-            Intent(this, SlideshowGuideActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        )
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {
@@ -311,12 +308,33 @@ class SlideshowActivity : BaseActivity() {
         }
     }
 
+    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            is SlideshowViewModel.Event.OpenGuide ->
+                openGuide()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }.autoDispose(this)
+
     override fun finish() {
         setResult(
             Activity.RESULT_OK,
             Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
         )
         super.finish()
+    }
+
+    private fun openGuide() {
+        startActivity(Intent(this, SlideshowGuideActivity::class.java))
     }
 
     companion object {

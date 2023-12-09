@@ -1,23 +1,30 @@
 package ua.com.radiokot.photoprism.features.viewer.slideshow.di
 
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
-import ua.com.radiokot.photoprism.features.viewer.slideshow.view.model.SlideshowViewModel
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.viewer.slideshow.view.model.SlideshowViewModel
 
 val slideshowFeatureModules: List<Module> = listOf(
     module {
         includes(mediaViewerFeatureModules)
 
+        single {
+            SlideshowPreferencesOnPrefs(
+                preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+                keyPrefix = "slideshow"
+            )
+        } bind SlideshowPreferences::class
+
         scope<EnvSession> {
-            viewModel {
-                SlideshowViewModel(
-                    galleryMediaRepositoryFactory = get(),
-                )
-            }
+            viewModelOf(::SlideshowViewModel)
         }
     }
 )
