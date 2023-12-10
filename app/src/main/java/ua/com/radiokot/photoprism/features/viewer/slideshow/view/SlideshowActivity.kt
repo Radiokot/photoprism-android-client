@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
@@ -91,6 +92,7 @@ class SlideshowActivity : BaseActivity() {
 
         initFullscreen()
         initStartEndArea()
+        initKeyboardNavigation()
     }
 
     private fun initFullscreen() = with(WindowInsetsControllerCompat(window, window.decorView)) {
@@ -160,6 +162,44 @@ class SlideshowActivity : BaseActivity() {
 
         ViewCompat.setTooltipText(view.startSideArea, view.startSideArea.contentDescription)
         ViewCompat.setTooltipText(view.endSideArea, view.endSideArea.contentDescription)
+    }
+
+    private fun initKeyboardNavigation() = with(view.keyboardNavigationFocusView) {
+        setOnKeyListener { _, keyCode, _ ->
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    log.debug {
+                        "initKeyboardNavigation(): click_end_by_key:" +
+                                "\nkey=right"
+                    }
+
+                    view.endSideArea.callOnClick()
+                    true
+                }
+
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    log.debug {
+                        "initKeyboardNavigation(): click_start_by_key:" +
+                                "\nkey=left"
+                    }
+
+                    view.startSideArea.callOnClick()
+
+                    true
+                }
+
+                else ->
+                    false
+            }
+        }
+
+        setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                log.debug { "initKeyboardNavigation(): focus_view_got_focus" }
+            }
+        }
+
+        requestFocus()
     }
 
     private fun initPager(
