@@ -140,4 +140,5 @@
     <string name="slideshow_guide_got_it">Понятно</string>
     <string name="slideshow_next">Следующий</string>
     <string name="slideshow_guide_show_system_buttons">Показать системные кнопки</string>
+    <string name="slideshow_exit">Выйти из слайд-шоу</string>
 </resources>

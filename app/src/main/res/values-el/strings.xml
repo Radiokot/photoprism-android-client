@@ -139,4 +139,5 @@
     <string name="slideshow_guide_got_it">Το πιασα</string>
     <string name="slideshow_next">Επόμενο</string>
     <string name="slideshow_guide_show_system_buttons">Εμφάνιση κουμπιών συστήματος</string>
+    <string name="slideshow_exit">Έξοδος από την παρουσίαση</string>
 </resources>

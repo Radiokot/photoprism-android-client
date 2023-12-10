@@ -142,4 +142,5 @@
     <string name="slideshow_guide_got_it">明白了</string>
     <string name="slideshow_next">下一页</string>
     <string name="slideshow_guide_show_system_buttons">显示系统按钮</string>
+    <string name="slideshow_exit">退出幻灯片</string>
 </resources>

@@ -140,4 +140,5 @@
     <string name="slideshow_guide_got_it">Capito</string>
     <string name="slideshow_next">Avanti</string>
     <string name="slideshow_guide_show_system_buttons">Mostra i pulsanti di sistema</string>
+    <string name="slideshow_exit">Esci dalla presentazione</string>
 </resources>

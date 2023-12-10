@@ -140,4 +140,5 @@
     <string name="slideshow_guide_got_it">Anladım</string>
     <string name="slideshow_next">Sonraki</string>
     <string name="slideshow_guide_show_system_buttons">Sistem düğmelerini göster</string>
+    <string name="slideshow_exit">Slayt gösterisinden çık</string>
 </resources>

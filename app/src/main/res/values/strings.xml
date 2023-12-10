@@ -144,4 +144,5 @@
     <string name="slideshow_guide_got_it">Got it</string>
     <string name="slideshow_next">Next</string>
     <string name="slideshow_guide_show_system_buttons">Show system buttons</string>
+    <string name="slideshow_exit">Exit the slideshow</string>
 </resources>

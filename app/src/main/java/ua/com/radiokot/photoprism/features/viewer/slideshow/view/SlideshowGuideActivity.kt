@@ -7,6 +7,7 @@ import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isVisible
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -16,6 +17,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivitySlideshowGuideBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import java.util.concurrent.TimeUnit
 
@@ -23,6 +25,7 @@ class SlideshowGuideActivity : BaseActivity() {
     private lateinit var view: ActivitySlideshowGuideBinding
 
     private val slideshowPreferences: SlideshowPreferences by inject()
+    private val tvDetector: TvDetector by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,7 @@ class SlideshowGuideActivity : BaseActivity() {
         initButtons()
         initFullscreen()
         initLandscapeMode()
+        initTvMode()
     }
 
     private fun initButtons() {
@@ -79,5 +83,30 @@ class SlideshowGuideActivity : BaseActivity() {
                 )
             }
         }
+    }
+
+    private fun initTvMode() {
+        if (!tvDetector.isRunningOnTv) {
+            return
+        }
+
+        // Change "touch" icons to "left" and "right".
+        // The drawable locations (start, end) must correspond
+        // to the ones in the landscape layout.
+        view.nextTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            null,
+            null,
+            ContextCompat.getDrawable(this, R.drawable.ic_keyboard_arrow_right),
+            null,
+        )
+        view.previousTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            ContextCompat.getDrawable(this, R.drawable.ic_keyboard_arrow_left),
+            null,
+            null,
+            null,
+        )
+
+        view.swipeTextView.isVisible = false
+        view.exitTextView?.isVisible = true
     }
 }

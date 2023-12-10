@@ -140,4 +140,5 @@
     <string name="slideshow_guide_got_it">Lo tengo</string>
     <string name="slideshow_next">Siguiente</string>
     <string name="slideshow_guide_show_system_buttons">Mostrar botones del sistema</string>
+    <string name="slideshow_exit">Salir del pase de diapositivas</string>
 </resources>
