@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
@@ -440,53 +441,11 @@ class MediaViewerActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
-
-        // Make all the toolbar views not focusable
-        // to not mess with the keyboard navigation.
-        view.toolbar.forEach { toolbarView ->
-            toolbarView.isFocusable = false
-            if (toolbarView is ImageButton) {
-                toolbarBackButton = toolbarView.apply {
-
-                    // Intercept keys to manually release the back button focus,
-                    // since Android fails doing it.
-                    setOnKeyListener { _, keyCode, event ->
-                        // Ignore all the irrelevant keys.
-                        if (keyCode !in setOf(
-                                KeyEvent.KEYCODE_DPAD_RIGHT,
-                                KeyEvent.KEYCODE_DPAD_LEFT,
-                                KeyEvent.KEYCODE_DPAD_UP,
-                                KeyEvent.KEYCODE_DPAD_DOWN
-                            )
-                        ) {
-                            return@setOnKeyListener false
-                        }
-
-                        // Ignore all the irrelevant events, but return true to avoid focus loss.
-                        if (event.action != KeyEvent.ACTION_DOWN || !event.hasNoModifiers()) {
-                            return@setOnKeyListener true
-                        }
-
-                        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                            unFocusToolbarBackButton()
-                        }
-
-                        return@setOnKeyListener true
-                    }
-                }
-            }
-        }
     }
 
     private fun focusToolbarBackButton() = with(toolbarBackButton) {
         isFocusableInTouchMode = true
         requestFocus(View.FOCUS_UP)
-    }
-
-    private fun unFocusToolbarBackButton() = with(toolbarBackButton) {
-        isFocusable = false
-        isFocusableInTouchMode = false
-        view.keyboardNavigationFocusView.requestFocus(View.FOCUS_DOWN)
     }
 
     @SuppressLint("RestrictedApi")
@@ -506,6 +465,42 @@ class MediaViewerActivity : BaseActivity() {
                         menuItem.icon,
                         iconMarginHorizontal, 0, iconMarginHorizontal, 0
                     )
+                }
+            }
+        }
+
+        // Keyboard navigation focus workarounds.
+        with(view.toolbar) {
+            val unFocusOnDownKeyListener = OnKeyListener { _, keyCode, _ ->
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    with(toolbarBackButton) {
+                        isFocusable = false
+                        isFocusableInTouchMode = false
+                        view.keyboardNavigationFocusView.requestFocus(View.FOCUS_DOWN)
+                    }
+                    true
+                } else {
+                    false
+                }
+            }
+
+            post {
+                // Make all the toolbar views not focusable
+                // to not mess with the keyboard navigation.
+                forEach { toolbarView ->
+                    toolbarView.isFocusable = false
+
+                    // Apply un-focusing on down key press for the back button
+                    // and for visible menu items.
+                    if (toolbarView is ImageButton) {
+                        // Back button is an ImageButton.
+                        toolbarBackButton = toolbarView
+                        toolbarView.setOnKeyListener(unFocusOnDownKeyListener)
+                    } else if (toolbarView is ActionMenuView) {
+                        // Visible menu item is an ActionMenuItemView
+                        // inside an ActionMenuView.
+                        toolbarView[0].setOnKeyListener(unFocusOnDownKeyListener)
+                    }
                 }
             }
         }

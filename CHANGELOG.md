@@ -18,6 +18,7 @@ prevents access to the API
 
 ### Fixed
 - Not clickable "Back" toolbar button in the media viewer 
+- Made the media viewer toolbar menu accessible on TV
 
 ## [1.21.0] - 2023-11-08
 
