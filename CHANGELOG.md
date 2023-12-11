@@ -19,6 +19,7 @@ prevents access to the API
 ### Fixed
 - Not clickable "Back" toolbar button in the media viewer 
 - Made the media viewer toolbar menu accessible on TV
+- Squashed icons of extra media viewer menu items on Android 5
 
 ## [1.21.0] - 2023-11-08
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.InsetDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Size
 import android.view.KeyEvent
@@ -456,15 +457,17 @@ class MediaViewerActivity : BaseActivity() {
             // Enable icons for overflow menu items.
             setOptionalIconsVisible(true)
 
-            // Apply horizontal margin for overflow menu item icons for more pleasant look.
-            val iconMarginHorizontal =
-                resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
-            visibleItems.forEach { menuItem ->
-                if (!menuItem.requestsActionButton()) {
-                    menuItem.icon = InsetDrawable(
-                        menuItem.icon,
-                        iconMarginHorizontal, 0, iconMarginHorizontal, 0
-                    )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // Apply horizontal margin for overflow menu item icons for more pleasant look.
+                val iconMarginHorizontal =
+                    resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
+                visibleItems.forEach { menuItem ->
+                    if (!menuItem.requestsActionButton()) {
+                        menuItem.icon = InsetDrawable(
+                            menuItem.icon,
+                            iconMarginHorizontal, 0, iconMarginHorizontal, 0
+                        )
+                    }
                 }
             }
         }
