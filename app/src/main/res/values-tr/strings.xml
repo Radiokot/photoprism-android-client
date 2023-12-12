@@ -141,4 +141,16 @@
     <string name="slideshow_next">Sonraki</string>
     <string name="slideshow_guide_show_system_buttons">Sistem düğmelerini göster</string>
     <string name="slideshow_exit">Slayt gösterisinden çık</string>
+    <string name="slideshow_guide_speed">Hız, Seçeneklerden değiştirilebilir</string>
+    <string name="viewing_preferences">Görüntüleme</string>
+    <string name="slideshow_speed_preference">Slayt gösterisi hızı</string>
+    <string name="slideshow_speed_preference_explanation">Slaytların ne kadar hızlı değiştirileceği</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Yavaş</item>
+        <item>Daha yavaş</item>
+        <item>Normal</item>
+        <item>Daha hızlı</item>
+        <item>Hızlı</item>
+    </string-array>
 </resources>

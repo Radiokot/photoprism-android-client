@@ -9,6 +9,18 @@
     <!-- There is a portrait version too -->
 
     <TextView
+        android:id="@+id/speed_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:gravity="center"
+        android:text="@string/slideshow_guide_speed"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:textSize="@dimen/slideshow_guide_text_size"
+        app:layout_constraintBottom_toTopOf="@id/previous_text_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/previous_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

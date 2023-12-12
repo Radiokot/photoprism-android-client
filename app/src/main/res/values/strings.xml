@@ -145,4 +145,16 @@
     <string name="slideshow_next">Next</string>
     <string name="slideshow_guide_show_system_buttons">Show system buttons</string>
     <string name="slideshow_exit">Exit the slideshow</string>
+    <string name="slideshow_guide_speed">The speed can be changed in Preferences</string>
+    <string name="viewing_preferences">Viewing</string>
+    <string name="slideshow_speed_preference">Slideshow speed</string>
+    <string name="slideshow_speed_preference_explanation">How fast to switch slides</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Slow</item>
+        <item>Slower</item>
+        <item>Normal</item>
+        <item>Faster</item>
+        <item>Fast</item>
+    </string-array>
 </resources>

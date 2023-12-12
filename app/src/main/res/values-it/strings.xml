@@ -141,4 +141,16 @@
     <string name="slideshow_next">Avanti</string>
     <string name="slideshow_guide_show_system_buttons">Mostra i pulsanti di sistema</string>
     <string name="slideshow_exit">Esci dalla presentazione</string>
+    <string name="slideshow_guide_speed">La velocità può essere modificata in Preferenze</string>
+    <string name="viewing_preferences">Visualizzazione</string>
+    <string name="slideshow_speed_preference">Velocità di presentazione</string>
+    <string name="slideshow_speed_preference_explanation">Velocità di cambio delle diapositive</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Lento</item>
+        <item>Più lento</item>
+        <item>Normale</item>
+        <item>Più veloce</item>
+        <item>Veloce</item>
+    </string-array>
 </resources>

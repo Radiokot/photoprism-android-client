@@ -11,4 +11,5 @@
     <string name="pk_show_people" translatable="false">show_people</string>
     <string name="pk_show_albums" translatable="false">show_albums</string>
     <string name="pk_show_album_folders" translatable="false">show_album_folders</string>
+    <string name="pk_slideshow_speed" translatable="false">slideshow_speed</string>
 </resources>

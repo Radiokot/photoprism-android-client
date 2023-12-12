@@ -23,6 +23,18 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/viewing_preferences">
+
+        <ListPreference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_slideshow_speed"
+            app:persistent="false"
+            app:summary="@string/slideshow_speed_preference_explanation"
+            app:title="@string/slideshow_speed_preference" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/search_preferences">
 
         <SwitchPreferenceCompat

@@ -140,4 +140,16 @@
     <string name="slideshow_next">Επόμενο</string>
     <string name="slideshow_guide_show_system_buttons">Εμφάνιση κουμπιών συστήματος</string>
     <string name="slideshow_exit">Έξοδος από την παρουσίαση</string>
+    <string name="slideshow_guide_speed">Η ταχύτητα μπορεί να αλλάξει στις Προτιμήσεις</string>
+    <string name="viewing_preferences">θέαση</string>
+    <string name="slideshow_speed_preference">Ταχύτητα παρουσίασης</string>
+    <string name="slideshow_speed_preference_explanation">Πόσο γρήγορα αλλάζουν οι διαφάνειες</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Αργό</item>
+        <item>Πιο αργό</item>
+        <item>Κανονικό</item>
+        <item>Πιο γρήγορα</item>
+        <item>Γρήγορα</item>
+    </string-array>
 </resources>

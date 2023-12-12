@@ -143,4 +143,16 @@
     <string name="slideshow_next">下一頁</string>
     <string name="slideshow_guide_show_system_buttons">顯示系統按鈕</string>
     <string name="slideshow_exit">退出幻灯片</string>
+    <string name="slideshow_guide_speed">速度可在首選項中更改</string>
+    <string name="viewing_preferences">預覽</string>
+    <string name="slideshow_speed_preference">幻燈片播放速度</string>
+    <string name="slideshow_speed_preference_explanation">切換投影片的速度有多快</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>慢</item>
+        <item>較慢</item>
+        <item>正常</item>
+        <item>更快</item>
+        <item>快</item>
+    </string-array>
 </resources>

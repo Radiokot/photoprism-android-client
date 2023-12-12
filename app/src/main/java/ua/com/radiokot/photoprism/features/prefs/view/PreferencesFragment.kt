@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
@@ -44,6 +45,8 @@ import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCa
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.SlideshowSpeed
+import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
@@ -55,6 +58,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private val log = kLogger("PreferencesFragment")
+    private val slideshowPreferences: SlideshowPreferences by inject()
     private val bookmarksBackup: SearchBookmarksBackup by inject()
     private val bookmarksBackupFileOpeningLauncher =
         registerForActivityResult(
@@ -145,6 +149,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         with(requirePreference(R.string.pk_library_disconnect)) {
             setOnPreferenceClickListener {
                 disconnect()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_slideshow_speed)) {
+            this as ListPreference
+            entries = resources.getStringArray(R.array.slideshow_speed_array)
+            entryValues = SlideshowSpeed.values().map(SlideshowSpeed::name).toTypedArray()
+            value = slideshowPreferences.speed.name
+            setOnPreferenceChangeListener { _, newValue ->
+                slideshowPreferences.speed = SlideshowSpeed.valueOf(newValue as String)
                 true
             }
         }

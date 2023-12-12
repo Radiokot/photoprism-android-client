@@ -199,7 +199,7 @@ class SlideshowViewModel(
                 else ->
                     scheduleSwitchingPage(
                         destinationPageIndex = nextPageIndex,
-                        delayMs = DEFAULT_PRESENTATION_DURATION_MS,
+                        delayMs = slideshowPreferences.speed.presentationDurationMs,
                     )
             }
         }
@@ -236,7 +236,7 @@ class SlideshowViewModel(
     private var switchingPageDisposable: Disposable? = null
     private fun scheduleSwitchingPage(
         destinationPageIndex: Int,
-        delayMs: Long,
+        delayMs: Int,
     ) {
         log.debug {
             "scheduleSwitchingPage(): scheduling:" +
@@ -245,7 +245,7 @@ class SlideshowViewModel(
         }
 
         switchingPageDisposable?.dispose()
-        switchingPageDisposable = Single.timer(delayMs, TimeUnit.MILLISECONDS)
+        switchingPageDisposable = Single.timer(delayMs.toLong(), TimeUnit.MILLISECONDS)
             .subscribeBy {
                 currentPageIndex.postValue(destinationPageIndex)
             }
@@ -254,9 +254,5 @@ class SlideshowViewModel(
 
     sealed interface Event {
         object OpenGuide : Event
-    }
-
-    private companion object {
-        private const val DEFAULT_PRESENTATION_DURATION_MS = 2500L
     }
 }

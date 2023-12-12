@@ -141,4 +141,16 @@
     <string name="slideshow_next">Следующий</string>
     <string name="slideshow_guide_show_system_buttons">Показать системные кнопки</string>
     <string name="slideshow_exit">Выйти из слайд-шоу</string>
+    <string name="slideshow_guide_speed">Скорость можно изменить в Настройках</string>
+    <string name="viewing_preferences">Просмотр</string>
+    <string name="slideshow_speed_preference">Скорость слайд-шоу</string>
+    <string name="slideshow_speed_preference_explanation">Как быстро переключать слайды</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Медленно</item>
+        <item>Медленнее</item>
+        <item>Обычно</item>
+        <item>Быстрее</item>
+        <item>Быстро</item>
+    </string-array>
 </resources>
