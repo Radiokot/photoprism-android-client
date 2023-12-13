@@ -31,11 +31,9 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.GenericItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
-import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -230,34 +228,19 @@ class MediaViewerActivity : BaseActivity() {
 
         adapter = fastAdapter
 
-        val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
-            footerAdapter = GenericItemAdapter(),
-            layoutManager = recyclerView.layoutManager.checkNotNull {
-                "There must be a layout manager at this point"
-            },
-            visibleThreshold = 6
-        ) {
-            override fun onLoadMore(currentPage: Int) {
-                if (currentPage == 0) {
-                    // Filter out false-triggering.
-                    return
-                }
-
+        recyclerView.addOnScrollListener(ViewerEndlessScrollListener(
+            recyclerView = recyclerView,
+            isLoadingLiveData = viewModel.isLoading,
+            visibleThreshold = 6,
+            onLoadMore = { currentPage ->
                 log.debug {
                     "onLoadMore(): load_more:" +
                             "\npage=$currentPage"
                 }
+
                 viewModel.loadMore()
             }
-        }
-        viewModel.isLoading.observe(this@MediaViewerActivity) { isLoading ->
-            if (isLoading) {
-                endlessScrollListener.disable()
-            } else {
-                endlessScrollListener.enable()
-            }
-        }
-        recyclerView.addOnScrollListener(endlessScrollListener)
+        ))
 
         registerOnPageChangeCallback(object : OnPageChangeCallback() {
             private var prevSelectedPagePosition = -1

@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.GenericItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.listeners.EventHook
-import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivitySlideshowBinding
@@ -34,6 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.model.SlideshowViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
+import ua.com.radiokot.photoprism.features.viewer.view.ViewerEndlessScrollListener
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
@@ -279,35 +278,19 @@ class SlideshowActivity : BaseActivity() {
 
         adapter = fastAdapter
 
-        // TODO: refactor to eliminate duplication.
-        val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
-            footerAdapter = GenericItemAdapter(),
-            layoutManager = recyclerView.layoutManager.checkNotNull {
-                "There must be a layout manager at this point"
-            },
-            visibleThreshold = 6
-        ) {
-            override fun onLoadMore(currentPage: Int) {
-                if (currentPage == 0) {
-                    // Filter out false-triggering.
-                    return
-                }
-
+        recyclerView.addOnScrollListener(ViewerEndlessScrollListener(
+            recyclerView = recyclerView,
+            isLoadingLiveData = viewModel.isLoading,
+            visibleThreshold = 6,
+            onLoadMore = { currentPage ->
                 log.debug {
                     "onLoadMore(): load_more:" +
                             "\npage=$currentPage"
                 }
+
                 viewModel.loadMore()
             }
-        }
-        viewModel.isLoading.observe(this@SlideshowActivity) { isLoading ->
-            if (isLoading) {
-                endlessScrollListener.disable()
-            } else {
-                endlessScrollListener.enable()
-            }
-        }
-        recyclerView.addOnScrollListener(endlessScrollListener)
+        ))
 
         // Fancier animation between pages.
         setPageTransformer(DepthPageTransformer())
