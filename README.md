@@ -20,6 +20,7 @@ It does not support all the official web app functionality, but nevertheless has
 - [Configurable search](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-search-the-library)
 - [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) that let you save search configurations and apply them later
 - Enhanced live photo viewer, looks best with Samsung and Apple shots
+- Full-screen slideshow with video support
 - Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F) and [HTTP basic authentication](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)

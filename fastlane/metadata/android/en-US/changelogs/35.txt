@@ -1,0 +1,15 @@
+Full changelog:
+https://t.ly/ppg-changelog
+
+Added:
+- Slideshow, which can be launched from the media viewer
+- Space between pages in the media viewer for better look
+- Spanish translation
+
+Fixed:
+- Not clickable "Back" toolbar button in the media viewer
+- Made the media viewer toolbar menu accessible on TV
+- Squashed icons of extra media viewer menu items on Android 5
+
+Changed:
+- Made connection error message more clear when a misconfigured proxy in front of the library prevents access to the API

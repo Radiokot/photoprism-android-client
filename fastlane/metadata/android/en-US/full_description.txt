@@ -6,6 +6,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Configurable search
 - Search bookmarks that let you save search configurations and apply them later
 - Enhanced live photo viewer, looks best with Samsung and Apple shots
+- Full-screen slideshow with video support
 - Endless session without the need to re-enter the password
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS) and HTTP basic authentication
