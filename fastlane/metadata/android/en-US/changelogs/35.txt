@@ -1,5 +1,5 @@
 Full changelog:
-https://t.ly/ppg-changelog
+https://radiokot.com.ua/pp-changes
 
 Added:
 - Slideshow, which can be launched from the media viewer
