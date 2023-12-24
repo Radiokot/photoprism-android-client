@@ -2,8 +2,10 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.net.Uri
 import android.view.View
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -81,6 +83,7 @@ class VideoViewerPage(
             seekToDefaultPosition()
         }
 
+        @OptIn(UnstableApi::class)
         override fun bindView(
             item: VideoViewerPage,
             payloads: List<Any>,

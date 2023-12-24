@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Size
 import android.view.View
 import androidx.core.view.isVisible
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent

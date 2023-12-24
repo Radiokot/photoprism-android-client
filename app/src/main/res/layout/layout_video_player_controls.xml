@@ -4,29 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player_controls_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".features.viewer.view.MediaViewerActivity">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/exo_play"
-        style="?materialIconButtonFilledTonalStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@id/exo_play_pause"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/play_video"
+        android:background="@drawable/video_play_pause_button_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:nextFocusDown="@id/exo_progress"
-        app:backgroundTint="@color/black_overlay"
-        app:icon="@drawable/ic_play" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@id/exo_pause"
-        style="?materialIconButtonFilledTonalStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/pause_video"
-        android:nextFocusDown="@id/exo_progress"
-        app:backgroundTint="@color/black_overlay"
-        app:icon="@drawable/ic_pause" />
+        android:tint="?colorOnSecondaryContainer"
+        tools:ignore="PrivateResource"
+        tools:srcCompat="@drawable/exo_styled_controls_play">
+        <!-- Content description and image are set by
+        androidx.media3.ui.PlayerControlView -->
+    </androidx.appcompat.widget.AppCompatImageButton>
 
     <!-- Horizontal margins are programmatically extended with insets -->
     <LinearLayout
@@ -49,7 +45,7 @@
             android:textColor="?colorOnSecondaryContainer"
             tools:text="00:05" />
 
-        <com.google.android.exoplayer2.ui.DefaultTimeBar
+        <androidx.media3.ui.DefaultTimeBar
             android:id="@id/exo_progress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

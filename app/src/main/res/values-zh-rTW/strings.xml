@@ -93,8 +93,6 @@
     <string name="disconnect_from_library">斷開連線</string>
     <string name="your_bookmarks_will_be_kept">你的書籤將保留</string>
     <string name="template_error_failed_to_disconnect">斷開連線失敗: %1$s</string>
-    <string name="play_video">播放</string>
-    <string name="pause_video">暫停</string>
     <string name="no_media_found">找不到媒體檔案</string>
     <string name="view_media">預覽</string>
     <string name="open_in_web_viewer">在瀏覽器打開</string>

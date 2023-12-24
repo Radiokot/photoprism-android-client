@@ -1,15 +1,18 @@
 package ua.com.radiokot.photoprism.features.viewer.logic
 
 import android.content.Context
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.upstream.cache.Cache
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import okhttp3.CacheControl
 import ua.com.radiokot.photoprism.di.HttpClient
 
+@OptIn(UnstableApi::class)
 class DefaultVideoPlayerFactory(
     private val httpClient: HttpClient,
     private val sharedCache: Cache,

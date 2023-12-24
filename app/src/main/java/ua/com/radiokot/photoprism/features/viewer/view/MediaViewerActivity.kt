@@ -15,7 +15,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnKeyListener
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.Button
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -334,7 +333,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         // Ignore all the irrelevant keys.
-        // Do not intercept Enter on buttons.
+        // Do not intercept Enter on play/pause button.
         if (keyCode !in setOf(
                 KeyEvent.KEYCODE_DPAD_RIGHT,
                 KeyEvent.KEYCODE_DPAD_LEFT,
@@ -344,7 +343,7 @@ class MediaViewerActivity : BaseActivity() {
             ) || keyCode in setOf(
                 KeyEvent.KEYCODE_ENTER,
                 KeyEvent.KEYCODE_DPAD_CENTER
-            ) && parentView is Button
+            ) && parentView.id == androidx.media3.ui.R.id.exo_play_pause
         ) {
             log.debug {
                 "initKeyboardNavigation(): press_ignored"
@@ -362,7 +361,14 @@ class MediaViewerActivity : BaseActivity() {
         // Call page click by pressing Enter (OK).
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP -> {
-                if (view.toolbar.isVisible) {
+                if (parentView.id == androidx.media3.ui.R.id.exo_play_pause) {
+                    log.debug {
+                        "initKeyboardNavigation(): focus_keyboard_navigation_view_by_key:" +
+                                "\nkey=up"
+                    }
+
+                    view.keyboardNavigationFocusView.requestFocus(View.FOCUS_UP)
+                } else if (view.toolbar.isVisible) {
                     log.debug {
                         "initKeyboardNavigation(): focus_toolbar_back_by_key:" +
                                 "\nkey=up"
@@ -559,8 +565,7 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             // Make arrow keys swipes work when play/pause buttons are in focus.
-            playerControlsView.exoPlay.setOnKeyListener(keyboardNavigationKeyListener)
-            playerControlsView.exoPause.setOnKeyListener(keyboardNavigationKeyListener)
+            playerControlsView.exoPlayPause.setOnKeyListener(keyboardNavigationKeyListener)
         }
 
         viewHolder.setOnFatalPlaybackErrorListener(viewModel::onVideoPlayerFatalPlaybackError)

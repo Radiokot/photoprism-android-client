@@ -16,11 +16,11 @@ def fileProviderAuthority = ""
 
 android {
     namespace "ua.com.radiokot.photoprism"
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
+        targetSdk 34
 
         applicationId "ua.com.radiokot.photoprism"
         versionCode 35
@@ -160,9 +160,9 @@ dependencies {
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.19.1'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.6'
-    implementation 'com.google.android.exoplayer:extension-okhttp:2.18.6'
+    implementation 'androidx.media3:media3-exoplayer:1.2.0'
+    implementation 'androidx.media3:media3-ui:1.2.0'
+    implementation 'androidx.media3:media3-datasource-okhttp:1.2.0'
 
     testImplementation 'junit:junit:4.13.2'
 

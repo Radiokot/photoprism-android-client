@@ -2,13 +2,16 @@ package ua.com.radiokot.photoprism.features.viewer.logic
 
 import android.content.Context
 import android.util.Pair
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.ExoTrackSelection
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 
 /**
  * A [DefaultTrackSelector] which selects the video track by the max known frame rate.
  * Therefore tracks wit unknown rate (-1) are not in favour.
  */
+@OptIn(UnstableApi::class)
 class MaxFrameRateVideoTrackSelector(
     context: Context,
 ) : DefaultTrackSelector(context) {

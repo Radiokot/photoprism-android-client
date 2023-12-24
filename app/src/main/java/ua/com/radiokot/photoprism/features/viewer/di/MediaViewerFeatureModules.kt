@@ -1,9 +1,11 @@
 package ua.com.radiokot.photoprism.features.viewer.di
 
-import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
-import com.google.android.exoplayer2.upstream.cache.Cache
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
@@ -31,6 +33,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheVie
 import ua.com.radiokot.photoprism.util.MediaCacheUtil
 import java.io.File
 
+@OptIn(UnstableApi::class)
 val mediaViewerFeatureModules: List<Module> = listOf(
     module {
         includes(galleryFeatureModules)

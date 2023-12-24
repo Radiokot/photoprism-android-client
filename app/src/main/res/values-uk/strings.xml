@@ -91,8 +91,6 @@
     <string name="disconnect_from_library">Відключитися</string>
     <string name="your_bookmarks_will_be_kept">Ваші закладки не пропадуть</string>
     <string name="template_error_failed_to_disconnect">Не вдалося відключитися: %1$s</string>
-    <string name="play_video">Відтворення</string>
-    <string name="pause_video">Пауза</string>
     <string name="no_media_found">Нічого не знайдено</string>
     <string name="view_media">Перегляд</string>
     <string name="open_in_web_viewer">Відкрити у веб-застосунку</string>

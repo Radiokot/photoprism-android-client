@@ -90,8 +90,6 @@
     <string name="disconnect_from_library">αποσύνδεση</string>
     <string name="your_bookmarks_will_be_kept">οινσελδοδεικτες σου θα διατηρηθούν</string>
     <string name="template_error_failed_to_disconnect">αποτυχία αποσύνδεσης: %1$s</string>
-    <string name="play_video">αναπαραγωγή</string>
-    <string name="pause_video">παύση</string>
     <string name="no_media_found">δε βρέθηκαν πολυμέσα</string>
     <string name="view_media">προβολή</string>
     <string name="open_in_web_viewer">άνοιγμα σε περιηγητή</string>

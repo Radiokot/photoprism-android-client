@@ -3,7 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.logic
 import android.content.Context
 import android.media.MediaScannerConnection
 import androidx.exifinterface.media.ExifInterface
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.media3.common.MimeTypes
 import io.reactivex.rxjava3.core.Observable
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
