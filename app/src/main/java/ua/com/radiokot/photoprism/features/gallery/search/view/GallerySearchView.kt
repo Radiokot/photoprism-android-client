@@ -32,6 +32,7 @@ import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -44,6 +45,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySea
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.features.memories.view.MemoriesDemoActivity
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
@@ -212,6 +214,14 @@ class GallerySearchView(
                 setThrottleOnClickListener {
                     viewModel.onSearchBarClicked()
                 }
+
+                // TODO: Just for demo purposes.
+                if (BuildConfig.DEBUG) {
+                    setOnLongClickListener {
+                        context.startActivity(Intent(context, MemoriesDemoActivity::class.java))
+                        true
+                    }
+                }
             }
         }
 
@@ -235,15 +245,15 @@ class GallerySearchView(
             // Otherwise, this ding dong tries to animate the menu which makes
             // all the items visible during the animation 🤦🏻‍
             SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
-            searchBar.setOnMenuItemClickListener {menuItem ->
+            searchBar.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.reset_search->
+                    R.id.reset_search ->
                         viewModel.onResetClicked()
 
                     R.id.add_search_bookmark ->
                         viewModel.onAddBookmarkClicked()
 
-                    R.id.edit_search_bookmark->
+                    R.id.edit_search_bookmark ->
                         viewModel.onEditBookmarkClicked()
                 }
                 true

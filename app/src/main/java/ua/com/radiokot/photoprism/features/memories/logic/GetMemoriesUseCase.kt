@@ -18,7 +18,7 @@ class GetMemoriesUseCase(
     private val photoPrismClientConfigService: PhotoPrismClientConfigService,
     private val photoPrismPhotosService: PhotoPrismPhotosService,
 ) {
-    operator fun invoke(): Single<Any> =
+    operator fun invoke(): Single<List<Pair<Int, String>>> =
         getPastYears()
             .flatMap { years ->
                 Maybe.concat(

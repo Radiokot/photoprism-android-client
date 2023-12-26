@@ -119,6 +119,11 @@
             android:resizeableActivity="true"
             android:theme="@style/TranslucentGuideTheme" />
 
+        <activity
+            android:name=".features.memories.view.MemoriesDemoActivity"
+            android:exported="false"
+            android:resizeableActivity="true" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"
