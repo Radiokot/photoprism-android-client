@@ -13,7 +13,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.memories.logic.GetMemoriesUseCase
-import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 
 /**
  * This is only for demo purposes.
@@ -51,13 +51,17 @@ class MemoriesDemoActivity : BaseActivity() {
                             text = year.toString()
                             setOnClickListener {
                                 startActivity(
-                                    Intent(this@MemoriesDemoActivity, SlideshowActivity::class.java)
+                                    Intent(
+                                        this@MemoriesDemoActivity,
+                                        MediaViewerActivity::class.java
+                                    )
                                         .putExtras(
-                                            SlideshowActivity.getBundle(
+                                            MediaViewerActivity.getBundle(
                                                 mediaIndex = 0,
                                                 repositoryParams = SimpleGalleryMediaRepository.Params(
                                                     query = searchQuery,
-                                                )
+                                                ),
+                                                areActionsEnabled = true,
                                             )
                                         )
                                 )

@@ -51,19 +51,17 @@ class GetMemoriesUseCase(
     }.toSingle()
 
     /**
-     * "This time N years ago" – few photos around this time in the specified past [year].
+     * "This day N years ago" – few photos or videos taken this day in the specified past [year].
      */
     private fun getPastYearMemories(year: Int): Maybe<List<PhotoPrismMergedPhoto>> {
-        val thisDayLocalDate = LocalDate().getCalendar().run {
-            set(Calendar.YEAR, year)
-            LocalDate(time)
-        }
+        val localCalendar = LocalDate().getCalendar()
 
         return getItemsForMemories(
             searchConfig = SearchConfig.DEFAULT.copy(
                 mediaTypes = MEDIA_TYPES,
-                beforeLocal = LocalDate(thisDayLocalDate.time + PAST_YEAR_MARGIN_MS),
-                afterLocal = LocalDate(thisDayLocalDate.time - PAST_YEAR_MARGIN_MS),
+                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
+                        "month:${localCalendar[Calendar.MONTH + 1]} " +
+                        "year:$year",
             )
         )
             .flatMapMaybe { items ->
@@ -113,7 +111,6 @@ class GetMemoriesUseCase(
             GalleryMedia.TypeName.VIDEO,
             GalleryMedia.TypeName.LIVE,
         )
-        private const val PAST_YEAR_MARGIN_MS = 3 * 86400000L // N days
         private const val MAX_MEMORIES_ITEMS_COUNT = 6
         private val MEMORIES_ITEMS_COMPARATOR =
             compareByDescending(PhotoPrismMergedPhoto::favorite)
