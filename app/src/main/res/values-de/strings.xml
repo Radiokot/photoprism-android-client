@@ -104,6 +104,7 @@
         <a href="#issue">einen Fehlerbericht einreichen</a> oder eine Nachricht an <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a> senden.\n\nBesten Dank!</string>
     <string name="used_open_source_software">Verwendete Open-Source Software</string>
     <string name="user_guides">Handbuch</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky und Mitwirkende von GitHub</string>
     <string name="people">Personen</string>
     <string name="no_people_found">Keine Personen gefunden</string>
     <string name="reload">Neu laden</string>
@@ -129,4 +130,12 @@
     <string name="viewing_preferences">Ansicht</string>
     <string name="slideshow_speed_preference">Präsentationgeschwindigkeit</string>
     <string name="slideshow_speed_preference_explanation">Zeit zwischen den Wechseln</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Langsam</item>
+        <item>Langsamer</item>
+        <item>Normal</item>
+        <item>Schneller</item>
+        <item>Schnell</item>
+    </string-array>
 </resources>
