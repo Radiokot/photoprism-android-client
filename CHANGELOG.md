@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated video player library. If you have playback problems, 
 consider checking out this version
 
+### Added
+- German translation
+
 ## [1.22.0] - 2023-12-15
 
 ### Added
