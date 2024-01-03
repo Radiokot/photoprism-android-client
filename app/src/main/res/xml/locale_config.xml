@@ -2,6 +2,7 @@
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Must be aligned with build.gradle resConfig and values-*. -->
 
+    <locale android:name="de" /> <!-- German -->
     <locale android:name="en" /> <!-- Default -->
     <locale android:name="el" />
     <locale android:name="es" />
