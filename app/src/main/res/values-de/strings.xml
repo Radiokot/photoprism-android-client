@@ -71,10 +71,12 @@
     <string name="ok">OK</string>
     <string name="learn_more">Mehr erfahren</string>
     <string name="preferences">Einstellungen</string>
+    <string name="library_preferences">@string/library</string>
     <string name="about">Über</string>
     <string name="app_version">Version</string>
     <string name="report_an_issue">Fehlerbericht einreichen</string>
     <string name="template_error_failed_to_export_bookmarks">Konnte Lesezeichen nicht exportieren: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
     <string name="export">Export</string>
     <string name="export_bookmarks">Lesezeichen exportieren</string>
     <string name="importt">Import</string>
@@ -92,6 +94,8 @@
     <string name="view_media">Ansehen</string>
     <string name="open_in_web_viewer">Im Web Viewer öffnen</string>
     <string name="albums">Alben</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">Kene Alben gefunden</string>
     <string name="clear_selection">Auswahl aufheben</string>
     <string name="done_selecting">Erledigt</string>
@@ -108,11 +112,15 @@
     <string name="user_guides">Handbuch</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky und Mitwirkende von GitHub</string>
     <string name="people">Personen</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Keine Personen gefunden</string>
     <string name="reload">Neu laden</string>
     <string name="loading_data_progress">Lade Daten…</string>
     <string name="search_preferences">Suche</string>
+    <string name="show_people">@string/people</string>
     <string name="show_people_explanation">Personen in der Suche anzeigen</string>
+    <string name="show_albums">@string/albums</string>
     <string name="show_albums_explanation">Alben in der Suche anzeigen</string>
     <string name="see_all_albums">Alle</string>
     <string name="see_all_people">Alle</string>
