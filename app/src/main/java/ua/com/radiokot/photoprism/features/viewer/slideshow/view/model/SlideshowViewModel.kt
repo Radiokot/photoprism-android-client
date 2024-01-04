@@ -177,17 +177,26 @@ class SlideshowViewModel(
             ?: return
         val lastPageIndex = itemsList.value?.size?.dec()
             ?: return
-        val nextPageIndex = currentPageIndex + 1
+        val isLastPage = currentPageIndex == lastPageIndex
+        val nextPageIndex =
+            // Switch to the next page unless restarting at the end.
+            if (!isLastPage)
+                currentPageIndex + 1
+            else
+                0
 
         log.debug {
             "onPageContentPresented(): content_presented:" +
                     "\npageIndex=$pageIndex," +
                     "\ncurrentPageIndex=$currentPageIndex," +
                     "\nlastPageIndex=$lastPageIndex," +
-                    "\ncurrentPage=$currentPage"
+                    "\ncurrentPage=$currentPage," +
+                    "\nnextPageIndex=$nextPageIndex"
         }
 
-        if (pageIndex == currentPageIndex && currentPageIndex < lastPageIndex) {
+        // The 'page content presented' callback may be launched late,
+        // we only care if the current page has been presented.
+        if (pageIndex == currentPageIndex) {
             when (currentPage) {
                 is VideoViewerPage ->
                     // For videos, switch immediately after playback end.

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated video player library. If you have playback problems, 
 consider checking out this version
+- Slideshow made looped: once reached the end, it restarts from the first slide
 
 ### Added
 - German translation
