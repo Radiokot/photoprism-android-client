@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">PhotoPrism Gallery</string>
+    <!-- English, default -->
     <string name="language_code">en</string>
+    <string name="app_name">PhotoPrism Gallery</string>
     <string name="build_year" translatable="false">2024</string>
 
     <string name="media_type_image">Image</string>

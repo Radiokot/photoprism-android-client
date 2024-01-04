@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">PhotoPrism Галерея</string>
+    <!-- Ukrainian -->
     <string name="language_code">uk</string>
+    <string name="app_name">PhotoPrism Галерея</string>
 
     <string name="media_type_image">Фото</string>
     <string name="media_type_animated">Анімація</string>

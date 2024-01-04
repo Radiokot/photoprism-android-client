@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">PhotoPrism Galeri</string>
+    <!-- Turkish -->
     <string name="language_code">tr</string>
+    <string name="app_name">PhotoPrism Galeri</string>
 
     <string name="media_type_image">Resim</string>
     <string name="media_type_animated">Animasyon</string>

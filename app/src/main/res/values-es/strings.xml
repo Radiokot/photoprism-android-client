@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PhotoPrism Galería</string>
+    <!-- Spanish -->
     <string name="language_code">es</string>
+    <string name="app_name">PhotoPrism Galería</string>
+
     <string name="media_type_image">Imagen</string>
     <string name="media_type_animated">Animación</string>
     <string name="media_type_live">Foto Live</string>

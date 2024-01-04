@@ -1,8 +1,7 @@
 <resources>
     <!-- Chinese Han Traditional. Taivan region because "-Hant" is not allowed as a dir name -->
-
-    <string name="app_name">PhotoPrism Gallery</string>
     <string name="language_code">zh</string>
+    <string name="app_name">PhotoPrism 相簿</string>
 
     <string name="media_type_image">照片</string>
     <string name="media_type_animated">動畫</string>
@@ -70,7 +69,7 @@
     <string name="p12_certificate_guide">
         1. 將你的 PKCS12 (.p12) 包下載到裝置上;\n\n
         2. 通過在檔案瀏覽器中打開捆綁包進行安裝. 使用 \"VPN and apps\" 型別;\n\n
-        3. 返回相簿並選擇安裝好的證書</string>
+        3. 返回相簿並選擇已安裝的證書</string>
     <string name="ok">OK</string>
     <string name="learn_more">瞭解更多</string>
     <string name="preferences">偏好設定</string>
@@ -107,7 +106,7 @@
     <string name="save_file_to_the_storage">將檔案儲存至本地</string>
     <string name="share_the_file">分享檔案</string>
     <string name="download_is_completed">下載完成</string>
-    <string name="welcome_title">歡迎使用相簿</string>
+    <string name="welcome_title">歡迎來到相簿</string>
     <string name="welcome_text">此應用並非PhotoPrism官方客戶端.
         它由 Oleg\u00A0Koretsky (Radiokot) 維護且與官方團隊無關\n\nIf
         如果在使用過程中遇到問題, 請在 Google Play 留下反饋,

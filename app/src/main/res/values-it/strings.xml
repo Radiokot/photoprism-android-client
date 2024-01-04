@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">PhotoPrism Galleria</string>
+    <!-- Italian -->
     <string name="language_code">it</string>
+    <string name="app_name">PhotoPrism Galleria</string>
 
     <string name="media_type_image">Immagine</string>
     <string name="media_type_animated">Animazione</string>

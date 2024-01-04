@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">PhotoPrism Gallery</string>
+    <!-- Greek -->
     <string name="language_code">el</string>
+    <string name="app_name">PhotoPrism Γκαλερί</string>
+
     <string name="media_type_image">εικόνα</string>
     <string name="media_type_animated">κινούμενη εικόνα</string>
     <string name="media_type_live">ζωντανή φωτογραφία</string>
