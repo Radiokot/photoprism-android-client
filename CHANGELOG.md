@@ -15,6 +15,9 @@ consider checking out this version
 ### Added
 - German translation
 
+### Fixed
+- In slideshow, immediate slide switch after going to a previous slide if it is a video
+
 ## [1.22.0] - 2023-12-15
 
 ### Added

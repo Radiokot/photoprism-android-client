@@ -41,16 +41,19 @@ class ImageViewerPage(
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
         private val picasso: Picasso by inject()
+        private var isLoadingFinished = false
 
         private val imageLoadingCallback = object : Callback {
             override fun onSuccess() {
                 view.progressIndicator.hide()
+                isLoadingFinished = true
                 onContentPresented()
             }
 
             override fun onError(e: Exception?) {
                 view.progressIndicator.hide()
                 view.errorTextView.visibility = View.VISIBLE
+                isLoadingFinished = true
                 onContentPresented()
             }
         }
@@ -60,6 +63,7 @@ class ImageViewerPage(
 
             view.progressIndicator.show()
             view.errorTextView.visibility = View.GONE
+            isLoadingFinished = false
 
             picasso
                 .load(item.previewUrl)
@@ -70,6 +74,14 @@ class ImageViewerPage(
                 .centerInside()
                 .onlyScaleDown()
                 .into(view.photoView, imageLoadingCallback)
+        }
+
+        override fun attachToWindow(item: ImageViewerPage) {
+            // If attached without re-binding (swipe to a previous page)
+            // and the loading is finished, call the content presentation callback.
+            if (isLoadingFinished) {
+                onContentPresented()
+            }
         }
 
         override fun unbindView(item: ImageViewerPage) {

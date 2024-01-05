@@ -77,7 +77,9 @@ class UnsupportedNoticePage(
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .into(view.thumbnailImageView, imageLoadingCallback)
+        }
 
+        override fun attachToWindow(item: UnsupportedNoticePage) {
             onContentPresented()
         }
 

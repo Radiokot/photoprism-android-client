@@ -129,9 +129,15 @@ class VideoPlayerViewHolderImpl(
 
         // Call on playback end for non-looped videos.
         override fun onPlaybackStateChanged(playbackState: Int) {
-            if (playbackState == Player.STATE_ENDED && !calledOnce) {
-                onPlaybackEnd()
-                calledOnce = true
+            when {
+                playbackState == Player.STATE_READY -> {
+                    calledOnce = false
+                }
+
+                playbackState == Player.STATE_ENDED && !calledOnce -> {
+                    onPlaybackEnd()
+                    calledOnce = true
+                }
             }
         }
 

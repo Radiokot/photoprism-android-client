@@ -153,6 +153,8 @@ class FadeEndLivePhotoViewerPage(
         override fun detachFromWindow(
             item: FadeEndLivePhotoViewerPage
         ) = with(view.videoView.player!!) {
+            super.detachFromWindow(item)
+
             // Stop playback once the page is swiped.
             stop()
 

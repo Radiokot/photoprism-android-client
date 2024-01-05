@@ -36,11 +36,10 @@ abstract class MediaViewerPageViewHolder<Page : MediaViewerPage>(
     }
 
     @CallSuper
-    override fun attachToWindow(item: Page) {
-        if (isContentPresented) {
-            onContentPresentedListener?.invoke()
-            onContentPresentedListener = null
-        }
+    override fun detachFromWindow(item: Page) {
+        // Once the page is detached,
+        // the existing presentation status is no longer relevant.
+        isContentPresented = false
     }
 
     protected fun onContentPresented() {

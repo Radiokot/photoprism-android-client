@@ -38,8 +38,6 @@ class VideoViewerPage(
         VideoPlayerViewHolder by VideoPlayerViewHolderImpl(view.videoView) {
 
         override fun attachToWindow(item: VideoViewerPage) = with(view.videoView.player!!) {
-            super.attachToWindow(item)
-
             if (isPlaying) {
                 return@with
             }
@@ -74,6 +72,8 @@ class VideoViewerPage(
         // This method is called on swipe but not on screen destroy.
         // Screen lifecycle is handled in VideoPlayerViewHolder::bindPlayerToLifecycle.
         override fun detachFromWindow(item: VideoViewerPage) = with(view.videoView.player!!) {
+            super.detachFromWindow(item)
+
             // Stop playback once the page is swiped.
             stop()
 
