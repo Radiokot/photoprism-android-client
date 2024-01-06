@@ -101,7 +101,6 @@ class GetMemoriesUseCase(
                     .sortedWith(MEMORIES_ITEMS_COMPARATOR)
                     .subList(0, mergedPhotos.size.coerceAtMost(MAX_MEMORIES_ITEMS_COUNT))
                     .distinctBy(PhotoPrismMergedPhoto::uid)
-                    .shuffled()
             }
     }
 

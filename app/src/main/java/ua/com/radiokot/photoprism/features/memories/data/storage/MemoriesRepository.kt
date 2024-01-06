@@ -9,17 +9,15 @@ import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 
 class MemoriesRepository : SimpleCollectionRepository<Memory>() {
     // TODO: Replace with a persistent storage.
-    private val tempStorage: MutableSet<Memory> = mutableSetOf()
-
     override fun getCollection(): Single<List<Memory>> =
         Single.just(
-            tempStorage
+            mutableItemsList
                 .toList()
                 .sortedDescending()
         )
 
     fun add(newMemories: List<Memory>): Completable = {
-        tempStorage
+        mutableItemsList
             .addAll(newMemories)
 
         // TODO: Add cleanup of old seen memories.

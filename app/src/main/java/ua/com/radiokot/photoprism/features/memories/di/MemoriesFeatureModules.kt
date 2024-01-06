@@ -1,12 +1,14 @@
 package ua.com.radiokot.photoprism.features.memories.di
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.memories.logic.GetMemoriesUseCase
 
 val memoriesFeatureModules: List<Module> = listOf(
@@ -21,13 +23,14 @@ val memoriesFeatureModules: List<Module> = listOf(
                             sessionId = session.id,
                         )
                     }
-
                 GetMemoriesUseCase(
                     photoPrismClientConfigService = photoPrismClientConfigService,
                     photoPrismPhotosService = get(),
                     previewUrlFactory = get(),
                 )
             } bind GetMemoriesUseCase::class
+
+            scopedOf(::MemoriesRepository)
         }
     },
 )
