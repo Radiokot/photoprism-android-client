@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.logic.GetMemoriesUseCase
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 
@@ -45,10 +46,13 @@ class MemoriesDemoActivity : BaseActivity() {
             }
             .subscribeBy { memoriesByYear ->
                 view.statusTextView.text = "Done"
-                memoriesByYear.forEach { (year, searchQuery) ->
+                memoriesByYear.forEach { memory ->
                     view.memoriesLayout.addView(
                         Button(view.memoriesLayout.context).apply {
-                            text = year.toString()
+                            text = when (memory) {
+                                is Memory.ThisDayInThePast ->
+                                    "${memory.year}"
+                            }
                             setOnClickListener {
                                 startActivity(
                                     Intent(
@@ -59,7 +63,7 @@ class MemoriesDemoActivity : BaseActivity() {
                                             MediaViewerActivity.getBundle(
                                                 mediaIndex = 0,
                                                 repositoryParams = SimpleGalleryMediaRepository.Params(
-                                                    query = searchQuery,
+                                                    query = memory.searchQuery,
                                                 ),
                                                 areActionsEnabled = true,
                                             )

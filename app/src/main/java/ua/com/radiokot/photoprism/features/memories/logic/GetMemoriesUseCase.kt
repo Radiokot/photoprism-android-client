@@ -9,29 +9,27 @@ import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 import java.util.Calendar
 import java.util.GregorianCalendar
 
+/**
+ * Fetches memories relevant at the moment.
+ */
 class GetMemoriesUseCase(
     private val photoPrismClientConfigService: PhotoPrismClientConfigService,
     private val photoPrismPhotosService: PhotoPrismPhotosService,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) {
-    operator fun invoke(): Single<List<Pair<Int, String>>> =
+    operator fun invoke(): Single<List<Memory>> =
         getPastYears()
             .flatMap { years ->
                 Maybe.concat(
                     years
-                        .map { year ->
-                            getPastYearMemories(year)
-                                .map { items ->
-                                    year to "uid:" + items.joinToString(
-                                        separator = "|",
-                                        transform = PhotoPrismMergedPhoto::uid,
-                                    )
-                                }
-                        }
+                        .map(::getThisDayInThePastMemories)
                         .asIterable()
                 ).toList()
             }
@@ -50,10 +48,7 @@ class GetMemoriesUseCase(
             ?: emptySequence()
     }.toSingle()
 
-    /**
-     * "This day N years ago" – few photos or videos taken this day in the specified past [year].
-     */
-    private fun getPastYearMemories(year: Int): Maybe<List<PhotoPrismMergedPhoto>> {
+    private fun getThisDayInThePastMemories(year: Int): Maybe<Memory.ThisDayInThePast> {
         val localCalendar = LocalDate().getCalendar()
 
         return getItemsForMemories(
@@ -64,11 +59,15 @@ class GetMemoriesUseCase(
                         "year:$year",
             )
         )
-            .flatMapMaybe { items ->
-                if (items.isEmpty())
-                    Maybe.empty()
-                else
-                    Maybe.just(items)
+            .flatMapMaybe { photoPrismMergedPhotos ->
+                if (photoPrismMergedPhotos.isEmpty())
+                    return@flatMapMaybe Maybe.empty()
+
+                Memory.ThisDayInThePast(
+                    year = year,
+                    searchQuery = photoPrismMergedPhotos.searchQuery,
+                    smallThumbnailUrl = photoPrismMergedPhotos.smallThumbnailUrl,
+                ).let { Maybe.just(it) }
             }
     }
 
@@ -102,8 +101,20 @@ class GetMemoriesUseCase(
                     .sortedWith(MEMORIES_ITEMS_COMPARATOR)
                     .subList(0, mergedPhotos.size.coerceAtMost(MAX_MEMORIES_ITEMS_COUNT))
                     .distinctBy(PhotoPrismMergedPhoto::uid)
+                    .shuffled()
             }
     }
+
+    private val Collection<PhotoPrismMergedPhoto>.searchQuery: String
+        get() = "uid:" + joinToString(
+            separator = "|",
+            transform = PhotoPrismMergedPhoto::uid,
+        )
+
+    private val Collection<PhotoPrismMergedPhoto>.smallThumbnailUrl: String
+        get() = previewUrlFactory.getSmallThumbnailUrl(
+            hash = first().hash
+        )
 
     private companion object {
         private val MEDIA_TYPES = setOf(

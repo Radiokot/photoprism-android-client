@@ -25,6 +25,7 @@ val memoriesFeatureModules: List<Module> = listOf(
                 GetMemoriesUseCase(
                     photoPrismClientConfigService = photoPrismClientConfigService,
                     photoPrismPhotosService = get(),
+                    previewUrlFactory = get(),
                 )
             } bind GetMemoriesUseCase::class
         }
