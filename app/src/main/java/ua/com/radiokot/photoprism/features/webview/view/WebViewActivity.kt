@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.webview.view
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.R
@@ -41,6 +43,9 @@ class WebViewActivity : BaseActivity() {
             "No title resource specified"
         }
     }
+    private val finishOnRedirectEnd: Boolean by lazy {
+        intent.getBooleanExtra(FINISH_ON_REDIRECT_END_EXTRA, false)
+    }
     private val pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> by lazy {
         intent.getIntArrayExtra(PAGE_STARTED_SCRIPTS_EXTRA)
             ?.map(WebViewInjectionScriptFactory.Script.values()::get)
@@ -64,6 +69,7 @@ class WebViewActivity : BaseActivity() {
             "onCreate(): creating:" +
                     "\nurl=${url.toHttpUrlOrNull()?.withMaskedCredentials() ?: url}," +
                     "\ntitle=${getString(titleRes)}," +
+                    "\nfinishOnRedirectEnd=$finishOnRedirectEnd," +
                     "\npageStartedInjectionScripts=${pageStartedInjectionScripts.size}," +
                     "\npageFinishedInjectionScripts=${pageFinishedInjectionScripts.size}," +
                     "\nsavedInstanceState=$savedInstanceState"
@@ -100,6 +106,14 @@ class WebViewActivity : BaseActivity() {
 
         webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(webView: WebView, newProgress: Int) {
+                displayLoadingProgress(newProgress)
+
+                if (finishOnRedirectEnd) {
+                    handleRedirect()
+                }
+            }
+
+            private fun displayLoadingProgress(newProgress: Int) {
                 view.progressIndicator.progress = newProgress
 
                 if (newProgress != 100) {
@@ -107,6 +121,49 @@ class WebViewActivity : BaseActivity() {
                 } else {
                     view.progressIndicator.hide()
                 }
+            }
+
+            // Variables for redirect handling.
+            var isRedirectStarted = false
+            var isRedirectEnded = false
+            var initialHttpUrl: HttpUrl? = this@WebViewActivity.url.toHttpUrlOrNull()
+            var handledHttpUrl: HttpUrl? = null
+
+            private fun handleRedirect() {
+                val currentHttpUrl = url?.toHttpUrlOrNull()
+                if (currentHttpUrl == null
+                    || currentHttpUrl == handledHttpUrl
+                    || initialHttpUrl == null
+                ) {
+                    return
+                }
+
+                if (!isRedirectStarted && currentHttpUrl != initialHttpUrl) {
+                    log.debug {
+                        "handleRedirect(): redirect_started:" +
+                                "\ncurrentHttpUrl=${currentHttpUrl.withMaskedCredentials()}," +
+                                "\ninitialHttpUrl=${initialHttpUrl?.withMaskedCredentials()}"
+                    }
+
+                    isRedirectStarted = true
+                } else if (isRedirectStarted && currentHttpUrl == initialHttpUrl) {
+                    log.debug {
+                        "handleRedirect(): redirect_ended"
+                    }
+
+                    isRedirectEnded = true
+                }
+
+                if (isRedirectEnded && finishOnRedirectEnd) {
+                    log.debug {
+                        "handleRedirect(): finishing_on_redirect_end"
+                    }
+
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+
+                handledHttpUrl = currentHttpUrl
             }
         }
 
@@ -160,7 +217,11 @@ class WebViewActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.web_view, menu)
-        menu.findItem(R.id.open_in_browser).isVisible = isUrlBrowsable
+        menu.findItem(R.id.open_in_browser).isVisible =
+                // The address can be opened in browser if it is browsable (not a local asset)
+                // and we are not trying to handle redirect.
+            isUrlBrowsable && !finishOnRedirectEnd
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -168,6 +229,7 @@ class WebViewActivity : BaseActivity() {
         when (item.itemId) {
             R.id.open_in_browser ->
                 goToBrowserAndFinish()
+
             R.id.close ->
                 finish()
         }
@@ -177,12 +239,16 @@ class WebViewActivity : BaseActivity() {
     companion object {
         private const val URL_EXTRA = "url"
         private const val TITLE_RES_EXTRA = "title_res"
+        private const val FINISH_ON_REDIRECT_END_EXTRA = "finish_on_redirect_end"
         private const val PAGE_STARTED_SCRIPTS_EXTRA = "page_started_scripts"
         private const val PAGE_FINISHED_SCRIPTS_EXTRA = "page_finished_scripts"
 
         /**
          * @param url URL to load
          * @param titleRes string resource for the title
+         * @param finishOnRedirectEnd whether to finish the screen with OK result
+         * once [url] redirect is ended. This allows user to interact with a page preventing
+         * access to the [url].
          * @param pageStartedInjectionScripts scripts to inject on page start
          * @param pageFinishedInjectionScripts scripts to inject on page finish
          */
@@ -190,11 +256,13 @@ class WebViewActivity : BaseActivity() {
             url: String,
             @StringRes
             titleRes: Int,
+            finishOnRedirectEnd: Boolean = false,
             pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> = emptySet(),
             pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> = emptySet(),
         ) = Bundle().apply {
             putString(URL_EXTRA, url)
             putInt(TITLE_RES_EXTRA, titleRes)
+            putBoolean(FINISH_ON_REDIRECT_END_EXTRA, finishOnRedirectEnd)
             putIntArray(
                 PAGE_STARTED_SCRIPTS_EXTRA,
                 pageStartedInjectionScripts
