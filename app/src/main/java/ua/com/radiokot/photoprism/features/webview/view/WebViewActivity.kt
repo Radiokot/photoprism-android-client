@@ -67,7 +67,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "onCreate(): creating:" +
-                    "\nurl=${url.toHttpUrlOrNull()?.withMaskedCredentials() ?: url}," +
+                    "\nurl=${url.maskUrlCredentialsIfPresent()}," +
                     "\ntitle=${getString(titleRes)}," +
                     "\nfinishOnRedirectEnd=$finishOnRedirectEnd," +
                     "\npageStartedInjectionScripts=${pageStartedInjectionScripts.size}," +
@@ -191,7 +191,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "navigate(): loading_url:" +
-                    "\nurl=$url"
+                    "\nurl=${url.maskUrlCredentialsIfPresent()}"
         }
     }
 
@@ -200,7 +200,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "goToBrowserAndFinish(): opening_url:" +
-                    "\nurl=$url"
+                    "\nurl=${url.maskUrlCredentialsIfPresent()}"
         }
 
         try {
@@ -235,6 +235,10 @@ class WebViewActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun String.maskUrlCredentialsIfPresent(): String =
+        toHttpUrlOrNull()?.withMaskedCredentials()?.toString()
+            ?: this
 
     companion object {
         private const val URL_EXTRA = "url"
