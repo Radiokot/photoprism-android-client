@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.webview.logic
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import com.google.common.hash.Hashing
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory.Script
 
 /**
@@ -11,13 +12,22 @@ import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptF
  */
 class WebViewInjectionScriptFactory {
 
-    fun getPhotoPrismAutoLoginScript(sessionId: String): String =
-        """
+    fun getPhotoPrismAutoLoginScript(sessionId: String): String {
+        // New fields for the upcoming 2FA+OpenID release are authToken and sessionId.
+        // See https://github.com/photoprism/photoprism/issues/808#issuecomment-1880117188
+        val newSessionId = Hashing.sha256()
+            .hashString(sessionId, Charsets.UTF_8)
+            .toString()
+
+        return """
             localStorage.setItem('session_id', '$sessionId')
+            localStorage.setItem('sessionId', '$newSessionId')
+            localStorage.setItem('authToken', '$sessionId')
             
             // Minimal user model is required for the app to skip the login.
             localStorage.setItem('user','{"ID":42,"UID":""}')
         """.trimIndent()
+    }
 
     fun getPhotoPrismImmersiveScript(
         @ColorInt
