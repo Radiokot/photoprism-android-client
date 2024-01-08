@@ -55,7 +55,7 @@ class GetMemoriesUseCase(
             searchConfig = SearchConfig.DEFAULT.copy(
                 mediaTypes = MEDIA_TYPES,
                 userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
-                        "month:${localCalendar[Calendar.MONTH + 1]} " +
+                        "month:${localCalendar[Calendar.MONTH] + 1} " +
                         "year:$year",
             )
         )
