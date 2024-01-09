@@ -1,11 +1,15 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyChain
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -37,6 +41,10 @@ class EnvConnectionActivity : BaseActivity() {
     private val connectionGuideUrl: String = getKoin()
         .getProperty<String>("connectionGuideUrl")
         .checkNotNull { "Missing connection guide URL" }
+    private val webViewerForRedirectHandlingLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onWebViewerRedirectHandlingResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,6 +186,8 @@ class EnvConnectionActivity : BaseActivity() {
             when (state) {
                 EnvConnectionViewModel.State.Connecting -> {
                     SoftInputUtil.hideSoftInput(window)
+                    // Ensure the keyboard will not re-appear.
+                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
                 }
 
                 EnvConnectionViewModel.State.Idle -> {
@@ -213,6 +223,11 @@ class EnvConnectionActivity : BaseActivity() {
 
                 is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
                     openClientCertificateGuide()
+
+                is EnvConnectionViewModel.Event.OpenWebViewerForRedirectHandling ->
+                    openWebViewerForRedirectHandling(
+                        url = event.url,
+                    )
             }
 
             log.debug {
@@ -289,6 +304,24 @@ class EnvConnectionActivity : BaseActivity() {
                 )
             )
         )
+    }
+
+    private fun openWebViewerForRedirectHandling(url: String) =
+        webViewerForRedirectHandlingLauncher.launch(
+            Intent(this, WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = url,
+                        titleRes = R.string.library,
+                        finishOnRedirectEnd = true,
+                    )
+                )
+        )
+
+    private fun onWebViewerRedirectHandlingResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.onWebViewerHandledRedirect()
+        }
     }
 
     private fun goToGallery() {

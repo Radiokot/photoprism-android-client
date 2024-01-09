@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.di
 
 import android.content.Context
 import android.os.Environment
+import android.webkit.CookieManager
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -10,12 +11,14 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.util.UrlBasicAuthInterceptor
 import ua.com.radiokot.photoprism.api.util.UserAgentInterceptor
+import ua.com.radiokot.photoprism.util.WebViewCookieHandler
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -51,6 +54,8 @@ val ioModules: List<Module> = listOf(
             }
         } bind HttpLoggingInterceptor::class
 
+        singleOf(CookieManager::getInstance)
+
         factory {
             OkHttpClient.Builder()
                 // Connect timeout to cut off dead network.
@@ -67,6 +72,9 @@ val ioModules: List<Module> = listOf(
                         extension = okhttp3.internal.userAgent,
                     )
                 )
+                // Use WebView cookies to pass proxy auth,
+                // like Authelia, Umbrel, Cloudflare, etc.
+                .cookieJar(WebViewCookieHandler(get()))
         } bind OkHttpClient.Builder::class
 
         single {

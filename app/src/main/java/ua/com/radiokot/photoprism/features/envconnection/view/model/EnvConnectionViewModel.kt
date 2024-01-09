@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
@@ -134,6 +135,20 @@ class EnvConnectionViewModel(
         eventsSubject.onNext(Event.OpenConnectionGuide)
     }
 
+    fun onWebViewerHandledRedirect() {
+        if (canConnect) {
+            log.debug {
+                "onWebViewerHandledRedirect(): connecting_once_again"
+            }
+
+            connect()
+        } else {
+            log.warn {
+                "onWebViewerHandledRedirect(): cant_connect_now"
+            }
+        }
+    }
+
     private fun connect() {
         stateSubject.onNext(State.Connecting)
 
@@ -207,6 +222,15 @@ class EnvConnectionViewModel(
                         is EnvIsNotPublicException ->
                             rootUrlError.value = RootUrlError.RequiresCredentials
 
+                        is ProxyBlockingAccessException ->
+                            // If proxy is blocking the access,
+                            // let the user interact with it through a web page.
+                            eventsSubject.onNext(
+                                Event.OpenWebViewerForRedirectHandling(
+                                    url = connectionParams.apiUrl.toString(),
+                                )
+                            )
+
                         else ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
                     }
@@ -236,5 +260,10 @@ class EnvConnectionViewModel(
         object ShowMissingClientCertificatesNotice : Event
         object OpenConnectionGuide : Event
         object OpenClientCertificateGuide : Event
+
+        /**
+         * Call [EnvConnectionViewModel.onWebViewerHandledRedirect] on successful result.
+         */
+        class OpenWebViewerForRedirectHandling(val url: String) : Event
     }
 }

@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.envconnection.logic
 
+import android.webkit.CookieManager
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
@@ -11,13 +12,15 @@ import java.io.File
 
 /**
  * Clears the [envSessionHolder].
- * Clears [envAuthPersistence], [envSessionPersistence] and [cacheDirectories], if present.
+ * Clears [envAuthPersistence], [envSessionPersistence], [cacheDirectories] and [cookieManager],
+ * if present.
  */
 class DisconnectFromEnvUseCase(
     private val envSessionHolder: EnvSessionHolder,
     private val envSessionPersistence: ObjectPersistence<EnvSession>?,
     private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
     private val cacheDirectories: Iterable<File>?,
+    private val cookieManager: CookieManager?,
 ) {
     private val log = kLogger("DisconnectFromEnvUseCase")
 
@@ -40,6 +43,12 @@ class DisconnectFromEnvUseCase(
             log.debug {
                 "invoke(): cache_dir_deleted:" +
                         "\ndir=$cacheDir"
+            }
+        }
+
+        cookieManager?.removeAllCookies(null)?.also {
+            log.debug {
+                "invoke(): cookie_manager_cleared"
             }
         }
 

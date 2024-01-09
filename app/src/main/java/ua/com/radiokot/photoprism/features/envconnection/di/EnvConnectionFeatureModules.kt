@@ -108,6 +108,7 @@ val envConnectionFeatureModules: List<Module> = listOf(
                     get(named(IMAGE_CACHE_DIRECTORY)),
                     get(named(VIDEO_CACHE_DIRECTORY)),
                 ),
+                cookieManager = get(),
             )
         } bind DisconnectFromEnvUseCase::class
 
