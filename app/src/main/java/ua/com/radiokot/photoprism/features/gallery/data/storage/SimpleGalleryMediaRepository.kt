@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.base.data.storage.Repository
 import ua.com.radiokot.photoprism.base.data.storage.SimplePagedDataRepository
+import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.mapSuccessful
@@ -132,6 +133,14 @@ class SimpleGalleryMediaRepository(
         return loadPage
             .repeatUntil { pageIsLast || collectedGalleryMediaItems.size >= limit }
             .ignoreElements()
+            .onErrorResumeNext { error ->
+                Completable.error(
+                    if (ProxyBlockingAccessException.THROWABLE_PREDICATE.test(error))
+                        ProxyBlockingAccessException()
+                    else
+                        error
+                )
+            }
             .toSingle {
                 log.debug {
                     "getPage(): loaded_enough_data:" +

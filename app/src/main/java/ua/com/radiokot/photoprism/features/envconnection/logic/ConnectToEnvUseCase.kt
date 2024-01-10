@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.envconnection.logic
 
-import com.fasterxml.jackson.core.JsonParseException
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
@@ -53,14 +52,12 @@ class ConnectToEnvUseCase(
             }
             .flatMap { checkEnv() }
             .onErrorResumeNext { error ->
-                // Handle unexpected HTML response, which can occur
-                // both in session creation and env check.
-                if (error is JsonParseException
-                    && error.message?.contains("character ('<'") == true
+                Single.error(
+                    if (ProxyBlockingAccessException.THROWABLE_PREDICATE.test(error))
+                        ProxyBlockingAccessException()
+                    else
+                        error
                 )
-                    Single.error(ProxyBlockingAccessException())
-                else
-                    Single.error(error)
             }
             .doOnSuccess {
                 log.debug { "perform(): env_checked" }

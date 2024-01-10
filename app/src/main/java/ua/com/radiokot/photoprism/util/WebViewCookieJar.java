@@ -18,10 +18,10 @@ import okhttp3.HttpUrl;
  * @author Hung Pham Sy
  * @see <a href="https://gist.github.com/hungps/8cb6d8484bb20e47d241cc8e117fa705">Source Gist</a>
  */
-public final class WebViewCookieHandler implements CookieJar {
+public final class WebViewCookieJar implements CookieJar {
     private final CookieManager webViewCookieManager;
 
-    public WebViewCookieHandler(CookieManager webViewCookieManager) {
+    public WebViewCookieJar(CookieManager webViewCookieManager) {
         this.webViewCookieManager = webViewCookieManager;
     }
 

@@ -312,7 +312,7 @@ class EnvConnectionActivity : BaseActivity() {
                 .putExtras(
                     WebViewActivity.getBundle(
                         url = url,
-                        titleRes = R.string.library,
+                        titleRes = R.string.connect_to_a_library,
                         finishOnRedirectEnd = true,
                     )
                 )
