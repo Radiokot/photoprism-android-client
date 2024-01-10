@@ -80,7 +80,7 @@ constructor(
         @JsonProperty("Duration")
         val duration: Long?,
         @JsonProperty("Frames")
-        val frames: Int?,
+        val frames: Long?,
         @JsonProperty("Primary")
         val primary: Boolean?,
         @JsonProperty("Root")

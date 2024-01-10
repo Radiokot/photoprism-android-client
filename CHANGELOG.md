@@ -17,6 +17,7 @@ consider checking out this version
 
 ### Fixed
 - In slideshow, immediate slide switch after going to a previous slide if it is a video
+- Not loading library content if there is a video with more than 2 billion frames
 
 ## [1.22.0] - 2023-12-15
 
