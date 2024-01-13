@@ -129,6 +129,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                     externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                     downloadMediaFileViewModel = get(),
+                    connectionParams = get<EnvSession>().envConnectionParams,
                     searchViewModel = get(),
                     fastScrollViewModel = get(),
                     disconnectFromEnvUseCase = get(),

@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -48,6 +49,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.features.welcome.data.storage.WelcomeScreenPreferences
 import ua.com.radiokot.photoprism.features.welcome.view.WelcomeActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
@@ -107,6 +109,10 @@ class GalleryActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             this::onStoragePermissionResult
         )
+    private val webViewerForRedirectHandlingLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onWebViewerRedirectHandlingResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -330,6 +336,12 @@ class GalleryActivity : BaseActivity() {
                 is GalleryViewModel.Event.ShowMissingStoragePermissionMessage -> {
                     showFloatingMessage(
                         message = getString(R.string.error_storage_permission_is_required),
+                    )
+                }
+
+                is GalleryViewModel.Event.OpenWebViewerForRedirectHandling -> {
+                    openWebViewerForRedirectHandling(
+                        url = event.url,
                     )
                 }
             }
@@ -770,6 +782,24 @@ class GalleryActivity : BaseActivity() {
 
         startActivity(Intent(this, WelcomeActivity::class.java))
         finishAffinity()
+    }
+
+    private fun openWebViewerForRedirectHandling(url: String) =
+        webViewerForRedirectHandlingLauncher.launch(
+            Intent(this, WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = url,
+                        titleRes = R.string.connect_to_a_library,
+                        finishOnRedirectEnd = true,
+                    )
+                )
+        )
+
+    private fun onWebViewerRedirectHandlingResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.onWebViewerHandledRedirect()
+        }
     }
 
     private var backPressResetDisposable: Disposable? = null

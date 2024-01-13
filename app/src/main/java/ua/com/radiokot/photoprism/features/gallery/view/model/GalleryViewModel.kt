@@ -12,7 +12,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -44,6 +46,7 @@ class GalleryViewModel(
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
+    private val connectionParams: EnvConnectionParams,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -414,6 +417,14 @@ class GalleryViewModel(
                     mainError.value = viewError
                 } else {
                     eventsSubject.onNext(Event.ShowFloatingError(viewError))
+                }
+
+                if (error is ProxyBlockingAccessException) {
+                    eventsSubject.onNext(
+                        Event.OpenWebViewerForRedirectHandling(
+                            url = connectionParams.apiUrl.toString(),
+                        )
+                    )
                 }
             }
             .addTo(disposable)
@@ -1058,6 +1069,14 @@ class GalleryViewModel(
         update(force = true)
     }
 
+    fun onWebViewerHandledRedirect() {
+        log.debug {
+            "onWebViewerHandledRedirect(): force_updating"
+        }
+
+        update(force = true)
+    }
+
     sealed interface State {
         /**
          * Viewing the gallery content.
@@ -1168,6 +1187,11 @@ class GalleryViewModel(
         object CheckStoragePermission : Event
 
         object ShowMissingStoragePermissionMessage : Event
+
+        /**
+         * Call [onWebViewerHandledRedirect] on successful result.
+         */
+        class OpenWebViewerForRedirectHandling(val url: String) : Event
     }
 
     sealed interface Error {

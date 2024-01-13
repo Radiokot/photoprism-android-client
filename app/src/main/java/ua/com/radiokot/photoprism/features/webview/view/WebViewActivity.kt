@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -28,6 +29,7 @@ class WebViewActivity : BaseActivity() {
     private val log = kLogger("WebViewActivity")
 
     private val webClientFactory: WebViewWVClient.Factory by inject()
+    private val cookieManager: CookieManager by inject()
 
     private lateinit var view: ActivityWebViewBinding
     private val webView: WebView
@@ -159,6 +161,9 @@ class WebViewActivity : BaseActivity() {
                         "handleRedirect(): finishing_on_redirect_end"
                     }
 
+                    // Ensure cookies are saved to the persistent storage.
+                    cookieManager.flush()
+
                     setResult(Activity.RESULT_OK)
                     finish()
                 }
@@ -184,6 +189,10 @@ class WebViewActivity : BaseActivity() {
         })
 
         setBackgroundColor(Color.TRANSPARENT)
+
+        // Accept cookies for proxy auth.
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(this, true)
     }
 
     private fun navigate(url: String) {
