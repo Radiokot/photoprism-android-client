@@ -14,6 +14,9 @@ consider checking out this version
 
 ### Added
 - German translation
+- Handling proxy web auth: if your library is secured with Authelia, Umbrel, Cloudflare Access 
+or any other proxy requiring authentication, it should be doable with this update. 
+Once the auth cookies are expired, you'll be asked for authentication again
 
 ### Fixed
 - In slideshow, immediate slide switch after going to a previous slide if it is a video
