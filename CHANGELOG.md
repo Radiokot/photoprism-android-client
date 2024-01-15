@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.23.0] - 2024-01-15
 
 ### Changed
 - Updated video player library. If you have playback problems, 
@@ -14,7 +14,7 @@ consider checking out this version
 
 ### Added
 - German translation
-- Handling proxy web auth: if your library is secured with Authelia, Umbrel, Cloudflare Access 
+- Web portal auth: if your library is secured with Authelia, Umbrel, Cloudflare Access 
 or any other proxy requiring authentication, it should be doable with this update. 
 Once the auth cookies are expired, you'll be asked for authentication again
 
@@ -423,7 +423,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.22.0(35)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...HEAD
+[1.23.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.22.0(35)...1.23.0(36)
 [1.22.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.21.0(34)...1.22.0(35)
 [1.21.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.3(33)...1.21.0(34)
 [1.20.3]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.2(32)...1.20.3(33)
