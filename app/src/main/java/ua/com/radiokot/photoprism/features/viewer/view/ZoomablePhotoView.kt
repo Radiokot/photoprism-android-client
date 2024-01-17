@@ -4,12 +4,17 @@ import com.github.chrisbanes.photoview.PhotoView
 
 class ZoomablePhotoView(
     val photoView: PhotoView,
-): ZoomableView {
+) : ZoomableView {
     override val isZoomed: Boolean
         get() = photoView.scale != 1f
 
     override fun canPanHorizontally(direction: Int): Boolean = with(photoView) {
-        if (direction < 0)
+        val displayRect = attacher?.displayRect
+
+        if (displayRect == null)
+            // Possible due to the attacher nullability.
+            false
+        else if (direction < 0)
             displayRect.left < left
         else
             displayRect.right > right
