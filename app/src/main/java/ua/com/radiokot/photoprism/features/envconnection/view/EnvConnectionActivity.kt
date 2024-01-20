@@ -27,7 +27,7 @@ import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectio
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import ua.com.radiokot.photoprism.util.SoftInputUtil
+import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
 class EnvConnectionActivity : BaseActivity() {
     private val log = kLogger("EEnvConnectionActivity")
@@ -185,7 +185,7 @@ class EnvConnectionActivity : BaseActivity() {
 
             when (state) {
                 EnvConnectionViewModel.State.Connecting -> {
-                    SoftInputUtil.hideSoftInput(window)
+                    SoftInputVisibility.hide(window)
                     // Ensure the keyboard will not re-appear.
                     window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
                 }

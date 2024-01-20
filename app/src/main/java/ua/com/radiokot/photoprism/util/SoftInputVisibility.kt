@@ -5,13 +5,13 @@ import android.view.Window
 import android.view.inputmethod.InputMethodManager
 
 /**
- * Contains utilities for soft keyboard interaction
+ * Switches soft keyboard visibility
  */
-object SoftInputUtil {
+object SoftInputVisibility {
     /**
      * Shows a soft keyboard on the currently focused view of the given [window]
      */
-    fun showSoftInput(window: Window) {
+    fun show(window: Window) {
         val view = window.currentFocus
             ?: return
 
@@ -30,7 +30,7 @@ object SoftInputUtil {
     /**
      * Hides a soft keyboard on the given [window]
      */
-    fun hideSoftInput(window: Window) {
+    fun hide(window: Window) {
         val view = window.currentFocus
             ?: window.decorView
 
