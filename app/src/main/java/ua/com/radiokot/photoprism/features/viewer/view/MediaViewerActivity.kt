@@ -50,7 +50,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.CustomTabsHelper
-import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
+import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -293,7 +293,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         view.buttonsLayout.doOnPreDraw { buttonsLayout ->
-            val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
+            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(window.decorView)
 
             buttonsLayout.updateLayoutParams {
                 this as MarginLayoutParams

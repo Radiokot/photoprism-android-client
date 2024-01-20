@@ -8,7 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import ua.com.radiokot.photoprism.R
 
-object FullscreenInsetsUtil {
+object FullscreenInsetsCompat {
     /**
      * @return a [Rect] of insets considering default system bar heights
      * on old SDK versions where translucent bars are already available.

@@ -35,7 +35,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.VideoPlayerViewHolder
 import ua.com.radiokot.photoprism.features.viewer.view.ViewerEndlessScrollListener
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
-import ua.com.radiokot.photoprism.util.FullscreenInsetsUtil
+import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import kotlin.math.roundToInt
 
 class SlideshowActivity : BaseActivity() {
@@ -109,7 +109,7 @@ class SlideshowActivity : BaseActivity() {
         }
 
         view.endSideArea.doOnPreDraw {
-            val insets = FullscreenInsetsUtil.getForTranslucentSystemBars(window.decorView)
+            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(window.decorView)
             val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
             view.startSideArea.updateLayoutParams {
