@@ -10,8 +10,8 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 
 
-object CustomTabsHelper {
-    private val log = kLogger("CustomTabsHelper")
+object SafeCustomTabs {
+    private val log = kLogger("SafeCustomTabs")
 
     /**
      * @see CustomTabsClient.connectAndInitialize

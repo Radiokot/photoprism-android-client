@@ -49,7 +49,7 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivi
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import ua.com.radiokot.photoprism.util.CustomTabsHelper
+import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import java.io.File
 import kotlin.math.roundToInt
@@ -322,7 +322,7 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(this)
+        SafeCustomTabs.safelyConnectAndInitialize(this)
     }
 
     private val keyboardNavigationKeyListener = OnKeyListener { parentView, keyCode, event ->

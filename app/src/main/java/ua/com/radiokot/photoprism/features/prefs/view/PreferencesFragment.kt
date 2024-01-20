@@ -51,7 +51,7 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.Slideshow
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import ua.com.radiokot.photoprism.util.CustomTabsHelper
+import ua.com.radiokot.photoprism.util.SafeCustomTabs
 
 class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     override val scope: Scope by lazy {
@@ -118,7 +118,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private fun initCustomTabs() {
-        CustomTabsHelper.safelyConnectAndInitialize(requireContext())
+        SafeCustomTabs.safelyConnectAndInitialize(requireContext())
     }
 
     private fun initBookmarksExportOptionsDialog() {
@@ -458,7 +458,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         // Custom tabs are preferred here,
         // as the user may be already logged into GitHub
         // and so won't have to log in again.
-        CustomTabsHelper.launchWithFallback(
+        SafeCustomTabs.launchWithFallback(
             context = requireContext(),
             intent = CustomTabsIntent.Builder()
                 .setShowTitle(false)
@@ -509,7 +509,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         // Custom tabs are preferred here,
         // as the user may be already logged into GitHub
         // and so won't have to log in again.
-        CustomTabsHelper.launchWithFallback(
+        SafeCustomTabs.launchWithFallback(
             context = requireContext(),
             intent = CustomTabsIntent.Builder()
                 .setShowTitle(false)
