@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Rare media viewer crash on touch
+- Changing albums visibility on the search screen when changing one for people
 
 ## [1.23.0] - 2024-01-15
 

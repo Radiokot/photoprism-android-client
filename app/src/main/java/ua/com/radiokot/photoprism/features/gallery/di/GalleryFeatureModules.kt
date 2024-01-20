@@ -4,13 +4,13 @@ import android.net.Uri
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
@@ -21,6 +21,8 @@ import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.dateFormatModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -58,9 +60,14 @@ val galleryFeatureModules: List<Module> = listOf(
             )
         } bind FileReturnIntentCreator::class
 
-        singleOf(::TvDetectorImpl) {
-            bind<TvDetector>()
-        }
+        singleOf(::TvDetectorImpl) bind TvDetector::class
+
+        single {
+            GalleryPreferencesOnPrefs(
+                preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+                keyPrefix = "gallery"
+            )
+        } bind GalleryPreferences::class
 
         scope<EnvSession> {
             scoped {
@@ -94,9 +101,7 @@ val galleryFeatureModules: List<Module> = listOf(
 
             // Downloader must be session-scoped to have the correct
             // HTTP client (e.g. for mTLS)
-            scopedOf(::OkHttpObservableDownloader) {
-                bind<ObservableDownloader>()
-            }
+            scopedOf(::OkHttpObservableDownloader) bind ObservableDownloader::class
 
             viewModelOf(::DownloadMediaFileViewModel)
 
@@ -130,6 +135,7 @@ val galleryFeatureModules: List<Module> = listOf(
                     externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                     downloadMediaFileViewModel = get(),
                     connectionParams = get<EnvSession>().envConnectionParams,
+                    galleryPreferences = get(),
                     searchViewModel = get(),
                     fastScrollViewModel = get(),
                     disconnectFromEnvUseCase = get(),

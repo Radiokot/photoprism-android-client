@@ -4,7 +4,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
@@ -51,9 +50,7 @@ val gallerySearchFeatureModules: List<Module> = listOf(
         viewModelOf(::SearchBookmarkDialogViewModel)
 
         // Import/export.
-        singleOf(::JsonSearchBookmarksBackup) {
-            bind<SearchBookmarksBackup>()
-        }
+        singleOf(::JsonSearchBookmarksBackup) bind SearchBookmarksBackup::class
 
         factory {
             ExportSearchBookmarksUseCase(

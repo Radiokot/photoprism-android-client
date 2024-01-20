@@ -40,6 +40,8 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
@@ -58,6 +60,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
     }
 
     private val log = kLogger("PreferencesFragment")
+    private val galleryPreferences: GalleryPreferences by inject()
     private val slideshowPreferences: SlideshowPreferences by inject()
     private val bookmarksBackup: SearchBookmarksBackup by inject()
     private val bookmarksBackupFileOpeningLauncher =
@@ -149,6 +152,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         with(requirePreference(R.string.pk_library_disconnect)) {
             setOnPreferenceClickListener {
                 disconnect()
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_gallery_item_scale)) {
+            this as ListPreference
+            entries = resources.getStringArray(R.array.gallery_item_scale_array)
+            entryValues = GalleryItemScale.values().map(GalleryItemScale::name).toTypedArray()
+            value = galleryPreferences.itemScale.value!!.name
+            setOnPreferenceChangeListener { _, newValue ->
+                galleryPreferences.itemScale.onNext(GalleryItemScale.valueOf(newValue as String))
                 true
             }
         }

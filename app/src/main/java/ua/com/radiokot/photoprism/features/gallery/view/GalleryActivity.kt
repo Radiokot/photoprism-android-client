@@ -38,8 +38,10 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
@@ -55,6 +57,7 @@ import ua.com.radiokot.photoprism.features.welcome.view.WelcomeActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 
@@ -66,10 +69,12 @@ class GalleryActivity : BaseActivity() {
     private var isMovedBackByBackButton = false
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
     private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
+    private val galleryPreferences: GalleryPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
+    private var currentListItemScale: GalleryItemScale? = null
 
     private val mediaFileSelectionView: MediaFileSelectionView by lazy {
         MediaFileSelectionView(
@@ -272,6 +277,14 @@ class GalleryActivity : BaseActivity() {
                 else
                     count.toString()
         }
+
+        viewModel.itemScale
+            .observe(this) { itemScale ->
+                // TODO: PoC solution.
+                if (currentListItemScale != null && itemScale != currentListItemScale) {
+                    initList(null)
+                }
+            }
     }
 
     private fun subscribeToEvents() {
@@ -466,6 +479,14 @@ class GalleryActivity : BaseActivity() {
             )
         }
 
+        val itemScale = viewModel.itemScale.value!!
+        currentListItemScale = itemScale
+        val minItemWidthPx =
+            resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
+        val scaledMinItemWidthPx = ceil(minItemWidthPx * itemScale.factor)
+            .toInt()
+            .coerceAtLeast(1)
+
         with(view.galleryRecyclerView) {
             setPadding(
                 paddingLeft,
@@ -490,9 +511,7 @@ class GalleryActivity : BaseActivity() {
                         log.warn { "initList(): used_fallback_height" }
                     }
 
-            val minItemWidthPx =
-                resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
-            val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
+            val spanCount = (listWidth / scaledMinItemWidthPx).coerceAtLeast(1)
             val cellSize = listWidth / spanCount.toFloat()
             val maxVisibleRowCount = (listHeight / cellSize).roundToInt()
             val maxRecycledMediaViewCount = maxVisibleRowCount * spanCount * 2
@@ -501,7 +520,9 @@ class GalleryActivity : BaseActivity() {
                 "initList(): calculated_grid:" +
                         "\nspanCount=$spanCount," +
                         "\nrowWidth=$listWidth," +
+                        "\nitemScale=$itemScale," +
                         "\nminItemWidthPx=$minItemWidthPx," +
+                        "\nscaledMinItemWidthPx=$scaledMinItemWidthPx," +
                         "\nmaxVisibleRowCount=$maxVisibleRowCount," +
                         "\nmaxRecycledMediaViewCount=$maxRecycledMediaViewCount"
             }

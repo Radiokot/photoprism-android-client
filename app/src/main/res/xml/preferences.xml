@@ -27,6 +27,13 @@
 
         <ListPreference
             app:iconSpaceReserved="false"
+            app:key="@string/pk_gallery_item_scale"
+            app:persistent="false"
+            app:summary="@string/gallery_item_scale_preference_explanation"
+            app:title="@string/gallery_item_scale_preference" />
+
+        <ListPreference
+            app:iconSpaceReserved="false"
             app:key="@string/pk_slideshow_speed"
             app:persistent="false"
             app:summary="@string/slideshow_speed_preference_explanation"

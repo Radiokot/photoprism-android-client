@@ -22,10 +22,12 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
@@ -47,6 +49,7 @@ class GalleryViewModel(
     private val externalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,
+    private val galleryPreferences: GalleryPreferences,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -71,6 +74,8 @@ class GalleryViewModel(
         private set
     private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
     val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
+    val itemScale: MutableLiveData<GalleryItemScale> =
+        MutableLiveData(galleryPreferences.itemScale.value!!)
 
     private val backPressActionsStack = BackPressActionsStack()
     val backPressedCallback: OnBackPressedCallback =
@@ -169,6 +174,7 @@ class GalleryViewModel(
         subscribeToSearch()
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
+        subscribeToPreferences()
         resetRepositoryToInitial()
     }
 
@@ -430,6 +436,14 @@ class GalleryViewModel(
             .addTo(disposable)
 
         disposable.autoDispose(this)
+    }
+
+    private fun subscribeToPreferences() {
+        galleryPreferences.itemScale
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(itemScale::setValue)
+            .autoDispose(this)
     }
 
     private fun postGalleryItems() {

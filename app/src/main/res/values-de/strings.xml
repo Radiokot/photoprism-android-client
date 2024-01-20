@@ -148,4 +148,14 @@
         <item>Schneller</item>
         <item>Schnell</item>
     </string-array>
+    <string name="gallery_item_scale_preference">Größe des Galerieelements</string>
+    <string name="gallery_item_scale_preference_explanation">Wie groß sind die Elemente im Raster</string>
+    <string-array name="gallery_item_scale_array">
+        <!-- Must be aligned with GalleryItemScale enum -->
+        <item>Winzig</item>
+        <item>Klein</item>
+        <item>Normal</item>
+        <item>Groß</item>
+        <item>Riesig</item>
+    </string-array>
 </resources>
