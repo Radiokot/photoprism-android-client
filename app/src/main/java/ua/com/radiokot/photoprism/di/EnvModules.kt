@@ -21,7 +21,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.util.MediaCacheUtil
+import ua.com.radiokot.photoprism.util.CacheConstraints
 import java.io.File
 
 class EnvHttpClientParams(
@@ -167,7 +167,7 @@ val envModules = listOf(
                         sessionAwareness = null,
                         clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                         withLogging = false,
-                        cache = Cache(cacheDir, MediaCacheUtil.calculateCacheMaxSize(cacheDir))
+                        cache = Cache(cacheDir, CacheConstraints.getOptimalSize(cacheDir))
                     )
                 }
 

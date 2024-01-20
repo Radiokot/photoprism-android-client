@@ -30,7 +30,7 @@ import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMedi
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
-import ua.com.radiokot.photoprism.util.MediaCacheUtil
+import ua.com.radiokot.photoprism.util.CacheConstraints
 import java.io.File
 
 @OptIn(UnstableApi::class)
@@ -45,7 +45,7 @@ val mediaViewerFeatureModules: List<Module> = listOf(
             SimpleCache(
                 cacheDir,
                 LeastRecentlyUsedCacheEvictor(
-                    MediaCacheUtil.calculateCacheMaxSize(cacheDir)
+                    CacheConstraints.getOptimalSize(cacheDir)
                 ),
                 StandaloneDatabaseProvider(get())
             )
