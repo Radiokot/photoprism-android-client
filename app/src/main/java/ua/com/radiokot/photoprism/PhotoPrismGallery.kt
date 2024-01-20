@@ -27,7 +27,7 @@ import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModules
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModules
-import ua.com.radiokot.photoprism.util.LocalizationHelper
+import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
 import java.io.IOException
 import java.util.Locale
@@ -100,16 +100,15 @@ class PhotoPrismGallery : Application() {
         HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        val stringsLocale = LocalizationHelper.getLocaleOfStrings(newBase.resources)
-        Locale.setDefault(stringsLocale)
+    override fun attachBaseContext(base: Context) =
         super.attachBaseContext(
-            LocalizationHelper.getLocalizedConfigurationContext(
-                context = newBase,
-                locale = stringsLocale,
-            )
+            LocalizedContextFactory(base)
+                .getLocalizedContext()
+                .also {
+                    @Suppress("DEPRECATION")
+                    Locale.setDefault(it.resources.configuration.locale)
+                }
         )
-    }
 
     private fun loadSessionIfPresent() {
         val sessionPersistence =

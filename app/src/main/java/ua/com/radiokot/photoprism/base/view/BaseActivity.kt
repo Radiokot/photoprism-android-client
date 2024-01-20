@@ -17,7 +17,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.view.EnvConnectionActivity
-import ua.com.radiokot.photoprism.util.LocalizationHelper
+import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.util.Locale
 
 abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
@@ -84,16 +84,15 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
         finishAffinity()
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        val stringsLocale = LocalizationHelper.getLocaleOfStrings(newBase.resources)
-        Locale.setDefault(stringsLocale)
+    override fun attachBaseContext(base: Context) =
         super.attachBaseContext(
-            LocalizationHelper.getLocalizedConfigurationContext(
-                context = newBase,
-                locale = stringsLocale,
-            )
+            LocalizedContextFactory(base)
+                .getLocalizedContext()
+                .also {
+                    @Suppress("DEPRECATION")
+                    Locale.setDefault(it.resources.configuration.locale)
+                }
         )
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Reset the splash background.
