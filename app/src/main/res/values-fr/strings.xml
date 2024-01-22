@@ -2,7 +2,7 @@
 <resources>
     <!-- French -->
     <string name="language_code">fr</string>
-    <string name="app_name">PhotoPrism Galerie</string>
+    <string name="app_name">Gallerie PhotoPrism</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_animated">Animation</string>
