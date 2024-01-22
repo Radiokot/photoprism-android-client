@@ -65,16 +65,19 @@
     <string name="client_certificate_optional">Certificat client (optionnel)</string>
     <string name="clear">Nettoyer</string>
     <string name="how_to_use_client_certificate">Comment utiliser les certificats client</string>
-    <string name="p12_certificate_guide">"         1. Download your PKCS12 (.p12) bundle to the device;           2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;           3. Return to the gallery and select the installed certificate."</string>
+    <string name="p12_certificate_guide">
+        1. Téléchargez votre paquet PKCS12 (.p12) sur le périphérique;\n\n
+        2. Installez le paquet en l\'ouvrant depuis un explorateur de fichiers. Utilisez le type \"VPN et applications\";\n\n
+        3. Revenez à la gallerie et utilisez le certificat que vous venez d'installer.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Plus</string>
     <string name="preferences">Préférences</string>
-    <string name="library_preferences">\@string/library</string>
+    <string name="library_preferences">@string/library</string>
     <string name="about">À propos de</string>
     <string name="app_version">Version</string>
     <string name="report_an_issue">Signaler un problème</string>
     <string name="template_error_failed_to_export_bookmarks">Impossible d\'exporter les marque-pages : %1$s</string>
-    <string name="bookmarks_preferences">\@string/search_bookmarks</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
     <string name="export">Exporter</string>
     <string name="export_bookmarks">Exporter les marque-pages</string>
     <string name="importt">Importer</string>
@@ -92,8 +95,8 @@
     <string name="view_media">Voir</string>
     <string name="open_in_web_viewer">Ouvrir dans une visionneuse web</string>
     <string name="albums">Albums</string>
-    <string name="loading_albums_progress">\@string/loading_data_progress</string>
-    <string name="reload_albums">\@string/reload</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
     <string name="no_albums_found">Pas d\'album trouvé</string>
     <string name="clear_selection">Réinitialiser la sélection</string>
     <string name="done_selecting">Fini</string>
@@ -103,20 +106,24 @@
     <string name="share_the_file">Partager le fichier</string>
     <string name="download_is_completed">Téléchargement terminé</string>
     <string name="welcome_title">Bienvenue dans la gallerie</string>
-    <string name="welcome_text">Please note that this app is not an official PhotoPrism client.</string>
+    <string name="welcome_text">Cette application n\'est pas un client PhotoPrism officiel.
+        Elle est maintenue par Oleg\u00A0Koretsky (Radiokot) et n\'a pas de relation avec l\'équipe Photoprism.\n\nSi
+        vous rencontrez un problème avec l'application, laissez un message sur Google Play,
+        <a href="#issue">envoyez un rapport de bug</a> ou un mail à <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nMerci.
+    </string>
     <string name="used_open_source_software">Logiciels open-source utilisés</string>
     <string name="user_guides">Guide de l\'utilisateur</string>
-    <string name="template_preferences_version">If</string>
-    <string name="people">"        something is wrong with the app, please leave feedback on Google Play,"</string>
-    <string name="loading_people_progress">"        <a href="#issue">submit a bug report</a> or send a letter to <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>."</string>
-    <string name="reload_people">\@string/reload</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky et les contributeurs de GitHub</string>
+    <string name="people">Personnes</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Thank you.</string>
     <string name="reload">Recharger</string>
     <string name="loading_data_progress">Chargement des données…</string>
     <string name="search_preferences">Rechercher</string>
-    <string name="show_people">\@string/people</string>
+    <string name="show_people">@string/people</string>
     <string name="show_people_explanation">Montrer les personnes et les nouveaux visages sur l\'écran de recherche</string>
-    <string name="show_albums">\@string/albums</string>
+    <string name="show_albums">@string/albums</string>
     <string name="show_albums_explanation">Montrer les albums sur l\'écran de recherche</string>
     <string name="see_all_albums">Voir tout</string>
     <string name="see_all_people">Voir tout</string>
