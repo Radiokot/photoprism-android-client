@@ -2,7 +2,7 @@
 <resources>
     <!-- French -->
     <string name="language_code">fr</string>
-    <string name="app_name">Gallerie PhotoPrism</string>
+    <string name="app_name">Galerie PhotoPrism</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_animated">Animation</string>
@@ -70,7 +70,7 @@
     <string name="p12_certificate_guide">
         1. Téléchargez votre paquet PKCS12 (.p12) sur le périphérique;\n\n
         2. Installez le paquet en l\'ouvrant depuis un explorateur de fichiers. Utilisez le type \"VPN et applications\";\n\n
-        3. Revenez à la gallerie et utilisez le certificat que vous venez d'installer.</string>
+        3. Revenez à la galerie et utilisez le certificat que vous venez d'installer.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Plus</string>
     <string name="preferences">Préférences</string>
@@ -107,7 +107,7 @@
     <string name="save_file_to_the_storage">Sauvegarder le fichier sur le stockage</string>
     <string name="share_the_file">Partager le fichier</string>
     <string name="download_is_completed">Téléchargement terminé</string>
-    <string name="welcome_title">Bienvenue dans la gallerie</string>
+    <string name="welcome_title">Bienvenue dans la galerie</string>
     <string name="welcome_text">Cette application n\'est pas un client PhotoPrism officiel.
         Elle est maintenue par Oleg\u00A0Koretsky (Radiokot) et n\'a pas de relation avec l\'équipe Photoprism.\n\nSi
         vous rencontrez un problème avec l'application, laissez un message sur Google Play,
@@ -153,7 +153,7 @@
         <item>Accéléré</item>
         <item>Rapide</item>
     </string-array>
-    <string name="gallery_item_scale_preference">Taille des objets de la gallerie</string>
+    <string name="gallery_item_scale_preference">Taille des objets de la galerie</string>
     <string name="gallery_item_scale_preference_explanation">Quelle taille ont les objets dans la grille</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
