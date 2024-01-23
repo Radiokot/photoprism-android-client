@@ -6,6 +6,7 @@
     <locale android:name="de" /> <!-- German -->
     <locale android:name="el" /> <!-- Greek -->
     <locale android:name="es" /> <!-- Spanish -->
+    <locale android:name="fr" /> <!-- French -->
     <locale android:name="it" /> <!-- Italian -->
     <locale android:name="ru" /> <!-- Russian -->
     <locale android:name="tr" /> <!-- Turkish -->

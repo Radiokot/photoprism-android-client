@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- French -->
+    <string name="language_code">fr</string>
+    <string name="app_name">Galerie PhotoPrism</string>
+
+    <string name="media_type_image">Image</string>
+    <string name="media_type_animated">Animation</string>
+    <string name="media_type_live">Live photo</string>
+    <string name="media_type_video">Vidéo</string>
+    <string name="media_type_vector">Image vectorielle</string>
+    <string name="media_type_sidecar">Fichier annexe</string>
+    <string name="media_type_text">Texte</string>
+    <string name="media_type_other">Autre fichier</string>
+    <string name="media_type_unknown">Format de fichier inconnu</string>
+    <string name="select_media_file">Sélectionner un fichier média</string>
+    <string name="file_thumbnail">Miniature du fichier</string>
+    <string name="downloading_progress">Téléchargement…</string>
+    <string name="cancel">Annuler</string>
+    <string name="failed_to_download_file">Impossible de télécharger le fichier</string>
+    <string name="select_content">Sélectionner du contenu</string>
+    <string name="library">Bibliothèque</string>
+    <string name="preview_is_not_available">Preview non disponible</string>
+    <string name="share">Partager</string>
+    <string name="download">Télécharger</string>
+    <string name="open_with">Ouvrir avec</string>
+    <string name="add_to_favorites">Ajouter aux favoris</string>
+    <string name="remove_from_favorites">Supprimer des favoris</string>
+    <string name="failed_to_load_the_preview">Impossible de charger la preview</string>
+    <string name="failed_to_load_the_thumbnail">Impossible de charger la miniature</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="search_the_library">Rechercher dans la bibliothèque</string>
+    <string name="use_mouse_to_search_the_library">Rechercher dans la bibliothèque (utiliser la souris)</string>
+    <string name="enter_the_query">Entrer la requête</string>
+    <string name="media_type">Type</string>
+    <string name="apply_search">Appliquer</string>
+    <string name="reset_search">Réinitialiser</string>
+    <string name="error_you_have_to_connect_to_library">Vous devez vous connecter à une bibliothèque</string>
+    <string name="library_root_url">URL de la bibliothèque</string>
+    <string name="username_optional">Nom d\'utilisateur (optionnel)</string>
+    <string name="password_optional">Mot de passe (optionnel)</string>
+    <string name="connect_to_a_library">Se connecter à une bibliothèque</string>
+    <string name="connect">Se connecter</string>
+    <string name="template_error_inaccessible_library_url">La bibliothèque n\'est pas accessible: %1$s</string>
+    <string name="error_invalid_library_url_format">Format de l\'URL incorrect. Assurez-vous qu\'elle contienne le protocole</string>
+    <string name="error_library_requires_credentials">La bibliothèque nécessite une authentification</string>
+    <string name="error_invalid_password">Mot de passe invalide</string>
+    <string name="template_error_failed_to_load_content">Impossible de charger le contenu: %1$s</string>
+    <string name="error_library_not_accessible_try_again">La bibliothèque n\\\'est pas accessible. Vérifiez la connexion et réessayez.</string>
+    <string name="try_again">Réessayez</string>
+    <string name="load_more">Charger plus</string>
+    <string name="template_started_download_file">Le fichier sera sauvegardé dans les Téléchargements: %1$s</string>
+    <string name="error_storage_permission_is_required">Permission d\'accéder au stockage requise</string>
+    <string name="add_search_bookmark">Ajouter un marque-page</string>
+    <string name="edit_search_bookmark">Éditer un marque-page</string>
+    <string name="search_bookmark_name">Nom</string>
+    <string name="save">Sauvegarder</string>
+    <string name="delete">Supprimer</string>
+    <string name="search_bookmarks">Marque-pages</string>
+    <string name="template_error_failed_to_add_bookmark">Impossible d\'ajouter le marque-page: %1$s</string>
+    <string name="template_error_failed_to_edit_bookmark">Impossible d\'éditer le marque-page: %1$s</string>
+    <string name="template_error_failed_to_delete_bookmark">Impossible de supprimer le marque-page: %1$s</string>
+    <string name="how_to_search_the_library">Comment rechercher dans la bibliothèque</string>
+    <string name="some_types_are_not_available_when_selecting">Seuls les types supportés par l\'application sont disponibles</string>
+    <string name="include_private_content">Inclure le contenu privé</string>
+    <string name="only_favorite_content">Seulement les favoris</string>
+    <string name="client_certificate_optional">Certificat client (optionnel)</string>
+    <string name="clear">Nettoyer</string>
+    <string name="how_to_use_client_certificate">Comment utiliser les certificats client</string>
+    <string name="p12_certificate_guide">
+        1. Téléchargez votre paquet PKCS12 (.p12) sur le périphérique;\n\n
+        2. Installez le paquet en l\'ouvrant depuis un explorateur de fichiers. Utilisez le type \"VPN et applications\";\n\n
+        3. Revenez à la galerie et utilisez le certificat que vous venez d\'installer.</string>
+    <string name="ok">OK</string>
+    <string name="learn_more">Plus</string>
+    <string name="preferences">Préférences</string>
+    <string name="library_preferences">@string/library</string>
+    <string name="about">À propos de</string>
+    <string name="app_version">Version</string>
+    <string name="report_an_issue">Signaler un problème</string>
+    <string name="template_error_failed_to_export_bookmarks">Impossible d\'exporter les marque-pages: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Exporter</string>
+    <string name="export_bookmarks">Exporter les marque-pages</string>
+    <string name="importt">Importer</string>
+    <string name="import_bookmarks">Importer les marque-pages</string>
+    <string name="template_error_failed_to_import_bookmarks">Impossible d\'importer les marque-pages: %1$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Succès: %1$s</string>
+    <string name="replace_current_bookmarks_with_saved">Remplacer les marque-pages actuels avec les marque-pages sauvegardés</string>
+    <string name="save_current_bookmarks_to_file">Sauvegarder les marque-pages dans un fichier</string>
+    <string name="your_bookmarks_will_be_replaced">Vos marque-pages actuels seront remplacés. Continuer?</string>
+    <string name="continuee">Continuer</string>
+    <string name="disconnect_from_library">Se déconnecter</string>
+    <string name="your_bookmarks_will_be_kept">Vos marque-pages seront gardés</string>
+    <string name="template_error_failed_to_disconnect">Impossible de se déconnecter: %1$s</string>
+    <string name="no_media_found">Pas de média trouvé</string>
+    <string name="view_media">Voir</string>
+    <string name="open_in_web_viewer">Ouvrir dans une visionneuse web</string>
+    <string name="albums">Albums</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
+    <string name="no_albums_found">Pas d\'album trouvé</string>
+    <string name="clear_selection">Réinitialiser la sélection</string>
+    <string name="done_selecting">Fini</string>
+    <string name="template_current_of">%1$d %2$d</string>
+    <string name="search_doesnt_fit_allowed_types">La requête de recherche utilise des types non-autorisés</string>
+    <string name="save_file_to_the_storage">Sauvegarder le fichier sur le stockage</string>
+    <string name="share_the_file">Partager le fichier</string>
+    <string name="download_is_completed">Téléchargement terminé</string>
+    <string name="welcome_title">Bienvenue dans la galerie</string>
+    <string name="welcome_text">Cette application n\'est pas un client PhotoPrism officiel.
+        Elle est maintenue par Oleg\u00A0Koretsky (Radiokot) et n\'a pas de relation avec l\'équipe Photoprism.\n\nSi
+        vous rencontrez un problème avec l\'application, laissez un message sur Google Play,
+        <a href="#issue">envoyez un rapport de bug</a> ou un mail à <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nMerci.
+    </string>
+    <string name="used_open_source_software">Logiciels open-source utilisés</string>
+    <string name="user_guides">Guide de l\'utilisateur</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky et les contributeurs de GitHub</string>
+    <string name="people">Personnes</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Pas de personnes trouvé</string>
+    <string name="reload">Recharger</string>
+    <string name="loading_data_progress">Chargement des données…</string>
+    <string name="search_preferences">Rechercher</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Montrer les personnes et les nouveaux visages sur l\'écran de recherche</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Montrer les albums sur l\'écran de recherche</string>
+    <string name="see_all_albums">Voir tout</string>
+    <string name="see_all_people">Voir tout</string>
+    <string name="search_albums">Rechercher</string>
+    <string name="failed_to_load_albums">Impossible de charger les albums</string>
+    <string name="failed_to_load_people">Impossible de charger les personnes</string>
+    <string name="show_album_folders">Dossiers</string>
+    <string name="show_album_folders_explanation">Montrer les dossiers dans la liste des albums</string>
+    <string name="files_saved_to_downloads">Les fichiers ont été sauvegardés dans les Téléchargements</string>
+    <string name="start_slideshow">Diaporama</string>
+    <string name="slideshow_previous">Précédent</string>
+    <string name="slideshow_guide_got_it">OK</string>
+    <string name="slideshow_next">Suivant</string>
+    <string name="slideshow_guide_show_system_buttons">Afficher les boutons système</string>
+    <string name="slideshow_exit">Quitter le diaporama</string>
+    <string name="slideshow_guide_speed">La vitesse peut être changée dans les préférences</string>
+    <string name="viewing_preferences">Visualisation</string>
+    <string name="slideshow_speed_preference">Vitesse des diaporamas</string>
+    <string name="slideshow_speed_preference_explanation">À quelle vitesse changer de diapo</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Lent</item>
+        <item>Ralenti</item>
+        <item>Normal</item>
+        <item>Accéléré</item>
+        <item>Rapide</item>
+    </string-array>
+    <string name="gallery_item_scale_preference">Taille des objets de la galerie</string>
+    <string name="gallery_item_scale_preference_explanation">Quelle taille ont les objets dans la grille</string>
+    <string-array name="gallery_item_scale_array">
+        <!-- Must be aligned with GalleryItemScale enum -->
+        <item>Minuscule</item>
+        <item>Petit</item>
+        <item>Normal</item>
+        <item>Grand</item>
+        <item>Énorme</item>
+    </string-array>
+</resources>
