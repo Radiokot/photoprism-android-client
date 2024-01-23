@@ -145,6 +145,22 @@
     <string name="viewing_preferences">Visualisation</string>
     <string name="slideshow_speed_preference">Vitesse des diaporamas</string>
     <string name="slideshow_speed_preference_explanation">À quelle vitesse changer de diapo</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Lent</item>
+        <item>Ralenti</item>
+        <item>Normal</item>
+        <item>Accéléré</item>
+        <item>Rapide</item>
+    </string-array>
     <string name="gallery_item_scale_preference">Taille des objets de la gallerie</string>
     <string name="gallery_item_scale_preference_explanation">Quelle taille ont les objets dans la grille</string>
+    <string-array name="gallery_item_scale_array">
+        <!-- Must be aligned with GalleryItemScale enum -->
+        <item>Minuscule</item>
+        <item>Petit</item>
+        <item>Normal</item>
+        <item>Grand</item>
+        <item>Énorme</item>
+    </string-array>
 </resources>
