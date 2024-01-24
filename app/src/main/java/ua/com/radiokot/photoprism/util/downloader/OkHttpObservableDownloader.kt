@@ -39,13 +39,6 @@ class OkHttpObservableDownloader(
                                     )
                                 )
                             },
-                            closedListener = {
-                                // Emit the completion when the body is closed,
-                                // not when read bytes count matches content length.
-                                // In the second case, the output is not yet fully written.
-                                val emitter = emittersMap.getValue(emitterKey)
-                                emitter.onComplete()
-                            }
                         )
                     )
                     .build()
@@ -82,6 +75,8 @@ class OkHttpObservableDownloader(
                         }
                         .source()
                         .readAll(destination)
+
+                    emitter.onComplete()
                 } catch (t: Throwable) {
                     emitter.tryOnError(t)
                 }
