@@ -116,8 +116,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'androidx.preference:preference:1.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // If there is a need to update the preferences library,
+    // the Material- overrides in androidx.preference and MaterialPreferenceDialogDisplay
+    // must be updated accordingly.
+    implementation 'androidx.preference:preference:1.2.1'
 
     implementation('com.fasterxml.jackson.core:jackson-databind'){
         version {

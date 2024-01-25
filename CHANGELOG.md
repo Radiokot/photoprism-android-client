@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rare media viewer crash on touch
 - Changing albums visibility on the search screen when changing one for people
 - Infinite file download progress on some environments, for example on `demo.photoprism.app`
+- Dialogs in the preferences not matching the app dialog style
 
 ### Added
 - French translation

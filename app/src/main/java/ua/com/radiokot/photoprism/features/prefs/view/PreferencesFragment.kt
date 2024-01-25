@@ -10,6 +10,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -51,9 +52,14 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.Slideshow
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
+import ua.com.radiokot.photoprism.util.MaterialPreferenceDialogDisplay
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 
-class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
+class PreferencesFragment :
+    PreferenceFragmentCompat(),
+    AndroidScopeComponent,
+    OnPreferenceDisplayDialogCallback by MaterialPreferenceDialogDisplay() {
+
     override val scope: Scope by lazy {
         getKoin().getScope(DI_SCOPE_SESSION)
             .apply { linkTo(createFragmentScope()) }
@@ -83,6 +89,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), AndroidScopeComponent {
         },
         this::writeBookmarksExportToFile
     )
+
     private val issueReportingUrl: String = getKoin()
         .getProperty<String>("issueReportingUrl")
         .checkNotNull { "Missing issue reporting URL" }
