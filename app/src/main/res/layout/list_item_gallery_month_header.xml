@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_month_header"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="88dp"
     android:focusable="false"
     android:gravity="bottom|start"
     android:paddingHorizontal="12dp"
-    android:paddingBottom="8dp"
+    android:paddingBottom="16dp"
     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
     tools:text="February" />

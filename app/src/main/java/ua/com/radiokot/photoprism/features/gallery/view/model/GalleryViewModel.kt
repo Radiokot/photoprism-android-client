@@ -451,6 +451,9 @@ class GalleryViewModel(
             "There must be a media repository to post items from"
         }
         val galleryMediaList = repository.itemsList
+        val itemScale = itemScale.value.checkNotNull {
+            "There must be an item scale to consider"
+        }
 
         mainError.postValue(
             when {
@@ -470,13 +473,21 @@ class GalleryViewModel(
         val currentState = stateSubject.value
         val areViewButtonsVisible = currentState is State.Selecting
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
+        val onlyGroupByMonths = itemScale == GalleryItemScale.TINY
 
         // Add date headers.
         galleryMediaList
             .forEachIndexed { i, galleryMedia ->
                 val takenAtLocal = galleryMedia.takenAtLocal
 
-                if (i == 0 && !takenAtLocal.isSameMonthAs(currentLocalDate)
+                // Month header.
+                //
+                // For the first item – show if only grouping by months, or if its month
+                // doesn't match the current (e.g. it is November, but the first photo is from October).
+                //
+                // For other items – show on month change, that is when the item's month
+                // doesn't match the previous one's.
+                if (i == 0 && (onlyGroupByMonths || !takenAtLocal.isSameMonthAs(currentLocalDate))
                     || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
                 ) {
                     val formattedMonth =
@@ -492,7 +503,17 @@ class GalleryViewModel(
                     )
                 }
 
-                if (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal)) {
+                // Day header.
+                //
+                // Do not show if only grouping by months.
+                //
+                // For the first item – always show.
+                //
+                // For other items – show on day change, that is when the item's day
+                // doesn't match the previous one's.
+                if (!onlyGroupByMonths
+                    && (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal))
+                ) {
                     newListItems.add(
                         if (takenAtLocal.isSameDayAs(currentLocalDate))
                             GalleryListItem.Header.day(
