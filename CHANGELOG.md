@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - French translation
 
+### Changed
+- Halved the space between gallery items
+
 ## [1.23.0] - 2024-01-15
 
 ### Changed

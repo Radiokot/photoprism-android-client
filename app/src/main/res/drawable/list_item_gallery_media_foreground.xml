@@ -2,14 +2,14 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
         <layer-list>
-            <item>
+            <item android:bottom="@dimen/list_item_gallery_media_margin_double" android:left="@dimen/list_item_gallery_media_margin_double" android:right="@dimen/list_item_gallery_media_margin_double" android:top="@dimen/list_item_gallery_media_margin_double">
                 <shape android:shape="rectangle">
-                    <stroke android:width="@dimen/list_item_gallery_media_margin" android:color="?colorControlHighlight" />
+                    <stroke android:width="@dimen/list_item_gallery_media_margin" android:color="?colorSurface" />
                 </shape>
             </item>
-            <item android:bottom="@dimen/list_item_gallery_media_margin" android:left="@dimen/list_item_gallery_media_margin" android:right="@dimen/list_item_gallery_media_margin" android:top="@dimen/list_item_gallery_media_margin">
+            <item>
                 <shape android:shape="rectangle">
-                    <stroke android:width="@dimen/list_item_gallery_media_margin" android:color="?android:colorBackground" />
+                    <stroke android:width="@dimen/list_item_gallery_media_margin_double" android:color="?colorOnSurface" />
                 </shape>
             </item>
         </layer-list>
