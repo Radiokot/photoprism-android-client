@@ -70,7 +70,9 @@ class GalleryActivity : BaseActivity() {
     private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
-    private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
+    private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
+        setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
+    }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
 
@@ -181,13 +183,9 @@ class GalleryActivity : BaseActivity() {
 
     private fun subscribeToData() {
         viewModel.isLoading.observe(this) { isLoading ->
-            galleryProgressFooterAdapter.setNewList(
-                listOf(
-                    GalleryLoadingFooterListItem(
-                        isLoading = isLoading,
-                        canLoadMore = viewModel.canLoadMore
-                    )
-                )
+            galleryProgressFooterAdapter[0] = GalleryLoadingFooterListItem(
+                isLoading = isLoading,
+                canLoadMore = viewModel.canLoadMore
             )
 
             // Do not show refreshing if there are no gallery items,

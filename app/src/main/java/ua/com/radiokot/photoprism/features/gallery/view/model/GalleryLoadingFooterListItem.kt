@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import android.view.View
+import androidx.core.view.isInvisible
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.R
@@ -28,17 +29,10 @@ class GalleryLoadingFooterListItem(
 
         override fun bindView(item: GalleryLoadingFooterListItem, payloads: List<Any>) {
             with(view) {
-                if (item.isLoading) {
-                    progressIndicator.visibility = View.VISIBLE
-                    loadMoreButton.visibility = View.GONE
-                } else {
-                    progressIndicator.visibility = View.GONE
-                    if (item.canLoadMore) {
-                        loadMoreButton.visibility = View.VISIBLE
-                    } else {
-                        loadMoreButton.visibility = View.GONE
-                    }
-                }
+                // Invisibility is used prevent unwanted vertical movement of the list items
+                // due to the footer size change or adding/removal.
+                progressIndicator.isInvisible = !item.isLoading
+                loadMoreButton.isInvisible = item.isLoading || !item.canLoadMore
             }
         }
 
