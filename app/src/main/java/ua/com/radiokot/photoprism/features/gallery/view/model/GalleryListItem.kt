@@ -72,7 +72,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             },
             title = source.title,
             mediaTypeIcon =
-            if (source.media !is GalleryMedia.TypeData.Image)
+            // Type icon is visible if it is not an image, unless the scale is tiny.
+            if (source.media !is GalleryMedia.TypeData.Image && itemScale != GalleryItemScale.TINY)
                 GalleryMediaTypeResources.getIcon(source.media.typeName)
             else
                 null,
@@ -81,10 +82,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 GalleryMediaTypeResources.getName(source.media.typeName)
             else
                 null,
-            isViewButtonVisible = isViewButtonVisible,
+            // View button is visible when needed, unless the scale is tiny.
+            isViewButtonVisible = isViewButtonVisible && itemScale != GalleryItemScale.TINY,
             isSelectionViewVisible = isSelectionViewVisible,
             isMediaSelected = isMediaSelected,
-            isFavorite = source.isFavorite,
+            // Favorite icon is visible when needed, unless the scale is tiny.
+            isFavorite = source.isFavorite && itemScale != GalleryItemScale.TINY,
             source = source,
         )
 

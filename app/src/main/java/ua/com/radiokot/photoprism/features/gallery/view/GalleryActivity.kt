@@ -41,7 +41,6 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
@@ -69,7 +68,6 @@ class GalleryActivity : BaseActivity() {
     private var isMovedBackByBackButton = false
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
     private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
-    private val galleryPreferences: GalleryPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>()
