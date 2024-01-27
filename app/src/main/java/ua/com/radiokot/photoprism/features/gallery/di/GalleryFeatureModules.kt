@@ -111,7 +111,10 @@ val galleryFeatureModules: List<Module> = listOf(
                     thumbnailUrlFactory = get(),
                     downloadUrlFactory = get(),
                     webUrlFactory = get(),
-                    pageLimit = 40,
+                    // Always 80 elements – not great, not terrible.
+                    // It is better, of course, to dynamically adjust
+                    // to the max number of items on the screen.
+                    pageLimit = 80,
                 )
             } bind SimpleGalleryMediaRepository.Factory::class
 
