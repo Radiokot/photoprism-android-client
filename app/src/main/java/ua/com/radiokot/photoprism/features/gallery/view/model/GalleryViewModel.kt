@@ -539,6 +539,7 @@ class GalleryViewModel(
                         isViewButtonVisible = areViewButtonsVisible,
                         isSelectionViewVisible = areSelectionViewsVisible,
                         isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
+                        itemScale = itemScale,
                     )
                 )
             }

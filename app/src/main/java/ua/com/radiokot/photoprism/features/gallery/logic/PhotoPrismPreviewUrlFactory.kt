@@ -12,11 +12,14 @@ class PhotoPrismPreviewUrlFactory(
 
     private val previewUrlBase = "${apiUrl}v1"
 
-    override fun getSmallThumbnailUrl(hash: String): String =
-        "$previewUrlBase/t/$hash/$previewToken/tile_224"
+    override fun getThumbnail100Url(hash: String): String=
+        getTilePreviewUrl(hash, 100)
 
-    override fun getMediumThumbnailUrl(hash: String): String =
-        "$previewUrlBase/t/$hash/$previewToken/tile_500"
+    override fun getThumbnail224Url(hash: String): String =
+        getTilePreviewUrl(hash, 224)
+
+    override fun getThumbnail500Url(hash: String): String =
+        getTilePreviewUrl(hash, 500)
 
     override fun getImagePreview720Url(hash: String): String =
         getFitPreviewUrl(hash, 720)
@@ -41,6 +44,9 @@ class PhotoPrismPreviewUrlFactory(
 
     override fun getImagePreview7680Url(hash: String): String =
         getFitPreviewUrl(hash, 7680)
+
+    private fun getTilePreviewUrl(hash: String, size: Int) =
+        "$previewUrlBase/t/$hash/$previewToken/tile_$size"
 
     private fun getFitPreviewUrl(hash: String, size: Int) =
         "$previewUrlBase/t/$hash/$previewToken/fit_$size"
@@ -81,7 +87,7 @@ class PhotoPrismPreviewUrlFactory(
         }
 
         return "$previewUrlBase/videos/${videoFile.hash}/$previewToken/$previewFormat"
-            .also { result ->
+            .also {
                 log.debug {
                     "getVideoPreviewUrl(): preview_url_created:" +
                             "\nphotoUid=${mergedPhoto.uid}," +

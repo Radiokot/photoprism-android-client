@@ -3,8 +3,9 @@ package ua.com.radiokot.photoprism.features.gallery.logic
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 
 interface MediaPreviewUrlFactory {
-    fun getSmallThumbnailUrl(hash: String): String
-    fun getMediumThumbnailUrl(hash: String): String
+    fun getThumbnail100Url(hash: String): String
+    fun getThumbnail224Url(hash: String): String
+    fun getThumbnail500Url(hash: String): String
 
     fun getImagePreview720Url(hash: String): String
     fun getImagePreview1280Url(hash: String): String

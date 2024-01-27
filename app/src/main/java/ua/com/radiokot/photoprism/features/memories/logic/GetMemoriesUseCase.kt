@@ -111,7 +111,7 @@ class GetMemoriesUseCase(
         )
 
     private val Collection<PhotoPrismMergedPhoto>.smallThumbnailUrl: String
-        get() = previewUrlFactory.getSmallThumbnailUrl(
+        get() = previewUrlFactory.getThumbnail224Url(
             hash = first().hash
         )
 

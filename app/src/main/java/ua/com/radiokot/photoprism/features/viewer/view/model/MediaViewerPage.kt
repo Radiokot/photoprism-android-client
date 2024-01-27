@@ -3,6 +3,8 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.util.Size
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsImage
+import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsVideo
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
@@ -75,22 +77,22 @@ sealed class MediaViewerPage(
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
-                        thumbnailUrl = source.smallThumbnailUrl,
+                        thumbnailUrl = source.getThumbnailUrl(500),
                         source = source,
                     )
                 }
 
-                source.media is GalleryMedia.TypeData.ViewableAsVideo ->
+                source.media is ViewableAsVideo ->
                     VideoViewerPage(
                         previewUrl = source.media.videoPreviewUrl,
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
-                        thumbnailUrl = source.smallThumbnailUrl,
+                        thumbnailUrl = source.getThumbnailUrl(500),
                         source = source,
                     )
 
-                source.media is GalleryMedia.TypeData.ViewableAsImage ->
+                source.media is ViewableAsImage ->
                     ImageViewerPage(
                         previewUrl = source.media.getImagePreviewUrl(
                             max(
@@ -99,7 +101,7 @@ sealed class MediaViewerPage(
                             )
                         ),
                         imageViewSize = imageViewSize,
-                        thumbnailUrl = source.smallThumbnailUrl,
+                        thumbnailUrl = source.getThumbnailUrl(500),
                         source = source,
                     )
 
@@ -111,7 +113,7 @@ sealed class MediaViewerPage(
         fun unsupported(source: GalleryMedia) = UnsupportedNoticePage(
             mediaTypeIcon = GalleryMediaTypeResources.getIcon(source.media.typeName),
             mediaTypeName = GalleryMediaTypeResources.getName(source.media.typeName),
-            thumbnailUrl = source.smallThumbnailUrl,
+            thumbnailUrl = source.getThumbnailUrl(500),
             source = source,
         )
     }

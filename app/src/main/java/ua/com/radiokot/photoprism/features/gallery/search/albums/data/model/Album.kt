@@ -25,7 +25,7 @@ class Album(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
         uid = source.uid,
-        smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.thumb),
+        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(source.thumb),
         isFavorite = source.favorite,
     )
 

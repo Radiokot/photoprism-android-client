@@ -16,6 +16,7 @@ class GalleryListItemDiffCallback : DiffCallback<GalleryListItem> {
                         && oldItem.isSelectionViewVisible == newItem.isSelectionViewVisible
                         && oldItem.isViewButtonVisible == newItem.isViewButtonVisible
                         && oldItem.isFavorite == newItem.isFavorite
+                        && oldItem.thumbnailUrl == newItem.thumbnailUrl
 
             else ->
                 true

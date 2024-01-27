@@ -27,6 +27,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.util.ItemViewFactory
@@ -55,8 +56,20 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             isViewButtonVisible: Boolean,
             isSelectionViewVisible: Boolean,
             isMediaSelected: Boolean,
+            itemScale: GalleryItemScale,
         ) : this(
-            thumbnailUrl = source.smallThumbnailUrl,
+            thumbnailUrl = when (itemScale) {
+                GalleryItemScale.TINY ->
+                    source.getThumbnailUrl(100)
+
+                GalleryItemScale.SMALL,
+                GalleryItemScale.NORMAL ->
+                    source.getThumbnailUrl(250)
+
+                GalleryItemScale.LARGE,
+                GalleryItemScale.HUGE ->
+                    source.getThumbnailUrl(500)
+            },
             title = source.title,
             mediaTypeIcon =
             if (source.media !is GalleryMedia.TypeData.Image)

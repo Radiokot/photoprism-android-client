@@ -39,7 +39,7 @@ class Person(
     ) : this(
         name = personSubject.name.takeIf(String::isNotEmpty),
         id = personSubject.uid,
-        smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(personSubject.thumb),
+        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(personSubject.thumb),
         isFavorite = personSubject.favorite,
         isFace = false,
         photoCount = personSubject.photoCount,
@@ -55,7 +55,7 @@ class Person(
     ) : this(
         name = face.name.takeIf(String::isNotEmpty),
         id = face.id,
-        smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(face.thumb),
+        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(face.thumb),
         isFavorite = false,
         isFace = true,
         photoCount = face.samples,

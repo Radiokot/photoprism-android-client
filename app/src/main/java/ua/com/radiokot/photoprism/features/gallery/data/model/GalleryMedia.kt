@@ -46,10 +46,6 @@ class GalleryMedia(
      */
     val title: String,
     /**
-     * Direct URL to the small square static thumbnail.
-     */
-    val smallThumbnailUrl: String,
-    /**
      * Direct URL to open this media in the web viewer.
      */
     val webViewUrl: String,
@@ -58,7 +54,9 @@ class GalleryMedia(
      */
     var isFavorite: Boolean,
     files: List<File>,
-) {
+    hash: String,
+    previewUrlFactory: MediaPreviewUrlFactory,
+) : WithThumbnail by WithThumbnailFromUrlFactory(hash, previewUrlFactory) {
     /**
      * Files associated with this media.
      */
@@ -80,7 +78,6 @@ class GalleryMedia(
         height = source.height,
         takenAtLocal = LocalDate(localDate = parsePhotoPrismDate(source.takenAtLocal)!!),
         title = source.title,
-        smallThumbnailUrl = previewUrlFactory.getSmallThumbnailUrl(source.hash),
         webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
         isFavorite = source.favorite,
         files = source.files.map { photoPrismFile ->
@@ -89,7 +86,9 @@ class GalleryMedia(
                 thumbnailUrlFactory = previewUrlFactory,
                 downloadUrlFactory = downloadUrlFactory,
             )
-        }.toMutableList()
+        }.toMutableList(),
+        hash = source.hash,
+        previewUrlFactory = previewUrlFactory,
     )
 
     /**
@@ -150,42 +149,6 @@ class GalleryMedia(
     }
 
     sealed class TypeData(val typeName: TypeName) {
-        interface ViewableAsImage {
-            fun getImagePreviewUrl(maxViewSize: Int): String
-        }
-
-        private class ViewableAsImageWithUrlFactory(
-            private val hash: String,
-            private val mediaPreviewUrlFactory: MediaPreviewUrlFactory,
-        ) : ViewableAsImage {
-            override fun getImagePreviewUrl(maxViewSize: Int): String =
-                when {
-                    maxViewSize < 1000 ->
-                        mediaPreviewUrlFactory.getImagePreview720Url(hash)
-
-                    maxViewSize < 1500 ->
-                        mediaPreviewUrlFactory.getImagePreview1280Url(hash)
-
-                    maxViewSize < 2000 ->
-                        mediaPreviewUrlFactory.getImagePreview1920Url(hash)
-
-                    maxViewSize < 2500 ->
-                        mediaPreviewUrlFactory.getImagePreview2048Url(hash)
-
-                    maxViewSize < 4000 ->
-                        mediaPreviewUrlFactory.getImagePreview3840Url(hash)
-
-                    maxViewSize < 4500 ->
-                        mediaPreviewUrlFactory.getImagePreview4096Url(hash)
-
-                    else ->
-                        mediaPreviewUrlFactory.getImagePreview7680Url(hash)
-                }
-        }
-
-        interface ViewableAsVideo {
-            val videoPreviewUrl: String
-        }
 
         object Unknown : TypeData(TypeName.UNKNOWN)
 
@@ -390,7 +353,7 @@ class GalleryMedia(
             mediaUid = source.photoUid,
             mimeType = source.mime ?: "application/octet-stream",
             sizeBytes = source.size,
-            smallThumbnailUrl = thumbnailUrlFactory.getSmallThumbnailUrl(source.hash),
+            smallThumbnailUrl = thumbnailUrlFactory.getThumbnail224Url(source.hash),
             downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
         )
 
