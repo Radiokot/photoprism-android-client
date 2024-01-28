@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IItemVHFactory
-import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.extension.kLogger
 import java.util.concurrent.Executors
 
@@ -25,13 +24,16 @@ class AsyncRecycledViewPoolInitializer(
         Thread(runnable).apply { name = "AsyncRVPoolInitializerExecutor" }
     }
 
+    /**
+     * @param recycledViewsCount should match [RecyclerView.RecycledViewPool.setMaxRecycledViews]
+     */
     fun initPool(
         recyclerView: RecyclerView,
-        count: Int,
+        recycledViewsCount: Int,
     ) {
         log.debug {
             "initPool(): starting:" +
-                    "\ncount=$count"
+                    "\ncount=$recycledViewsCount"
         }
 
         fastAdapter.registerItemFactory(itemViewType, object : IItemVHFactory<ViewHolder> {
@@ -40,15 +42,15 @@ class AsyncRecycledViewPoolInitializer(
         })
 
         val startedAt = System.currentTimeMillis()
-        repeat(count) { i ->
+        repeat(recycledViewsCount) { i ->
             executor.submit {
                 val viewHolder = fastAdapter.createViewHolder(recyclerView, itemViewType)
                 recyclerView.recycledViewPool.putRecycledView(viewHolder)
 
-                if (i == count - 1) {
+                if (i == recycledViewsCount - 1) {
                     log.debug {
                         "initPool(): done:" +
-                                "\ncount=$count," +
+                                "\ncount=$recycledViewsCount," +
                                 "\nelapsedMs=${System.currentTimeMillis() - startedAt}"
                     }
                 }

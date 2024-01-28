@@ -583,7 +583,7 @@ class GalleryActivity : BaseActivity() {
                 )
                     .initPool(
                         recyclerView = view.galleryRecyclerView,
-                        count = maxRecycledMediaViewCount,
+                        recycledViewsCount = maxRecycledMediaViewCount,
                     )
             }
 
