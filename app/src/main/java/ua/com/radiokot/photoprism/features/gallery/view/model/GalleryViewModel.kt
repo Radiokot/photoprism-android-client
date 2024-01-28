@@ -442,7 +442,22 @@ class GalleryViewModel(
         galleryPreferences.itemScale
             .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(itemScale::setValue)
+            .subscribe { newItemScale ->
+                if (newItemScale != itemScale.value) {
+                    itemScale.value = newItemScale
+                    val postItems = itemsList.value != null
+
+                    log.debug {
+                        "subscribeToPreferences(): item_scale_changed:" +
+                                "\nnewItemScale=$newItemScale," +
+                                "\npostItems=$postItems"
+                    }
+
+                    if (postItems) {
+                        postGalleryItems()
+                    }
+                }
+            }
             .autoDispose(this)
     }
 

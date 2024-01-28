@@ -276,9 +276,9 @@ class GalleryActivity : BaseActivity() {
 
         viewModel.itemScale
             .observe(this) { itemScale ->
-                // TODO: PoC solution.
                 if (currentListItemScale != null && itemScale != currentListItemScale) {
-                    initList(null)
+                    // Will not do for pinch gesture.
+                    recreate()
                 }
             }
     }
