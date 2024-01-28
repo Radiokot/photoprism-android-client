@@ -23,16 +23,32 @@
         tools:background="@android:color/darker_gray"
         tools:ignore="ContentDescription" />
 
+    <Space
+        android:id="@+id/image_view_space"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/image_view"
+        app:layout_constraintEnd_toEndOf="@id/image_view"
+        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintStart_toStartOf="@id/image_view"
+        app:layout_constraintTop_toTopOf="@id/image_view"
+        app:layout_constraintWidth_percent="0.9">
+
+        <!-- This space is intended to keep the corner aligned views
+             little further than the image shrink when selected.
+             The selection state scale is in the list item class,
+             this space percent size must be less than it.-->
+    </Space>
+
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/media_type_image_view"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:layout_margin="5dp"
         android:alpha="0.75"
         android:background="@drawable/list_item_gallery_media_indicator_background"
         android:padding="4dp"
-        app:layout_constraintStart_toStartOf="@id/image_view"
-        app:layout_constraintTop_toTopOf="@id/image_view"
+        app:layout_constraintStart_toStartOf="@id/image_view_space"
+        app:layout_constraintTop_toTopOf="@id/image_view_space"
         app:tint="@android:color/white"
         tools:src="@drawable/ic_sledding" />
 
@@ -40,13 +56,12 @@
         android:id="@+id/favorite_image_view"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:layout_margin="5dp"
         android:alpha="0.75"
         android:background="@drawable/list_item_gallery_media_indicator_background"
         android:paddingHorizontal="4dp"
         android:paddingTop="1dp"
-        app:layout_constraintEnd_toEndOf="@id/image_view"
-        app:layout_constraintTop_toTopOf="@id/image_view"
+        app:layout_constraintEnd_toEndOf="@id/image_view_space"
+        app:layout_constraintTop_toTopOf="@id/image_view_space"
         app:srcCompat="@drawable/ic_favorite_filled"
         app:tint="@android:color/white" />
 
@@ -56,8 +71,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginEnd="-7dp"
-        android:layout_marginBottom="-7dp"
+        android:layout_marginEnd="-12dp"
+        android:layout_marginBottom="-12dp"
         android:contentDescription="@string/view_media"
         android:scaleX=".56"
         android:scaleY=".56"
@@ -65,8 +80,8 @@
         android:visibility="gone"
         app:backgroundTint="?colorPrimaryContainer"
         app:icon="@drawable/ic_arrows_expand"
-        app:layout_constraintBottom_toBottomOf="@id/image_view"
-        app:layout_constraintEnd_toEndOf="@id/image_view"
+        app:layout_constraintBottom_toBottomOf="@id/image_view_space"
+        app:layout_constraintEnd_toEndOf="@id/image_view_space"
         tools:targetApi="o"
         tools:visibility="visible" />
 
@@ -74,7 +89,6 @@
         android:id="@+id/selection_check_box"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="5dp"
         android:background="@drawable/checkbox_circle_background"
         android:backgroundTint="?colorOnSecondaryContainer"
         android:checked="true"
@@ -83,7 +97,7 @@
         android:visibility="gone"
         app:buttonCompat="@drawable/checkbox_circle_button"
         app:buttonTint="?colorPrimaryContainer"
-        app:layout_constraintBottom_toBottomOf="@id/image_view"
-        app:layout_constraintStart_toStartOf="@id/image_view"
+        app:layout_constraintBottom_toBottomOf="@id/image_view_space"
+        app:layout_constraintStart_toStartOf="@id/image_view_space"
         tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
