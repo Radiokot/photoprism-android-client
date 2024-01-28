@@ -59,7 +59,7 @@ When a new version of PhotoPrism comes out, the app may break.
 <br>
 …and 3 anonymous sponsors.
 
-*I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ♥ To join this public list, email me the transaction reference once it is complete. &emsp;*
+*I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ❤️ To join this public list, email me the transaction reference once it is complete. &emsp;*
 
 ## Tech stack
 - Kotlin
@@ -68,6 +68,6 @@ When a new version of PhotoPrism comes out, the app may break.
 - OkHTTP networking + Retrofit
 - Room database
 - kotlin-logging with slf4j-handroid
-- ExoPlayer
+- Picasso for images & ExoPlayer for videos
 - FastAdapter
 - ViewModel
