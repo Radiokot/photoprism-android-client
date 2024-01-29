@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - French translation
+- Ability to change the gallery item size in the preferences. Pinch gesture will be added later
 
 ### Changed
 - Halved the space between gallery items
