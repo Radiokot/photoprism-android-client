@@ -49,8 +49,8 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivi
 import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
+import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -544,13 +544,15 @@ class MediaViewerActivity : BaseActivity() {
             this.view.buttonsLayout.doOnNextLayout { buttonsLayout ->
                 val buttonsLayoutParams = buttonsLayout.layoutParams as MarginLayoutParams
 
+                val extraTopMargin = view.toolbar.bottom
                 val extraBottomMargin = buttonsLayout.height + buttonsLayoutParams.bottomMargin
                 val extraLeftMargin = buttonsLayoutParams.leftMargin
                 val extraRightMargin = buttonsLayoutParams.rightMargin
 
-                playerControlsView.playerProgressLayout.updateLayoutParams {
+                playerControlsView.root.updateLayoutParams {
                     this as MarginLayoutParams
 
+                    topMargin += extraTopMargin
                     bottomMargin += extraBottomMargin
                     leftMargin += extraLeftMargin
                     rightMargin += extraRightMargin

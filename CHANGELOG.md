@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changing albums visibility on the search screen when changing one for people
 - Infinite file download progress on some environments, for example on `demo.photoprism.app`
 - Dialogs in the preferences not matching the app dialog style
+- Play/pause video button not centered horizontally in landscape orientation
 
 ### Added
 - French translation
