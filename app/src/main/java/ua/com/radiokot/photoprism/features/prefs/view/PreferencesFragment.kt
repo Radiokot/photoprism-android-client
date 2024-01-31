@@ -52,7 +52,7 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.Slideshow
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import ua.com.radiokot.photoprism.util.MaterialPreferenceDialogDisplay
+import androidx.preference.MaterialPreferenceDialogDisplay
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 
 class PreferencesFragment :

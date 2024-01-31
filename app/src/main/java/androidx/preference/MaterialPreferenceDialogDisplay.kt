@@ -1,10 +1,6 @@
-package ua.com.radiokot.photoprism.util
+package androidx.preference
 
 import androidx.fragment.app.DialogFragment
-import androidx.preference.ListPreference
-import androidx.preference.MaterialListPreferenceDialogFragmentCompat
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
 
 /**
