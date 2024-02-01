@@ -36,11 +36,20 @@ class WebViewInjectionScriptFactory {
         """
             var immersiveCss = `
                 <style type="text/css">
-                    /* Make the content background match window color and remove
-                       navigation paddings
-                    */
+                    /* Remove navigation paddings */
                     .v-content__wrap {
                         padding: 0px !important;
+                    }
+                    
+                    /* Make the content background match window color */
+                    .theme-default .v-content__wrap {
+                        background: ${backgroundColor.toCssRgb()} !important;
+                    }
+                    
+                    /* Make the content container background match window color.
+                       This container doesn't wraps the card and needs its separate rule.
+                       Making it 100vh causes the card to jump when selected. */
+                    .p-page-photos .container {
                         background: ${backgroundColor.toCssRgb()} !important;
                     }
                     
@@ -52,12 +61,6 @@ class WebViewInjectionScriptFactory {
                     /* Hide toolbar navigation */
                     .v-toolbar__content {
                         display: none !important;
-                    }
-                    
-                    /* Make the content container background match window color and fill the height*/
-                    .p-page-photos .container {
-                        background: ${backgroundColor.toCssRgb()} !important;
-                        min-height: 100vh !important;    
                     }
                     
                     /* Hide sidebar navigation */
