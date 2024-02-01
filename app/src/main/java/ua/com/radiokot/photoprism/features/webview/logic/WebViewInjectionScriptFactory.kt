@@ -67,6 +67,11 @@ class WebViewInjectionScriptFactory {
                     #p-navigation {
                         display: none !important;
                     }
+                    
+                    /* Hide download buttons, they do nothing in web viewer */
+                    .action-download {
+                        display: none !important;
+                    }
                 </style>
             `
             

@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Infinite file download progress on some environments, for example on `demo.photoprism.app`
 - Dialogs in the preferences not matching the app dialog style
 - Play/pause video button not centered horizontally in landscape orientation
-- Photo card jumping off the screen when selected in web viewer 
+- Photo card jumping off the screen when selected in PhotoPrism web viewer
 
 ### Added
 - French translation
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Halved the space between gallery items
+- Removed "Download" buttons from PhotoPrism web viewer as they don't work in this mode
 
 ## [1.23.0] - 2024-01-15
 
