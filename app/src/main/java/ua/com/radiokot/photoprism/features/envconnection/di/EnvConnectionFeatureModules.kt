@@ -99,18 +99,21 @@ val envConnectionFeatureModules: List<Module> = listOf(
             )
         } bind ConnectToEnvUseCase::class
 
-        factory {
-            DisconnectFromEnvUseCase(
-                envSessionHolder = get(),
-                envSessionPersistence = getOrNull(_q<EnvSession>()),
-                envAuthPersistence = get(_q<EnvAuth>()),
-                cacheDirectories = listOf(
-                    get(named(IMAGE_CACHE_DIRECTORY)),
-                    get(named(VIDEO_CACHE_DIRECTORY)),
-                ),
-                cookieManager = get(),
-            )
-        } bind DisconnectFromEnvUseCase::class
+        scope<EnvSession> {
+            factory {
+                DisconnectFromEnvUseCase(
+                    envSessionHolder = get(),
+                    envSessionPersistence = getOrNull(_q<EnvSession>()),
+                    envAuthPersistence = getOrNull(_q<EnvAuth>()),
+                    cacheDirectories = listOf(
+                        get(named(IMAGE_CACHE_DIRECTORY)),
+                        get(named(VIDEO_CACHE_DIRECTORY)),
+                    ),
+                    cookieManager = getOrNull(),
+                    memoriesRepository = getOrNull(),
+                )
+            } bind DisconnectFromEnvUseCase::class
+        }
 
         viewModel {
             EnvConnectionViewModel(

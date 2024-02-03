@@ -19,7 +19,7 @@ sealed class Memory(
      * Direct URL to the small square static thumbnail
      */
     val smallThumbnailUrl: String,
-): Comparable<Memory> {
+) {
 
     /**
      * "This day N years ago" – few photos or videos taken this day in the past [year].
@@ -59,7 +59,4 @@ sealed class Memory(
     override fun hashCode(): Int {
         return searchQuery.hashCode()
     }
-
-    override fun compareTo(other: Memory): Int =
-        createdAt.compareTo(other.createdAt)
 }

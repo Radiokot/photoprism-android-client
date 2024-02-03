@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.memories.data.model
 
 import androidx.room.ColumnInfo
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
@@ -14,6 +15,9 @@ import org.koin.core.component.inject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import java.util.Date
 
+@Entity(
+    "memories",
+)
 @TypeConverters(MemoryDbEntity.Converters::class)
 data class MemoryDbEntity(
     @PrimaryKey

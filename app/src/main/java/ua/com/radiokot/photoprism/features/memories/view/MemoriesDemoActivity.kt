@@ -49,6 +49,8 @@ class MemoriesDemoActivity : BaseActivity() {
 
         subscribeToRepository()
         initList()
+
+        repository.update()
     }
 
     private fun addMemories() {
