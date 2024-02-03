@@ -11,20 +11,18 @@ class KoinScopeEnvSessionHolder(
 ) : EnvSessionHolder {
     private val log = kLogger("KoinScopeEnvSessionHolder")
 
-    override fun set(session: EnvSession) {
-        with(koin) {
-            closeExistingScope()
+    override fun set(session: EnvSession) = with(koin) {
+        closeExistingScope()
 
-            createScope(
-                scopeId = DI_SCOPE_SESSION,
-                qualifier = named<EnvSession>(),
-                source = session
-            )
+        createScope(
+            scopeId = DI_SCOPE_SESSION,
+            qualifier = named<EnvSession>(),
+            source = session
+        )
 
-            log.debug {
-                "set(): created_new_scope:" +
-                        "\nscopeId=$DI_SCOPE_SESSION"
-            }
+        log.debug {
+            "set(): created_new_scope:" +
+                    "\nscopeId=$DI_SCOPE_SESSION"
         }
     }
 
@@ -32,11 +30,9 @@ class KoinScopeEnvSessionHolder(
         closeExistingScope()
     }
 
-    private fun closeExistingScope() {
-        with(koin) {
-            getScopeOrNull(DI_SCOPE_SESSION)?.close()?.also {
-                log.debug { "closeExistingScope(): scope_closed" }
-            }
+    private fun closeExistingScope() = with(koin) {
+        getScopeOrNull(DI_SCOPE_SESSION)?.close()?.also {
+            log.debug { "closeExistingScope(): scope_closed" }
         }
     }
 
