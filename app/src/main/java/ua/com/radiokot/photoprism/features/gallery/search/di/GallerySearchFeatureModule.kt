@@ -13,7 +13,6 @@ import org.koin.dsl.module
 import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
-import ua.com.radiokot.photoprism.di.dbModules
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -39,8 +38,6 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookm
 val gallerySearchFeatureModules: List<Module> = listOf(
     // Bookmarks.
     module {
-        includes(dbModules)
-
         single {
             SearchBookmarksRepository(
                 bookmarksDbDao = get<AppDatabase>().bookmarks(),

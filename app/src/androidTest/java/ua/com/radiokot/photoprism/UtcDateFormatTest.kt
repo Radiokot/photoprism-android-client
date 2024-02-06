@@ -12,7 +12,7 @@ import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
-import ua.com.radiokot.photoprism.di.dateFormatModules
+import ua.com.radiokot.photoprism.di.dateFormatModule
 import java.text.DateFormat
 
 @RunWith(AndroidJUnit4::class)
@@ -20,7 +20,7 @@ class UtcDateFormatTest {
     @Test
     fun ensureTimeZones() {
         val koin = koinApplication {
-            modules(dateFormatModules)
+            modules(dateFormatModule)
         }.koin
 
         listOf(

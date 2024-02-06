@@ -10,7 +10,7 @@ import org.koin.core.context.startKoin
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
+import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.search.logic.JsonSearchBookmarksBackup
 import ua.com.radiokot.photoprism.features.gallery.search.logic.UnsupportedVersionException
 import java.io.ByteArrayOutputStream
@@ -21,7 +21,7 @@ class JsonSearchBookmarkBackupTest : KoinComponent {
         @JvmStatic
         fun initKoin() {
             startKoin {
-                modules(galleryFeatureModules)
+                modules(galleryFeatureModule)
             }
         }
 

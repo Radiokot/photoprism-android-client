@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.di
 
 import android.text.format.DateFormat
-import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -16,49 +15,48 @@ const val UTC_DAY_YEAR_DATE_FORMAT = "utc-day-year"
 const val UTC_DATE_TIME_DATE_FORMAT = "utc-date-time"
 const val UTC_DATE_TIME_YEAR_DATE_FORMAT = "utc-date-time-year"
 
-val dateFormatModules: List<Module> = listOf(
-    module {
-        factory { Locale.getDefault() }
+val dateFormatModule = module {
+    factory { Locale.getDefault() }
 
-        factory(named(UTC_MONTH_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "MMMM"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
+    factory(named(UTC_MONTH_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "MMMM"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
 
-        factory(named(UTC_MONTH_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
+    factory(named(UTC_MONTH_YEAR_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "MMMMyyyy"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
 
-        factory(named(UTC_DAY_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMd"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
+    factory(named(UTC_DAY_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "EEMMMMd"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
 
-        factory(named(UTC_DAY_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
+    factory(named(UTC_DAY_YEAR_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
 
-        factory(named(UTC_DATE_TIME_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMd HH:mm"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
+    factory(named(UTC_DATE_TIME_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "EEMMMMd HH:mm"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
 
-        factory(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)) {
-            SimpleDateFormat(
-                DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy HH:mm"),
-                get<Locale>()
-            ).setUtcTimeZone()
-        } bind java.text.DateFormat::class
-    })
+    factory(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)) {
+        SimpleDateFormat(
+            DateFormat.getBestDateTimePattern(get(), "EEMMMMdyyyy HH:mm"),
+            get<Locale>()
+        ).setUtcTimeZone()
+    } bind java.text.DateFormat::class
+}

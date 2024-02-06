@@ -15,19 +15,19 @@ import org.koin.core.qualifier.named
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
-import ua.com.radiokot.photoprism.di.dbModules
-import ua.com.radiokot.photoprism.di.retrofitApiModules
+import ua.com.radiokot.photoprism.di.dbModule
+import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
+import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.featureflags.di.featureFlagsModule
-import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
-import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModules
-import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
-import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModules
-import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModules
-import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModules
+import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModule
+import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
+import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
+import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
+import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule
 import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
 import java.io.IOException
@@ -44,16 +44,17 @@ class PhotoPrismGallery : Application() {
             androidLogger()
             androidContext(this@PhotoPrismGallery)
             modules(
-                retrofitApiModules
-                        + dbModules
+                retrofitApiModule
+                        + dbModule
                         + featureFlagsModule
-                        + galleryFeatureModules
-                        + mediaViewerFeatureModules
-                        + envConnectionFeatureModules
-                        + webViewFeatureModules
-                        + welcomeScreenFeatureModules
-                        + slideshowFeatureModules
-                        + memoriesFeatureModules
+
+                        + galleryFeatureModule
+                        + mediaViewerFeatureModule
+                        + envConnectionFeatureModule
+                        + webViewFeatureModule
+                        + welcomeScreenFeatureModule
+                        + slideshowFeatureModule
+                        + memoriesFeatureModule
             )
             androidFileProperties("app.properties")
         }
