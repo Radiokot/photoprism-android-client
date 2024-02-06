@@ -30,13 +30,14 @@ import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
-import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.features.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
@@ -216,7 +217,7 @@ class GallerySearchView(
                 }
 
                 // TODO: Just for demo purposes.
-                if (BuildConfig.DEBUG) {
+                if (get<FeatureFlags>().hasMemoriesFeature) {
                     setOnLongClickListener {
                         context.startActivity(Intent(context, MemoriesDemoActivity::class.java))
                         true

@@ -21,6 +21,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModules
+import ua.com.radiokot.photoprism.features.featureflags.di.featureFlagsModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModules
 import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModules
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModules
@@ -45,6 +46,7 @@ class PhotoPrismGallery : Application() {
             modules(
                 retrofitApiModules
                         + dbModules
+                        + featureFlagsModule
                         + galleryFeatureModules
                         + mediaViewerFeatureModules
                         + envConnectionFeatureModules
