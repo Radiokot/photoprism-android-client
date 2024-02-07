@@ -22,8 +22,11 @@ import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.featureflags.di.featureFlagsModule
+import ua.com.radiokot.photoprism.features.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModule
+import ua.com.radiokot.photoprism.features.memories.logic.CancelDailyMemoriesUpdatesUseCase
+import ua.com.radiokot.photoprism.features.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
@@ -61,6 +64,7 @@ class PhotoPrismGallery : Application() {
 
         initRxErrorHandler()
         initLogging()
+        initOptionalFeatures()
 
         loadSessionIfPresent()
         clearInternalDownloads()
@@ -101,6 +105,14 @@ class PhotoPrismGallery : Application() {
         HandroidLoggerAdapter.APP_NAME = "PPG"
         HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
         HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
+    }
+
+    private fun initOptionalFeatures() = with(get<FeatureFlags>()) {
+        if (hasMemoriesFeature) {
+            get<ScheduleDailyMemoriesUpdatesUseCase>().invoke()
+        } else {
+            get<CancelDailyMemoriesUpdatesUseCase>().invoke()
+        }
     }
 
     override fun attachBaseContext(base: Context) =
