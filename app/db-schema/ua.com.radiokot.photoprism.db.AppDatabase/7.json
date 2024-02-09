@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "fe5658bd7fb4f4d7cc073583233b2155",
+    "identityHash": "a258874ed975155871e1ec5db1498d05",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -86,7 +86,7 @@
       },
       {
         "tableName": "memories",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`searchQuery` TEXT NOT NULL, `is_seen` INTEGER NOT NULL, `created_at_ms` INTEGER NOT NULL, `small_thumbnail_url` TEXT NOT NULL, `type_data` TEXT NOT NULL, PRIMARY KEY(`searchQuery`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`searchQuery` TEXT NOT NULL, `is_seen` INTEGER NOT NULL, `created_at_ms` INTEGER NOT NULL, `preview_hash` TEXT NOT NULL, `type_data` TEXT NOT NULL, PRIMARY KEY(`searchQuery`))",
         "fields": [
           {
             "fieldPath": "searchQuery",
@@ -107,8 +107,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "smallThumbnailUrl",
-            "columnName": "small_thumbnail_url",
+            "fieldPath": "previewHash",
+            "columnName": "preview_hash",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -132,7 +132,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe5658bd7fb4f4d7cc073583233b2155')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a258874ed975155871e1ec5db1498d05')"
     ]
   }
 }

@@ -66,7 +66,8 @@ class GetMemoriesUseCase(
                 Memory.ThisDayInThePast(
                     year = year,
                     searchQuery = photoPrismMergedPhotos.searchQuery,
-                    smallThumbnailUrl = photoPrismMergedPhotos.smallThumbnailUrl,
+                    previewHash = photoPrismMergedPhotos.first().hash,
+                    previewUrlFactory = previewUrlFactory,
                 ).let { Maybe.just(it) }
             }
     }
@@ -108,11 +109,6 @@ class GetMemoriesUseCase(
         get() = "uid:" + joinToString(
             separator = "|",
             transform = PhotoPrismMergedPhoto::uid,
-        )
-
-    private val Collection<PhotoPrismMergedPhoto>.smallThumbnailUrl: String
-        get() = previewUrlFactory.getThumbnail224Url(
-            hash = first().hash
         )
 
     private companion object {

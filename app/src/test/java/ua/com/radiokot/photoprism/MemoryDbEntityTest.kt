@@ -4,8 +4,12 @@ import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.ioModules
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
 import java.util.Date
@@ -17,7 +21,13 @@ class MemoryDbEntityTest : KoinComponent {
         @JvmStatic
         fun initKoin() {
             startKoin {
-                modules(ioModules)
+                modules(
+                    ioModules
+                            +
+                            module {
+                                singleOf<MediaPreviewUrlFactory>(::DummyMediaPreviewUrlFactory)
+                            }
+                )
             }
         }
     }
@@ -29,7 +39,8 @@ class MemoryDbEntityTest : KoinComponent {
             searchQuery = "uid:1|2|3",
             createdAt = Date(1706952860000),
             isSeen = false,
-            smallThumbnailUrl = "http://example.com"
+            previewHash = "hash",
+            previewUrlFactory = get(),
         )
 
         val entity = MemoryDbEntity(memory)
@@ -37,7 +48,7 @@ class MemoryDbEntityTest : KoinComponent {
         Assert.assertEquals(memory.searchQuery, entity.searchQuery)
         Assert.assertEquals(memory.createdAt.time, entity.createdAtMs)
         Assert.assertEquals(memory.isSeen, entity.isSeen)
-        Assert.assertEquals(memory.smallThumbnailUrl, entity.smallThumbnailUrl)
+        Assert.assertEquals(memory.previewHash, entity.previewHash)
 
         val typeData = assertIs<MemoryDbEntity.TypeData.ThisDayInThePast>(entity.typeData)
         Assert.assertEquals(memory.year, typeData.year)
@@ -49,18 +60,20 @@ class MemoryDbEntityTest : KoinComponent {
             searchQuery = "uid:1|2|3",
             createdAtMs = 1706952860000,
             isSeen = false,
-            smallThumbnailUrl = "http://example.com",
+            previewHash = "hash",
             typeData = MemoryDbEntity.TypeData.ThisDayInThePast(
                 year = 2021,
             )
         )
 
-        val memory = entity.toMemory()
+        val memory = entity.toMemory(
+            previewUrlFactory = get()
+        )
 
         Assert.assertEquals(entity.searchQuery, memory.searchQuery)
         Assert.assertEquals(entity.createdAtMs, memory.createdAt.time)
         Assert.assertEquals(entity.isSeen, memory.isSeen)
-        Assert.assertEquals(entity.smallThumbnailUrl, memory.smallThumbnailUrl)
+        Assert.assertEquals(entity.previewHash, memory.previewHash)
 
         val thisDayInThePast = assertIs<Memory.ThisDayInThePast>(memory)
         Assert.assertEquals(

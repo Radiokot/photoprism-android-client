@@ -5,4 +5,5 @@
     <dimen name="list_item_person_width">120dp</dimen>
     <dimen name="slideshow_guide_text_size">24sp</dimen>
     <dimen name="slideshow_guide_prev_next_margin">24dp</dimen>
+    <dimen name="list_item_memory_width">160dp</dimen>
 </resources>

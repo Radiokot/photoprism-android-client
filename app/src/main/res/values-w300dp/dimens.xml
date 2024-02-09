@@ -6,4 +6,5 @@
     <dimen name="list_item_album_width">120dp</dimen>
     <dimen name="slideshow_guide_text_size">20sp</dimen>
     <dimen name="slideshow_guide_prev_next_margin">16dp</dimen>
+    <dimen name="list_item_memory_width">120dp</dimen>
 </resources>

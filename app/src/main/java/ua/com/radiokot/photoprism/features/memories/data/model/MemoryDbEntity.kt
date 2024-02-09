@@ -13,6 +13,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.Date
 
 @Entity(
@@ -26,8 +27,8 @@ data class MemoryDbEntity(
     val isSeen: Boolean,
     @ColumnInfo("created_at_ms")
     val createdAtMs: Long,
-    @ColumnInfo("small_thumbnail_url")
-    val smallThumbnailUrl: String,
+    @ColumnInfo("preview_hash")
+    val previewHash: String,
     @ColumnInfo("type_data")
     val typeData: TypeData,
 ) {
@@ -65,7 +66,7 @@ data class MemoryDbEntity(
         searchQuery = memory.searchQuery,
         isSeen = memory.isSeen,
         createdAtMs = memory.createdAt.time,
-        smallThumbnailUrl = memory.smallThumbnailUrl,
+        previewHash = memory.previewHash,
         typeData = when (memory) {
             is Memory.ThisDayInThePast ->
                 TypeData.ThisDayInThePast(
@@ -74,14 +75,15 @@ data class MemoryDbEntity(
         }
     )
 
-    fun toMemory() = when (typeData) {
+    fun toMemory(previewUrlFactory: MediaPreviewUrlFactory) = when (typeData) {
         is TypeData.ThisDayInThePast ->
             Memory.ThisDayInThePast(
                 year = typeData.year,
                 searchQuery = this.searchQuery,
                 isSeen = this.isSeen,
                 createdAt = Date(this.createdAtMs),
-                smallThumbnailUrl = this.smallThumbnailUrl,
+                previewHash = this.previewHash,
+                previewUrlFactory = previewUrlFactory,
             )
     }
 }

@@ -39,4 +39,6 @@
     <dimen name="menu_icon_margin_horizontal">8dp</dimen>
     <dimen name="slideshow_guide_text_size">16sp</dimen>
     <dimen name="slideshow_guide_prev_next_margin">4dp</dimen>
+    <dimen name="list_item_memory_width">96dp</dimen>
+    <dimen name="list_item_memory_margin_end">8dp</dimen>
 </resources>

@@ -29,9 +29,26 @@
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="8dp"
+        android:paddingStart="@dimen/list_item_memory_margin_end"
+        android:paddingEnd="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/list_item_album" />
+        tools:listitem="@layout/list_item_memory" />
 
+    <Button
+        android:id="@+id/clear_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Clear" />
+
+    <Button
+        android:id="@+id/update_now_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Update now" />
 </LinearLayout>

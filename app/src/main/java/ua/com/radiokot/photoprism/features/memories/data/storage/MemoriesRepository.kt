@@ -7,11 +7,13 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
 
 class MemoriesRepository(
     private val memoriesDao: MemoriesDbDao,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Memory>() {
     private val log = kLogger("MemoriesRepo")
 
@@ -31,7 +33,9 @@ class MemoriesRepository(
 
         memoriesDao
             .getAll()
-            .map(MemoryDbEntity::toMemory)
+            .map { memoryDbEntity ->
+                memoryDbEntity.toMemory(previewUrlFactory)
+            }
             .sortedWith(comparator)
     }.toSingle()
 
@@ -47,6 +51,10 @@ class MemoriesRepository(
     }
         .toCompletable()
         .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            mutableItemsList.clear()
+            broadcast()
+        }
 
     private companion object {
         private const val KEEP_MEMORIES_FOR_DAYS = 2

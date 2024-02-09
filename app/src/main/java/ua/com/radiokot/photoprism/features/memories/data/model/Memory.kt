@@ -1,5 +1,8 @@
 package ua.com.radiokot.photoprism.features.memories.data.model
 
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.Date
 
 sealed class Memory(
@@ -15,11 +18,9 @@ sealed class Memory(
      * Whether the user have seen this memory.
      */
     var isSeen: Boolean,
-    /**
-     * Direct URL to the small square static thumbnail
-     */
-    val smallThumbnailUrl: String,
-) {
+    val previewHash: String,
+    previewUrlFactory: MediaPreviewUrlFactory,
+) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
 
     /**
      * "This day N years ago" – few photos or videos taken this day in the past [year].
@@ -32,18 +33,21 @@ sealed class Memory(
         searchQuery: String,
         createdAt: Date,
         isSeen: Boolean,
-        smallThumbnailUrl: String,
-    ) : Memory(searchQuery, createdAt, isSeen, smallThumbnailUrl) {
+        previewHash: String,
+        previewUrlFactory: MediaPreviewUrlFactory,
+    ) : Memory(searchQuery, createdAt, isSeen, previewHash, previewUrlFactory) {
         constructor(
             year: Int,
             searchQuery: String,
-            smallThumbnailUrl: String,
+            previewHash: String,
+            previewUrlFactory: MediaPreviewUrlFactory,
         ) : this(
             year = year,
             searchQuery = searchQuery,
             createdAt = Date(),
             isSeen = false,
-            smallThumbnailUrl = smallThumbnailUrl,
+            previewHash = previewHash,
+            previewUrlFactory = previewUrlFactory,
         )
     }
 
