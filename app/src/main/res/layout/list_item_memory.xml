@@ -34,12 +34,12 @@
             android:minLines="2"
             android:paddingHorizontal="8dp"
             android:paddingVertical="8dp"
-            android:shadowColor="?colorSurfaceInverse"
+            android:shadowColor="@color/md_theme_light_outline"
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="5"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="?colorSurface"
+            android:textColor="@color/md_theme_light_background"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="1 year ago\nmany words" />
     </androidx.constraintlayout.widget.ConstraintLayout>
