@@ -42,7 +42,7 @@ class GetMemoriesUseCase(
 
         photoPrismClientConfigService.getClientConfig()
             .years
-            ?.sortedDescending()
+            ?.sorted() // For memories to be returned in chronological order.
             ?.asSequence()
             ?.filter { it < currentYear }
             ?: emptySequence()
