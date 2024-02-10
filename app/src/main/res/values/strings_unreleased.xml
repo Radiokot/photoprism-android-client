@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Do not translate these strings.-->
+    <plurals name="years_ago" translatable="false">
+        <item quantity="one">%1$d year ago</item>
+        <item quantity="other">%1$d yeas ago</item>
+    </plurals>
+</resources>

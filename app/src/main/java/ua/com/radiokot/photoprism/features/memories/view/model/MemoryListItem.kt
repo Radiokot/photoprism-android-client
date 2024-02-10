@@ -12,9 +12,11 @@ import ua.com.radiokot.photoprism.databinding.ListItemMemoryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.memories.data.model.Memory
+import ua.com.radiokot.photoprism.util.LocalDate
+import java.util.Calendar
 
 class MemoryListItem(
-    val title: String,
+    val title: Title,
     val thumbnailUrl: String,
     val source: Memory?,
 ) : AbstractItem<MemoryListItem.ViewHolder>() {
@@ -30,8 +32,9 @@ class MemoryListItem(
     constructor(source: Memory) : this(
         title = when (source) {
             is Memory.ThisDayInThePast ->
-                // TODO use resources.
-                "This day in ${source.year}"
+                Title.YearsAgo(
+                    years = LocalDate().getCalendar()[Calendar.YEAR] - source.year,
+                )
         },
         thumbnailUrl = source.getThumbnailUrl(500),
         source = source,
@@ -39,6 +42,12 @@ class MemoryListItem(
 
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)
+
+    sealed interface Title {
+        class YearsAgo(
+            val years: Int,
+        ) : Title
+    }
 
     class ViewHolder(
         itemView: View
@@ -50,8 +59,16 @@ class MemoryListItem(
         private val picasso: Picasso by inject()
 
         override fun bindView(item: MemoryListItem, payloads: List<Any>) {
-            view.titleTextView.text = item.title
-            view.imageView.contentDescription = item.title
+            val titleString = when (val title = item.title) {
+                is Title.YearsAgo ->
+                    view.root.context.resources.getQuantityString(
+                        R.plurals.years_ago,
+                        title.years,
+                        title.years,
+                    )
+            }
+            view.titleTextView.text = titleString
+            view.imageView.contentDescription = titleString
 
             picasso
                 .load(item.thumbnailUrl)
