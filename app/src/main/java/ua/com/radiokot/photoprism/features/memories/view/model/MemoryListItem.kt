@@ -18,6 +18,7 @@ import java.util.Calendar
 class MemoryListItem(
     val title: Title,
     val thumbnailUrl: String,
+    val isSeen: Boolean,
     val source: Memory?,
 ) : AbstractItem<MemoryListItem.ViewHolder>() {
     override val layoutRes: Int =
@@ -37,6 +38,7 @@ class MemoryListItem(
                 )
         },
         thumbnailUrl = source.getThumbnailUrl(500),
+        isSeen = source.isSeen,
         source = source,
     )
 
@@ -77,6 +79,11 @@ class MemoryListItem(
                 .fit()
                 .centerCrop()
                 .into(view.imageView)
+            view.imageView.alpha =
+                if (item.isSeen)
+                    0.6f
+                else
+                    1f
         }
 
         override fun unbindView(item: MemoryListItem) {

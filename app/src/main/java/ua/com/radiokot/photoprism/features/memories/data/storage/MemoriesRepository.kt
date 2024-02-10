@@ -56,6 +56,18 @@ class MemoriesRepository(
             broadcast()
         }
 
+    fun markAsSeen(memory: Memory): Completable = {
+        memoriesDao.markAsSeen(
+            memorySearchQuery = memory.searchQuery,
+        )
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            memory.isSeen = true
+            broadcast()
+        }
+
     private companion object {
         private const val KEEP_MEMORIES_FOR_DAYS = 2
     }

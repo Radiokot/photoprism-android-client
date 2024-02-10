@@ -19,4 +19,7 @@ interface MemoriesDbDao {
 
     @Query("DELETE FROM memories")
     fun deleteAll()
+
+    @Query("UPDATE memories SET is_seen=1 WHERE searchQuery=:memorySearchQuery")
+    fun markAsSeen(memorySearchQuery: String)
 }

@@ -22,6 +22,7 @@ import java.util.Date
 @TypeConverters(MemoryDbEntity.Converters::class)
 data class MemoryDbEntity(
     @PrimaryKey
+    @ColumnInfo("searchQuery")
     val searchQuery: String,
     @ColumnInfo("is_seen")
     val isSeen: Boolean,

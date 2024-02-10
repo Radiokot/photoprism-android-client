@@ -72,19 +72,26 @@ class MemoriesDemoActivity : BaseActivity() {
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, _, position: Int ->
-                startActivity(
-                    Intent(this@MemoriesDemoActivity, MediaViewerActivity::class.java)
-                        .putExtras(
-                            MediaViewerActivity.getBundle(
-                                mediaIndex = 0,
-                                repositoryParams = SimpleGalleryMediaRepository.Params(
-                                    query = repository.itemsList[position].searchQuery,
-                                ),
-                                areActionsEnabled = true
+            onClickListener = { _, _, item: MemoryListItem, position: Int ->
+                val memory = item.source
+                if (memory != null) {
+                    startActivity(
+                        Intent(this@MemoriesDemoActivity, MediaViewerActivity::class.java)
+                            .putExtras(
+                                MediaViewerActivity.getBundle(
+                                    mediaIndex = 0,
+                                    repositoryParams = SimpleGalleryMediaRepository.Params(
+                                        query = memory.searchQuery,
+                                    ),
+                                    areActionsEnabled = true
+                                )
                             )
-                        )
-                )
+                    )
+                    repository
+                        .markAsSeen(memory)
+                        .subscribeBy()
+                        .autoDispose(this@MemoriesDemoActivity)
+                }
                 true
             }
         }
