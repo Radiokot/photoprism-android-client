@@ -8,7 +8,7 @@ import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
-import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.db.DevAppDatabase
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesDbDao
@@ -20,7 +20,7 @@ import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
 
 val memoriesFeatureModule = module {
     single {
-        get<AppDatabase>().memories()
+        get<DevAppDatabase>().memories()
     } bind MemoriesDbDao::class
 
     single {

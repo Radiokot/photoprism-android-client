@@ -6,19 +6,15 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmarksDbEntity
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksDbDao
-import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesDbDao
 
 @Database(
-    version = 7,
+    version = 6,
     entities = [
         SearchBookmarksDbEntity::class,
-        MemoryDbEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7),
     ],
     exportSchema = true,
 )
@@ -29,5 +25,4 @@ import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesDbDao
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarks(): SearchBookmarksDbDao
-    abstract fun memories(): MemoriesDbDao
 }
