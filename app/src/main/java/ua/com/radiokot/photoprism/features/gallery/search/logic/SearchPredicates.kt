@@ -23,12 +23,12 @@ object SearchPredicates {
     fun generalCondition(query: String, vararg fields: String?): Boolean {
         val unmatchedFieldsParts = fields.fold(mutableSetOf<String>()) { acc, item ->
             if (item != null) {
-                acc.addAll(splitByWhitespace(item.toLowerCase(Locale.getDefault())))
+                acc.addAll(splitByWhitespace(item.lowercase(Locale.getDefault())))
             }
             acc
         }
 
-        val unmatchedQueryParts = splitByWhitespace(query.toLowerCase(Locale.getDefault())).toMutableList()
+        val unmatchedQueryParts = splitByWhitespace(query.lowercase(Locale.getDefault())).toMutableList()
         var unmatchedChanged = true
         while (unmatchedFieldsParts.isNotEmpty()
             && unmatchedQueryParts.isNotEmpty()
