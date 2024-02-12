@@ -3,9 +3,15 @@ package ua.com.radiokot.photoprism.features.memories.data.model
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.util.LocalDate
+import java.util.Calendar
 import java.util.Date
 
-sealed class Memory(
+class Memory(
+    /**
+     * Type-specific memory data.
+     */
+    val typeData: TypeData,
     /**
      * PhotoPrism search query to fetch the memory contents.
      */
@@ -13,42 +19,30 @@ sealed class Memory(
     /**
      * Creation date used to determine how long a particular memory is kept.
      */
-    val createdAt: Date,
+    val createdAt: Date = Date(),
     /**
      * Whether the user have seen this memory.
      */
-    var isSeen: Boolean,
+    var isSeen: Boolean = false,
     val previewHash: String,
     previewUrlFactory: MediaPreviewUrlFactory,
 ) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
 
-    /**
-     * "This day N years ago" – few photos or videos taken this day in the past [year].
-     */
-    class ThisDayInThePast(
+    sealed class TypeData {
         /**
-         * Past year to which this memory is referred to.
+         * "This day N years ago" – few photos or videos taken this day in the past [year].
          */
-        val year: Int,
-        searchQuery: String,
-        createdAt: Date,
-        isSeen: Boolean,
-        previewHash: String,
-        previewUrlFactory: MediaPreviewUrlFactory,
-    ) : Memory(searchQuery, createdAt, isSeen, previewHash, previewUrlFactory) {
-        constructor(
-            year: Int,
-            searchQuery: String,
-            previewHash: String,
-            previewUrlFactory: MediaPreviewUrlFactory,
-        ) : this(
-            year = year,
-            searchQuery = searchQuery,
-            createdAt = Date(),
-            isSeen = false,
-            previewHash = previewHash,
-            previewUrlFactory = previewUrlFactory,
-        )
+        class ThisDayInThePast(
+            /**
+             * Past year to which this memory is referred to.
+             */
+            val year: Int,
+        ) : TypeData() {
+            /**
+             * How many years ago is this memory.
+             */
+            val yearsAgo: Int = LocalDate().getCalendar()[Calendar.YEAR] - year
+        }
     }
 
     override fun equals(other: Any?): Boolean {

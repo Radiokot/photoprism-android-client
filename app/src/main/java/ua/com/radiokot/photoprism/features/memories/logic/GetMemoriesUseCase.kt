@@ -48,7 +48,7 @@ class GetMemoriesUseCase(
             ?: emptySequence()
     }.toSingle()
 
-    private fun getThisDayInThePastMemories(year: Int): Maybe<Memory.ThisDayInThePast> {
+    private fun getThisDayInThePastMemories(year: Int): Maybe<Memory> {
         val localCalendar = LocalDate().getCalendar()
 
         return getItemsForMemories(
@@ -63,8 +63,10 @@ class GetMemoriesUseCase(
                 if (photoPrismMergedPhotos.isEmpty())
                     return@flatMapMaybe Maybe.empty()
 
-                Memory.ThisDayInThePast(
-                    year = year,
+                Memory(
+                    typeData = Memory.TypeData.ThisDayInThePast(
+                        year = year,
+                    ),
                     searchQuery = photoPrismMergedPhotos.searchQuery,
                     previewHash = photoPrismMergedPhotos.first().hash,
                     previewUrlFactory = previewUrlFactory,

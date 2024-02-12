@@ -12,8 +12,6 @@ import ua.com.radiokot.photoprism.databinding.ListItemMemoryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.memories.data.model.Memory
-import ua.com.radiokot.photoprism.util.LocalDate
-import java.util.Calendar
 
 class MemoryListItem(
     val title: Title,
@@ -31,10 +29,10 @@ class MemoryListItem(
         source?.hashCode()?.toLong() ?: -1L
 
     constructor(source: Memory) : this(
-        title = when (source) {
-            is Memory.ThisDayInThePast ->
+        title = when (val typeData = source.typeData) {
+            is Memory.TypeData.ThisDayInThePast ->
                 Title.YearsAgo(
-                    years = LocalDate().getCalendar()[Calendar.YEAR] - source.year,
+                    years = typeData.yearsAgo,
                 )
         },
         thumbnailUrl = source.getThumbnailUrl(500),

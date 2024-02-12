@@ -34,8 +34,10 @@ class MemoryDbEntityTest : KoinComponent {
 
     @Test
     fun createFromMemorySuccessfully() {
-        val memory = Memory.ThisDayInThePast(
-            year = 2021,
+        val memory = Memory(
+            typeData = Memory.TypeData.ThisDayInThePast(
+                year = 2021,
+            ),
             searchQuery = "uid:1|2|3",
             createdAt = Date(1706952860000),
             isSeen = false,
@@ -51,7 +53,7 @@ class MemoryDbEntityTest : KoinComponent {
         Assert.assertEquals(memory.previewHash, entity.previewHash)
 
         val typeData = assertIs<MemoryDbEntity.TypeData.ThisDayInThePast>(entity.typeData)
-        Assert.assertEquals(memory.year, typeData.year)
+        Assert.assertEquals((memory.typeData as Memory.TypeData.ThisDayInThePast).year, typeData.year)
     }
 
     @Test
@@ -75,7 +77,7 @@ class MemoryDbEntityTest : KoinComponent {
         Assert.assertEquals(entity.isSeen, memory.isSeen)
         Assert.assertEquals(entity.previewHash, memory.previewHash)
 
-        val thisDayInThePast = assertIs<Memory.ThisDayInThePast>(memory)
+        val thisDayInThePast = assertIs<Memory.TypeData.ThisDayInThePast>(memory.typeData)
         Assert.assertEquals(
             (entity.typeData as MemoryDbEntity.TypeData.ThisDayInThePast).year,
             thisDayInThePast.year

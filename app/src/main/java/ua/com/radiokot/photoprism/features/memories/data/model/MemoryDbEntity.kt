@@ -54,13 +54,27 @@ data class MemoryDbEntity(
         JsonSubTypes.Type(value = TypeData.ThisDayInThePast::class, name = "1"),
     )
     sealed class TypeData {
+        abstract fun toMemoryTypeData(): Memory.TypeData
 
         class ThisDayInThePast
         @JsonCreator
         constructor(
             @JsonProperty("year")
             val year: Int
-        ) : TypeData()
+        ) : TypeData() {
+            override fun toMemoryTypeData() = Memory.TypeData.ThisDayInThePast(
+                year = year,
+            )
+        }
+
+        companion object {
+            fun fromMemoryTypeData(typeData: Memory.TypeData) = when (typeData) {
+                is Memory.TypeData.ThisDayInThePast ->
+                    ThisDayInThePast(
+                        year = typeData.year,
+                    )
+            }
+        }
     }
 
     constructor(memory: Memory) : this(
@@ -68,23 +82,15 @@ data class MemoryDbEntity(
         isSeen = memory.isSeen,
         createdAtMs = memory.createdAt.time,
         previewHash = memory.previewHash,
-        typeData = when (memory) {
-            is Memory.ThisDayInThePast ->
-                TypeData.ThisDayInThePast(
-                    year = memory.year,
-                )
-        }
+        typeData = TypeData.fromMemoryTypeData(memory.typeData),
     )
 
-    fun toMemory(previewUrlFactory: MediaPreviewUrlFactory) = when (typeData) {
-        is TypeData.ThisDayInThePast ->
-            Memory.ThisDayInThePast(
-                year = typeData.year,
-                searchQuery = this.searchQuery,
-                isSeen = this.isSeen,
-                createdAt = Date(this.createdAtMs),
-                previewHash = this.previewHash,
-                previewUrlFactory = previewUrlFactory,
-            )
-    }
+    fun toMemory(previewUrlFactory: MediaPreviewUrlFactory) = Memory(
+        typeData = typeData.toMemoryTypeData(),
+        searchQuery = this.searchQuery,
+        isSeen = this.isSeen,
+        createdAt = Date(this.createdAtMs),
+        previewHash = this.previewHash,
+        previewUrlFactory = previewUrlFactory,
+    )
 }
