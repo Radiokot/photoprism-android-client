@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.24.0] - 2024-02-13
 
 ### Fixed
 - Rare media viewer crash on touch
 - Changing albums visibility on the search screen when changing one for people
-- Infinite file download progress on some environments, for example on `demo.photoprism.app`
+- Infinite file download progress on some environments
 - Dialogs in the preferences not matching the app dialog style
 - Play/pause video button not centered horizontally in landscape orientation
 - Photo card jumping off the screen when selected in PhotoPrism web viewer
@@ -441,7 +441,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.0(37)...HEAD
+[1.24.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...1.24.0(37)
 [1.23.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.22.0(35)...1.23.0(36)
 [1.22.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.21.0(34)...1.22.0(35)
 [1.21.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.3(33)...1.21.0(34)

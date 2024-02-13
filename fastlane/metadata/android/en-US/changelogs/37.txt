@@ -1,0 +1,18 @@
+Full changelog:
+https://radiokot.com.ua/pp-changes
+
+Fixed:
+- Rare media viewer crash on touch
+- Changing albums visibility on the search screen when changing one for people
+- Infinite file download progress on some environments
+- Dialogs in the preferences not matching the app dialog style
+- Play/pause video button not centered horizontally in landscape orientation
+- Photo card jumping off the screen when selected in PhotoPrism web viewer
+
+Added:
+- French translation
+- Ability to change the gallery item size in the preferences. Pinch gesture will be added later
+
+Changed:
+- Halved the space between gallery items
+- Removed "Download" buttons from PhotoPrism web viewer as they don't work in this mode
