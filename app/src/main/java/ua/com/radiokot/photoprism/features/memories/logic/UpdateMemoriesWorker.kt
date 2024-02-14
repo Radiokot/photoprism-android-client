@@ -6,6 +6,8 @@ import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.core.Single
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -13,7 +15,8 @@ import java.util.Calendar
 
 /**
  * A worker meant to update the memories daily from the desired hour.
- * Must be scheduled hourly.
+ * To work reliably, must be scheduled to have multiple intervals per day.
+ * The update is skipped if had a successful update this day or it is too early.
  *
  * @see getInputData
  */
@@ -25,12 +28,26 @@ class UpdateMemoriesWorker(
 
     private val startingFromHour =
         workerParams.inputData.getInt(STARTING_FROM_HOUR_KEY, 0)
+    private val statusPersistence: ObjectPersistence<Status> by inject()
 
     override fun createWork(): Single<Result> {
-        val currentHour = LocalDate().getCalendar()[Calendar.HOUR_OF_DAY]
-        if (currentHour != startingFromHour) {
+        val status = statusPersistence.loadItem() ?: Status()
+        val (currentHour, currentDay) = LocalDate().getCalendar().let {
+            it[Calendar.HOUR_OF_DAY] to it[Calendar.DAY_OF_YEAR]
+        }
+
+        if (currentDay == status.lastSuccessfulUpdateDay) {
             log.debug {
-                "createWork(): skip_due_to_hour_mismatch:" +
+                "createWork(): skip_as_already_updated_today:" +
+                        "\nlastSuccessfulUpdateDay=${status.lastSuccessfulUpdateDay}"
+            }
+
+            return Single.just(Result.failure())
+        }
+
+        if (currentHour < startingFromHour) {
+            log.debug {
+                "createWork(): skip_as_too_early:" +
                         "\ncurrentHour=$currentHour," +
                         "\nstartingFromHour=$startingFromHour"
             }
@@ -44,7 +61,7 @@ class UpdateMemoriesWorker(
             ?.getOrNull<UpdateMemoriesUseCase>()
         if (useCase == null) {
             log.debug {
-                "createWork(): skipp_due_to_missing_use_case"
+                "createWork(): skip_as_missing_use_case"
             }
 
             return Single.just(Result.failure())
@@ -53,8 +70,25 @@ class UpdateMemoriesWorker(
         return useCase
             .invoke()
             .toSingleDefault(Result.success())
+            .doOnSuccess {
+                statusPersistence.saveItem(
+                    status.copy(
+                        lastSuccessfulUpdateDay = currentDay,
+                    )
+                )
+            }
             .onErrorReturnItem(Result.retry())
     }
+
+    data class Status(
+        /**
+         * Day of the year when the last successful update has been performed.
+         * 0 if there was no successful update.
+         *
+         * @see Calendar.DAY_OF_YEAR
+         */
+        val lastSuccessfulUpdateDay: Int = 0,
+    )
 
     companion object {
         const val TAG = "UpdateMemories"

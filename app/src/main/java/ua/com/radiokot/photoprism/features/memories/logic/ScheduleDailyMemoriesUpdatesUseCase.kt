@@ -28,7 +28,7 @@ class ScheduleDailyMemoriesUpdatesUseCase(
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
-    private val workRequest = PeriodicWorkRequestBuilder<UpdateMemoriesWorker>(1, TimeUnit.HOURS)
+    private val workRequest = PeriodicWorkRequestBuilder<UpdateMemoriesWorker>(2, TimeUnit.HOURS)
         .setInputData(UpdateMemoriesWorker.getInputData(
             startingFromHour = startingFromHour
         ))

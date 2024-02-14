@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
 import ua.com.radiokot.photoprism.features.memories.view.model.MemoryListItem
@@ -64,6 +65,9 @@ class MemoriesDemoActivity : BaseActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { memories ->
                 adapter.set(memories.map(::MemoryListItem))
+                memories.maxByOrNull(Memory::createdAt)?.let { mostRecentMemory ->
+                    view.statusTextView.text = "Most recent: ${mostRecentMemory.createdAt}"
+                }
             }
             .autoDispose(this)
     }
