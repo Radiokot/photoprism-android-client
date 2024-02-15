@@ -2,6 +2,8 @@ package ua.com.radiokot.photoprism.features.gallery.search.people.data.model
 
 import ua.com.radiokot.photoprism.api.faces.model.PhotoPrismFace
 import ua.com.radiokot.photoprism.api.subjects.model.PhotoPrismSubject
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isFaceId
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isSubjectUid
@@ -23,14 +25,15 @@ class Person(
      * @see isSubjectUid
      */
     val id: String,
-    val smallThumbnailUrl: String,
     val isFavorite: Boolean,
     /**
      * Whether this is a known person (subject) or just a face.
      */
     val isFace: Boolean,
     val photoCount: Int,
-) {
+    previewHash: String,
+    previewUrlFactory: MediaPreviewUrlFactory,
+) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
     val hasName: Boolean = name != null
 
     constructor(
@@ -39,10 +42,11 @@ class Person(
     ) : this(
         name = personSubject.name.takeIf(String::isNotEmpty),
         id = personSubject.uid,
-        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(personSubject.thumb),
         isFavorite = personSubject.favorite,
         isFace = false,
         photoCount = personSubject.photoCount,
+        previewHash = personSubject.thumb,
+        previewUrlFactory = previewUrlFactory,
     ) {
         require(personSubject.type == "person") {
             "Expected person subject"
@@ -55,10 +59,11 @@ class Person(
     ) : this(
         name = face.name.takeIf(String::isNotEmpty),
         id = face.id,
-        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(face.thumb),
         isFavorite = false,
         isFace = true,
         photoCount = face.samples,
+        previewHash = face.thumb,
+        previewUrlFactory = previewUrlFactory,
     ) {
         require(face.thumb.isNotEmpty()) {
             "The face must have a thumb, make sure it is requested with markers"

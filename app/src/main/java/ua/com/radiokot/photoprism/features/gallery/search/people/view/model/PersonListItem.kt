@@ -42,7 +42,7 @@ class PersonListItem(
         isNameShown: Boolean,
     ) : this(
         name = source.name,
-        thumbnailUrl = source.smallThumbnailUrl,
+        thumbnailUrl = source.getThumbnailUrl(DEFAULT_THUMBNAIL_SIZE),
         isPersonSelected = isPersonSelected,
         isNameShown = isNameShown,
         source = source,
@@ -92,5 +92,9 @@ class PersonListItem(
         override fun unbindView(item: PersonListItem) {
             picasso.cancelRequest(view.imageView)
         }
+    }
+
+    companion object {
+        const val DEFAULT_THUMBNAIL_SIZE = 250
     }
 }

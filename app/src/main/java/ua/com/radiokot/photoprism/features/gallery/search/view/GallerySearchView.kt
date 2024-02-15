@@ -43,6 +43,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
@@ -485,7 +486,14 @@ class GallerySearchView(
             .apply {
                 search.config.personIds.forEach { personUid ->
                     // If the URL is missing, the placeholder will be shown.
-                    val thumbnailUrl = viewModel.peopleViewModel.getPersonThumbnail(personUid)
+                    val thumbnailUrl = viewModel.peopleViewModel.getPersonThumbnail(
+                        uid = personUid,
+                        // Use the thumbnail size from the person list item
+                        // although it is too big for such a tiny view.
+                        // The is most certainly already cached by the people list,
+                        // hence can be displayed instantly.
+                        viewSizePx = PersonListItem.DEFAULT_THUMBNAIL_SIZE,
+                    )
                         ?: "missing:/"
                     appendCircleImage(thumbnailUrl)
                 }

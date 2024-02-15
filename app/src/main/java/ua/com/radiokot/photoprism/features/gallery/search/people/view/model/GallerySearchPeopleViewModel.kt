@@ -185,8 +185,8 @@ class GallerySearchPeopleViewModel(
         }
     }
 
-    fun getPersonThumbnail(uid: String): String? =
-        peopleRepository.getLoadedPerson(uid)?.smallThumbnailUrl
+    fun getPersonThumbnail(uid: String, viewSizePx: Int): String? =
+        peopleRepository.getLoadedPerson(uid)?.getThumbnailUrl(viewSizePx)
 
     sealed interface State {
         object Loading : State
