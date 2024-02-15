@@ -36,7 +36,7 @@ data class AlbumListItem(
         isAlbumSelected: Boolean,
     ) : this(
         title = source.title,
-        thumbnailUrl = source.smallThumbnailUrl,
+        thumbnailUrl = source.getThumbnailUrl(500),
         isAlbumSelected = isAlbumSelected,
         source = source,
     )

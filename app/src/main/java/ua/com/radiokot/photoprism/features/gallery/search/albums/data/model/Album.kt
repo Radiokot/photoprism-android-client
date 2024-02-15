@@ -1,6 +1,8 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.data.model
 
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
+import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class Album(
@@ -14,9 +16,10 @@ class Album(
     val type: TypeName,
     val title: String, //same as photos name
     val uid: String,
-    val smallThumbnailUrl: String,
     val isFavorite: Boolean,
-) {
+    previewHash: String,
+    previewUrlFactory: MediaPreviewUrlFactory,
+) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
 
     constructor(
         source: PhotoPrismAlbum,
@@ -25,8 +28,9 @@ class Album(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
         uid = source.uid,
-        smallThumbnailUrl = previewUrlFactory.getThumbnail224Url(source.thumb),
         isFavorite = source.favorite,
+        previewHash = source.thumb,
+        previewUrlFactory = previewUrlFactory,
     )
 
     override fun equals(other: Any?): Boolean {
