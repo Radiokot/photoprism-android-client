@@ -279,10 +279,12 @@ class GalleryMedia(
                                 // Short videos have primary image file
                                 // generated from the video file,
                                 // while real live photos have the preview generated
-                                // from the image file or don't have it at all.
-                                mainFile != null && videoFile != null && videoFile != mainFile
+                                // from the image file (HEIC) or don't have it at all.
+                                mainFile != null
+                                        && videoFile != null
+                                        && videoFile != mainFile
+                                        && videoFile.codec != "heic"
                                         && mainFile.name.startsWith(videoFile.name)
-
                             } ->
                                 Live.Kind.ShortVideo
 

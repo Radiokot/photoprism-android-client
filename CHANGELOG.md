@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Increased quality of album thumbnails
 
+### Fixed
+- Not playing HEIC Samsung live photos properly
+
 ## [1.24.0] - 2024-02-13
 
 ### Fixed
