@@ -18,7 +18,7 @@ class GalleryLoadingFooterListItem(
         get() = R.layout.list_item_gallery_loading_footer
 
     override var identifier: Long =
-        "loading".hashCode().toLong()
+        "loading-$isLoading-$canLoadMore".hashCode().toLong()
 
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)
