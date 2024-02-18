@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -38,6 +39,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
@@ -48,6 +50,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
+import ua.com.radiokot.photoprism.features.memories.view.model.MemoriesListListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -72,6 +75,9 @@ class GalleryActivity : BaseActivity() {
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
         setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
+    }
+    private val memoriesListAdapter = ItemAdapter<MemoriesListListItem>().apply {
+        setNewList(listOf(MemoriesListListItem()))
     }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
@@ -421,10 +427,17 @@ class GalleryActivity : BaseActivity() {
 
     private fun initList(savedInstanceState: Bundle?) {
         val galleryAdapter = FastAdapter.with(
-            listOf(
-                galleryItemsAdapter,
-                galleryProgressFooterAdapter
-            )
+            if (get<FeatureFlags>().hasMemoriesFeature)
+                listOf(
+                    memoriesListAdapter,
+                    galleryItemsAdapter,
+                    galleryProgressFooterAdapter
+                )
+            else
+                listOf(
+                    galleryItemsAdapter,
+                    galleryProgressFooterAdapter
+                )
         ).apply {
             stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
@@ -530,7 +543,8 @@ class GalleryActivity : BaseActivity() {
                         when (galleryAdapter.getItemViewType(position)) {
                             R.id.list_item_gallery_loading_footer,
                             R.id.list_item_gallery_day_header,
-                            R.id.list_item_month_header ->
+                            R.id.list_item_month_header,
+                            R.id.memories_recycler_view ->
                                 spanCount
 
                             else ->
