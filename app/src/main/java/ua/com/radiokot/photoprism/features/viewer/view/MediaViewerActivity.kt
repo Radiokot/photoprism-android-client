@@ -135,18 +135,21 @@ class MediaViewerActivity : BaseActivity() {
                 "No repository params specified"
             }
         val areActionsEnabled = intent.getBooleanExtra(ACTIONS_ENABLED_KEY, true)
+        val staticSubtitle = intent.getStringExtra(STATIC_SUBTITLE_KEY)
 
         log.debug {
             "onCreate(): creating:" +
                     "\nmediaIndex=$mediaIndex," +
                     "\nrepositoryParams=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled," +
+                    "\nstaticSubtitle=$staticSubtitle," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
         viewModel.initOnce(
             repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
+            staticSubtitle = staticSubtitle,
         )
 
         // Init before the subscription.
@@ -921,6 +924,8 @@ class MediaViewerActivity : BaseActivity() {
         private const val MEDIA_INDEX_KEY = "media-index"
         private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
+        private const val STATIC_SUBTITLE_KEY = "static-subtitle"
+
         private val SWIPE_TO_DISMISS_DIRECTIONS = setOf(
             SwipeDirection.DOWN,
             SwipeDirection.UP,
@@ -929,16 +934,19 @@ class MediaViewerActivity : BaseActivity() {
         /**
          * @param mediaIndex index of the media to start from
          * @param repositoryParams params of the media repository to view
-         * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not.
+         * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not
+         * @param staticSubtitle if set, will be shown in subtitle
          */
         fun getBundle(
             mediaIndex: Int,
             repositoryParams: SimpleGalleryMediaRepository.Params,
             areActionsEnabled: Boolean,
+            staticSubtitle: String? = null,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
+            putString(STATIC_SUBTITLE_KEY, staticSubtitle)
         }
 
         /**

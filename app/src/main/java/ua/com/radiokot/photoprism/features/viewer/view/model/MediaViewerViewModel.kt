@@ -41,6 +41,7 @@ class MediaViewerViewModel(
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
     private var areActionsEnabled = false
+    private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
 
     // Media that turned to be not viewable.
@@ -96,6 +97,7 @@ class MediaViewerViewModel(
     fun initOnce(
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
+        staticSubtitle: String?,
     ) {
         if (isInitialized) {
             return
@@ -108,13 +110,17 @@ class MediaViewerViewModel(
         subscribeToRepository()
 
         this.areActionsEnabled = areActionsEnabled
+        this.staticSubtitle = staticSubtitle
+
         initControlsVisibility()
 
         isInitialized = true
 
         log.debug {
             "initOnce(): initialized:" +
-                    "\nrepositoryParam=$repositoryParams"
+                    "\nrepositoryParam=$repositoryParams," +
+                    "\nareActionsEnabled=$areActionsEnabled," +
+                    "\nstaticSubtitle=$staticSubtitle"
         }
 
         update()
@@ -613,7 +619,9 @@ class MediaViewerViewModel(
 
         val takenAtLocal = item.takenAtLocal
         subtitle.value =
-            if (takenAtLocal.isSameYearAs(currentLocalDate))
+            if (staticSubtitle != null)
+                staticSubtitle
+            else if (takenAtLocal.isSameYearAs(currentLocalDate))
                 utcDateTimeDateFormat.format(takenAtLocal).capitalized()
             else
                 utcDateTimeYearDateFormat.format(takenAtLocal).capitalized()

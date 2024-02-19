@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -49,7 +50,7 @@ class MemoriesDemoActivity : BaseActivity() {
                 .subscribeBy()
                 .autoDispose(this)
         }
-        
+
         view.updateNowButton.setThrottleOnClickListener {
             get<UpdateMemoriesUseCase>()
                 .invoke()
@@ -76,7 +77,7 @@ class MemoriesDemoActivity : BaseActivity() {
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: MemoryListItem, position: Int ->
+            onClickListener = { _, _, item: MemoryListItem, _: Int ->
                 val memory = item.source
                 if (memory != null) {
                     startActivity(
@@ -87,7 +88,15 @@ class MemoriesDemoActivity : BaseActivity() {
                                     repositoryParams = SimpleGalleryMediaRepository.Params(
                                         query = memory.searchQuery,
                                     ),
-                                    areActionsEnabled = true
+                                    areActionsEnabled = true,
+                                    staticSubtitle = when (val typeData = memory.typeData) {
+                                        is Memory.TypeData.ThisDayInThePast ->
+                                            resources.getQuantityString(
+                                                R.plurals.years_ago,
+                                                typeData.yearsAgo,
+                                                typeData.yearsAgo,
+                                            )
+                                    }
                                 )
                             )
                     )
