@@ -30,6 +30,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -53,6 +54,7 @@ class GalleryViewModel(
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
+    val memoriesListViewModel: GalleryMemoriesListViewModel?,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
@@ -188,14 +190,14 @@ class GalleryViewModel(
 
             currentSearchConfig = searchConfig
             mediaRepositoryChanges.onNext(
-                MediaRepositoryChange.Other(
+                MediaRepositoryChange.ResetToInitial(
                     galleryMediaRepositoryFactory.getForSearch(searchConfig),
                 )
             )
         } else {
             currentSearchConfig = null
             mediaRepositoryChanges.onNext(
-                MediaRepositoryChange.Other(
+                MediaRepositoryChange.ResetToInitial(
                     galleryMediaRepositoryFactory.get(),
                 )
             )
@@ -362,6 +364,9 @@ class GalleryViewModel(
                 if (change !is MediaRepositoryChange.FastScroll) {
                     fastScrollViewModel.setMediaRepository(change.repository)
                 }
+
+                memoriesListViewModel?.isListRequired =
+                    change is MediaRepositoryChange.ResetToInitial
             }
             .autoDispose(this)
     }
@@ -1305,9 +1310,9 @@ class GalleryViewModel(
             MediaRepositoryChange(repository)
 
         /**
-         * Change caused by something else.
+         * Change caused by resetting it to the initial one.
          */
-        class Other(repository: SimpleGalleryMediaRepository) :
+        class ResetToInitial(repository: SimpleGalleryMediaRepository) :
             MediaRepositoryChange(repository)
     }
 
