@@ -65,6 +65,7 @@ class MemoriesRepository(
         .subscribeOn(Schedulers.io())
         .doOnComplete {
             memory.isSeen = true
+            mutableItemsList.sortWith(comparator)
 
             log.debug {
                 "markAsSeen(): marked_memory_as_seen:" +
@@ -73,6 +74,11 @@ class MemoriesRepository(
 
             broadcast()
         }
+
+    fun markAllAsNotSeenLocally() =
+        itemsList
+            .forEach { it.isSeen = false }
+            .also { broadcast() }
 
     private companion object {
         private const val KEEP_MEMORIES_FOR_DAYS = 2
