@@ -50,7 +50,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
-import ua.com.radiokot.photoprism.features.memories.view.model.MemoriesListListItem
+import ua.com.radiokot.photoprism.features.memories.view.GalleryMemoriesListView
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -75,9 +75,6 @@ class GalleryActivity : BaseActivity() {
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
         setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
-    }
-    private val memoriesListAdapter = ItemAdapter<MemoriesListListItem>().apply {
-        setNewList(listOf(MemoriesListListItem()))
     }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
@@ -108,6 +105,12 @@ class GalleryActivity : BaseActivity() {
         GalleryFastScrollView(
             viewModel = viewModel.fastScrollViewModel,
             lifecycleOwner = this,
+        )
+    }
+    private val memoriesListView: GalleryMemoriesListView by lazy {
+        GalleryMemoriesListView(
+            viewModel = viewModel.memoriesListViewModel,
+            activity = this,
         )
     }
     private val viewerLauncher = registerForActivityResult(
@@ -429,7 +432,7 @@ class GalleryActivity : BaseActivity() {
         val galleryAdapter = FastAdapter.with(
             if (get<FeatureFlags>().hasMemoriesFeature)
                 listOf(
-                    memoriesListAdapter,
+                    memoriesListView.recyclerAdapter,
                     galleryItemsAdapter,
                     galleryProgressFooterAdapter
                 )
@@ -544,7 +547,8 @@ class GalleryActivity : BaseActivity() {
                             R.id.list_item_gallery_loading_footer,
                             R.id.list_item_gallery_day_header,
                             R.id.list_item_month_header,
-                            R.id.memories_recycler_view ->
+                            GalleryMemoriesListView.RECYCLER_VIEW_TYPE,
+                            ->
                                 spanCount
 
                             else ->

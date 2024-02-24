@@ -28,6 +28,23 @@ class Memory(
     previewUrlFactory: MediaPreviewUrlFactory,
 ) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Memory) return false
+
+        if (searchQuery != other.searchQuery) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return searchQuery.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Memory(searchQuery='$searchQuery', type=$typeData)"
+    }
+
     sealed class TypeData {
         /**
          * "This day N years ago" – few photos or videos taken this day in the past [year].
@@ -43,18 +60,5 @@ class Memory(
              */
             val yearsAgo: Int = LocalDate().getCalendar()[Calendar.YEAR] - year
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Memory) return false
-
-        if (searchQuery != other.searchQuery) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return searchQuery.hashCode()
     }
 }

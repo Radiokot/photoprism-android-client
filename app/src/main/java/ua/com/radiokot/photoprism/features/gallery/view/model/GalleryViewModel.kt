@@ -54,7 +54,7 @@ class GalleryViewModel(
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
-    val memoriesListViewModel: GalleryMemoriesListViewModel?,
+    val memoriesListViewModel: GalleryMemoriesListViewModel,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
@@ -365,7 +365,7 @@ class GalleryViewModel(
                     fastScrollViewModel.setMediaRepository(change.repository)
                 }
 
-                memoriesListViewModel?.isListRequired =
+                memoriesListViewModel.isViewRequired =
                     change is MediaRepositoryChange.ResetToInitial
             }
             .autoDispose(this)

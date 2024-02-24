@@ -14,7 +14,7 @@ import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 
 class MemoryListItem(
-    val title: Title,
+    val title: MemoryTitle,
     val thumbnailUrl: String,
     val isSeen: Boolean,
     val source: Memory?,
@@ -29,12 +29,7 @@ class MemoryListItem(
         source?.hashCode()?.toLong() ?: -1L
 
     constructor(source: Memory) : this(
-        title = when (val typeData = source.typeData) {
-            is Memory.TypeData.ThisDayInThePast ->
-                Title.YearsAgo(
-                    years = typeData.yearsAgo,
-                )
-        },
+        title = MemoryTitle.forMemory(source),
         thumbnailUrl = source.getThumbnailUrl(500),
         isSeen = source.isSeen,
         source = source,
@@ -42,12 +37,6 @@ class MemoryListItem(
 
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(v)
-
-    sealed interface Title {
-        class YearsAgo(
-            val years: Int,
-        ) : Title
-    }
 
     class ViewHolder(
         itemView: View
@@ -59,14 +48,7 @@ class MemoryListItem(
         private val picasso: Picasso by inject()
 
         override fun bindView(item: MemoryListItem, payloads: List<Any>) {
-            val titleString = when (val title = item.title) {
-                is Title.YearsAgo ->
-                    view.root.context.resources.getQuantityString(
-                        R.plurals.years_ago,
-                        title.years,
-                        title.years,
-                    )
-            }
+            val titleString = item.title.getString(view.root.context)
             view.titleTextView.text = titleString
             view.imageView.contentDescription = titleString
 

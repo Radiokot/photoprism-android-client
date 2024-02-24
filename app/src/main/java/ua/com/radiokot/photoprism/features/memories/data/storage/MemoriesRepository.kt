@@ -65,6 +65,12 @@ class MemoriesRepository(
         .subscribeOn(Schedulers.io())
         .doOnComplete {
             memory.isSeen = true
+
+            log.debug {
+                "markAsSeen(): marked_memory_as_seen:" +
+                        "\nmemory=$memory"
+            }
+
             broadcast()
         }
 

@@ -1,21 +1,18 @@
 package ua.com.radiokot.photoprism.features.memories.view.model
 
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.inject
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
 
-class MemoriesListListItem : AbstractItem<MemoriesListListItem.ViewHolder>() {
+class MemoriesListListItem(
+    private val viewModel: GalleryMemoriesListViewModel,
+    private val lifecycleOwner: LifecycleOwner,
+) : AbstractItem<MemoriesListListItem.ViewHolder>() {
     override val layoutRes: Int =
         R.layout.list_item_memories_list
 
@@ -25,40 +22,40 @@ class MemoriesListListItem : AbstractItem<MemoriesListListItem.ViewHolder>() {
     override var identifier: Long =
         "memories".hashCode().toLong()
 
-    override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(v)
+    override fun getViewHolder(v: View) = ViewHolder(
+        viewModel = viewModel,
+        lifecycleOwner = lifecycleOwner,
+        itemView = v,
+    )
 
-    // TODO: PoC solution.
     class ViewHolder(
+        private val viewModel: GalleryMemoriesListViewModel,
+        lifecycleOwner: LifecycleOwner,
         itemView: View
     ) : FastAdapter.ViewHolder<MemoriesListListItem>(itemView),
-        KoinScopeComponent {
-        override val scope: Scope
-            get() = getKoin().getScope(DI_SCOPE_SESSION)
+        LifecycleOwner by lifecycleOwner {
 
-        private val memoriesRepository: MemoriesRepository by inject()
         private val memoriesRecyclerView = itemView as RecyclerView
         private val adapter = ItemAdapter<MemoryListItem>()
-        private var subscriptionDisposable: Disposable? = null
+        private val itemsListObserver = Observer<List<MemoryListItem>> { memoryListItems ->
+            memoryListItems?.let(adapter::setNewList)
+        }
 
         init {
-            println("OOLEG here")
-            memoriesRecyclerView.adapter = FastAdapter.with(adapter)
-            memoriesRepository.update()
+            memoriesRecyclerView.adapter = FastAdapter.with(adapter).apply {
+                onClickListener = { _, _, item: MemoryListItem, _ ->
+                    viewModel.onMemoryItemClicked(item)
+                    true
+                }
+            }
         }
 
         override fun bindView(item: MemoriesListListItem, payloads: List<Any>) {
-            subscriptionDisposable?.dispose()
-            subscriptionDisposable = memoriesRepository
-                .items
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy { memories ->
-                    adapter.setNewList(memories.map(::MemoryListItem))
-                }
+            viewModel.itemsList.observe(this, itemsListObserver)
         }
 
         override fun unbindView(item: MemoriesListListItem) {
-            subscriptionDisposable?.dispose()
+            viewModel.itemsList.removeObserver(itemsListObserver)
         }
     }
 }
