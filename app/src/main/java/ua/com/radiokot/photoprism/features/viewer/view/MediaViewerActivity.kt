@@ -52,6 +52,7 @@ import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import java.io.File
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class MediaViewerActivity : BaseActivity() {
@@ -302,8 +303,12 @@ class MediaViewerActivity : BaseActivity() {
                 this as MarginLayoutParams
 
                 bottomMargin += insets.bottom
-                leftMargin += insets.left
-                rightMargin += insets.right
+
+                // Adjust horizontal margins by the equal value
+                // for proper horizontal centering against the video.
+                val horizontalInset = max(insets.left, insets.right)
+                leftMargin += horizontalInset
+                rightMargin += horizontalInset
 
                 log.debug {
                     "initButtons(): applied_buttons_insets_margin:" +
@@ -547,7 +552,6 @@ class MediaViewerActivity : BaseActivity() {
             this.view.buttonsLayout.doOnNextLayout { buttonsLayout ->
                 val buttonsLayoutParams = buttonsLayout.layoutParams as MarginLayoutParams
 
-                val extraTopMargin = view.toolbar.bottom
                 val extraBottomMargin = buttonsLayout.height + buttonsLayoutParams.bottomMargin
                 val extraLeftMargin = buttonsLayoutParams.leftMargin
                 val extraRightMargin = buttonsLayoutParams.rightMargin
@@ -555,13 +559,17 @@ class MediaViewerActivity : BaseActivity() {
                 playerControlsView.root.updateLayoutParams {
                     this as MarginLayoutParams
 
-                    topMargin += extraTopMargin
+                    // Adjust the bottom margin and make the top one match it
+                    // for proper vertical centering of play/pause and buffering progress.
                     bottomMargin += extraBottomMargin
+                    topMargin = bottomMargin
+
                     leftMargin += extraLeftMargin
                     rightMargin += extraRightMargin
 
                     log.debug {
                         "setUpVideoViewer(): applied_controls_insets_margin:" +
+                                "\ntop=$topMargin," +
                                 "\nleft=$leftMargin," +
                                 "\nright=$rightMargin," +
                                 "\nbottom=$bottomMargin"
