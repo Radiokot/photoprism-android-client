@@ -545,8 +545,8 @@ class GalleryActivity : BaseActivity() {
                     override fun getSpanSize(position: Int): Int =
                         when (galleryAdapter.getItemViewType(position)) {
                             R.id.list_item_gallery_loading_footer,
-                            R.id.list_item_gallery_day_header,
-                            R.id.list_item_month_header,
+                            R.layout.list_item_gallery_small_header,
+                            R.layout.list_item_gallery_large_header,
                             GalleryMemoriesListView.RECYCLER_VIEW_TYPE,
                             ->
                                 spanCount

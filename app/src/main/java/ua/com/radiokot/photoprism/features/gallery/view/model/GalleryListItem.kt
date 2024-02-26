@@ -8,7 +8,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.graphics.ColorUtils
@@ -19,19 +18,27 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryMediaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.util.ItemViewFactory
 import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
+import ua.com.radiokot.photoprism.util.LocalDate
+import java.text.DateFormat
 
 sealed class GalleryListItem : AbstractItem<ViewHolder>() {
     class Media(
@@ -274,26 +281,59 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
 
     class Header
     private constructor(
-        val text: String?,
-        @StringRes
-        val textRes: Int?,
-        override var identifier: Long,
-        @IdRes
-        override val type: Int,
+        private val value: Value,
         @LayoutRes
         override val layoutRes: Int,
     ) : GalleryListItem() {
+        override val type: Int = layoutRes
 
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
 
+        private sealed interface Value {
+            val identifier: Long
+
+            object Today : Value {
+                override val identifier: Long = 10647
+            }
+
+            sealed class Date(val localDate: LocalDate) : Value {
+                override val identifier: Long = localDate.time
+
+                class Day(localDate: LocalDate) : Date(localDate)
+                class DayWithYear(localDate: LocalDate) : Date(localDate)
+                class Month(localDate: LocalDate) : Date(localDate)
+                class MonthWithYear(localDate: LocalDate) : Date(localDate)
+            }
+        }
+
         class ViewHolder(itemView: View) :
-            FastAdapter.ViewHolder<Header>(itemView) {
+            FastAdapter.ViewHolder<Header>(itemView),
+            KoinComponent {
+            private val dayDateFormat: DateFormat by inject(named(UTC_DAY_DATE_FORMAT))
+            private val dayYearDateFormat: DateFormat by inject(named(UTC_DAY_YEAR_DATE_FORMAT))
+            private val monthDateFormat: DateFormat by inject(named(UTC_MONTH_DATE_FORMAT))
+            private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
+
             private val headerTextView = itemView as TextView
 
             override fun bindView(item: Header, payloads: List<Any>) {
-                headerTextView.text =
-                    item.text ?: headerTextView.context.getString(item.textRes.checkNotNull())
+                headerTextView.text = when (val value = item.value) {
+                    Value.Today ->
+                        itemView.resources.getString(R.string.today)
+
+                    is Value.Date.Day ->
+                        dayDateFormat.format(value.localDate).capitalized()
+
+                    is Value.Date.DayWithYear ->
+                        dayYearDateFormat.format(value.localDate).capitalized()
+
+                    is Value.Date.Month ->
+                        monthDateFormat.format(value.localDate).capitalized()
+
+                    is Value.Date.MonthWithYear ->
+                        monthYearDateFormat.format(value.localDate).capitalized()
+                }
             }
 
             override fun unbindView(item: Header) {
@@ -301,36 +341,33 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         }
 
         companion object {
-            fun day(text: String) = Header(
-                text = text,
-                textRes = null,
-                identifier = text.hashCode().toLong(),
-                type = R.id.list_item_gallery_day_header,
-                layoutRes = R.layout.list_item_gallery_day_header,
+            fun today() = Header(
+                value = Value.Today,
+                layoutRes = R.layout.list_item_gallery_small_header,
             )
 
-            fun day(@StringRes textRes: Int) = Header(
-                text = null,
-                textRes = textRes,
-                identifier = textRes.toLong(),
-                type = R.id.list_item_gallery_day_header,
-                layoutRes = R.layout.list_item_gallery_day_header,
+            fun day(
+                localDate: LocalDate,
+                withYear: Boolean,
+            ) = Header(
+                value =
+                if (withYear)
+                    Value.Date.DayWithYear(localDate)
+                else
+                    Value.Date.Day(localDate),
+                layoutRes = R.layout.list_item_gallery_small_header,
             )
 
-            fun month(text: String) = Header(
-                text = text,
-                textRes = null,
-                identifier = text.hashCode().toLong(),
-                type = R.id.list_item_month_header,
-                layoutRes = R.layout.list_item_gallery_month_header,
-            )
-
-            fun month(@StringRes textRes: Int) = Header(
-                text = null,
-                textRes = textRes,
-                identifier = textRes.toLong(),
-                type = R.id.list_item_month_header,
-                layoutRes = R.layout.list_item_gallery_month_header,
+            fun month(
+                localDate: LocalDate,
+                withYear: Boolean,
+            ) = Header(
+                value =
+                if (withYear)
+                    Value.Date.MonthWithYear(localDate)
+                else
+                    Value.Date.Month(localDate),
+                layoutRes = R.layout.list_item_gallery_large_header
             )
         }
     }

@@ -13,8 +13,6 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
-import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
-import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.dateFormatModule
@@ -128,10 +126,6 @@ val galleryFeatureModule = module {
         viewModel {
             GalleryViewModel(
                 galleryMediaRepositoryFactory = get(),
-                dateHeaderUtcDayYearDateFormat = get(named(UTC_DAY_YEAR_DATE_FORMAT)),
-                dateHeaderUtcDayDateFormat = get(named(UTC_DAY_DATE_FORMAT)),
-                dateHeaderUtcMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
-                dateHeaderUtcMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
                 internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 downloadMediaFileViewModel = get(),

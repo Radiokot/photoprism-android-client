@@ -11,12 +11,10 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
 import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
@@ -37,15 +35,10 @@ import java.io.File
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.text.DateFormat
 import kotlin.collections.set
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val dateHeaderUtcDayYearDateFormat: DateFormat,
-    private val dateHeaderUtcDayDateFormat: DateFormat,
-    private val dateHeaderUtcMonthYearDateFormat: DateFormat,
-    private val dateHeaderUtcMonthDateFormat: DateFormat,
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
@@ -510,15 +503,10 @@ class GalleryViewModel(
                 if (i == 0 && (onlyGroupByMonths || !takenAtLocal.isSameMonthAs(currentLocalDate))
                     || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
                 ) {
-                    val formattedMonth =
-                        if (takenAtLocal.isSameYearAs(currentLocalDate))
-                            dateHeaderUtcMonthDateFormat.format(takenAtLocal)
-                        else
-                            dateHeaderUtcMonthYearDateFormat.format(takenAtLocal)
-
                     newListItems.add(
                         GalleryListItem.Header.month(
-                            text = formattedMonth.capitalized(),
+                            localDate = takenAtLocal,
+                            withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
                         )
                     )
                 }
@@ -536,20 +524,12 @@ class GalleryViewModel(
                 ) {
                     newListItems.add(
                         if (takenAtLocal.isSameDayAs(currentLocalDate))
+                            GalleryListItem.Header.today()
+                        else
                             GalleryListItem.Header.day(
-                                textRes = R.string.today,
+                                localDate = takenAtLocal,
+                                withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
                             )
-                        else {
-                            val formattedDate =
-                                if (takenAtLocal.isSameYearAs(currentLocalDate))
-                                    dateHeaderUtcDayDateFormat.format(takenAtLocal)
-                                else
-                                    dateHeaderUtcDayYearDateFormat.format(takenAtLocal)
-
-                            GalleryListItem.Header.day(
-                                text = formattedDate.capitalized(),
-                            )
-                        }
                     )
                 }
 
