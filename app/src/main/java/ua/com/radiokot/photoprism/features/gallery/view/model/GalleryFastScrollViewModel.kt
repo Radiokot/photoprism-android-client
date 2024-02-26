@@ -9,7 +9,6 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -17,13 +16,9 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
 import ua.com.radiokot.photoprism.util.LocalDate
-import java.text.DateFormat
 import java.util.concurrent.TimeUnit
 
-class GalleryFastScrollViewModel(
-    private val bubbleUtcMonthYearDateFormat: DateFormat,
-    private val bubbleUtcMonthDateFormat: DateFormat,
-) : ViewModel() {
+class GalleryFastScrollViewModel: ViewModel() {
     private val log = kLogger("GalleryFastScrollVM")
     private var currentMediaRepository: SimpleGalleryMediaRepository? = null
 
@@ -135,12 +130,9 @@ class GalleryFastScrollViewModel(
                 .sortedDescending()
                 .map { month ->
                     GalleryMonthScrollBubble(
-                        name =
-                        if (month.firstDay.isSameYearAs(currentLocalDate))
-                            bubbleUtcMonthDateFormat.format(month.firstDay).capitalized()
-                        else
-                            bubbleUtcMonthYearDateFormat.format(month.firstDay).capitalized(),
-                        source = month
+                        localDate = month.firstDay,
+                        withYear = !month.firstDay.isSameYearAs(currentLocalDate),
+                        source = month,
                     )
                 }
                 .also {

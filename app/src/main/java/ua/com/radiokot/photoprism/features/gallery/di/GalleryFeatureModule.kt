@@ -13,8 +13,6 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
-import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
-import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.dateFormatModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
@@ -116,12 +114,7 @@ val galleryFeatureModule = module {
 
         viewModelOf(::GallerySearchViewModel)
 
-        viewModel {
-            GalleryFastScrollViewModel(
-                bubbleUtcMonthYearDateFormat = get(named(UTC_MONTH_YEAR_DATE_FORMAT)),
-                bubbleUtcMonthDateFormat = get(named(UTC_MONTH_DATE_FORMAT)),
-            )
-        }
+        viewModelOf(::GalleryFastScrollViewModel)
 
         viewModel {
             GalleryViewModel(

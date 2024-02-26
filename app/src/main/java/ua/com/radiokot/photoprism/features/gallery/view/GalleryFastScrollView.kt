@@ -16,20 +16,31 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.Predicate
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMonthScrollBubble
+import java.text.DateFormat
 
 class GalleryFastScrollView(
     private val viewModel: GalleryFastScrollViewModel,
     lifecycleOwner: LifecycleOwner,
-) : LifecycleOwner by lifecycleOwner {
+) : LifecycleOwner by lifecycleOwner,
+    KoinComponent {
+
     private val log = kLogger("GalleryFastScrollView")
 
     private lateinit var fastScrollRecyclerView: RecyclerView
     private lateinit var fastScroller: FastScroller
+    private val bubbleUtcMonthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
+    private val bubbleUtcMonthDateFormat: DateFormat by inject(named(UTC_MONTH_DATE_FORMAT))
     private var notifyFastScroller = {}
     private var bubbles: List<GalleryMonthScrollBubble> = emptyList()
     private var scrollRange = 0
@@ -108,7 +119,12 @@ class GalleryFastScrollView(
             }
 
             override fun getPopupText(): CharSequence? =
-                getCurrentBubble()?.name
+                getCurrentBubble()?.let { bubble ->
+                    if (bubble.withYear)
+                        bubbleUtcMonthYearDateFormat.format(bubble.localDate).capitalized()
+                    else
+                        bubbleUtcMonthDateFormat.format(bubble.localDate).capitalized()
+                }
         }
     }
 
