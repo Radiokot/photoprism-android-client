@@ -17,8 +17,6 @@ import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.EnvHttpClientParams
 import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
-import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_DATE_FORMAT
-import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
@@ -64,8 +62,6 @@ val mediaViewerFeatureModule = module {
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 downloadMediaFileViewModel = get(),
                 backgroundMediaFileDownloadManager = get(),
-                utcDateTimeDateFormat = get(named(UTC_DATE_TIME_DATE_FORMAT)),
-                utcDateTimeYearDateFormat = get(named(UTC_DATE_TIME_YEAR_DATE_FORMAT)),
                 setGalleryMediaFavoriteUseCaseFactory = get(),
             )
         }

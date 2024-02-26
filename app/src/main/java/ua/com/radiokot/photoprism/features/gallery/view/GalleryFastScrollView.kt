@@ -39,8 +39,8 @@ class GalleryFastScrollView(
 
     private lateinit var fastScrollRecyclerView: RecyclerView
     private lateinit var fastScroller: FastScroller
-    private val bubbleUtcMonthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
-    private val bubbleUtcMonthDateFormat: DateFormat by inject(named(UTC_MONTH_DATE_FORMAT))
+    private val bubbleMonthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
+    private val bubbleMonthDateFormat: DateFormat by inject(named(UTC_MONTH_DATE_FORMAT))
     private var notifyFastScroller = {}
     private var bubbles: List<GalleryMonthScrollBubble> = emptyList()
     private var scrollRange = 0
@@ -121,9 +121,9 @@ class GalleryFastScrollView(
             override fun getPopupText(): CharSequence? =
                 getCurrentBubble()?.let { bubble ->
                     if (bubble.withYear)
-                        bubbleUtcMonthYearDateFormat.format(bubble.localDate).capitalized()
+                        bubbleMonthYearDateFormat.format(bubble.localDate).capitalized()
                     else
-                        bubbleUtcMonthDateFormat.format(bubble.localDate).capitalized()
+                        bubbleMonthDateFormat.format(bubble.localDate).capitalized()
                 }
         }
     }

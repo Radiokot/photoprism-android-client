@@ -35,9 +35,12 @@ import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.qualifier.named
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
+import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_DATE_FORMAT
+import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -52,6 +55,7 @@ import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import java.io.File
+import java.text.DateFormat
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -61,6 +65,8 @@ class MediaViewerActivity : BaseActivity() {
     private val viewModel: MediaViewerViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
+    private val dateTimeDateFormat: DateFormat by inject(named(UTC_DATE_TIME_DATE_FORMAT))
+    private val dateTimeYearDateFormat: DateFormat by inject(named(UTC_DATE_TIME_YEAR_DATE_FORMAT))
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPage>()
     private lateinit var toolbarBackButton: ImageButton
@@ -656,10 +662,19 @@ class MediaViewerActivity : BaseActivity() {
                 setTitle(title)
             }
         }
-        viewModel.subtitle.observe(
-            this,
-            view.toolbar::setSubtitle
-        )
+
+        viewModel.subtitle.observe(this) { subtitle ->
+            view.toolbar.subtitle = when (subtitle) {
+                is MediaViewerViewModel.SubtitleValue.DateTime ->
+                    if (subtitle.withYear)
+                        dateTimeYearDateFormat.format(subtitle.localDate).capitalized()
+                    else
+                        dateTimeDateFormat.format(subtitle.localDate).capitalized()
+
+                is MediaViewerViewModel.SubtitleValue.Static ->
+                    subtitle.value
+            }
+        }
 
         viewModel.isFavorite.observe(this) { isFavorite ->
             view.favoriteButton.contentDescription =

@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.memories.view
 
 import android.os.Bundle
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.get
@@ -9,6 +10,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
 
@@ -46,5 +48,16 @@ class MemoriesDemoActivity : BaseActivity() {
         view.unseeAllButton.setThrottleOnClickListener {
             repository.markAllAsNotSeenLocally()
         }
+
+        repository
+            .items
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { memories ->
+                memories.maxByOrNull(Memory::createdAt)?.let { mostRecentMemory ->
+                    view.statusTextView.text =
+                        "Most recent: ${mostRecentMemory.createdAt}"
+                }
+            }
+            .autoDispose(this)
     }
 }
