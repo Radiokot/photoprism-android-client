@@ -286,6 +286,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         override val layoutRes: Int,
     ) : GalleryListItem() {
         override val type: Int = layoutRes
+        override var identifier: Long = value.identifier
 
         override fun getViewHolder(v: View): ViewHolder =
             ViewHolder(v)
@@ -298,12 +299,22 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             sealed class Date(val localDate: LocalDate) : Value {
-                override val identifier: Long = localDate.time
+                class Day(
+                    localDate: LocalDate,
+                    val withYear: Boolean,
+                ) : Date(localDate) {
+                    override val identifier: Long = localDate.time
+                }
 
-                class Day(localDate: LocalDate) : Date(localDate)
-                class DayWithYear(localDate: LocalDate) : Date(localDate)
-                class Month(localDate: LocalDate) : Date(localDate)
-                class MonthWithYear(localDate: LocalDate) : Date(localDate)
+                class Month(
+                    localDate: LocalDate,
+                    val withYear: Boolean,
+                ) : Date(localDate) {
+                    // It is very unlikely to get a collision here, as such dates
+                    // have no milliseconds.
+                    // Although, even if a collision happens, the header simply gets invisible.
+                    override val identifier: Long = localDate.time + 1
+                }
             }
         }
 
@@ -323,16 +334,16 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                         itemView.resources.getString(R.string.today)
 
                     is Value.Date.Day ->
-                        dayDateFormat.format(value.localDate).capitalized()
-
-                    is Value.Date.DayWithYear ->
-                        dayYearDateFormat.format(value.localDate).capitalized()
+                        if (value.withYear)
+                            dayYearDateFormat.format(value.localDate).capitalized()
+                        else
+                            dayDateFormat.format(value.localDate).capitalized()
 
                     is Value.Date.Month ->
-                        monthDateFormat.format(value.localDate).capitalized()
-
-                    is Value.Date.MonthWithYear ->
-                        monthYearDateFormat.format(value.localDate).capitalized()
+                        if (value.withYear)
+                            monthYearDateFormat.format(value.localDate).capitalized()
+                        else
+                            monthDateFormat.format(value.localDate).capitalized()
                 }
             }
 
@@ -350,11 +361,10 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 localDate: LocalDate,
                 withYear: Boolean,
             ) = Header(
-                value =
-                if (withYear)
-                    Value.Date.DayWithYear(localDate)
-                else
-                    Value.Date.Day(localDate),
+                value = Value.Date.Day(
+                    localDate = localDate,
+                    withYear = withYear,
+                ),
                 layoutRes = R.layout.list_item_gallery_small_header,
             )
 
@@ -362,12 +372,11 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 localDate: LocalDate,
                 withYear: Boolean,
             ) = Header(
-                value =
-                if (withYear)
-                    Value.Date.MonthWithYear(localDate)
-                else
-                    Value.Date.Month(localDate),
-                layoutRes = R.layout.list_item_gallery_large_header
+                value = Value.Date.Month(
+                    localDate = localDate,
+                    withYear = withYear,
+                ),
+                layoutRes = R.layout.list_item_gallery_large_header,
             )
         }
     }
