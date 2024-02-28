@@ -5,4 +5,8 @@
         <item quantity="one">%1$d year ago</item>
         <item quantity="other">%1$d yeas ago</item>
     </plurals>
+    <string name="memories_notification_new_memories_title" translatable="false">New memories found</string>
+    <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
+    <string name="memories_notification_channel_name" translatable="false">Memories</string>
+    <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
 </resources>

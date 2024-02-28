@@ -23,6 +23,7 @@ import ua.com.radiokot.photoprism.features.memories.logic.GetMemoriesUseCase
 import ua.com.radiokot.photoprism.features.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
 import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesWorker
+import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.memories.view.model.GalleryMemoriesListViewModel
 
 val memoriesFeatureModule = module {
@@ -52,6 +53,8 @@ val memoriesFeatureModule = module {
             jsonObjectMapper = get(),
         )
     }
+
+    singleOf(::MemoriesNotificationsManager)
 
     scope<EnvSession> {
         scoped {

@@ -10,6 +10,7 @@ import org.koin.core.component.inject
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 
@@ -29,6 +30,7 @@ class UpdateMemoriesWorker(
     private val startingFromHour =
         workerParams.inputData.getInt(STARTING_FROM_HOUR_KEY, 0)
     private val statusPersistence: ObjectPersistence<Status> by inject()
+    private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
     override fun createWork(): Single<Result> {
         val status = statusPersistence.loadItem() ?: Status()
@@ -69,14 +71,18 @@ class UpdateMemoriesWorker(
 
         return useCase
             .invoke()
-            .toSingleDefault(Result.success())
-            .doOnSuccess {
+            .doOnSuccess { gotAnyMemories ->
                 statusPersistence.saveItem(
                     status.copy(
                         lastSuccessfulUpdateDay = currentDay,
                     )
                 )
+
+                if (gotAnyMemories) {
+                    memoriesNotificationsManager.notifyNewMemories()
+                }
             }
+            .map { Result.success() }
             .onErrorReturnItem(Result.retry())
     }
 

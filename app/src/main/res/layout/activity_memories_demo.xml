@@ -48,4 +48,13 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:text="Unsee all" />
+
+    <Button
+        android:id="@+id/notify_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Notify" />
 </LinearLayout>

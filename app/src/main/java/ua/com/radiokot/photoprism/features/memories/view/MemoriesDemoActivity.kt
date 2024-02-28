@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.memories.view
 
 import android.os.Bundle
+import android.widget.Toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -21,6 +22,7 @@ class MemoriesDemoActivity : BaseActivity() {
     private lateinit var view: ActivityMemoriesDemoBinding
 
     private val repository: MemoriesRepository by inject()
+    private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,12 +43,21 @@ class MemoriesDemoActivity : BaseActivity() {
             get<UpdateMemoriesUseCase>()
                 .invoke()
                 .subscribeOn(Schedulers.io())
-                .subscribeBy()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy { gotAnyMemories ->
+                    if (!gotAnyMemories) {
+                        Toast.makeText(this, "Nothing found", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 .autoDispose(this)
         }
 
         view.unseeAllButton.setThrottleOnClickListener {
             repository.markAllAsNotSeenLocally()
+        }
+
+        view.notifyButton.setThrottleOnClickListener {
+            memoriesNotificationsManager.notifyNewMemories()
         }
 
         repository
