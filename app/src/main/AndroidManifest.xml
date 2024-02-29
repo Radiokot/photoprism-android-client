@@ -21,6 +21,11 @@
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
+
+        <!-- Android 13 app language preferences -->
+        <intent>
+            <action android:name="android.settings.APP_LOCALE_SETTINGS" />
+        </intent>
     </queries>
 
     <application

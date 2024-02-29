@@ -3,11 +3,15 @@ package ua.com.radiokot.photoprism.features.prefs.view
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.ListPreference
+import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
@@ -52,7 +56,6 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.Slideshow
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
-import androidx.preference.MaterialPreferenceDialogDisplay
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 
 class PreferencesFragment :
@@ -246,6 +249,20 @@ class PreferencesFragment :
             setOnPreferenceClickListener {
                 openGuidesSummary()
                 true
+            }
+        }
+
+        with(requirePreference(R.string.pk_language)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                isVisible = getAppLanguagePreferencesIntent()
+                    .resolveActivity(requireContext().packageManager) != null
+
+                setOnPreferenceClickListener {
+                    openAppLanguagePreferences()
+                    true
+                }
+            } else {
+                isVisible = false
             }
         }
     }
@@ -528,6 +545,15 @@ class PreferencesFragment :
             titleRes = R.string.app_name
         )
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun openAppLanguagePreferences() =
+        startActivity(getAppLanguagePreferencesIntent())
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun getAppLanguagePreferencesIntent() =
+        Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
+            .setData(Uri.fromParts("package", requireContext().packageName, null))
 
     private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {
         val key = getString(keyId)

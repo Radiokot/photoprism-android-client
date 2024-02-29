@@ -162,4 +162,5 @@
         <item>大的</item>
         <item>巨大的</item>
     </string-array>
+    <string name="language_preference">語言</string>
 </resources>

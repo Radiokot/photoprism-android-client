@@ -162,4 +162,5 @@
         <item>Большой</item>
         <item>Огромный</item>
     </string-array>
+    <string name="language_preference">Язык</string>
 </resources>

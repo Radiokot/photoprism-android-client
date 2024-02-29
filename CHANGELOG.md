@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A shortcut in the preferences for Android 13 app language settings
+
 ### Fixed
 - Showing the loading spinner at the bottom even if nothing left to load
 - Improper centering of media viewer controls against the content and each other

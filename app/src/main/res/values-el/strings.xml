@@ -162,4 +162,5 @@
         <item>Μεγάλο</item>
         <item>Τεράστιο</item>
     </string-array>
+    <string name="language_preference">Γλώσσα</string>
 </resources>

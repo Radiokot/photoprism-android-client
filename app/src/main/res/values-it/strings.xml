@@ -162,4 +162,5 @@
         <item>Grande</item>
         <item>Enorme</item>
     </string-array>
+    <string name="language_preference">Lingua</string>
 </resources>

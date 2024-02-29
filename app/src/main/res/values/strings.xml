@@ -166,4 +166,5 @@
         <item>Large</item>
         <item>Huge</item>
     </string-array>
+    <string name="language_preference">Language</string>
 </resources>

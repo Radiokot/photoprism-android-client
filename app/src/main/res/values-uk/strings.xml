@@ -162,4 +162,5 @@
         <item>Великий</item>
         <item>Величезний</item>
     </string-array>
+    <string name="language_preference">Мова</string>
 </resources>

@@ -162,4 +162,5 @@
         <item>Büyük</item>
         <item>Çok büyük</item>
     </string-array>
+    <string name="language_preference">Dil</string>
 </resources>
