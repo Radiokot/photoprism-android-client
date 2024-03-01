@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -281,6 +280,8 @@ class GalleryActivity : BaseActivity() {
                     getString(R.string.select_content)
                 else
                     count.toString()
+
+            updateMultipleSelectionMenuVisibility()
         }
 
         viewModel.itemScale
@@ -399,12 +400,13 @@ class GalleryActivity : BaseActivity() {
                     else
                         null
 
-                @SuppressLint("RestrictedApi")
-                if (state is GalleryViewModel.State.Selecting.ForUser) {
-                    inflateMenu(R.menu.gallery_selecting_for_user)
-                } else {
-                    menu.clear()
-                }
+//                @SuppressLint("RestrictedApi")
+//                if (state is GalleryViewModel.State.Selecting.ForUser) {
+//                    inflateMenu(R.menu.gallery_selecting_for_user)
+//                } else {
+//                    menu.clear()
+//                }
+                updateMultipleSelectionMenuVisibility()
             }
 
             // The FAB is only used when selecting for other app,
@@ -679,6 +681,18 @@ class GalleryActivity : BaseActivity() {
                     + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_end_offset),
         )
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+    }
+
+    private fun updateMultipleSelectionMenuVisibility() {
+        val multipleSelectionItemsCount = viewModel.multipleSelectionItemsCount.value ?: 0
+        val state = viewModel.currentState
+        val areUserSelectionItemsVisible =
+            multipleSelectionItemsCount > 0 && state is GalleryViewModel.State.Selecting.ForUser
+
+        with(view.selectionBottomAppBar.menu) {
+            findItem(R.id.share)?.isVisible = areUserSelectionItemsVisible
+            findItem(R.id.download)?.isVisible = areUserSelectionItemsVisible
+        }
     }
 
     private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {

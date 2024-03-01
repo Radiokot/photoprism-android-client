@@ -93,6 +93,7 @@
         app:elevation="0dp"
         app:fabAlignmentModeEndMargin="18dp"
         app:fabAnchorMode="cradle"
+        app:menu="@menu/gallery_selecting"
         app:menuAlignmentMode="auto"
         app:navigationContentDescription="@string/clear_selection"
         app:navigationIcon="@drawable/ic_close">

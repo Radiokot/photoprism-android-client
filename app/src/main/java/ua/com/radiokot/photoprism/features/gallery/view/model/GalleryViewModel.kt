@@ -64,6 +64,8 @@ class GalleryViewModel(
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     private val stateSubject = BehaviorSubject.create<State>()
     val state: Observable<State> = stateSubject.toMainThreadObservable()
+    val currentState: State
+        get() = stateSubject.value!!
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
@@ -174,7 +176,7 @@ class GalleryViewModel(
     }
 
     private fun resetRepositoryToInitial() {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
 
         if (currentState is State.Selecting.ForOtherApp) {
             val searchConfig =
@@ -206,7 +208,7 @@ class GalleryViewModel(
 
             when (state) {
                 is GallerySearchViewModel.State.Applied -> {
-                    val currentState = stateSubject.value
+                    val currentState = this.currentState
                     val searchConfigToApply: SearchConfig =
                         if (currentState is State.Selecting.ForOtherApp) {
                             // If we are selecting the content,
@@ -483,7 +485,7 @@ class GalleryViewModel(
         )
 
         val newListItems = mutableListOf<GalleryListItem>()
-        val currentState = stateSubject.value
+        val currentState = this.currentState
         val areViewButtonsVisible = currentState is State.Selecting
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
         val onlyGroupByMonths = itemScale == GalleryItemScale.TINY
@@ -580,7 +582,7 @@ class GalleryViewModel(
         val media = (item as? GalleryListItem.Media)?.source
             ?: return
 
-        when (val state = stateSubject.value.checkNotNull()) {
+        when (val state = currentState) {
             is State.Selecting -> {
                 if (state.allowMultiple) {
                     toggleMediaMultipleSelection(media)
@@ -625,7 +627,7 @@ class GalleryViewModel(
         val media = (item as? GalleryListItem.Media)?.source
             ?: return
 
-        when (stateSubject.value.checkNotNull()) {
+        when (currentState) {
             State.Viewing -> {
                 log.debug { "onItemLongClicked(): switching_to_selecting_for_user" }
 
@@ -643,7 +645,7 @@ class GalleryViewModel(
      * @param target an entry the user interacted with initiating the switch.
      */
     private fun switchToSelectingForUser(target: GalleryMedia) {
-        assert(stateSubject.value is State.Viewing) {
+        assert(currentState is State.Viewing) {
             "Switching to selecting is only possible while viewing"
         }
 
@@ -660,7 +662,7 @@ class GalleryViewModel(
     }
 
     private fun selectMedia(media: GalleryMedia) {
-        assert(stateSubject.value is State.Selecting) {
+        assert(currentState is State.Selecting) {
             "Media can only be selected handled in the corresponding state"
         }
 
@@ -674,7 +676,7 @@ class GalleryViewModel(
     }
 
     private fun toggleMediaMultipleSelection(media: GalleryMedia) {
-        assert(stateSubject.value is State.Selecting) {
+        assert(currentState is State.Selecting) {
             "Media multiple selection can only be toggled in the corresponding state"
         }
 
@@ -694,7 +696,7 @@ class GalleryViewModel(
     }
 
     private fun addFileToMultipleSelection(file: GalleryMedia.File) {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
         check(currentState is State.Selecting && currentState.allowMultiple) {
             "Media file can only be added to the multiple selection in the corresponding state"
         }
@@ -712,7 +714,7 @@ class GalleryViewModel(
     }
 
     private fun removeMediaFromMultipleSelection(mediaUid: String) {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
         check(currentState is State.Selecting && currentState.allowMultiple) {
             "Media can only be removed from the multiple selection in the corresponding state"
         }
@@ -752,7 +754,7 @@ class GalleryViewModel(
     }
 
     fun onFileSelected(file: GalleryMedia.File) {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
         check(currentState is State.Selecting) {
             "Media files can only be selected in the selection state"
         }
@@ -933,7 +935,7 @@ class GalleryViewModel(
     }
 
     fun onClearMultipleSelectionClicked() {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
 
         check(currentState is State.Selecting && currentState.allowMultiple) {
             "Clear multiple selection button is only clickable in the corresponding state"
@@ -961,7 +963,7 @@ class GalleryViewModel(
     }
 
     fun onDoneMultipleSelectionClicked() {
-        val currentState = stateSubject.value
+        val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
             "Done multiple selection button is only clickable when selecting multiple for other app"
         }
@@ -976,7 +978,6 @@ class GalleryViewModel(
     }
 
     fun onShareMultipleSelectionClicked() {
-        val currentState = stateSubject.value
         check(currentState is State.Selecting.ForUser) {
             "Share multiple selection button is only clickable when selecting"
         }
@@ -991,7 +992,6 @@ class GalleryViewModel(
     }
 
     fun onDownloadMultipleSelectionClicked() {
-        val currentState = stateSubject.value
         check(currentState is State.Selecting.ForUser) {
             "Download multiple selection button is only clickable when selecting"
         }
@@ -1023,7 +1023,7 @@ class GalleryViewModel(
                     "\nisGranted=$isGranted"
         }
 
-        when (val state = stateSubject.value!!) {
+        when (val state = currentState) {
             is State.Selecting.ForUser ->
                 if (isGranted) {
                     downloadMultipleSelectionFiles(
@@ -1083,7 +1083,7 @@ class GalleryViewModel(
     }
 
     private fun switchToViewing() {
-        assert(stateSubject.value is State.Selecting.ForUser) {
+        assert(currentState is State.Selecting.ForUser) {
             "Switching to viewing is only possible while selecting to share"
         }
 
