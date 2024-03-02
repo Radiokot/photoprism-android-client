@@ -16,7 +16,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
  * the write is applied rather than committed.
  */
 @SuppressLint("CheckResult")
-inline fun <reified ValueType> preferenceSubject(
+inline fun <reified ValueType: Any> preferenceSubject(
     preferences: SharedPreferences,
     key: String,
     readValue: SharedPreferences.(key: String) -> ValueType,
@@ -64,7 +64,7 @@ fun booleanPreferenceSubject(
  * @param stringDeserializer deserializer for the string value,
  * if returns **null** then [defaultValue] is used
  */
-inline fun <reified ValueType> stringifyPreferenceSubject(
+inline fun <reified ValueType: Any> stringifyPreferenceSubject(
     preferences: SharedPreferences,
     key: String,
     defaultValue: ValueType,
