@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import androidx.core.os.ConfigurationCompat
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import org.koin.android.ext.android.get
@@ -20,9 +21,9 @@ import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.memories.logic.CancelDailyMemoriesUpdatesUseCase
@@ -119,9 +120,9 @@ class PhotoPrismGallery : Application() {
         super.attachBaseContext(
             LocalizedContextFactory(base)
                 .getLocalizedContext()
-                .also {
-                    @Suppress("DEPRECATION")
-                    Locale.setDefault(it.resources.configuration.locale)
+                .also { newBase ->
+                    ConfigurationCompat.getLocales(newBase.resources.configuration)[0]
+                        ?.also(Locale::setDefault)
                 }
         )
 

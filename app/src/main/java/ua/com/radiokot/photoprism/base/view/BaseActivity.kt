@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.ConfigurationCompat
 import com.google.android.material.color.MaterialColors
 import org.koin.android.ext.android.getKoin
 import org.koin.android.scope.AndroidScopeComponent
@@ -88,9 +89,16 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
         super.attachBaseContext(
             LocalizedContextFactory(base)
                 .getLocalizedContext()
-                .also {
+                .also { newBase ->
+                    // Update the global configuration with the most recent one.
                     @Suppress("DEPRECATION")
-                    Locale.setDefault(it.resources.configuration.locale)
+                    base.applicationContext.resources.updateConfiguration(
+                        newBase.resources.configuration,
+                        newBase.resources.displayMetrics,
+                    )
+
+                    ConfigurationCompat.getLocales(newBase.resources.configuration)[0]
+                        ?.also(Locale::setDefault)
                 }
         )
 

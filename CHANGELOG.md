@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Showing the loading spinner at the bottom even if nothing left to load
 - Improper centering of media viewer controls against the content and each other
 - Showing "Share" and "Download" selection options while nothing is yet selected
+- Not updating dates if the system language is changed until the app is restarted
 
 ## [1.24.1] - 2024-02-16
 

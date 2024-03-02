@@ -16,7 +16,7 @@ const val UTC_DATE_TIME_DATE_FORMAT = "utc-date-time"
 const val UTC_DATE_TIME_YEAR_DATE_FORMAT = "utc-date-time-year"
 
 val dateFormatModule = module {
-    factory { Locale.getDefault() }
+    includes(localeModule)
 
     factory(named(UTC_MONTH_DATE_FORMAT)) {
         SimpleDateFormat(
