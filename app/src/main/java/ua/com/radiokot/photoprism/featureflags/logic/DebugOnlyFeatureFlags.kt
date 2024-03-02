@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.featureflags.logic
+package ua.com.radiokot.photoprism.featureflags.logic
 
 import ua.com.radiokot.photoprism.BuildConfig
 

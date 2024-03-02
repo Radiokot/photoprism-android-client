@@ -21,8 +21,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
-import ua.com.radiokot.photoprism.features.featureflags.di.featureFlagsModule
-import ua.com.radiokot.photoprism.features.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.memories.logic.CancelDailyMemoriesUpdatesUseCase
