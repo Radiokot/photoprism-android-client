@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
+import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -425,7 +425,7 @@ class GalleryViewModel(
                     eventsSubject.onNext(Event.ShowFloatingError(viewError))
                 }
 
-                if (error is ProxyBlockingAccessException) {
+                if (error is WebPageInteractionRequiredException) {
                     eventsSubject.onNext(
                         Event.OpenWebViewerForRedirectHandling(
                             url = connectionParams.apiUrl.toString(),

@@ -3,7 +3,7 @@ package ua.com.radiokot.photoprism.env.data.model
 import androidx.core.util.Predicate
 import com.fasterxml.jackson.core.JsonParseException
 import retrofit2.HttpException
-import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException.Companion.THROWABLE_PREDICATE
+import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException.Companion.THROWABLE_PREDICATE
 import java.io.IOException
 import java.net.HttpURLConnection
 
@@ -22,16 +22,20 @@ class SessionExpiredException(sessionId: String) :
     )
 
 /**
- * Unexpected HTML response presumably means that the proxy is blocking API access
- * and wants to show a page instead.
+ * When occurred, means the user must interact with a web page
+ * in order to access the requested resource.
  *
  * @see THROWABLE_PREDICATE
  */
-class ProxyBlockingAccessException :
+class WebPageInteractionRequiredException :
     IOException(
-        "The proxy in front of the library blocks access to the API"
+        "The user must interact with a web page to access the requested resource"
     ) {
     companion object {
+        /**
+         * Checks if the given [Throwable]
+         * can be interpreted as [WebPageInteractionRequiredException].
+         */
         val THROWABLE_PREDICATE = Predicate<Throwable> {
             // Expected JSON but got HTML – puter calls for hooman.
             (it is JsonParseException

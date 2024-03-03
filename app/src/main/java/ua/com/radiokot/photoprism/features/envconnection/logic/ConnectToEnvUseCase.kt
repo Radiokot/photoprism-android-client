@@ -9,7 +9,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.env.data.model.ProxyBlockingAccessException
+import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -25,7 +25,7 @@ typealias PhotoPrismConfigServiceFactory =
  *
  * @see InvalidCredentialsException
  * @see EnvIsNotPublicException
- * @see ProxyBlockingAccessException
+ * @see WebPageInteractionRequiredException
  */
 class ConnectToEnvUseCase(
     private val connectionParams: EnvConnectionParams,
@@ -53,8 +53,8 @@ class ConnectToEnvUseCase(
             .flatMap { checkEnv() }
             .onErrorResumeNext { error ->
                 Single.error(
-                    if (ProxyBlockingAccessException.THROWABLE_PREDICATE.test(error))
-                        ProxyBlockingAccessException()
+                    if (WebPageInteractionRequiredException.THROWABLE_PREDICATE.test(error))
+                        WebPageInteractionRequiredException()
                     else
                         error
                 )
