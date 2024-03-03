@@ -1,0 +1,11 @@
+Full changelog:
+https://radiokot.com.ua/pp-changes
+
+Added:
+- A shortcut in the preferences for Android 13 app language settings
+
+Fixed:
+- Showing the loading spinner at the bottom even if nothing left to load
+- Improper centering of media viewer controls against the content and each other
+- Showing "Share" and "Download" selection options while nothing is yet selected
+- Not updating dates if the system language is changed until the app is restarted
