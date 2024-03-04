@@ -101,8 +101,11 @@ class GetMemoriesUseCase(
             .map { mergedPhotos ->
                 // Take only a limited number of the most suitable items.
                 mergedPhotos
+                    .filter {
+                        !it.title.lowercase().contains("screenshot")
+                    }
                     .sortedWith(MEMORIES_ITEMS_COMPARATOR)
-                    .subList(0, mergedPhotos.size.coerceAtMost(MAX_MEMORIES_ITEMS_COUNT))
+                    .run { subList(0, size.coerceAtMost(MAX_MEMORIES_ITEMS_COUNT)) }
                     .distinctBy(PhotoPrismMergedPhoto::uid)
             }
     }
