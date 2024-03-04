@@ -38,7 +38,6 @@ class ProgressResponseBody(
             val bytesRead = super.read(sink, byteCount)
             totalBytesRead += if (bytesRead != -1L) bytesRead else 0
 
-            println("OOLEG prb progress $byteCount")
             progressListener(totalBytesRead, contentLength())
 
             return bytesRead

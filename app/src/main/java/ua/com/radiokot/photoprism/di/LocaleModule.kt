@@ -21,6 +21,5 @@ val localeModule = module {
             ConfigurationCompat.getLocales(application.resources.configuration)[0]
                 ?: Locale.getDefault()
         }
-            .also { println("OOLEG here $it") }
     } bind Locale::class
 }
