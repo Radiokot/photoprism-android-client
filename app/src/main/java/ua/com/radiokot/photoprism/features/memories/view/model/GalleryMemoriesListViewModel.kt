@@ -3,13 +3,16 @@ package ua.com.radiokot.photoprism.features.memories.view.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
+import java.util.concurrent.TimeUnit
 
 class GalleryMemoriesListViewModel(
     private val memoriesRepository: MemoriesRepository,
@@ -96,10 +99,14 @@ class GalleryMemoriesListViewModel(
                 )
             )
 
-            memoriesRepository
-                .markAsSeen(memory)
-                .subscribeBy()
-                .autoDispose(this)
+            if (!memory.isSeen) {
+                // Mark the memory as seen with a slight delay
+                // to avoid card move while the viewer is opening.
+                Completable.timer(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                    .andThen(memoriesRepository.markAsSeen(memory))
+                    .subscribeBy()
+                    .autoDispose(this)
+            }
         }
     }
 
