@@ -12,10 +12,12 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
 import java.util.concurrent.TimeUnit
 
 class GalleryMemoriesListViewModel(
     private val memoriesRepository: MemoriesRepository,
+    private val memoriesNotificationsManager: MemoriesNotificationsManager,
 ) : ViewModel() {
     private val log = kLogger("GalleryMemoriesListVM")
 
@@ -49,6 +51,7 @@ class GalleryMemoriesListViewModel(
         }
 
         memoriesRepository.update()
+        memoriesNotificationsManager.cancelNewMemoriesNotification()
 
         isInitialized = true
 
@@ -107,6 +110,8 @@ class GalleryMemoriesListViewModel(
                     .subscribeBy()
                     .autoDispose(this)
             }
+
+            memoriesNotificationsManager.cancelNewMemoriesNotification()
         }
     }
 

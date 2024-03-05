@@ -57,6 +57,10 @@ class MemoriesNotificationsManager(
         return notification
     }
 
+    fun cancelNewMemoriesNotification() {
+        notificationsManager.cancel(NEW_MEMORIES_NOTIFICATION_ID)
+    }
+
     private fun ensureChannel() {
         notificationsManager.createNotificationChannelsCompat(
             listOf(
