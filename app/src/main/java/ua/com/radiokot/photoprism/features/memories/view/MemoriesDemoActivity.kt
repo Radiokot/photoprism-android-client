@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -44,9 +45,19 @@ class MemoriesDemoActivity : BaseActivity() {
                 .invoke()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy { gotAnyMemories ->
-                    if (!gotAnyMemories) {
+                .doOnSubscribe {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.loading_data_progress),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .subscribeBy { foundMemories ->
+                    if (foundMemories.isEmpty()) {
                         Toast.makeText(this, "Nothing found", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Found ${foundMemories.size}", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
                 .autoDispose(this)
@@ -57,7 +68,12 @@ class MemoriesDemoActivity : BaseActivity() {
         }
 
         view.notifyButton.setThrottleOnClickListener {
-            memoriesNotificationsManager.notifyNewMemories()
+            memoriesNotificationsManager
+                .notifyNewMemories(
+                    bigPictureUrl = "https://i.photoprism.app/prism?cover=64&amp;style=centered%20dark&amp;title=Hi%20there",
+                )
+                .subscribeBy()
+                .autoDispose(this)
         }
 
         repository

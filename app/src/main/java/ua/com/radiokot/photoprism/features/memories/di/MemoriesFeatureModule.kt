@@ -54,7 +54,13 @@ val memoriesFeatureModule = module {
         )
     }
 
-    singleOf(::MemoriesNotificationsManager)
+    single {
+        // Instance to be used out of the session scope.
+        MemoriesNotificationsManager(
+            context = get(),
+            picasso = null,
+        )
+    } bind MemoriesNotificationsManager::class
 
     scope<EnvSession> {
         scoped {
@@ -78,5 +84,7 @@ val memoriesFeatureModule = module {
         scopedOf(::UpdateMemoriesUseCase)
 
         scopedOf(::GalleryMemoriesListViewModel)
+
+        scopedOf(::MemoriesNotificationsManager)
     }
 }

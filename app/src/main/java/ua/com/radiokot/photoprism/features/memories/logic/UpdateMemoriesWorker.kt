@@ -71,15 +71,19 @@ class UpdateMemoriesWorker(
 
         return useCase
             .invoke()
-            .doOnSuccess { gotAnyMemories ->
+            .doOnSuccess { foundMemories ->
                 statusPersistence.saveItem(
                     status.copy(
                         lastSuccessfulUpdateDay = currentDay,
                     )
                 )
 
-                if (gotAnyMemories) {
-                    memoriesNotificationsManager.notifyNewMemories()
+                if (foundMemories.isNotEmpty()) {
+                    memoriesNotificationsManager.notifyNewMemories(
+                        bigPictureUrl = foundMemories.last().getThumbnailUrl(
+                            viewSizePx = 500,
+                        )
+                    )
                 }
             }
             .map { Result.success() }

@@ -63,14 +63,16 @@ class GetMemoriesUseCase(
                 if (photoPrismMergedPhotos.isEmpty())
                     return@flatMapMaybe Maybe.empty()
 
-                Memory(
-                    typeData = Memory.TypeData.ThisDayInThePast(
-                        year = year,
-                    ),
-                    searchQuery = photoPrismMergedPhotos.searchQuery,
-                    previewHash = photoPrismMergedPhotos.first().hash,
-                    previewUrlFactory = previewUrlFactory,
-                ).let { Maybe.just(it) }
+                Maybe.just(
+                    Memory(
+                        typeData = Memory.TypeData.ThisDayInThePast(
+                            year = year,
+                        ),
+                        searchQuery = photoPrismMergedPhotos.searchQuery,
+                        previewHash = photoPrismMergedPhotos.first().hash,
+                        previewUrlFactory = previewUrlFactory,
+                    )
+                )
             }
     }
 

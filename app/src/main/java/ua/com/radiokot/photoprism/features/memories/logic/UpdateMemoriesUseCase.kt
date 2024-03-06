@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.memories.logic
 
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
 
 class UpdateMemoriesUseCase(
@@ -9,9 +10,9 @@ class UpdateMemoriesUseCase(
     private val memoriesRepository: MemoriesRepository,
 ) {
     private val log = kLogger("UpdateMemoriesUseCase")
-    private var gotAnyMemories = false
+    private var foundMemories = emptyList<Memory>()
 
-    operator fun invoke(): Single<Boolean> =
+    operator fun invoke(): Single<List<Memory>> =
         getMemoriesUseCase
             .invoke()
             .doOnSubscribe {
@@ -25,7 +26,7 @@ class UpdateMemoriesUseCase(
                             "\nmemories=${memories.size}"
                 }
 
-                gotAnyMemories = memories.isNotEmpty()
+                foundMemories = memories
             }
             .flatMapCompletable(memoriesRepository::add)
             .doOnComplete {
@@ -33,5 +34,5 @@ class UpdateMemoriesUseCase(
                     "invoke(): added_to_repository"
                 }
             }
-            .toSingle { gotAnyMemories }
+            .toSingle { foundMemories }
 }

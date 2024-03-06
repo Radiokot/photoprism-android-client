@@ -7,17 +7,24 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.squareup.picasso.Picasso
+import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.extension.intoSingle
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
 
 class MemoriesNotificationsManager(
     private val context: Context,
+    private val picasso: Picasso?,
 ) {
+    private val log = kLogger("MemoriesNotificationManager")
     private val notificationsManager: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(context)
     }
@@ -28,7 +35,48 @@ class MemoriesNotificationsManager(
             Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
 
-    fun notifyNewMemories(): Notification {
+    /**
+     * Loads the picture and shows a notification with it.
+     * If the loading fails, the notification is shown anyway, without the picture.
+     */
+    fun notifyNewMemories(bigPictureUrl: String): Single<Notification> {
+        if (picasso == null) {
+            log.debug {
+                "notifyNewMemories(): notifying_without_picture_because_no_picasso"
+            }
+
+            return Single.just(
+                notifyNewMemories(
+                    bigPicture = null,
+                )
+            )
+        }
+
+        return picasso
+            .load(bigPictureUrl)
+            .intoSingle()
+            .map { bigPictureBitmap ->
+                log.debug {
+                    "notifyNewMemories(): notifying_with_picture"
+                }
+
+                notifyNewMemories(
+                    bigPicture = bigPictureBitmap,
+                )
+            }
+            .onErrorReturn { error ->
+                log.debug(error) {
+                    "notifyNewMemories(): notifying_without_picture_because_of_error"
+                }
+
+                // If the picture can't be loaded, show a notification without it.
+                notifyNewMemories(
+                    bigPicture = null,
+                )
+            }
+    }
+
+    fun notifyNewMemories(bigPicture: Bitmap? = null): Notification {
         ensureChannel()
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -47,6 +95,16 @@ class MemoriesNotificationsManager(
                 )
             )
             .setAutoCancel(true)
+            .apply {
+                if (bigPicture != null) {
+                    setLargeIcon(bigPicture)
+                    setStyle(
+                        NotificationCompat.BigPictureStyle()
+                            .bigPicture(bigPicture)
+                            .bigLargeIcon(null)
+                    )
+                }
+            }
             .build()
 
         @SuppressLint("MissingPermission")
