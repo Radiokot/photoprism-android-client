@@ -5,8 +5,10 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.core.Single
-import org.koin.core.component.KoinComponent
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.createScope
 import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -24,15 +26,29 @@ import java.util.Calendar
 class UpdateMemoriesWorker(
     appContext: Context,
     workerParams: WorkerParameters
-) : RxWorker(appContext, workerParams), KoinComponent {
+) : RxWorker(appContext, workerParams), KoinScopeComponent {
+    override val scope: Scope by lazy {
+        // Prefer the session scope, but allow running without it.
+        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
+    }
+
     private val log = kLogger("UpdateMemoriesWorker")
 
     private val startingFromHour =
         workerParams.inputData.getInt(STARTING_FROM_HOUR_KEY, 0)
     private val statusPersistence: ObjectPersistence<Status> by inject()
+    private val updateMemoriesUseCase: UpdateMemoriesUseCase by inject()
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
     override fun createWork(): Single<Result> {
+        if (scope.id != DI_SCOPE_SESSION) {
+            log.debug {
+                "createWork(): skip_as_missing_session_scope"
+            }
+
+            return Single.just(Result.failure())
+        }
+
         val status = statusPersistence.loadItem() ?: Status()
         val (currentHour, currentDay) = LocalDate().getCalendar().let {
             it[Calendar.HOUR_OF_DAY] to it[Calendar.DAY_OF_YEAR]
@@ -57,33 +73,28 @@ class UpdateMemoriesWorker(
             return Single.just(Result.failure())
         }
 
-        // The use case may not be obtainable if not connected to an env
-        // hence there is no session scope.
-        val useCase = getKoin().getScopeOrNull(DI_SCOPE_SESSION)
-            ?.getOrNull<UpdateMemoriesUseCase>()
-        if (useCase == null) {
-            log.debug {
-                "createWork(): skip_as_missing_use_case"
-            }
-
-            return Single.just(Result.failure())
-        }
-
-        return useCase
+        return updateMemoriesUseCase
             .invoke()
-            .doOnSuccess { foundMemories ->
+            .doOnSuccess {
                 statusPersistence.saveItem(
                     status.copy(
                         lastSuccessfulUpdateDay = currentDay,
                     )
                 )
-
+            }
+            .flatMap { foundMemories ->
                 if (foundMemories.isNotEmpty()) {
+                    log.debug {
+                        "createWork(): notify_new_memories"
+                    }
+
                     memoriesNotificationsManager.notifyNewMemories(
                         bigPictureUrl = foundMemories.last().getThumbnailUrl(
                             viewSizePx = 500,
                         )
                     )
+                } else {
+                    Single.just(Unit)
                 }
             }
             .map { Result.success() }

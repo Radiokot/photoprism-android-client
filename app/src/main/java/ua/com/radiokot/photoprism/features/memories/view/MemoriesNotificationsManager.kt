@@ -57,7 +57,8 @@ class MemoriesNotificationsManager(
             .intoSingle()
             .map { bigPictureBitmap ->
                 log.debug {
-                    "notifyNewMemories(): notifying_with_picture"
+                    "notifyNewMemories(): notifying_with_picture:" +
+                            "\nbigPictureUrl=$bigPictureUrl"
                 }
 
                 notifyNewMemories(
