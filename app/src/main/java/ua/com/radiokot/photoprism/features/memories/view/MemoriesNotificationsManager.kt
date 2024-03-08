@@ -77,7 +77,7 @@ class MemoriesNotificationsManager(
             }
     }
 
-    fun notifyNewMemories(bigPicture: Bitmap? = null): Notification {
+    private fun notifyNewMemories(bigPicture: Bitmap? = null): Notification {
         ensureChannel()
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -111,6 +111,10 @@ class MemoriesNotificationsManager(
         @SuppressLint("MissingPermission")
         if (canNotify) {
             notificationsManager.notify(NEW_MEMORIES_NOTIFICATION_ID, notification)
+        } else {
+            log.debug {
+                "notifyNewMemories(): skip_notify_as_no_permission"
+            }
         }
 
         return notification
