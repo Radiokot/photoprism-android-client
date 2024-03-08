@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Not handling Authelia when connecting to the library with credentials 
+- Improper display of multiple files download progress on German language
 
 ## [1.25.0] - 2024-03-03
 

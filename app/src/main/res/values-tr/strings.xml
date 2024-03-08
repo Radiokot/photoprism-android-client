@@ -101,7 +101,7 @@
     <string name="no_albums_found">Albüm bulunamadı</string>
     <string name="clear_selection">Seçimi temizle</string>
     <string name="done_selecting">Tamam</string>
-    <string name="template_current_of">%2$d \'de %1$d </string>
+    <string name="template_current_of">%2$d \'de %1$d</string>
     <string name="search_doesnt_fit_allowed_types">Arama sorgusu, izin verilen türlere uymuyor</string>
     <string name="save_file_to_the_storage">Dosyayı cihaz hafızasına kaydet</string>
     <string name="share_the_file">Dosyayı paylaş</string>

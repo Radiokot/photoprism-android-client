@@ -99,7 +99,7 @@
     <string name="no_albums_found">Kene Alben gefunden</string>
     <string name="clear_selection">Auswahl aufheben</string>
     <string name="done_selecting">Erledigt</string>
-    <string name="template_current_of">%1$d von %2$</string>
+    <string name="template_current_of">%1$d von %2$d</string>
     <string name="search_doesnt_fit_allowed_types">Die Suchanfrage entspricht nicht den zulässigen Typen</string>
     <string name="save_file_to_the_storage">Datei speichern</string>
     <string name="share_the_file">Datei teilen</string>
