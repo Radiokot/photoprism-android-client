@@ -1,14 +1,19 @@
 package ua.com.radiokot.photoprism.featureflags.logic
 
 interface FeatureFlags {
-    val hasExtensionPreferences: Boolean
-    val hasMemoriesExtension: Boolean
+    fun hasFeature(feature: Feature): Boolean
+
+    operator fun contains(feature: Feature): Boolean =
+        hasFeature(feature)
 
     operator fun plus(other: FeatureFlags) = object : FeatureFlags{
-        override val hasExtensionPreferences: Boolean
-            get() = this@FeatureFlags.hasExtensionPreferences || other.hasExtensionPreferences
+        override fun hasFeature(feature: Feature): Boolean =
+            feature in this@FeatureFlags || feature in other
+    }
 
-        override val hasMemoriesExtension: Boolean
-            get() = this@FeatureFlags.hasMemoriesExtension || other.hasMemoriesExtension
+    enum class Feature {
+        EXTENSION_PREFERENCES,
+        MEMORIES_EXTENSION,
+        ;
     }
 }

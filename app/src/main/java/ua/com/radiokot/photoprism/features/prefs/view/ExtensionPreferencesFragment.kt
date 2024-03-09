@@ -9,6 +9,7 @@ import org.koin.androidx.scope.createFragmentScope
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 

@@ -8,17 +8,15 @@ class FeatureFlagsTest {
     @Test
     fun concatenateSuccessfully() {
         val a = object : FeatureFlags {
-            override val hasExtensionPreferences = true
-            override val hasMemoriesExtension: Boolean = true
+            override fun hasFeature(feature: FeatureFlags.Feature): Boolean = true
         }
         val b = object : FeatureFlags {
-            override val hasExtensionPreferences = false
-            override val hasMemoriesExtension: Boolean = false
+            override fun hasFeature(feature: FeatureFlags.Feature): Boolean = false
         }
 
-        Assert.assertTrue((a + b).hasMemoriesExtension)
-        Assert.assertTrue((b + a).hasMemoriesExtension)
-        Assert.assertFalse((b + b).hasMemoriesExtension)
-        Assert.assertTrue((a + a).hasMemoriesExtension)
+        Assert.assertTrue((a + b).hasFeature(FeatureFlags.Feature.values().first()))
+        Assert.assertTrue((b + a).hasFeature(FeatureFlags.Feature.values().first()))
+        Assert.assertFalse((b + b).hasFeature(FeatureFlags.Feature.values().first()))
+        Assert.assertTrue((a + a).hasFeature(FeatureFlags.Feature.values().first()))
     }
 }
