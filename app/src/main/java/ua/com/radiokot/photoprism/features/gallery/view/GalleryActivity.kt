@@ -432,7 +432,7 @@ class GalleryActivity : BaseActivity() {
 
     private fun initList(savedInstanceState: Bundle?) {
         val galleryAdapter = FastAdapter.with(
-            if (get<FeatureFlags>().hasMemoriesFeature)
+            if (get<FeatureFlags>().hasMemoriesExtension)
                 listOf(
                     memoriesListView.recyclerAdapter,
                     galleryItemsAdapter,

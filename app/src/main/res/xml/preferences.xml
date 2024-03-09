@@ -95,6 +95,14 @@
         app:title="@string/about">
 
         <Preference
+            app:fragment="ua.com.radiokot.photoprism.features.prefs.view.ExtensionPreferencesFragment"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_extensions"
+            app:persistent="false"
+            app:summary="@string/extension_preferences_summary"
+            app:title="@string/extension_preferences" />
+
+        <Preference
             app:iconSpaceReserved="false"
             app:key="@string/pk_language"
             app:persistent="false"

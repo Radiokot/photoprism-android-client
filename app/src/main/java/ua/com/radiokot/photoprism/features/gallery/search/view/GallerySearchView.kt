@@ -218,7 +218,7 @@ class GallerySearchView(
                 }
 
                 // TODO: Just for demo purposes.
-                if (get<FeatureFlags>().hasMemoriesFeature) {
+                if (get<FeatureFlags>().hasMemoriesExtension) {
                     setOnLongClickListener {
                         context.startActivity(Intent(context, MemoriesDemoActivity::class.java))
                         true

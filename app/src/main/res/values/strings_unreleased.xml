@@ -9,4 +9,9 @@
     <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
     <string name="memories_notification_channel_name" translatable="false">Memories</string>
     <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
+    <string name="extension_preferences" translatable="false">Extensions</string>
+    <string name="extension_preferences_summary" translatable="false">Extra features for your gallery</string>
+    <string name="extension_memories_preferences" translatable="false">Memories</string>
+    <string name="extension_memories_notification_preference" translatable="false">Notifications</string>
+    <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
 </resources>

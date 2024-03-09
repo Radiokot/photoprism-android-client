@@ -6,16 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.ListPreference
 import androidx.preference.MaterialPreferenceDialogDisplay
-import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
-import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -23,7 +21,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 import okio.buffer
 import okio.sink
 import okio.source
@@ -44,6 +41,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
+import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -52,6 +50,8 @@ import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCa
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.prefs.extension.bindToSubject
+import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.SlideshowSpeed
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
@@ -92,6 +92,7 @@ class PreferencesFragment :
         },
         this::writeBookmarksExportToFile
     )
+    private val featureFlags: FeatureFlags by inject()
 
     private val issueReportingUrl: String = getKoin()
         .getProperty<String>("issueReportingUrl")
@@ -105,9 +106,13 @@ class PreferencesFragment :
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         log.debug {
-            "onCreatePreferences(): start_init:" +
+            "onViewCreated(): start_init:" +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
@@ -152,7 +157,7 @@ class PreferencesFragment :
         }
     }
 
-    private fun initPreferences() = preferenceScreen.apply {
+    private fun initPreferences() = with(preferenceScreen) {
         with(requirePreference(R.string.pk_library_root_url)) {
             summary = session.envConnectionParams.rootUrl
                 .withMaskedCredentials()
@@ -190,17 +195,17 @@ class PreferencesFragment :
 
         with(requirePreference(R.string.pk_show_people)) {
             this as SwitchPreferenceCompat
-            bindToSubject(searchPreferences.showPeople)
+            bindToSubject(searchPreferences.showPeople, viewLifecycleOwner)
         }
 
         with(requirePreference(R.string.pk_show_albums)) {
             this as SwitchPreferenceCompat
-            bindToSubject(searchPreferences.showAlbums)
+            bindToSubject(searchPreferences.showAlbums, viewLifecycleOwner)
         }
 
         with(requirePreference(R.string.pk_show_album_folders)) {
             this as SwitchPreferenceCompat
-            bindToSubject(searchPreferences.showAlbumFolders)
+            bindToSubject(searchPreferences.showAlbumFolders, viewLifecycleOwner)
         }
 
         with(requirePreference(R.string.pk_import_bookmarks)) {
@@ -264,6 +269,10 @@ class PreferencesFragment :
             } else {
                 isVisible = false
             }
+        }
+
+        with(requirePreference(R.string.pk_extensions)) {
+            isVisible = featureFlags.hasExtensionPreferences
         }
     }
 
@@ -554,26 +563,6 @@ class PreferencesFragment :
     private fun getAppLanguagePreferencesIntent() =
         Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
             .setData(Uri.fromParts("package", requireContext().packageName, null))
-
-    private fun PreferenceScreen.requirePreference(@StringRes keyId: Int): Preference {
-        val key = getString(keyId)
-        return findPreference<Preference>(key).checkNotNull {
-            "Required preference '$key' not found"
-        }
-    }
-
-    private fun SwitchPreferenceCompat.bindToSubject(subject: BehaviorSubject<Boolean>) {
-        subject
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onNext = this::setChecked)
-            // View lifecycle owner is not available at the init time.
-            .autoDispose(this@PreferencesFragment)
-
-        setOnPreferenceChangeListener { _, newValue ->
-            subject.onNext(newValue == true)
-            true
-        }
-    }
 
     private companion object {
         private const val BOOKMARKS_EXPORT_OPTIONS_DIALOG_TAG = "beo"

@@ -109,7 +109,7 @@ class PhotoPrismGallery : Application() {
     }
 
     private fun initOptionalFeatures() = with(get<FeatureFlags>()) {
-        if (hasMemoriesFeature) {
+        if (hasMemoriesExtension) {
             get<ScheduleDailyMemoriesUpdatesUseCase>().invoke()
         } else {
             get<CancelDailyMemoriesUpdatesUseCase>().invoke()

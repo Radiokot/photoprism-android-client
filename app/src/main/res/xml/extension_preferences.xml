@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:key="@string/pk_ext_memories"
+        app:title="@string/extension_memories_preferences">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_ext_memories_notifications"
+            app:persistent="false"
+            app:summary="@string/extension_memories_notification_preference_summary"
+            app:title="@string/extension_memories_notification_preference"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
