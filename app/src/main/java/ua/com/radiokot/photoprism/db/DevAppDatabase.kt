@@ -3,8 +3,8 @@ package ua.com.radiokot.photoprism.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesDbDao
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntity
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesDbDao
 
 
 @Database(

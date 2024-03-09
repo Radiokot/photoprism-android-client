@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.logic
+package ua.com.radiokot.photoprism.features.ext.memories.logic
 
 import android.content.Context
 import androidx.work.Data
@@ -12,7 +12,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 

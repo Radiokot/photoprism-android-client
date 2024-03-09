@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.di
+package ua.com.radiokot.photoprism.features.ext.memories.di
 
 import androidx.work.WorkManager
 import org.koin.android.ext.koin.androidApplication
@@ -15,16 +15,16 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesDbDao
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
-import ua.com.radiokot.photoprism.features.memories.data.storage.UpdateMemoriesWorkerStatusPersistenceOnPrefs
-import ua.com.radiokot.photoprism.features.memories.logic.CancelDailyMemoriesUpdatesUseCase
-import ua.com.radiokot.photoprism.features.memories.logic.GetMemoriesUseCase
-import ua.com.radiokot.photoprism.features.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
-import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
-import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesWorker
-import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
-import ua.com.radiokot.photoprism.features.memories.view.model.GalleryMemoriesListViewModel
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesDbDao
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.UpdateMemoriesWorkerStatusPersistenceOnPrefs
+import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.logic.GetMemoriesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesWorker
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 
 val memoriesFeatureModule = module {
     includes(ioModules)

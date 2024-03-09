@@ -1,8 +1,8 @@
-package ua.com.radiokot.photoprism.features.memories.view.model
+package ua.com.radiokot.photoprism.features.ext.memories.view.model
 
 import android.content.Context
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 
 sealed class MemoryTitle {
 

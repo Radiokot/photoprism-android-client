@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.view
+package ua.com.radiokot.photoprism.features.ext.memories.view
 
 import android.os.Bundle
 import android.widget.Toast
@@ -12,9 +12,9 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
-import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesUseCase
 
 /**
  * This is only for demo purposes.

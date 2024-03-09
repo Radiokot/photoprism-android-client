@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.view.model
+package ua.com.radiokot.photoprism.features.ext.memories.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,8 +11,8 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
-import ua.com.radiokot.photoprism.features.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import java.util.concurrent.TimeUnit
 
 class GalleryMemoriesListViewModel(

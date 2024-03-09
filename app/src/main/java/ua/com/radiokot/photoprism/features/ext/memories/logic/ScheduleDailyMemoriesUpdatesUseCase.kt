@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.logic
+package ua.com.radiokot.photoprism.features.ext.memories.logic
 
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -29,9 +29,11 @@ class ScheduleDailyMemoriesUpdatesUseCase(
         .build()
 
     private val workRequest = PeriodicWorkRequestBuilder<UpdateMemoriesWorker>(2, TimeUnit.HOURS)
-        .setInputData(UpdateMemoriesWorker.getInputData(
-            startingFromHour = startingFromHour
-        ))
+        .setInputData(
+            UpdateMemoriesWorker.getInputData(
+                startingFromHour = startingFromHour
+            )
+        )
         .setConstraints(constraints)
         .addTag(UpdateMemoriesWorker.TAG)
         .build()

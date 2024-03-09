@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.data.model
+package ua.com.radiokot.photoprism.features.ext.memories.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

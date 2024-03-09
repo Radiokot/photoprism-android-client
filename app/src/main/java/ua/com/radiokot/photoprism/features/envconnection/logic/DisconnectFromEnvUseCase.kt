@@ -9,7 +9,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import java.io.File
 
 /**

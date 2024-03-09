@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.view.model
+package ua.com.radiokot.photoprism.features.ext.memories.view.model
 
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
@@ -11,7 +11,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemMemoryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 
 class MemoryListItem(
     val title: MemoryTitle,

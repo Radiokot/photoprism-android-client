@@ -1,10 +1,10 @@
-package ua.com.radiokot.photoprism.features.memories.data.storage
+package ua.com.radiokot.photoprism.features.ext.memories.data.storage
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntity
 
 @Dao
 interface MemoriesDbDao {

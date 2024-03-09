@@ -48,7 +48,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.Pers
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
-import ua.com.radiokot.photoprism.features.memories.view.MemoriesDemoActivity
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesDemoActivity
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener

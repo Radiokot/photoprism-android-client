@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.view
+package ua.com.radiokot.photoprism.features.ext.memories.view
 
 import android.Manifest
 import android.annotation.SuppressLint

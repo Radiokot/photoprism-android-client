@@ -1,9 +1,9 @@
-package ua.com.radiokot.photoprism.features.memories.logic
+package ua.com.radiokot.photoprism.features.ext.memories.logic
 
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
-import ua.com.radiokot.photoprism.features.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 
 class UpdateMemoriesUseCase(
     private val getMemoriesUseCase: GetMemoriesUseCase,

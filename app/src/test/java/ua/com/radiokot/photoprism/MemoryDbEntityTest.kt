@@ -10,8 +10,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
-import ua.com.radiokot.photoprism.features.memories.data.model.MemoryDbEntity
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntity
 import java.util.Date
 import kotlin.test.assertIs
 

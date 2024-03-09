@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.logic
+package ua.com.radiokot.photoprism.features.ext.memories.logic
 
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
@@ -10,7 +10,7 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 import java.util.Calendar

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.logic
+package ua.com.radiokot.photoprism.features.ext.memories.logic
 
 import androidx.work.WorkManager
 

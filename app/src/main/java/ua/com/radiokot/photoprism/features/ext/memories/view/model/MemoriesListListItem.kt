@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.memories.view.model
+package ua.com.radiokot.photoprism.features.ext.memories.view.model
 
 import android.view.View
 import androidx.lifecycle.LifecycleOwner

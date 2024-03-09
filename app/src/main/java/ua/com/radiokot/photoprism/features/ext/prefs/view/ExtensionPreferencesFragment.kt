@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.prefs.view
+package ua.com.radiokot.photoprism.features.ext.prefs.view
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

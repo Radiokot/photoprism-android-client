@@ -128,7 +128,7 @@
             android:theme="@style/TranslucentGuideTheme" />
 
         <activity
-            android:name=".features.memories.view.MemoriesDemoActivity"
+            android:name=".features.ext.memories.view.MemoriesDemoActivity"
             android:exported="false"
             android:resizeableActivity="true" />
 

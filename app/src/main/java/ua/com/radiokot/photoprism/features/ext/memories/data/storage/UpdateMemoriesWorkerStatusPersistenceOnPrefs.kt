@@ -1,11 +1,11 @@
-package ua.com.radiokot.photoprism.features.memories.data.storage
+package ua.com.radiokot.photoprism.features.ext.memories.data.storage
 
 import android.content.SharedPreferences
 import com.fasterxml.jackson.annotation.JsonProperty
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
-import ua.com.radiokot.photoprism.features.memories.logic.UpdateMemoriesWorker
+import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesWorker
 
 class UpdateMemoriesWorkerStatusPersistenceOnPrefs(
     key: String,
