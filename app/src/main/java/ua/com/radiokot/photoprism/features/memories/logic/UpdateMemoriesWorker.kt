@@ -46,7 +46,7 @@ class UpdateMemoriesWorker(
                 "createWork(): skip_as_missing_session_scope"
             }
 
-            return Single.just(Result.failure())
+            return Single.just(Result.success())
         }
 
         val status = statusPersistence.loadItem() ?: Status()
@@ -60,7 +60,7 @@ class UpdateMemoriesWorker(
                         "\nlastSuccessfulUpdateDay=${status.lastSuccessfulUpdateDay}"
             }
 
-            return Single.just(Result.failure())
+            return Single.just(Result.success())
         }
 
         if (currentHour < startingFromHour) {
@@ -70,7 +70,7 @@ class UpdateMemoriesWorker(
                         "\nstartingFromHour=$startingFromHour"
             }
 
-            return Single.just(Result.failure())
+            return Single.just(Result.success())
         }
 
         return updateMemoriesUseCase
