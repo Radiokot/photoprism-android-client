@@ -1,7 +1,9 @@
 package ua.com.radiokot.photoprism.features.ext.prefs.view
 
+import android.os.Build
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -11,6 +13,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
 // When renaming or moving this fragment,
@@ -25,6 +28,7 @@ class ExtensionPreferencesFragment :
     }
 
     private val featureFlags: FeatureFlags by inject()
+    private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.extension_preferences, rootKey)
@@ -36,5 +40,37 @@ class ExtensionPreferencesFragment :
         with(requirePreference(R.string.pk_ext_memories)) {
             isVisible = featureFlags.hasMemoriesExtension
         }
+
+        if (featureFlags.hasMemoriesExtension) {
+            with(requirePreference(R.string.pk_ext_memories_notifications)) {
+                setOnPreferenceChangeListener { _, newValue ->
+                    if (!memoriesNotificationsManager.areNotificationsEnabled
+                        || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    ) {
+                        // Open system settings if the notifications are disabled globally
+                        // or the notification channel settings are available (since Oreo).
+                        startActivity(memoriesNotificationsManager.getSystemSettingsIntent())
+                    } else {
+                        // TODO: Update the preference with the new value.
+                        updateMemoriesNotificationsChecked()
+                    }
+                    false
+                }
+
+                updateMemoriesNotificationsChecked()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        updateMemoriesNotificationsChecked()
+    }
+
+    private fun updateMemoriesNotificationsChecked(
+    ) = with(preferenceScreen.requirePreference(R.string.pk_ext_memories_notifications)) {
+        this as SwitchPreferenceCompat
+        isChecked = memoriesNotificationsManager.areMemoriesNotificationsEnabled
     }
 }
