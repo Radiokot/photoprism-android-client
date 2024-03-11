@@ -2,7 +2,7 @@ buildscript {
     ext.kotlin_version = "1.8.0"
     ext.koin_version = "3.2.2"
     ext.koin_android_version = "3.3.0"
-    ext.room_version = "2.5.1"
+    ext.room_version = "2.6.1"
     // Must be 2.13.0 for minSdk 21
     ext.jackson_version = "2.13.0"
 }

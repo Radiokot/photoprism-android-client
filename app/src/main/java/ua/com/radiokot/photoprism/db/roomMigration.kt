@@ -10,5 +10,5 @@ internal fun roomMigration(
     to: Int,
     migration: SupportSQLiteDatabase.() -> Unit,
 ) = object : androidx.room.migration.Migration(from, to) {
-    override fun migrate(database: SupportSQLiteDatabase) = database.run(migration)
+    override fun migrate(db: SupportSQLiteDatabase) = db.run(migration)
 }
