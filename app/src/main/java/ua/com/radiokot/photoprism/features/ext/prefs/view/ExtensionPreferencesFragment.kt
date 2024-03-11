@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
@@ -29,6 +30,7 @@ class ExtensionPreferencesFragment :
 
     private val featureFlags: FeatureFlags by inject()
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
+    private val memoriesPreferences: MemoriesPreferences by inject()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.extension_preferences, rootKey)
@@ -51,7 +53,7 @@ class ExtensionPreferencesFragment :
                         // or the notification channel settings are available (since Oreo).
                         startActivity(memoriesNotificationsManager.getSystemSettingsIntent())
                     } else {
-                        // TODO: Update the preference with the new value.
+                        memoriesPreferences.areNotificationsEnabled = newValue == true
                         updateMemoriesNotificationsChecked()
                     }
                     false

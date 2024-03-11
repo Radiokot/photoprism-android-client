@@ -18,12 +18,14 @@ import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
 
 
 class MemoriesNotificationsManager(
     private val context: Context,
     private val picasso: Picasso?,
+    private val memoriesPreferences: MemoriesPreferences,
 ) {
     private val log = kLogger("MemoriesNotificationManager")
     private val notificationsManager: NotificationManagerCompat by lazy {
@@ -36,8 +38,7 @@ class MemoriesNotificationsManager(
     val areMemoriesNotificationsEnabled: Boolean
         get() = areNotificationsEnabled &&
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    // TODO: No notification channels, check preferences.
-                    true
+                    memoriesPreferences.areNotificationsEnabled
                 } else {
                     notificationsManager.getNotificationChannelCompat(CHANNEL_ID)
                         ?.let { it.importance > NotificationManagerCompat.IMPORTANCE_NONE }

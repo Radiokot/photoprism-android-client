@@ -16,6 +16,8 @@ import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesDbDao
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.UpdateMemoriesWorkerStatusPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
@@ -59,8 +61,16 @@ val memoriesFeatureModule = module {
         MemoriesNotificationsManager(
             context = get(),
             picasso = null,
+            memoriesPreferences = get(),
         )
     } bind MemoriesNotificationsManager::class
+
+    single {
+        MemoriesPreferencesOnPrefs(
+            preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+            keyPrefix = "ext_memories",
+        )
+    } bind MemoriesPreferences::class
 
     scope<EnvSession> {
         scoped {
