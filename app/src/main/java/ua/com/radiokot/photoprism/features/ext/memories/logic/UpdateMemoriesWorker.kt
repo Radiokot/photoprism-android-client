@@ -83,7 +83,9 @@ class UpdateMemoriesWorker(
                 )
             }
             .flatMap { foundMemories ->
-                if (foundMemories.isNotEmpty()) {
+                if (foundMemories.isNotEmpty()
+                    && memoriesNotificationsManager.areMemoriesNotificationsEnabled
+                ) {
                     log.debug {
                         "createWork(): notify_new_memories"
                     }
