@@ -40,6 +40,7 @@ class MemoriesNotificationsManager(
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                     memoriesPreferences.areNotificationsEnabled
                 } else {
+                    ensureChannel()
                     notificationsManager.getNotificationChannelCompat(CHANNEL_ID)
                         ?.let { it.importance > NotificationManagerCompat.IMPORTANCE_NONE }
                         ?: false
