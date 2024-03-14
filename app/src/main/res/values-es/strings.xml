@@ -76,7 +76,6 @@
     <string name="preferences">Preferencias</string>
     <string name="library_preferences">@string/library</string>
     <string name="about">Sobre</string>
-    <string name="app_version">Versión</string>
     <string name="report_an_issue">Reportar un problema</string>
     <string name="template_error_failed_to_export_bookmarks">Fallo al exportar los favoritos: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>

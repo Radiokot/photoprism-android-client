@@ -77,7 +77,6 @@
     <string name="preferences">Preferences</string>
     <string name="library_preferences">@string/library</string> <!-- This is a reference to another string value. Keep it if it matches the context in your language -->
     <string name="about">About</string>
-    <string name="app_version">Version</string>
     <string name="report_an_issue">Report an issue</string>
     <string name="template_error_failed_to_export_bookmarks">Failed to export bookmarks: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>

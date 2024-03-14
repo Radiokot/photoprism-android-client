@@ -75,7 +75,6 @@
     <string name="preferences">Настройки</string>
     <string name="library_preferences">@string/library</string>
     <string name="about">О приложении</string>
-    <string name="app_version">Версия</string>
     <string name="report_an_issue">Сообщить о проблеме</string>
     <string name="template_error_failed_to_export_bookmarks">Не удалось экспортировать закладки: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
