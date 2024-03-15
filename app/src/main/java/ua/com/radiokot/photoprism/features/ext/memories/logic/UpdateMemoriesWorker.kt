@@ -96,6 +96,10 @@ class UpdateMemoriesWorker(
                         )
                     )
                 } else {
+                    log.debug {
+                        "createWork(): skip_notify_as_disabled"
+                    }
+
                     Single.just(Unit)
                 }
             }
