@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.util.DbscanClustering
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -51,7 +52,7 @@ class GetMemoriesUseCase(
         return getItemsForMemories(
             searchConfig = SearchConfig.DEFAULT.copy(
                 mediaTypes = MEDIA_TYPES,
-                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]-3} " +
+                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
                         "month:${localCalendar[Calendar.MONTH] + 1} " +
                         "year:$year",
             )
@@ -82,14 +83,32 @@ class GetMemoriesUseCase(
         return repository
             .updateDeferred()
             .toSingle {
-                // Take only a limited number of the most suitable items.
                 repository
                     .itemsList
                     .filter {
+                        // Filter out garbage.
                         !it.title.lowercase().contains("screenshot")
                     }
-                    .sortedWith(MEMORIES_ITEMS_COMPARATOR)
-                    .take(MAX_MEMORIES_ITEMS_COUNT)
+                    .let { filteredItems ->
+                        // Group items by time taken with 15 second range.
+                        DbscanClustering(filteredItems) { it.takenAtLocal.time }
+                            .cluster(
+                                maxDistance = 15000,
+                                minClusterSize = 1,
+                            )
+                    }
+                    .also {clusters->
+                        println(clusters)
+                    }
+                    .flatMap { clusterItems ->
+                        // From items taken at around the same time,
+                        // pick the most preferred one.
+                        clusterItems
+                            .sortedWith(PREFERABLE_ITEM_COMPARATOR)
+                            .take(1)
+                    }
+                    // Limit total number of items in the memory.
+                    .take(MAX_MEMORY_SIZE)
             }
     }
 
@@ -105,8 +124,9 @@ class GetMemoriesUseCase(
             GalleryMedia.TypeName.VIDEO,
             GalleryMedia.TypeName.LIVE,
         )
-        private const val MAX_MEMORIES_ITEMS_COUNT = 6
+        private const val MAX_MEMORY_SIZE = 6
         private const val MAX_ITEMS_TO_LOAD = 150
-        private val MEMORIES_ITEMS_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
+        private val PREFERABLE_ITEM_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
+            .thenByDescending { it.media.typeName == GalleryMedia.TypeName.VIDEO }
     }
 }
