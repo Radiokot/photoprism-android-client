@@ -186,7 +186,7 @@ class GalleryViewModel(
             currentSearchConfig = searchConfig
             mediaRepositoryChanges.onNext(
                 MediaRepositoryChange.ResetToInitial(
-                    galleryMediaRepositoryFactory.getForSearch(searchConfig),
+                    galleryMediaRepositoryFactory.get(searchConfig),
                 )
             )
         } else {
@@ -222,7 +222,7 @@ class GalleryViewModel(
                     currentSearchConfig = searchConfigToApply
 
                     val searchMediaRepository = galleryMediaRepositoryFactory
-                        .getForSearch(searchConfigToApply)
+                        .get(searchConfigToApply)
 
                     fastScrollViewModel.reset(isInitiatedByUser = false)
 
@@ -334,7 +334,7 @@ class GalleryViewModel(
 
             if (searchConfigForMonth != null) {
                 val repositoryForMonth =
-                    galleryMediaRepositoryFactory.getForSearch(searchConfigForMonth)
+                    galleryMediaRepositoryFactory.get(searchConfigForMonth)
 
                 mediaRepositoryChanges.onNext(
                     MediaRepositoryChange.FastScroll(

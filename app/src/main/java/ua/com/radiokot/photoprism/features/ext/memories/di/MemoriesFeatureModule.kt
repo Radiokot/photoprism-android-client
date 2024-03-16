@@ -84,7 +84,7 @@ val memoriesFeatureModule = module {
                 }
             GetMemoriesUseCase(
                 photoPrismClientConfigService = photoPrismClientConfigService,
-                photoPrismPhotosService = get(),
+                galleryMediaRepositoryFactory = get(),
                 previewUrlFactory = get(),
             )
         } bind GetMemoriesUseCase::class

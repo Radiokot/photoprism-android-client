@@ -279,42 +279,47 @@ class SimpleGalleryMediaRepository(
         val query: String? = null,
         val postFilterBefore: LocalDate? = null,
         val postFilterAfter: LocalDate? = null,
-    ) : Parcelable
+    ) : Parcelable {
+
+        constructor(searchConfig: SearchConfig) : this(
+            query = searchConfig.getPhotoPrismQuery(),
+            postFilterBefore = searchConfig.beforeLocal,
+            postFilterAfter = searchConfig.afterLocal,
+        )
+    }
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
         private val thumbnailUrlFactory: MediaPreviewUrlFactory,
         private val downloadUrlFactory: MediaFileDownloadUrlFactory,
         private val webUrlFactory: MediaWebUrlFactory,
-        private val pageLimit: Int,
+        private val defaultPageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
-        fun getForSearch(config: SearchConfig): SimpleGalleryMediaRepository {
-            val params = Params(
-                query = config.getPhotoPrismQuery(),
-                postFilterBefore = config.beforeLocal,
-                postFilterAfter = config.afterLocal,
-            )
-
-            return get(params)
-        }
+        fun get(searchConfig: SearchConfig) =
+            get(Params(searchConfig))
 
         fun get(params: Params = Params()): SimpleGalleryMediaRepository {
             val key = params.toString()
 
             return cache[key]
-                ?: SimpleGalleryMediaRepository(
-                    photoPrismPhotosService = photoPrismPhotosService,
-                    thumbnailUrlFactory = thumbnailUrlFactory,
-                    downloadUrlFactory = downloadUrlFactory,
-                    webUrlFactory = webUrlFactory,
-                    params = params,
-                    pageLimit = pageLimit,
-                ).also {
+                ?: create(params).also {
                     cache.put(key, it)
                 }
         }
+
+        fun create(
+            params: Params = Params(),
+            pageLimit: Int = defaultPageLimit,
+        ) = SimpleGalleryMediaRepository(
+            photoPrismPhotosService = photoPrismPhotosService,
+            thumbnailUrlFactory = thumbnailUrlFactory,
+            downloadUrlFactory = downloadUrlFactory,
+            webUrlFactory = webUrlFactory,
+            params = params,
+            pageLimit = defaultPageLimit,
+        )
 
         /**
          * Invalidates all the cached repositories.

@@ -3,16 +3,13 @@ package ua.com.radiokot.photoprism.features.ext.memories.logic
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
-import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
-import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
-import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 import java.util.Calendar
 import java.util.GregorianCalendar
 
@@ -21,7 +18,7 @@ import java.util.GregorianCalendar
  */
 class GetMemoriesUseCase(
     private val photoPrismClientConfigService: PhotoPrismClientConfigService,
-    private val photoPrismPhotosService: PhotoPrismPhotosService,
+    private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) {
     operator fun invoke(): Single<List<Memory>> =
@@ -54,7 +51,7 @@ class GetMemoriesUseCase(
         return getItemsForMemories(
             searchConfig = SearchConfig.DEFAULT.copy(
                 mediaTypes = MEDIA_TYPES,
-                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
+                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]-3} " +
                         "month:${localCalendar[Calendar.MONTH] + 1} " +
                         "year:$year",
             )
@@ -76,46 +73,30 @@ class GetMemoriesUseCase(
             }
     }
 
-    private fun getItemsForMemories(searchConfig: SearchConfig): Single<List<PhotoPrismMergedPhoto>> {
-        val query = searchConfig.getPhotoPrismQuery()
-
-        return PagedCollectionLoader(
-            pageProvider = { cursor ->
-                {
-                    val offset = cursor?.toInt() ?: 0
-                    val count = 40
-
-                    val items = photoPrismPhotosService.getMergedPhotos(
-                        count = count,
-                        offset = offset,
-                        q = query,
-                    )
-
-                    DataPage(
-                        items = items,
-                        nextCursor = (offset + count).toString(),
-                        isLast = items.size < count,
-                    )
-                }.toSingle()
-            }
+    private fun getItemsForMemories(searchConfig: SearchConfig): Single<List<GalleryMedia>> {
+        val repository = galleryMediaRepositoryFactory.create(
+            params = SimpleGalleryMediaRepository.Params(searchConfig),
+            pageLimit = MAX_ITEMS_TO_LOAD,
         )
-            .loadAll()
-            .map { mergedPhotos ->
+
+        return repository
+            .updateDeferred()
+            .toSingle {
                 // Take only a limited number of the most suitable items.
-                mergedPhotos
+                repository
+                    .itemsList
                     .filter {
                         !it.title.lowercase().contains("screenshot")
                     }
                     .sortedWith(MEMORIES_ITEMS_COMPARATOR)
                     .take(MAX_MEMORIES_ITEMS_COUNT)
-                    .distinctBy(PhotoPrismMergedPhoto::uid)
             }
     }
 
-    private val Collection<PhotoPrismMergedPhoto>.searchQuery: String
+    private val Collection<GalleryMedia>.searchQuery: String
         get() = "uid:" + joinToString(
             separator = "|",
-            transform = PhotoPrismMergedPhoto::uid,
+            transform = GalleryMedia::uid,
         )
 
     private companion object {
@@ -125,8 +106,7 @@ class GetMemoriesUseCase(
             GalleryMedia.TypeName.LIVE,
         )
         private const val MAX_MEMORIES_ITEMS_COUNT = 6
-        private val MEMORIES_ITEMS_COMPARATOR =
-            compareByDescending(PhotoPrismMergedPhoto::favorite)
-                .thenByDescending(PhotoPrismMergedPhoto::quality)
+        private const val MAX_ITEMS_TO_LOAD = 150
+        private val MEMORIES_ITEMS_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
     }
 }

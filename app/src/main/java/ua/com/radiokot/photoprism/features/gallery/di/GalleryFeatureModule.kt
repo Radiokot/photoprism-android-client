@@ -108,7 +108,7 @@ val galleryFeatureModule = module {
                 // Always 80 elements – not great, not terrible.
                 // It is better, of course, to dynamically adjust
                 // to the max number of items on the screen.
-                pageLimit = 80,
+                defaultPageLimit = 80,
             )
         } bind SimpleGalleryMediaRepository.Factory::class
 

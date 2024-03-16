@@ -53,8 +53,8 @@ class GalleryMedia(
      * Whether the entry is liked (added to favorites) or not.
      */
     var isFavorite: Boolean,
+    val hash: String,
     files: List<File>,
-    hash: String,
     previewUrlFactory: MediaPreviewUrlFactory,
 ) : WithThumbnail by WithThumbnailFromUrlFactory(hash, previewUrlFactory) {
     /**
