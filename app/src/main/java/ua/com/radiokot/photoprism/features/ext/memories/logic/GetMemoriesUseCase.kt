@@ -7,10 +7,10 @@ import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 import java.util.Calendar
@@ -107,7 +107,7 @@ class GetMemoriesUseCase(
                         !it.title.lowercase().contains("screenshot")
                     }
                     .sortedWith(MEMORIES_ITEMS_COMPARATOR)
-                    .run { subList(0, size.coerceAtMost(MAX_MEMORIES_ITEMS_COUNT)) }
+                    .take(MAX_MEMORIES_ITEMS_COUNT)
                     .distinctBy(PhotoPrismMergedPhoto::uid)
             }
     }
