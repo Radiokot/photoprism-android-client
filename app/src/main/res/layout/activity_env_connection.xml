@@ -11,9 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="32dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_margin="32dp">
 
         <LinearLayout
             android:id="@+id/content_layout"

@@ -14,4 +14,7 @@
     <string name="extension_memories_preferences" translatable="false">Memories</string>
     <string name="extension_memories_notification_preference" translatable="false">Notifications</string>
     <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
+    <string name="key_input_title" translatable="false">Enter key</string>
+    <string name="key_input_enter_continue" translatable="false">@string/continuee</string>
+    <string name="key_input_enter_input_title" translatable="false">Key</string>
 </resources>

@@ -47,8 +47,8 @@
         <activity
             android:name=".features.gallery.view.GalleryActivity"
             android:exported="true"
-            android:resizeableActivity="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:resizeableActivity="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -126,6 +126,13 @@
             android:exported="false"
             android:resizeableActivity="true"
             android:theme="@style/TranslucentGuideTheme" />
+
+        <activity
+            android:name=".features.ext.key.input.view.KeyInputActivity"
+            android:exported="false"
+            android:label="@string/key_input_title"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".features.ext.memories.view.MemoriesDemoActivity"

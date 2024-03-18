@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.key.input.view.model
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -11,7 +12,7 @@ import ua.com.radiokot.photoprism.features.ext.model.GalleryExtension
 
 class KeyInputViewModel(
     private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
-) {
+) : ViewModel() {
     private val log = kLogger("KeyInputVM")
 
     val key = MutableLiveData<String>()
@@ -32,11 +33,16 @@ class KeyInputViewModel(
             )
         }
 
-        key.observeForever(updateSubmitInput)
+        key.observeForever {
+            keyError.value = null
+            updateSubmitInput(null)
+        }
         keyError.observeForever(updateSubmitInput)
+
+        updateSubmitInput(null)
     }
 
-    fun submitKeyInput() {
+    fun onKeyInputSubmit() {
         check(
             currentState is State.Entering
                     && canSubmitKeyInput.value == true
