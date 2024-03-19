@@ -130,7 +130,7 @@
         <activity
             android:name=".features.ext.key.input.view.KeyInputActivity"
             android:exported="false"
-            android:label="@string/key_input_title"
+            android:label="@string/key_input_entering_title"
             android:resizeableActivity="true"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 

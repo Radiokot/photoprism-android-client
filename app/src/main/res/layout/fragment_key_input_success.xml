@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -24,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="16dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_entering_title"
+                android:text="@string/key_input_success_title"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                 app:drawableTopCompat="@mipmap/splash_logo" />
 
@@ -33,41 +32,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_entering_subtitle"
+                android:text="@string/key_input_success_subtitle"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="32dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/key_text_input"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/key_input_enter_input_title">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top"
-                    android:imeOptions="actionDone"
-                    android:importantForAutofill="no"
-                    android:inputType="textVisiblePassword|textNoSuggestions"
-                    tools:ignore="SpeakableTextPresentCheck">
-
-                    <requestFocus />
-                </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/continue_button"
+            android:id="@+id/done_button"
             style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/key_input_enter_continue"
+            android:text="@string/key_input_success_done"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/content_layout"
             app:layout_constraintVertical_bias="1" />

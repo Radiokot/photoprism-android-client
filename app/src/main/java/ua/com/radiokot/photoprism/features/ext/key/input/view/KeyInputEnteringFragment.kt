@@ -33,7 +33,8 @@ class KeyInputEnteringFragment : Fragment() {
     private fun initFields() {
         with(view.keyTextInput) {
             with(editText!!) {
-                setLines(4)
+                // Only works if set programmatically on the EditText 🤷.
+                maxLines = 3
                 setHorizontallyScrolling(false)
 
                 bindTextTwoWay(viewModel.key, viewLifecycleOwner)

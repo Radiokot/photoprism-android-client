@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.key.input.view
 
 import android.os.Bundle
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,6 +30,7 @@ class KeyInputActivity : BaseActivity() {
 
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = ""
 
         subscribeToState()
     }
@@ -45,15 +47,9 @@ class KeyInputActivity : BaseActivity() {
             }
 
             is KeyInputViewModel.State.SuccessfullyEntered -> {
-                TODO()
+                showSuccess()
             }
         }
-
-        title =
-            if (state is KeyInputViewModel.State.Entering)
-                getString(R.string.key_input_title)
-            else
-                ""
 
         log.debug {
             "subscribeToState(): handled_new_state:" +
@@ -80,7 +76,28 @@ class KeyInputActivity : BaseActivity() {
         }
     }
 
+    private fun showSuccess() {
+        if (supportFragmentManager.findFragmentByTag(SUCCESS_FRAGMENT_TAG) != null) {
+            log.debug {
+                "showSuccess(): already_shown"
+            }
+
+            return
+        }
+
+        supportFragmentManager.commit {
+            replace(R.id.fragment_container, KeyInputSuccessFragment(), SUCCESS_FRAGMENT_TAG)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            disallowAddToBackStack()
+
+            log.debug {
+                "showSuccess(): showing"
+            }
+        }
+    }
+
     private companion object {
         private const val ENTERING_FRAGMENT_TAG = "entering"
+        private const val SUCCESS_FRAGMENT_TAG = "success"
     }
 }
