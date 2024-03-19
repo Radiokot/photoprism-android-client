@@ -22,10 +22,10 @@ class ParseEnteredKeyUseCase(
         }
     }
 
-    class InvalidFormatException : Exception("The input has an invalid format")
-    class DeviceMismatchException : Exception("This key is not issued for this device")
-    class EmailMismatchException : Exception("This key is not issued for known email")
-    class ExpiredException : Exception("This key is expired")
+    class InvalidFormatException : RuntimeException("The input has an invalid format")
+    class DeviceMismatchException : RuntimeException("This key is not issued for this device")
+    class EmailMismatchException : RuntimeException("This key is not issued for known email")
+    class ExpiredException : RuntimeException("This key is expired")
 
     class Factory() {
         fun get(

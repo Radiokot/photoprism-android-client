@@ -73,5 +73,11 @@ class KeyInputEnteringFragment : Fragment() {
                 viewModel.onKeyInputSubmit()
             }
         }
+
+        with(view.pasteButton) {
+            setThrottleOnClickListener {
+                viewModel.onKeyInputPasteClicked()
+            }
+        }
     }
 }

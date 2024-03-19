@@ -1,5 +1,8 @@
 package ua.com.radiokot.photoprism.features.ext.key.input.view.model
 
+import android.app.Application
+import android.content.ClipboardManager
+import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -11,6 +14,7 @@ import ua.com.radiokot.photoprism.features.ext.key.input.logic.ParseEnteredKeyUs
 import ua.com.radiokot.photoprism.features.ext.model.GalleryExtension
 
 class KeyInputViewModel(
+    private val application: Application,
     private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("KeyInputVM")
@@ -42,6 +46,31 @@ class KeyInputViewModel(
         updateSubmitInput(null)
     }
 
+    fun onKeyInputPasteClicked() {
+        check(currentState is State.Entering) {
+            "Paste button can only be clicked in the entering state"
+        }
+
+        val clipboardText = application.getSystemService<ClipboardManager>()
+            ?.primaryClip
+            ?.getItemAt(0)
+            ?.text
+            ?.toString()
+
+        if (clipboardText != null) {
+            log.debug {
+                "onKeyInputPasteClicked(): replacing_key_with_clipboard_text"
+            }
+
+            key.value = clipboardText
+            parseEnteredKey()
+        } else {
+            log.debug {
+                "onKeyInputPasteClicked(): clipboard_is_empty"
+            }
+        }
+    }
+
     fun onKeyInputSubmit() {
         check(
             currentState is State.Entering
@@ -63,7 +92,9 @@ class KeyInputViewModel(
         )
 
         try {
-            val parsedKey = useCase.invoke()
+            val parsedKey = useCase
+                .invoke()
+                .blockingGet()
 
             stateSubject.onNext(
                 State.SuccessfullyEntered(
