@@ -5,27 +5,29 @@ import io.reactivex.rxjava3.core.Single
 class ParseEnteredKeyUseCase(
     private val keyInput: String,
 ) {
-
-    /**
-     * @see InvalidFormatException
-     * @see DeviceMismatchException
-     * @see EmailMismatchException
-     * @see ExpiredException
-     */
-    operator fun invoke(): Single<Any> {
-        return when ((0..3).random()) {
-            0 -> Single.error(InvalidFormatException())
-            1 -> Single.error(DeviceMismatchException())
-            2 -> Single.error(EmailMismatchException())
-            3 -> Single.error(ExpiredException())
-            else -> Single.just(Unit)
-        }
+    operator fun invoke(): Single<Result> {
+        return when ((0..4).random()) {
+            0 -> Result.Failure.INVALID_FORMAT
+            1 -> Result.Failure.DEVICE_MISMATCH
+            2 -> Result.Failure.EMAIL_MISMATCH
+            3 -> Result.Failure.EXPIRED
+            else -> Result.Success(Unit)
+        }.let { Single.just(it) }
     }
 
-    class InvalidFormatException : RuntimeException("The input has an invalid format")
-    class DeviceMismatchException : RuntimeException("This key is not issued for this device")
-    class EmailMismatchException : RuntimeException("This key is not issued for known email")
-    class ExpiredException : RuntimeException("This key is expired")
+    sealed interface Result {
+        data class Success(
+            val parsed: Any,
+        ) : Result
+
+        enum class Failure : Result {
+            INVALID_FORMAT,
+            DEVICE_MISMATCH,
+            EMAIL_MISMATCH,
+            EXPIRED,
+            ;
+        }
+    }
 
     class Factory() {
         fun get(

@@ -17,8 +17,12 @@
     <string name="key_input_entering_title" translatable="false">Enter your key</string>
     <string name="key_input_entering_subtitle" translatable="false">Paste the key you\'ve got to enable extra features</string>
     <string name="key_input_entering_paste" translatable="false">Paste</string>
-    <string name="key_input_enter_continue" translatable="false">@string/continuee</string>
-    <string name="key_input_enter_input_title" translatable="false">Key</string>
+    <string name="key_input_entering_continue" translatable="false">@string/continuee</string>
+    <string name="key_input_entering_input_title" translatable="false">Key</string>
+    <string name="key_input_error_device_mismatch" translatable="false">This key is not issued for this device</string>
+    <string name="key_input_error_email_mismatch" translatable="false">This key is not issued for you</string>
+    <string name="key_input_error_invalid_format" translatable="false">The format is incorrect</string>
+    <string name="key_input_error_expired" translatable="false">This key is expired</string>
     <string name="key_input_success_title" translatable="false">Key activated</string>
     <string name="key_input_success_subtitle" translatable="false">New extensions have been added to your gallery</string>
     <string name="key_input_success_done" translatable="false">Done</string>

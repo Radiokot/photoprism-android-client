@@ -5,8 +5,12 @@ import android.content.ClipboardManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -91,25 +95,56 @@ class KeyInputViewModel(
             keyInput = keyInput,
         )
 
-        try {
-            val parsedKey = useCase
-                .invoke()
-                .blockingGet()
+        useCase
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { result ->
+                    when (result) {
+                        is ParseEnteredKeyUseCase.Result.Success -> {
+                            log.debug {
+                                "parseEnteredKey(): parsed_successfully:" +
+                                        "\nparsed=${result.parsed}"
+                            }
 
-            stateSubject.onNext(
-                State.SuccessfullyEntered(
-                    addedExtensions = setOf(GalleryExtension.MEMORIES)
-                )
+                            stateSubject.onNext(
+                                State.SuccessfullyEntered(
+                                    addedExtensions = setOf(GalleryExtension.MEMORIES)
+                                )
+                            )
+                        }
+
+                        is ParseEnteredKeyUseCase.Result.Failure -> {
+                            log.debug {
+                                "parseEnteredKey(): parsing_failed:" +
+                                        "\nfailure=$result"
+                            }
+
+                            when (result) {
+                                ParseEnteredKeyUseCase.Result.Failure.INVALID_FORMAT ->
+                                    keyError.value = KeyError.InvalidFormat
+
+                                ParseEnteredKeyUseCase.Result.Failure.DEVICE_MISMATCH ->
+                                    keyError.value = KeyError.DeviceMismatch
+
+                                ParseEnteredKeyUseCase.Result.Failure.EMAIL_MISMATCH ->
+                                    keyError.value = KeyError.EmailMismatch
+
+                                ParseEnteredKeyUseCase.Result.Failure.EXPIRED ->
+                                    keyError.value = KeyError.Expired
+                            }
+                        }
+                    }
+                },
+                onError = { error ->
+                    log.error(error) {
+                        "parseEnteredKey(): unexpected_error_occurred"
+                    }
+                    // TODO show floating error message
+                }
             )
-        } catch (_: ParseEnteredKeyUseCase.InvalidFormatException) {
-            keyError.value = KeyError.InvalidFormat
-        } catch (_: ParseEnteredKeyUseCase.ExpiredException) {
-            keyError.value = KeyError.Expired
-        } catch (_: ParseEnteredKeyUseCase.EmailMismatchException) {
-            keyError.value = KeyError.EmailMismatch
-        } catch (_: ParseEnteredKeyUseCase.DeviceMismatchException) {
-            keyError.value = KeyError.DeviceMismatch
-        }
+            .autoDispose(this)
     }
 
     sealed interface KeyError {
