@@ -14,6 +14,7 @@ interface FeatureFlags {
     enum class Feature {
         EXTENSION_PREFERENCES,
         MEMORIES_EXTENSION,
+        TEST_EXTENSION,
         ;
     }
 }
