@@ -13,10 +13,13 @@
 
         <LinearLayout
             android:id="@+id/content_layout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="340dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/title_text_view"
@@ -36,15 +39,12 @@
                 android:text="@string/key_input_entering_subtitle"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="32dp" />
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/key_text_input"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
                 android:hint="@string/key_input_entering_input_title">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -74,13 +74,17 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/continue_button"
             style="@style/Widget.Material3.Button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
             android:text="@string/key_input_entering_continue"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/content_layout"
-            app:layout_constraintVertical_bias="1" />
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintWidth_max="340dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

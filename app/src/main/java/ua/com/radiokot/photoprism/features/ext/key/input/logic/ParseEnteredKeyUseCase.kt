@@ -6,13 +6,14 @@ class ParseEnteredKeyUseCase(
     private val keyInput: String,
 ) {
     operator fun invoke(): Single<Result> {
-        return when ((0..4).random()) {
-            0 -> Result.Failure.INVALID_FORMAT
-            1 -> Result.Failure.DEVICE_MISMATCH
-            2 -> Result.Failure.EMAIL_MISMATCH
-            3 -> Result.Failure.EXPIRED
-            else -> Result.Success(Unit)
-        }.let { Single.just(it) }
+        return Single.just(Result.Success(keyInput))
+//        return when ((0..4).random()) {
+//            0 -> Result.Failure.INVALID_FORMAT
+//            1 -> Result.Failure.DEVICE_MISMATCH
+//            2 -> Result.Failure.EMAIL_MISMATCH
+//            3 -> Result.Failure.EXPIRED
+//            else -> Result.Success(Unit)
+//        }.let { Single.just(it) }
     }
 
     sealed interface Result {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -12,10 +13,13 @@
 
         <LinearLayout
             android:id="@+id/content_layout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="340dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/title_text_view"
@@ -35,21 +39,31 @@
                 android:text="@string/key_input_success_subtitle"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="32dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/added_extensions_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="1"
+                tools:listitem="@layout/list_item_gallery_extension" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/done_button"
             style="@style/Widget.Material3.Button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
             android:text="@string/key_input_success_done"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/content_layout"
-            app:layout_constraintVertical_bias="1" />
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintWidth_max="340dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
