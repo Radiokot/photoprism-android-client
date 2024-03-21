@@ -33,6 +33,7 @@ class KeyInputActivity : BaseActivity() {
         title = ""
 
         subscribeToState()
+        subscribeToEvents()
     }
 
     private fun subscribeToState() = viewModel.state.subscribeBy { state ->
@@ -54,6 +55,23 @@ class KeyInputActivity : BaseActivity() {
         log.debug {
             "subscribeToState(): handled_new_state:" +
                     "\nstate=$state"
+        }
+    }.autoDispose(this)
+
+    private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            KeyInputViewModel.Event.Finish ->
+                finish()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
         }
     }.autoDispose(this)
 

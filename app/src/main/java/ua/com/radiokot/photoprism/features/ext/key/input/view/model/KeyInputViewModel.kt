@@ -150,6 +150,18 @@ class KeyInputViewModel(
             .autoDispose(this)
     }
 
+    fun onSuccessDoneClicked() {
+        check(currentState is State.SuccessfullyEntered) {
+            "Done button can only be clicked in the successfully entered state"
+        }
+
+        log.debug {
+            "onSuccessDoneClicked(): finishing"
+        }
+
+        eventsSubject.onNext(Event.Finish)
+    }
+
     sealed interface KeyError {
         object InvalidFormat : KeyError
         object DeviceMismatch : KeyError
@@ -165,5 +177,7 @@ class KeyInputViewModel(
         ) : State
     }
 
-    sealed interface Event
+    sealed interface Event {
+        object Finish : Event
+    }
 }
