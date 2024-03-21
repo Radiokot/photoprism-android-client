@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.key.input.view
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -11,6 +12,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityKeyInputBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.ext.key.input.view.model.KeyInputViewModel
+import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
 class KeyInputActivity : BaseActivity() {
     private val log = kLogger("KeyInputActivity")
@@ -48,6 +50,10 @@ class KeyInputActivity : BaseActivity() {
             }
 
             is KeyInputViewModel.State.SuccessfullyEntered -> {
+                SoftInputVisibility.hide(window)
+                // Ensure the keyboard will not re-appear.
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
                 showSuccess()
             }
         }
