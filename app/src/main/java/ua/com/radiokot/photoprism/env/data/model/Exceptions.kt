@@ -51,3 +51,5 @@ class WebPageInteractionRequiredException :
         }
     }
 }
+
+class TfaNotYetSupportedException: IOException()

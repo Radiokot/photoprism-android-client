@@ -114,6 +114,7 @@ val envModule = module {
                 )
             },
             envConnectionParams = params.envConnectionParams,
+            jsonObjectMapper = get(),
         )
     } bind SessionCreator::class
 
