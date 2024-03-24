@@ -66,7 +66,9 @@ class KeyInputViewModel(
                 "onKeyInputPasteClicked(): replacing_key_with_clipboard_text"
             }
 
-            key.value = clipboardText
+            // Lint complains on LiveData nullability otherwise.
+            clipboardText.also(key::setValue)
+
             parseEnteredKey()
         } else {
             log.debug {
