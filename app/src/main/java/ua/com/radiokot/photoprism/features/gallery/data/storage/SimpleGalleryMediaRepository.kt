@@ -318,7 +318,7 @@ class SimpleGalleryMediaRepository(
             downloadUrlFactory = downloadUrlFactory,
             webUrlFactory = webUrlFactory,
             params = params,
-            pageLimit = defaultPageLimit,
+            pageLimit = pageLimit,
         )
 
         /**
