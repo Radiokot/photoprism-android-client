@@ -127,8 +127,8 @@ class KeyInputViewModel(
                             }
 
                             when (result) {
-                                ParseEnteredKeyUseCase.Result.Failure.INVALID_FORMAT ->
-                                    keyError.value = KeyError.InvalidFormat
+                                ParseEnteredKeyUseCase.Result.Failure.INVALID ->
+                                    keyError.value = KeyError.Invalid
 
                                 ParseEnteredKeyUseCase.Result.Failure.DEVICE_MISMATCH ->
                                     keyError.value = KeyError.DeviceMismatch
@@ -165,7 +165,7 @@ class KeyInputViewModel(
     }
 
     sealed interface KeyError {
-        object InvalidFormat : KeyError
+        object Invalid : KeyError
         object DeviceMismatch : KeyError
         object EmailMismatch : KeyError
         object Expired : KeyError

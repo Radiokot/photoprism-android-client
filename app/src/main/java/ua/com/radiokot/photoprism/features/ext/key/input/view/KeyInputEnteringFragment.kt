@@ -65,8 +65,8 @@ class KeyInputEnteringFragment : Fragment() {
                     KeyInputViewModel.KeyError.Expired ->
                         getString(R.string.key_input_error_expired)
 
-                    KeyInputViewModel.KeyError.InvalidFormat ->
-                        getString(R.string.key_input_error_invalid_format)
+                    KeyInputViewModel.KeyError.Invalid ->
+                        getString(R.string.key_input_error_invalid)
                 }
             }
         }

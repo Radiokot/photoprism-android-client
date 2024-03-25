@@ -165,6 +165,7 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0-alpha05'
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
+    implementation 'ua.com.radiokot:offline-license-key:1.0.0-rc.6'
 
     implementation 'androidx.media3:media3-exoplayer:1.2.0'
     implementation 'androidx.media3:media3-ui:1.2.0'
