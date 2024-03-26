@@ -1,11 +1,21 @@
 package ua.com.radiokot.photoprism.featureflags.di
 
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.featureflags.logic.DebugOnlyFeatureFlags
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.featureflags.logic.FeatureSetFeatureFlags
+import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 
 val featureFlagsModule = module {
-    singleOf(::DebugOnlyFeatureFlags) bind FeatureFlags::class
+    single {
+        FeatureSetFeatureFlags(
+            FeatureFlags.Feature.EXTENSION_PREFERENCES,
+        ) + get<GalleryExtensionsStateRepository>()
+    } bind FeatureFlags::class
+}
+
+val noOpFeatureFlagsModule = module {
+    single {
+        FeatureSetFeatureFlags()
+    } bind FeatureFlags::class
 }
