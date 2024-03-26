@@ -8,6 +8,7 @@ import ua.com.radiokot.license.OfflineLicenseKeyVerificationException
 import ua.com.radiokot.license.OfflineLicenseKeys
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -55,7 +56,8 @@ class ParseEnteredKeyUseCase(
                     log.debug {
                         "invoke(): verification_failed:" +
                                 "\nkeyInput=$keyInput," +
-                                "\nmessage=${verificationError.message}," +
+                                "\nprimarySubject=$primarySubject," +
+                                "\nerrorMessage='${verificationError.message}'," +
                                 "\noutcome=${outcome}"
                     }
 
@@ -68,12 +70,18 @@ class ParseEnteredKeyUseCase(
         KeyFactory.getInstance("RSA")
             .generatePublic(
                 X509EncodedKeySpec(
-                    Base64Variants.PEM.decode(ISSUER_PUB)
+                    Base64Variants.PEM.decode(ISSUER_PUB.trimIndent())
                 )
             ) as RSAPublicKey
     }.toSingle().subscribeOn(Schedulers.io())
 
     private fun readAndVerifyKey(): Single<OfflineLicenseKey> = {
+        log.debug {
+            "readAndVerifyKey(): reading_the_key:" +
+                    "\nkeyInput=$keyInput," +
+                    "\nprimarySubject=$primarySubject"
+        }
+
         OfflineLicenseKeys.jwt.verifyingReader(
             issuerPublicKey = issuerPublicKey,
             issuer = ISSUER,
@@ -98,17 +106,24 @@ class ParseEnteredKeyUseCase(
     }
 
     class Factory(
-//        private val extensionsStateRepository: GalleryExtensionsStateRepository,
+        private val extensionsStateRepository: GalleryExtensionsStateRepository,
     ) {
         fun get(
             keyInput: String,
         ) = ParseEnteredKeyUseCase(
             keyInput = keyInput,
-            primarySubject = null//extensionsStateRepository.state.primarySubject,
+            primarySubject = extensionsStateRepository.state.primarySubject,
         )
     }
 
     private companion object {
+        // Dearest gentle explorer.
+        //
+        // I would find it utterly discourteous
+        // should there be any alterations to the following constants.
+        //
+        // Sincerely,
+        // O.K.
         private const val ISSUER = "pp-license.radiokot.com.ua"
         private const val ISSUER_PUB = """
             MIIBHzANBgkqhkiG9w0BAQEFAAOCAQwAMIIBBwKB/y6ZK6lHmMfS0T5fA5WsBWpR
