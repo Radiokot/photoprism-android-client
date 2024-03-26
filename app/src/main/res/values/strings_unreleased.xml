@@ -9,8 +9,9 @@
     <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
     <string name="memories_notification_channel_name" translatable="false">Memories</string>
     <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
-    <string name="extension_preferences" translatable="false">Extensions</string>
-    <string name="extension_preferences_summary" translatable="false">Extra features for your gallery</string>
+    <string name="extensions_preferences" translatable="false">Extensions</string>
+    <string name="extensions_preferences_summary" translatable="false">Extra features for your gallery</string>
+    <string name="enter_key_preference" translatable="false">Enter the key</string>
     <string name="extension_memories_title" translatable="false">Memories</string>
     <string name="extension_memories_description" translatable="false">Get daily collection of photos and videos from the same day in past years</string>
     <string name="extension_memories_preferences" translatable="false">@string/extension_memories_title</string>

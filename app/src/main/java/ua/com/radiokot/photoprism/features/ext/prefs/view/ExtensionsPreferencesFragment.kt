@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.ext.prefs.view
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
@@ -13,13 +14,14 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.ext.key.input.view.KeyInputActivity
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
 // When renaming or moving this fragment,
 // make sure to manually update the preference "fragment" value in preferences.xml.
-class ExtensionPreferencesFragment :
+class ExtensionsPreferencesFragment :
     PreferenceFragmentCompat(),
     AndroidScopeComponent {
 
@@ -33,12 +35,19 @@ class ExtensionPreferencesFragment :
     private val memoriesPreferences: MemoriesPreferences by inject()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.extension_preferences, rootKey)
+        setPreferencesFromResource(R.xml.extensions_preferences, rootKey)
 
         initPreferences()
     }
 
     private fun initPreferences() = with(preferenceScreen) {
+        with(requirePreference(R.string.pk_ext_enter_key)) {
+            setOnPreferenceClickListener {
+                startActivity(Intent(requireActivity(), KeyInputActivity::class.java))
+                true
+            }
+        }
+
         with(requirePreference(R.string.pk_ext_memories)) {
             isVisible = featureFlags.hasMemoriesExtension
         }

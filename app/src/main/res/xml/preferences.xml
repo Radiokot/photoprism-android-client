@@ -95,12 +95,12 @@
         app:title="@string/about">
 
         <Preference
-            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionPreferencesFragment"
+            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment"
             app:iconSpaceReserved="false"
             app:key="@string/pk_extensions"
             app:persistent="false"
-            app:summary="@string/extension_preferences_summary"
-            app:title="@string/extension_preferences" />
+            app:summary="@string/extensions_preferences_summary"
+            app:title="@string/extensions_preferences" />
 
         <Preference
             app:iconSpaceReserved="false"

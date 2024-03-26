@@ -16,6 +16,7 @@
     <string name="pk_language" translatable="false">language</string>
     <string name="pk_extensions" translatable="false">extensions</string>
 
+    <string name="pk_ext_enter_key" translatable="false">ext_enter_key</string>
     <string name="pk_ext_memories" translatable="false">ext_memories</string>
     <string name="pk_ext_memories_notifications" translatable="false">ext_memories_notifications</string>
 </resources>
