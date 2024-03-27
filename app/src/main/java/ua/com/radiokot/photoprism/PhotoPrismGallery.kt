@@ -16,7 +16,9 @@ import org.koin.core.qualifier.named
 import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
-import ua.com.radiokot.photoprism.di.dbModule
+import ua.com.radiokot.photoprism.di.appDbModule
+import ua.com.radiokot.photoprism.di.devDbModule
+import ua.com.radiokot.photoprism.di.memoryOnlyDevDbModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
@@ -52,7 +54,8 @@ class PhotoPrismGallery : Application() {
             androidContext(this@PhotoPrismGallery)
             modules(
                 retrofitApiModule
-                        + dbModule
+                        + appDbModule
+                        + (if (BuildConfig.DEBUG) devDbModule else memoryOnlyDevDbModule)
                         + (if (BuildConfig.DEBUG) featureFlagsModule else noOpFeatureFlagsModule)
 
                         + galleryFeatureModule

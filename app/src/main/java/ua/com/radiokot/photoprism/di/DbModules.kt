@@ -5,12 +5,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Room
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.db.DevAppDatabase
 import ua.com.radiokot.photoprism.db.roomMigration
 
-val dbModule = module {
+val appDbModule = module {
     single {
         Room
             .databaseBuilder(
@@ -47,20 +46,23 @@ val dbModule = module {
             )
             .build()
     } bind AppDatabase::class
+}
 
+val devDbModule = module {
     single {
-        if (BuildConfig.DEBUG) {
-            Room.databaseBuilder(
-                context = get(),
-                klass = DevAppDatabase::class.java,
-                name = "dev-database"
-            )
-        } else {
-            Room.inMemoryDatabaseBuilder(
-                context = get(),
-                klass = DevAppDatabase::class.java,
-            )
-        }
-            .build()
+        Room.databaseBuilder(
+            context = get(),
+            klass = DevAppDatabase::class.java,
+            name = "dev-database"
+        ).build()
+    } bind DevAppDatabase::class
+}
+
+val memoryOnlyDevDbModule = module {
+    single {
+        Room.inMemoryDatabaseBuilder(
+            context = get(),
+            klass = DevAppDatabase::class.java,
+        ).build()
     } bind DevAppDatabase::class
 }
