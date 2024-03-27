@@ -45,7 +45,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:hint="@string/key_input_entering_input_title">
+                android:hint="@string/key_input_entering_input_title"
+                app:endIconContentDescription="@string/key_input_entering_paste"
+                app:endIconDrawable="@drawable/ic_content_paste_go"
+                app:endIconMode="custom"
+                app:endIconTint="@color/text_input_layout_end_icon_tint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -59,16 +63,6 @@
                     <requestFocus />
                 </com.google.android.material.textfield.TextInputEditText>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/paste_button"
-                style="@style/Widget.Material3.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="4dp"
-                android:text="@string/key_input_entering_paste"
-                app:icon="@drawable/ic_content_paste_go" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
