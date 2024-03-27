@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.key.input.logic.ParseEnteredKeyUseCase
@@ -112,10 +113,9 @@ class KeyInputViewModel(
 
                             stateSubject.onNext(
                                 State.SuccessfullyEntered(
-                                    addedExtensions = setOf(
-                                        GalleryExtension.MEMORIES,
-                                        GalleryExtension.TEST,
-                                    )
+                                    addedExtensions = result.parsed.features
+                                        .mapSuccessful(GalleryExtension.values()::get)
+                                        .toSet()
                                 )
                             )
                         }

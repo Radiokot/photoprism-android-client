@@ -93,7 +93,7 @@ class ParseEnteredKeyUseCase(
 
     sealed interface Result {
         data class Success(
-            val parsed: Any,
+            val parsed: OfflineLicenseKey,
         ) : Result
 
         enum class Failure : Result {
