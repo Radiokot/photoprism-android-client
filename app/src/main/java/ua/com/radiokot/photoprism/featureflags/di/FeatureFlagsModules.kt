@@ -14,7 +14,7 @@ val featureFlagsModule = module {
     } bind FeatureFlags::class
 }
 
-val noOpFeatureFlagsModule = module {
+val allDisabledFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags()
     } bind FeatureFlags::class
