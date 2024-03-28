@@ -146,7 +146,8 @@ class KeyInputViewModel(
                     log.error(error) {
                         "parseAndActivateEnteredKey(): unexpected_error_occurred"
                     }
-                    // TODO show floating error message
+
+                    eventsSubject.onNext(Event.ShowFloatingFailedProcessingMessage)
                 }
             )
             .autoDispose(this)
@@ -163,25 +164,33 @@ class KeyInputViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { addedExtensions ->
-                    // TODO check if added any
-                    log.debug {
-                        "activateParsedKey(): switching_to_success:" +
-                                "\naddedExtensions=${addedExtensions.size}"
-                    }
+                    if (addedExtensions.isNotEmpty()) {
+                        log.debug {
+                            "activateParsedKey(): switching_to_success:" +
+                                    "\naddedExtensions=${addedExtensions.size}"
+                        }
 
-                    stateSubject.onNext(
-                        State.SuccessfullyEntered(
-                            addedExtensions = addedExtensions
-                                .map(ActivatedGalleryExtension::type),
-                            expiresAt = parsedKey.expiresAt,
+                        stateSubject.onNext(
+                            State.SuccessfullyEntered(
+                                addedExtensions = addedExtensions
+                                    .map(ActivatedGalleryExtension::type),
+                                expiresAt = parsedKey.expiresAt,
+                            )
                         )
-                    )
+                    } else {
+                        log.debug {
+                            "activateParsedKey(): no_new_extensions_added"
+                        }
+
+                        eventsSubject.onNext(Event.ShowFloatingNoNewExtensionsMessage)
+                    }
                 },
                 onError = { error ->
                     log.error(error) {
                         "activateParsedKey(): unexpected_error_occurred"
                     }
-                    // TODO show floating error message
+
+                    eventsSubject.onNext(Event.ShowFloatingFailedProcessingMessage)
                 }
             )
             .autoDispose(this)
@@ -217,5 +226,7 @@ class KeyInputViewModel(
 
     sealed interface Event {
         object Finish : Event
+        object ShowFloatingFailedProcessingMessage : Event
+        object ShowFloatingNoNewExtensionsMessage : Event
     }
 }

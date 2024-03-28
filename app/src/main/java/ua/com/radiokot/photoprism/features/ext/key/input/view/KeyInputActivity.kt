@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -73,6 +74,12 @@ class KeyInputActivity : BaseActivity() {
         when (event) {
             KeyInputViewModel.Event.Finish ->
                 finish()
+
+            KeyInputViewModel.Event.ShowFloatingFailedProcessingMessage ->
+                showFloatingMessage(getString(R.string.key_input_error_failed_processing))
+
+            KeyInputViewModel.Event.ShowFloatingNoNewExtensionsMessage ->
+                showFloatingMessage(getString(R.string.key_input_error_no_new_extensions))
         }
 
         log.debug {
@@ -118,6 +125,11 @@ class KeyInputActivity : BaseActivity() {
                 "showSuccess(): showing"
             }
         }
+    }
+
+    private fun showFloatingMessage(message: String) {
+        Snackbar.make(view.fragmentContainer, message, Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     private companion object {
