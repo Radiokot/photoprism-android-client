@@ -48,7 +48,7 @@ val memoriesFeatureModule = module {
 
     singleOf(::CancelDailyMemoriesUpdatesUseCase)
 
-    single<ObjectPersistence<UpdateMemoriesWorker.Status>> {
+    single<ObjectPersistence<UpdateMemoriesWorker.Status>>(_q<UpdateMemoriesWorker.Status>()) {
         UpdateMemoriesWorkerStatusPersistenceOnPrefs(
             key = "update_memories_worker_status",
             preferences = get(named(APP_NO_BACKUP_PREFERENCES)),

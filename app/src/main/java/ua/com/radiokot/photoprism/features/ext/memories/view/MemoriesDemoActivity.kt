@@ -7,7 +7,9 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier._q
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -15,6 +17,7 @@ import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesUseCase
+import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesWorker
 
 /**
  * This is only for demo purposes.
@@ -24,6 +27,8 @@ class MemoriesDemoActivity : BaseActivity() {
 
     private val repository: MemoriesRepository by inject()
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
+    private val updateWorkerStatusPersistence: ObjectPersistence<UpdateMemoriesWorker.Status>
+            by inject(_q<UpdateMemoriesWorker.Status>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +43,7 @@ class MemoriesDemoActivity : BaseActivity() {
             repository.clear()
                 .subscribeBy()
                 .autoDispose(this)
+            updateWorkerStatusPersistence.clear()
         }
 
         view.updateNowButton.setThrottleOnClickListener {

@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.core.Single
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
+import org.koin.core.qualifier._q
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -36,7 +37,7 @@ class UpdateMemoriesWorker(
 
     private val startingFromHour =
         workerParams.inputData.getInt(STARTING_FROM_HOUR_KEY, 0)
-    private val statusPersistence: ObjectPersistence<Status> by inject()
+    private val statusPersistence: ObjectPersistence<Status> by inject(_q<Status>())
     private val updateMemoriesUseCase: UpdateMemoriesUseCase by inject()
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
@@ -104,6 +105,11 @@ class UpdateMemoriesWorker(
                 }
             }
             .map { Result.success() }
+            .doOnError {
+                log.error(it) {
+                    "createWork(): error_occurred"
+                }
+            }
             .onErrorReturnItem(Result.retry())
     }
 
