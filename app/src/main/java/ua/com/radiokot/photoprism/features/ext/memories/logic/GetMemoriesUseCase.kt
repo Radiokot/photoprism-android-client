@@ -97,9 +97,6 @@ class GetMemoriesUseCase(
                                 minClusterSize = 1,
                             )
                     }
-                    .also {clusters->
-                        println(clusters)
-                    }
                     .flatMap { clusterItems ->
                         // From items taken at around the same time,
                         // pick the most preferred one.

@@ -54,7 +54,7 @@ class DbscanClustering<Item : Any>(
             }
         }
 
-        return clusters.also(::println)
+        return clusters
     }
 
     private fun getNeighborIndices(
