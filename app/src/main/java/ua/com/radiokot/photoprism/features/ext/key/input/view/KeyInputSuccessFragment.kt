@@ -39,6 +39,7 @@ class KeyInputSuccessFragment : Fragment() {
                 "This screen can only be shown in the successfully entered state"
             }
 
+        // TODO show expiration if set, above or below the list
         view.addedExtensionsRecyclerView.adapter = FastAdapter.with(
             ItemAdapter<GalleryExtensionListItem>()
                 .setNewList(
@@ -49,7 +50,7 @@ class KeyInputSuccessFragment : Fragment() {
     }
 
     private fun initButtons() {
-        with (view.doneButton) {
+        with(view.doneButton) {
             setThrottleOnClickListener {
                 viewModel.onSuccessDoneClicked()
             }

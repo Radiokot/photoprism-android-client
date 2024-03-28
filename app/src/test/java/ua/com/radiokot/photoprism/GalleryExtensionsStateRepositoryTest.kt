@@ -125,7 +125,7 @@ class GalleryExtensionsStateRepositoryTest {
             keySubject = keySubject,
             keyExtensions = keyExtensions,
             encodedKey = encodedKey,
-            keyExpirationDate = null,
+            keyExpiresAt = null,
         )
 
         Assert.assertEquals(1, activatedExtensions.size)
@@ -165,7 +165,7 @@ class GalleryExtensionsStateRepositoryTest {
             keySubject = keySubject,
             keyExtensions = keyExtensions,
             encodedKey = encodedKey,
-            keyExpirationDate = null,
+            keyExpiresAt = null,
         )
 
         Assert.assertEquals(1, activatedExtensions.size)
@@ -203,7 +203,7 @@ class GalleryExtensionsStateRepositoryTest {
             keySubject = keySubject,
             keyExtensions = keyExtensions,
             encodedKey = encodedKey,
-            keyExpirationDate = null,
+            keyExpiresAt = null,
         )
 
         Assert.assertEquals(0, activatedExtensions.size)
@@ -245,7 +245,7 @@ class GalleryExtensionsStateRepositoryTest {
             keySubject = keySubject,
             keyExtensions = keyExtensions,
             encodedKey = encodedKey,
-            keyExpirationDate = keyExpirationDate,
+            keyExpiresAt = keyExpirationDate,
         )
 
         Assert.assertEquals(2, activatedExtensions.size)
@@ -289,7 +289,7 @@ class GalleryExtensionsStateRepositoryTest {
             keySubject = keySubject,
             keyExtensions = keyExtensions,
             encodedKey = encodedKey,
-            keyExpirationDate = null,
+            keyExpiresAt = null,
         )
 
         Assert.assertEquals(2, activatedExtensions.size)

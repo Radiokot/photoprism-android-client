@@ -9,6 +9,7 @@ import ua.com.radiokot.license.OfflineLicenseKeys
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
+import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -19,13 +20,24 @@ class ParseEnteredKeyUseCase(
 ) {
     private val log = kLogger("ParseEnteredKeyUseCase")
 
-    private lateinit var issuerPublicKey: RSAPublicKey
-
     operator fun invoke(): Single<Result> {
         return getIssuerPublicKey()
-            .doOnSuccess { issuerPublicKey = it }
-            .flatMap { readAndVerifyKey() }
-            .map<Result>(Result::Success)
+            .flatMap(::readAndVerifyKey)
+            .map { verifiedKey ->
+                val parsedKey = ParsedKey(verifiedKey)
+                if (parsedKey.extensions.isEmpty()) {
+                    Result.Failure.INVALID.also { outcome ->
+                        log.warn {
+                            "invoke(): parsed_key_has_no_known_extensions:" +
+                                    "\nkeyInput=$keyInput," +
+                                    "\nverifiedKeyFeatures=${verifiedKey.features}," +
+                                    "\noutcome=$outcome"
+                        }
+                    }
+                } else {
+                    Result.Success(parsedKey)
+                }
+            }
             .onErrorResumeNext { error ->
                 val verificationError = error as? OfflineLicenseKeyVerificationException
                 if (verificationError == null) {
@@ -75,7 +87,7 @@ class ParseEnteredKeyUseCase(
             ) as RSAPublicKey
     }.toSingle().subscribeOn(Schedulers.io())
 
-    private fun readAndVerifyKey(): Single<OfflineLicenseKey> = {
+    private fun readAndVerifyKey(issuerPublicKey: RSAPublicKey): Single<OfflineLicenseKey> = {
         log.debug {
             "readAndVerifyKey(): reading_the_key:" +
                     "\nkeyInput=$keyInput," +
@@ -93,7 +105,7 @@ class ParseEnteredKeyUseCase(
 
     sealed interface Result {
         data class Success(
-            val parsed: OfflineLicenseKey,
+            val parsed: ParsedKey,
         ) : Result
 
         enum class Failure : Result {

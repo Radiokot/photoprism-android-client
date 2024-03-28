@@ -56,7 +56,7 @@ class GalleryExtensionsStateRepository(
     fun activateKeyExtensions(
         keySubject: String,
         keyExtensions: Collection<GalleryExtension>,
-        keyExpirationDate: Date?,
+        keyExpiresAt: Date?,
         encodedKey: String,
     ): Collection<ActivatedGalleryExtension> {
         if (state.primarySubject != null) {
@@ -76,13 +76,13 @@ class GalleryExtensionsStateRepository(
             // or if it prolongs the already activated one.
             if (alreadyActivatedExtension == null
                 || alreadyActivatedExtension.expiresAt != null
-                && (keyExpirationDate == null || keyExpirationDate > alreadyActivatedExtension.expiresAt)
+                && (keyExpiresAt == null || keyExpiresAt > alreadyActivatedExtension.expiresAt)
             ) {
                 newActivatedExtensions.add(
                     ActivatedGalleryExtension(
                         type = keyExtension,
                         key = encodedKey,
-                        expiresAt = keyExpirationDate,
+                        expiresAt = keyExpiresAt,
                     )
                 )
 

@@ -13,14 +13,18 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
+import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
+import ua.com.radiokot.photoprism.features.ext.key.input.logic.ActivateParsedKeyUseCase
 import ua.com.radiokot.photoprism.features.ext.key.input.logic.ParseEnteredKeyUseCase
+import java.util.Date
 
 class KeyInputViewModel(
     private val application: Application,
     private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
+    private val activateParsedKeyUseCaseFactory: ActivateParsedKeyUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("KeyInputVM")
 
@@ -70,7 +74,7 @@ class KeyInputViewModel(
             // Lint complains on LiveData nullability otherwise.
             clipboardText.also(key::setValue)
 
-            parseEnteredKey()
+            parseAndActivateEnteredKey()
         } else {
             log.debug {
                 "onKeyInputPasteClicked(): clipboard_is_empty"
@@ -86,10 +90,10 @@ class KeyInputViewModel(
             "This input can only submitted in the entering state when it is allowed"
         }
 
-        parseEnteredKey()
+        parseAndActivateEnteredKey()
     }
 
-    private fun parseEnteredKey() {
+    private fun parseAndActivateEnteredKey() {
         val keyInput = key.value.checkNotNull {
             "The key must be entered at this point"
         }
@@ -107,22 +111,18 @@ class KeyInputViewModel(
                     when (result) {
                         is ParseEnteredKeyUseCase.Result.Success -> {
                             log.debug {
-                                "parseEnteredKey(): parsed_successfully:" +
+                                "parseAndActivateEnteredKey(): activating_successfully_parsed_key:" +
                                         "\nparsed=${result.parsed}"
                             }
 
-                            stateSubject.onNext(
-                                State.SuccessfullyEntered(
-                                    addedExtensions = result.parsed.features
-                                        .mapSuccessful(GalleryExtension.values()::get)
-                                        .toSet()
-                                )
+                            activateParsedKey(
+                                parsedKey = result.parsed,
                             )
                         }
 
                         is ParseEnteredKeyUseCase.Result.Failure -> {
                             log.debug {
-                                "parseEnteredKey(): parsing_failed:" +
+                                "parseAndActivateEnteredKey(): parsing_failed:" +
                                         "\nfailure=$result"
                             }
 
@@ -144,7 +144,42 @@ class KeyInputViewModel(
                 },
                 onError = { error ->
                     log.error(error) {
-                        "parseEnteredKey(): unexpected_error_occurred"
+                        "parseAndActivateEnteredKey(): unexpected_error_occurred"
+                    }
+                    // TODO show floating error message
+                }
+            )
+            .autoDispose(this)
+    }
+
+    private fun activateParsedKey(parsedKey: ParsedKey) {
+        val useCase = activateParsedKeyUseCaseFactory.get(
+            parsedKey = parsedKey,
+        )
+
+        useCase
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { addedExtensions ->
+                    // TODO check if added any
+                    log.debug {
+                        "activateParsedKey(): switching_to_success:" +
+                                "\naddedExtensions=${addedExtensions.size}"
+                    }
+
+                    stateSubject.onNext(
+                        State.SuccessfullyEntered(
+                            addedExtensions = addedExtensions
+                                .map(ActivatedGalleryExtension::type),
+                            expiresAt = parsedKey.expiresAt,
+                        )
+                    )
+                },
+                onError = { error ->
+                    log.error(error) {
+                        "activateParsedKey(): unexpected_error_occurred"
                     }
                     // TODO show floating error message
                 }
@@ -175,7 +210,8 @@ class KeyInputViewModel(
         object Entering : State
 
         class SuccessfullyEntered(
-            val addedExtensions: Set<GalleryExtension>,
+            val addedExtensions: Collection<GalleryExtension>,
+            val expiresAt: Date?,
         ) : State
     }
 
