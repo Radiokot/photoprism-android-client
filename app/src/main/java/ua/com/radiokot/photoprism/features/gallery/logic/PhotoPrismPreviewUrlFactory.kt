@@ -57,13 +57,6 @@ class PhotoPrismPreviewUrlFactory(
         val videoFile = mergedPhoto.videoFile
         // Valid case for live photos.
             ?: return "$previewUrlBase/videos/${mergedPhoto.hash}/$previewToken/$DEFAULT_VIDEO_PREVIEW_FORMAT"
-                .also {
-                    log.debug {
-                        "getVideoPreviewUrl(): no_video_file_found:" +
-                                "\nphotoUid=${mergedPhoto.uid}," +
-                                "\npreviewFormat=$DEFAULT_VIDEO_PREVIEW_FORMAT"
-                    }
-                }
 
         val videoCodec = videoFile.codec ?: ""
 
