@@ -1,47 +1,54 @@
 package ua.com.radiokot.photoprism.features.ext.data.storage
 
+import android.annotation.SuppressLint
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import java.util.Date
-import kotlin.properties.Delegates
 
+@SuppressLint("CheckResult")
 class GalleryExtensionsStateRepository(
     private val statePersistence: ObjectPersistence<GalleryExtensionsState>,
 ) : FeatureFlags {
-    private var _state: GalleryExtensionsState by Delegates.observable(
-        initialValue = statePersistence.loadItem() ?: GalleryExtensionsState(),
-        onChange = { _, _, newState ->
-            statePersistence.saveItem(newState)
-        }
-    )
-    val state: GalleryExtensionsState
-        get() = _state
+    private var activatedExtensionsFeatures: Set<FeatureFlags.Feature> = emptySet()
+
+    private val stateSubject =
+        BehaviorSubject.createDefault(statePersistence.loadItem() ?: GalleryExtensionsState())
+    val state: Observable<GalleryExtensionsState> = stateSubject
+    val currentState: GalleryExtensionsState
+        get() = stateSubject.value!!
 
     init {
-        val notExpiredExtensions = state.activatedExtensions
+        state
+            .doOnNext { eachState ->
+                activatedExtensionsFeatures = eachState.activatedExtensions
+                    .mapTo(mutableSetOf()) { it.type.feature }
+            }
+            .skip(1)
+            .subscribe(statePersistence::saveItem)
+
+        val notExpiredExtensions = currentState.activatedExtensions
             .filterNot(ActivatedGalleryExtension::isExpired)
 
-        if (notExpiredExtensions.size < state.activatedExtensions.size) {
-            _state = state.copy(
-                activatedExtensions = notExpiredExtensions,
-                primarySubject =
-                // If all the activated extensions have expired,
-                // forget the primary subject.
-                if (notExpiredExtensions.isEmpty())
-                    null
-                else
-                    state.primarySubject,
+        if (notExpiredExtensions.size < currentState.activatedExtensions.size) {
+            stateSubject.onNext(
+                currentState.copy(
+                    activatedExtensions = notExpiredExtensions,
+                    primarySubject =
+                    // If all the activated extensions have expired,
+                    // forget the primary subject.
+                    if (notExpiredExtensions.isEmpty())
+                        null
+                    else
+                        currentState.primarySubject,
+                )
             )
         }
     }
-
-    private val activatedExtensionsFeatures: MutableSet<FeatureFlags.Feature> =
-        state.activatedExtensions
-            .map { it.type.feature }
-            .toMutableSet()
 
     override fun hasFeature(feature: FeatureFlags.Feature): Boolean =
         feature in activatedExtensionsFeatures
@@ -59,13 +66,13 @@ class GalleryExtensionsStateRepository(
         keyExpiresAt: Date?,
         encodedKey: String,
     ): Collection<ActivatedGalleryExtension> {
-        if (state.primarySubject != null) {
-            require(keySubject == state.primarySubject) {
-                "The key subject must match the current primary subject: ${state.primarySubject}"
+        if (currentState.primarySubject != null) {
+            require(keySubject == currentState.primarySubject) {
+                "The key subject must match the current primary subject: ${currentState.primarySubject}"
             }
         }
 
-        val alreadyActivatedExtensions = state.activatedExtensions.toMutableList()
+        val alreadyActivatedExtensions = currentState.activatedExtensions.toMutableList()
         val newActivatedExtensions = mutableListOf<ActivatedGalleryExtension>()
 
         keyExtensions.forEach { keyExtension ->
@@ -92,10 +99,14 @@ class GalleryExtensionsStateRepository(
             }
         }
 
-        _state = state.copy(
-            primarySubject = keySubject,
-            activatedExtensions = alreadyActivatedExtensions + newActivatedExtensions,
-        )
+        if (newActivatedExtensions.isNotEmpty()) {
+            stateSubject.onNext(
+                currentState.copy(
+                    primarySubject = keySubject,
+                    activatedExtensions = alreadyActivatedExtensions + newActivatedExtensions,
+                )
+            )
+        }
 
         return newActivatedExtensions
     }

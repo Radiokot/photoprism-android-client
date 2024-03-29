@@ -128,6 +128,7 @@ val galleryFeatureModule = module {
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
                 memoriesListViewModel = get(),
+                galleryExtensionsStateRepository = get(),
             )
         }
     }

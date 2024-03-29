@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesUseCase
@@ -29,6 +30,8 @@ class MemoriesDemoActivity : BaseActivity() {
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
     private val updateWorkerStatusPersistence: ObjectPersistence<UpdateMemoriesWorker.Status>
             by inject(_q<UpdateMemoriesWorker.Status>())
+    private val extensionsStatePersistence: ObjectPersistence<GalleryExtensionsState>
+            by inject(_q<GalleryExtensionsState>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,10 @@ class MemoriesDemoActivity : BaseActivity() {
                 .subscribeBy()
                 .autoDispose(this)
             updateWorkerStatusPersistence.clear()
+        }
+
+        view.clearExtButton.setThrottleOnClickListener {
+            extensionsStatePersistence.clear()
         }
 
         view.updateNowButton.setThrottleOnClickListener {

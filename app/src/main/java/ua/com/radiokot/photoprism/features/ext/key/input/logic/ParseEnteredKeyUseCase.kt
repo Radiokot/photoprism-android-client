@@ -124,7 +124,7 @@ class ParseEnteredKeyUseCase(
             keyInput: String,
         ) = ParseEnteredKeyUseCase(
             keyInput = keyInput,
-            primarySubject = extensionsStateRepository.state.primarySubject,
+            primarySubject = extensionsStateRepository.currentState.primarySubject,
         )
     }
 

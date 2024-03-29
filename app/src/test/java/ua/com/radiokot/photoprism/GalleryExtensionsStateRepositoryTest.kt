@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism
 import org.junit.Assert
 import org.junit.Test
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
@@ -29,8 +28,8 @@ class GalleryExtensionsStateRepositoryTest {
             statePersistence = persistence,
         )
 
-        Assert.assertTrue(repository.hasFeature(FeatureFlags.Feature.MEMORIES_EXTENSION))
-        Assert.assertFalse(repository.hasFeature(FeatureFlags.Feature.TEST_EXTENSION))
+        Assert.assertTrue(repository.hasFeature(GalleryExtension.MEMORIES.feature))
+        Assert.assertFalse(repository.hasFeature(GalleryExtension.TEST.feature))
     }
 
     @Test
@@ -56,7 +55,7 @@ class GalleryExtensionsStateRepositoryTest {
             statePersistence = persistence,
         )
 
-        Assert.assertFalse(repository.hasFeature(FeatureFlags.Feature.TEST_EXTENSION))
+        Assert.assertFalse(repository.hasFeature(GalleryExtension.TEST.feature))
         Assert.assertEquals(1, persistence.loadItem()!!.activatedExtensions.size)
         Assert.assertEquals(
             GalleryExtension.MEMORIES,
@@ -83,7 +82,7 @@ class GalleryExtensionsStateRepositoryTest {
             statePersistence = persistence,
         )
 
-        Assert.assertFalse(repository.hasFeature(FeatureFlags.Feature.TEST_EXTENSION))
+        Assert.assertFalse(repository.hasFeature(GalleryExtension.TEST.feature))
         Assert.assertNull(persistence.loadItem()!!.primarySubject)
     }
 
@@ -130,10 +129,11 @@ class GalleryExtensionsStateRepositoryTest {
 
         Assert.assertEquals(1, activatedExtensions.size)
         Assert.assertEquals(keyExtensions.first(), activatedExtensions.first().type)
-        Assert.assertEquals(keySubject, repository.state.primarySubject)
+        Assert.assertEquals(keySubject, repository.currentState.primarySubject)
         Assert.assertEquals(encodedKey, activatedExtensions.first().key)
         Assert.assertNull(activatedExtensions.first().expiresAt)
-        Assert.assertArrayEquals(activatedExtensions.toTypedArray(), repository.state.activatedExtensions.toTypedArray())
+        Assert.assertArrayEquals(activatedExtensions.toTypedArray(), repository.currentState.activatedExtensions.toTypedArray())
+        Assert.assertTrue(repository.hasFeature(GalleryExtension.TEST.feature))
     }
 
     @Test
@@ -170,9 +170,10 @@ class GalleryExtensionsStateRepositoryTest {
 
         Assert.assertEquals(1, activatedExtensions.size)
         Assert.assertEquals(GalleryExtension.TEST, activatedExtensions.first().type)
-        Assert.assertEquals(keySubject, repository.state.primarySubject)
+        Assert.assertEquals(keySubject, repository.currentState.primarySubject)
         Assert.assertEquals(encodedKey, activatedExtensions.first().key)
-        Assert.assertEquals("keyA", repository.state.activatedExtensions.first().key)
+        Assert.assertEquals("keyA", repository.currentState.activatedExtensions.first().key)
+        Assert.assertTrue(repository.hasFeature(GalleryExtension.TEST.feature))
     }
 
     @Test
@@ -207,7 +208,7 @@ class GalleryExtensionsStateRepositoryTest {
         )
 
         Assert.assertEquals(0, activatedExtensions.size)
-        Assert.assertEquals("keyA", repository.state.activatedExtensions.first().key)
+        Assert.assertEquals("keyA", repository.currentState.activatedExtensions.first().key)
     }
 
     @Test
@@ -249,10 +250,10 @@ class GalleryExtensionsStateRepositoryTest {
         )
 
         Assert.assertEquals(2, activatedExtensions.size)
-        Assert.assertEquals(encodedKey, repository.state.activatedExtensions[0].key)
-        Assert.assertEquals(keyExpirationDate, repository.state.activatedExtensions[0].expiresAt)
-        Assert.assertEquals(encodedKey, repository.state.activatedExtensions[1].key)
-        Assert.assertEquals(keyExpirationDate, repository.state.activatedExtensions[1].expiresAt)
+        Assert.assertEquals(encodedKey, repository.currentState.activatedExtensions[0].key)
+        Assert.assertEquals(keyExpirationDate, repository.currentState.activatedExtensions[0].expiresAt)
+        Assert.assertEquals(encodedKey, repository.currentState.activatedExtensions[1].key)
+        Assert.assertEquals(keyExpirationDate, repository.currentState.activatedExtensions[1].expiresAt)
     }
 
     @Test
@@ -293,10 +294,10 @@ class GalleryExtensionsStateRepositoryTest {
         )
 
         Assert.assertEquals(2, activatedExtensions.size)
-        Assert.assertEquals(encodedKey, repository.state.activatedExtensions[0].key)
-        Assert.assertNull(repository.state.activatedExtensions[0].expiresAt)
-        Assert.assertEquals(encodedKey, repository.state.activatedExtensions[1].key)
-        Assert.assertNull(repository.state.activatedExtensions[1].expiresAt)
+        Assert.assertEquals(encodedKey, repository.currentState.activatedExtensions[0].key)
+        Assert.assertNull(repository.currentState.activatedExtensions[0].expiresAt)
+        Assert.assertEquals(encodedKey, repository.currentState.activatedExtensions[1].key)
+        Assert.assertNull(repository.currentState.activatedExtensions[1].expiresAt)
     }
 
     private class SimpleStatePersistence(

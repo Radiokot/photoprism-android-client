@@ -20,6 +20,9 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
+import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
+import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
+import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
@@ -28,7 +31,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -48,6 +50,7 @@ class GalleryViewModel(
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
     val memoriesListViewModel: GalleryMemoriesListViewModel,
+    galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
@@ -73,6 +76,9 @@ class GalleryViewModel(
     val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
     val itemScale: MutableLiveData<GalleryItemScale> =
         MutableLiveData(galleryPreferences.itemScale.value!!)
+    val extensionsState: Observable<GalleryExtensionsState> =
+        galleryExtensionsStateRepository.state
+            .observeOn(AndroidSchedulers.mainThread())
 
     private val backPressActionsStack = BackPressActionsStack()
     val backPressedCallback: OnBackPressedCallback =

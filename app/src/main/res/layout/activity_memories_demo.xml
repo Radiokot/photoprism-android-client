@@ -28,7 +28,16 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        android:text="Clear" />
+        android:text="Clear memories" />
+
+    <Button
+        android:id="@+id/clear_ext_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Clear extensions" />
 
     <Button
         android:id="@+id/update_now_button"
