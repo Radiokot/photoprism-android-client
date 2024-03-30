@@ -16,6 +16,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.key.input.view.KeyInputActivity
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
@@ -98,5 +99,11 @@ class ExtensionsPreferencesFragment :
     ) = with(preferenceScreen.requirePreference(R.string.pk_ext_memories_notifications)) {
         this as SwitchPreferenceCompat
         isChecked = memoriesNotificationsManager.areMemoriesNotificationsEnabled
+    }
+
+    companion object{
+        val EXTENSIONS_WITH_PREFERENCES = setOf(
+            GalleryExtension.MEMORIES,
+        )
     }
 }
