@@ -59,8 +59,34 @@ class ExtensionsPreferencesFragment :
     private fun subscribeToExtensionsState() {
         galleryExtensionsStateRepository.state
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { initExtensionSpecificPreferences() }
+            .subscribeBy {
+                initSummary()
+                initExtensionSpecificPreferences()
+            }
             .autoDispose(this)
+    }
+
+    private fun initSummary() = with(preferenceScreen) {
+        with(requirePreference(R.string.pk_ext_summary)) {
+            val activatedExtensionsCount =
+                galleryExtensionsStateRepository.currentState.activatedExtensions.size
+            val primarySubject = galleryExtensionsStateRepository.currentState.primarySubject
+
+            if (activatedExtensionsCount > 0 && primarySubject != null) {
+                isVisible = true
+                summary = getString(
+                    R.string.template_extensions_preferences_activated_extensions_for,
+                    requireContext().resources.getQuantityString(
+                        R.plurals.activated_extensions,
+                        activatedExtensionsCount,
+                        activatedExtensionsCount,
+                    ),
+                    primarySubject,
+                )
+            } else {
+                isVisible = false
+            }
+        }
     }
 
     private fun initExtensionSpecificPreferences() = with(preferenceScreen) {
@@ -101,7 +127,7 @@ class ExtensionsPreferencesFragment :
         isChecked = memoriesNotificationsManager.areMemoriesNotificationsEnabled
     }
 
-    companion object{
+    companion object {
         val EXTENSIONS_WITH_PREFERENCES = setOf(
             GalleryExtension.MEMORIES,
         )

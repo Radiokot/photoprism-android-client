@@ -31,4 +31,9 @@
     <string name="key_input_success_title" translatable="false">Key activated</string>
     <string name="key_input_success_subtitle" translatable="false">New extensions have been added to your gallery 😎</string>
     <string name="key_input_success_done" translatable="false">Done</string>
+    <plurals name="activated_extensions" translatable="false">
+        <item quantity="one">%1$d activated extension</item>
+        <item quantity="other">%1$d activated extensions</item>
+    </plurals>
+    <string name="template_extensions_preferences_activated_extensions_for" translatable="false">%1$s for %2$s</string>
 </resources>

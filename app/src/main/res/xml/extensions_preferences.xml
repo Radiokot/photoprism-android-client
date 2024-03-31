@@ -1,4 +1,11 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <Preference
+        app:iconSpaceReserved="false"
+        app:key="@string/pk_ext_summary"
+        app:persistent="false"
+        tools:summary="2 extensions activated for test@local" />
 
     <Preference
         app:iconSpaceReserved="false"
