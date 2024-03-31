@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
+import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -17,6 +18,7 @@ import java.security.spec.X509EncodedKeySpec
 class ParseEnteredKeyUseCase(
     private val keyInput: String,
     private val primarySubject: String?,
+    private val hardware: String?,
 ) {
     private val log = kLogger("ParseEnteredKeyUseCase")
 
@@ -91,14 +93,15 @@ class ParseEnteredKeyUseCase(
         log.debug {
             "readAndVerifyKey(): reading_the_key:" +
                     "\nkeyInput=$keyInput," +
-                    "\nprimarySubject=$primarySubject"
+                    "\nprimarySubject=$primarySubject," +
+                    "\nhardware=$hardware"
         }
 
         OfflineLicenseKeys.jwt.verifyingReader(
             issuerPublicKey = issuerPublicKey,
             issuer = ISSUER,
             subject = primarySubject,
-            hardware = null, // TODO add identification
+            hardware = hardware,
         )
             .read(keyInput)
     }.toSingle().subscribeOn(Schedulers.io())
@@ -119,12 +122,14 @@ class ParseEnteredKeyUseCase(
 
     class Factory(
         private val extensionsStateRepository: GalleryExtensionsStateRepository,
+        private val hardwareIdentifier: HardwareIdentifier?,
     ) {
         fun get(
             keyInput: String,
         ) = ParseEnteredKeyUseCase(
             keyInput = keyInput,
             primarySubject = extensionsStateRepository.currentState.primarySubject,
+            hardware = hardwareIdentifier?.getHardwareIdentifier(),
         )
     }
 

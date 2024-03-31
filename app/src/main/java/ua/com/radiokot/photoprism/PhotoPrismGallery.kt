@@ -23,8 +23,8 @@ import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.di.allDisabledFeatureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
