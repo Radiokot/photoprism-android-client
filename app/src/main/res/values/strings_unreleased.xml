@@ -2,23 +2,23 @@
 <resources>
     <!-- Do not translate these strings.-->
     <plurals name="years_ago" translatable="false">
-        <item quantity="one">%1$d year ago</item>
+        <item quantity="one">Year ago</item>
         <item quantity="other">%1$d years ago</item>
     </plurals>
     <string name="memories_notification_new_memories_title" translatable="false">New memories found</string>
     <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
-    <string name="memories_notification_channel_name" translatable="false">Memories</string>
+    <string name="memories_notification_channel_name" translatable="false">@string/extension_memories_title</string>
     <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
     <string name="extensions_preferences" translatable="false">Extensions</string>
-    <string name="extensions_preferences_summary" translatable="false">Extra features for your gallery</string>
-    <string name="enter_key_preference" translatable="false">Enter another key</string>
+    <string name="extensions_preferences_summary" translatable="false">Extra features for the gallery</string>
+    <string name="enter_key_preference" translatable="false">Activate another key</string>
     <string name="extension_memories_title" translatable="false">Memories</string>
     <string name="extension_memories_description" translatable="false">Get daily collection of photos and videos from the same day in past years</string>
     <string name="extension_memories_preferences" translatable="false">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference" translatable="false">Notifications</string>
     <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
-    <string name="key_input_entering_title" translatable="false">Enter your key</string>
-    <string name="key_input_entering_subtitle" translatable="false">Paste the key you\'ve got to enable extra features</string>
+    <string name="key_input_entering_title" translatable="false">Activate a key</string>
+    <string name="key_input_entering_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
     <string name="key_input_entering_paste" translatable="false">Paste</string>
     <string name="key_input_entering_continue" translatable="false">@string/continuee</string>
     <string name="key_input_entering_input_title" translatable="false">Key</string>
@@ -27,9 +27,9 @@
     <string name="key_input_error_invalid" translatable="false">This key is invalid</string>
     <string name="key_input_error_expired" translatable="false">This key is expired</string>
     <string name="key_input_error_no_new_extensions" translatable="false">This key adds no new extensions</string>
-    <string name="key_input_error_failed_processing" translatable="false">Failed to process the key</string>
+    <string name="template_key_input_error_failed_processing" translatable="false">Failed to process the key: %1$s</string>
     <string name="key_input_success_title" translatable="false">Key activated</string>
-    <string name="key_input_success_subtitle" translatable="false">New extensions have been added to your gallery 😎</string>
+    <string name="key_input_success_subtitle" translatable="false">New extensions have been added to the gallery 😎</string>
     <string name="key_input_success_done" translatable="false">Done</string>
     <plurals name="activated_extensions" translatable="false">
         <item quantity="one">%1$d activated extension</item>

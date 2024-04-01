@@ -75,8 +75,13 @@ class KeyInputActivity : BaseActivity() {
             KeyInputViewModel.Event.Finish ->
                 finish()
 
-            KeyInputViewModel.Event.ShowFloatingFailedProcessingMessage ->
-                showFloatingMessage(getString(R.string.key_input_error_failed_processing))
+            is KeyInputViewModel.Event.ShowFloatingFailedProcessingMessage ->
+                showFloatingMessage(
+                    getString(
+                        R.string.template_key_input_error_failed_processing,
+                        event.shortSummary
+                    )
+                )
 
             KeyInputViewModel.Event.ShowFloatingNoNewExtensionsMessage ->
                 showFloatingMessage(getString(R.string.key_input_error_no_new_extensions))

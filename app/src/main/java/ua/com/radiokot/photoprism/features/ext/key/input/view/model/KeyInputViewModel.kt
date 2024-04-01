@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
@@ -147,7 +148,11 @@ class KeyInputViewModel(
                         "parseAndActivateEnteredKey(): unexpected_error_occurred"
                     }
 
-                    eventsSubject.onNext(Event.ShowFloatingFailedProcessingMessage)
+                    eventsSubject.onNext(
+                        Event.ShowFloatingFailedProcessingMessage(
+                            shortSummary = error.shortSummary,
+                        )
+                    )
                 }
             )
             .autoDispose(this)
@@ -190,7 +195,9 @@ class KeyInputViewModel(
                         "activateParsedKey(): unexpected_error_occurred"
                     }
 
-                    eventsSubject.onNext(Event.ShowFloatingFailedProcessingMessage)
+                    Event.ShowFloatingFailedProcessingMessage(
+                        shortSummary = error.shortSummary,
+                    )
                 }
             )
             .autoDispose(this)
@@ -226,7 +233,7 @@ class KeyInputViewModel(
 
     sealed interface Event {
         object Finish : Event
-        object ShowFloatingFailedProcessingMessage : Event
+        class ShowFloatingFailedProcessingMessage(val shortSummary: String) : Event
         object ShowFloatingNoNewExtensionsMessage : Event
     }
 }
