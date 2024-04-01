@@ -22,8 +22,8 @@
     <string name="key_input_entering_paste">Вставить</string>
     <string name="key_input_entering_continue">@string/continuee</string>
     <string name="key_input_entering_input_title">Ключ</string>
-    <string name="key_input_error_device_mismatch">Этот ключ выпущен не для вашего устройства</string>
-    <string name="key_input_error_email_mismatch">Этот ключ выпущен не для вас</string>
+    <string name="key_input_error_device_mismatch">Этот ключ выдан не для этого устройства</string>
+    <string name="key_input_error_email_mismatch">Этот ключ выдан не вам</string>
     <string name="key_input_error_invalid">Этот ключ неправильный</string>
     <string name="key_input_error_expired">Этот ключ просрочен</string>
     <string name="key_input_error_no_new_extensions">Этот ключ не добавляет расширений</string>

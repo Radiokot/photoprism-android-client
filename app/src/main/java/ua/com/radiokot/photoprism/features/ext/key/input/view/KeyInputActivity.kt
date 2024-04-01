@@ -75,16 +75,8 @@ class KeyInputActivity : BaseActivity() {
             KeyInputViewModel.Event.Finish ->
                 finish()
 
-            is KeyInputViewModel.Event.ShowFloatingFailedProcessingMessage ->
-                showFloatingMessage(
-                    getString(
-                        R.string.template_key_input_error_failed_processing,
-                        event.shortSummary
-                    )
-                )
-
-            KeyInputViewModel.Event.ShowFloatingNoNewExtensionsMessage ->
-                showFloatingMessage(getString(R.string.key_input_error_no_new_extensions))
+            is KeyInputViewModel.Event.ShowFloatingError ->
+                showFloatingError(event.error)
         }
 
         log.debug {
@@ -132,10 +124,34 @@ class KeyInputActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingMessage(message: String) {
-        Snackbar.make(view.fragmentContainer, message, Snackbar.LENGTH_SHORT)
+    private fun showFloatingError(error: KeyInputViewModel.Error) {
+        Snackbar.make(view.fragmentContainer, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .show()
     }
+
+    private val KeyInputViewModel.Error.localizedMessage: String
+        get() = when (this) {
+            KeyInputViewModel.Error.KeyError.DeviceMismatch ->
+                getString(R.string.key_input_error_device_mismatch)
+
+            KeyInputViewModel.Error.KeyError.EmailMismatch ->
+                getString(R.string.key_input_error_email_mismatch)
+
+            KeyInputViewModel.Error.KeyError.Expired ->
+                getString(R.string.key_input_error_expired)
+
+            KeyInputViewModel.Error.KeyError.Invalid ->
+                getString(R.string.key_input_error_invalid)
+
+            KeyInputViewModel.Error.KeyError.NoNewExtensions ->
+                getString(R.string.key_input_error_no_new_extensions)
+
+            is KeyInputViewModel.Error.FailedProcessing ->
+                getString(
+                    R.string.template_key_input_error_failed_processing,
+                    shortSummary,
+                )
+        }
 
     private companion object {
         private const val ENTERING_FRAGMENT_TAG = "entering"

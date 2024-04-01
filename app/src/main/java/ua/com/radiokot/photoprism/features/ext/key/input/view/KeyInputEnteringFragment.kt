@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.FragmentKeyInputEnteringBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
@@ -47,26 +46,6 @@ class KeyInputEnteringFragment : Fragment() {
                     } else {
                         false
                     }
-                }
-            }
-
-            viewModel.keyError.observe(viewLifecycleOwner) { keyError ->
-                isErrorEnabled = keyError != null
-                error = when (keyError) {
-                    null ->
-                        null
-
-                    KeyInputViewModel.KeyError.DeviceMismatch ->
-                        getString(R.string.key_input_error_device_mismatch)
-
-                    KeyInputViewModel.KeyError.EmailMismatch ->
-                        getString(R.string.key_input_error_email_mismatch)
-
-                    KeyInputViewModel.KeyError.Expired ->
-                        getString(R.string.key_input_error_expired)
-
-                    KeyInputViewModel.KeyError.Invalid ->
-                        getString(R.string.key_input_error_invalid)
                 }
             }
         }

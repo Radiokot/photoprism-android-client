@@ -30,7 +30,6 @@ class KeyInputViewModel(
     private val log = kLogger("KeyInputVM")
 
     val key = MutableLiveData<String>()
-    val keyError = MutableLiveData<KeyError?>()
     val canSubmitKeyInput = MutableLiveData<Boolean>()
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Entering)
@@ -42,16 +41,12 @@ class KeyInputViewModel(
 
     init {
         val updateSubmitInput = { _: Any? ->
-            canSubmitKeyInput.postValue(
-                !key.value.isNullOrBlank() && keyError.value == null
-            )
+            canSubmitKeyInput.postValue(!key.value.isNullOrBlank())
         }
 
         key.observeForever {
-            keyError.value = null
             updateSubmitInput(null)
         }
-        keyError.observeForever(updateSubmitInput)
 
         updateSubmitInput(null)
     }
@@ -95,7 +90,7 @@ class KeyInputViewModel(
     }
 
     private fun parseAndActivateEnteredKey() {
-        val keyInput = key.value.checkNotNull {
+        val keyInput = key.value?.trim().checkNotNull {
             "The key must be entered at this point"
         }
 
@@ -129,16 +124,32 @@ class KeyInputViewModel(
 
                             when (result) {
                                 ParseEnteredKeyUseCase.Result.Failure.INVALID ->
-                                    keyError.value = KeyError.Invalid
+                                    eventsSubject.onNext(
+                                        Event.ShowFloatingError(
+                                            error = Error.KeyError.Invalid
+                                        )
+                                    )
 
                                 ParseEnteredKeyUseCase.Result.Failure.DEVICE_MISMATCH ->
-                                    keyError.value = KeyError.DeviceMismatch
+                                    eventsSubject.onNext(
+                                        Event.ShowFloatingError(
+                                            error = Error.KeyError.DeviceMismatch
+                                        )
+                                    )
 
                                 ParseEnteredKeyUseCase.Result.Failure.EMAIL_MISMATCH ->
-                                    keyError.value = KeyError.EmailMismatch
+                                    eventsSubject.onNext(
+                                        Event.ShowFloatingError(
+                                            error = Error.KeyError.EmailMismatch
+                                        )
+                                    )
 
                                 ParseEnteredKeyUseCase.Result.Failure.EXPIRED ->
-                                    keyError.value = KeyError.Expired
+                                    eventsSubject.onNext(
+                                        Event.ShowFloatingError(
+                                            error = Error.KeyError.Expired
+                                        )
+                                    )
                             }
                         }
                     }
@@ -149,8 +160,10 @@ class KeyInputViewModel(
                     }
 
                     eventsSubject.onNext(
-                        Event.ShowFloatingFailedProcessingMessage(
-                            shortSummary = error.shortSummary,
+                        Event.ShowFloatingError(
+                            error = Error.FailedProcessing(
+                                shortSummary = error.shortSummary,
+                            )
                         )
                     )
                 }
@@ -187,7 +200,11 @@ class KeyInputViewModel(
                             "activateParsedKey(): no_new_extensions_added"
                         }
 
-                        eventsSubject.onNext(Event.ShowFloatingNoNewExtensionsMessage)
+                        eventsSubject.onNext(
+                            Event.ShowFloatingError(
+                                error = Error.KeyError.NoNewExtensions
+                            )
+                        )
                     }
                 },
                 onError = { error ->
@@ -195,8 +212,12 @@ class KeyInputViewModel(
                         "activateParsedKey(): unexpected_error_occurred"
                     }
 
-                    Event.ShowFloatingFailedProcessingMessage(
-                        shortSummary = error.shortSummary,
+                    eventsSubject.onNext(
+                        Event.ShowFloatingError(
+                            error = Error.FailedProcessing(
+                                shortSummary = error.shortSummary,
+                            )
+                        )
                     )
                 }
             )
@@ -215,11 +236,16 @@ class KeyInputViewModel(
         eventsSubject.onNext(Event.Finish)
     }
 
-    sealed interface KeyError {
-        object Invalid : KeyError
-        object DeviceMismatch : KeyError
-        object EmailMismatch : KeyError
-        object Expired : KeyError
+    sealed interface Error {
+        sealed interface KeyError : Error {
+            object Invalid : KeyError
+            object DeviceMismatch : KeyError
+            object EmailMismatch : KeyError
+            object Expired : KeyError
+            object NoNewExtensions : KeyError
+        }
+
+        class FailedProcessing(val shortSummary: String) : Error
     }
 
     sealed interface State {
@@ -233,7 +259,6 @@ class KeyInputViewModel(
 
     sealed interface Event {
         object Finish : Event
-        class ShowFloatingFailedProcessingMessage(val shortSummary: String) : Event
-        object ShowFloatingNoNewExtensionsMessage : Event
+        class ShowFloatingError(val error: Error) : Event
     }
 }
