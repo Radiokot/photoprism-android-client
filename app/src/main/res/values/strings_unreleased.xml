@@ -17,20 +17,20 @@
     <string name="extension_memories_preferences" translatable="false">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference" translatable="false">Notifications</string>
     <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
-    <string name="key_input_entering_title" translatable="false">Activate a key</string>
-    <string name="key_input_entering_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
-    <string name="key_input_entering_paste" translatable="false">Paste</string>
-    <string name="key_input_entering_continue" translatable="false">@string/continuee</string>
-    <string name="key_input_entering_input_title" translatable="false">Key</string>
-    <string name="key_input_error_device_mismatch" translatable="false">This key is not issued for this device</string>
-    <string name="key_input_error_email_mismatch" translatable="false">This key is not issued for you</string>
-    <string name="key_input_error_invalid" translatable="false">This key is invalid</string>
-    <string name="key_input_error_expired" translatable="false">This key is expired</string>
-    <string name="key_input_error_no_new_extensions" translatable="false">This key adds no new extensions</string>
-    <string name="template_key_input_error_failed_processing" translatable="false">Failed to process the key: %1$s</string>
-    <string name="key_input_success_title" translatable="false">Key activated</string>
-    <string name="key_input_success_subtitle" translatable="false">New extensions have been added to the gallery 😎</string>
-    <string name="key_input_success_done" translatable="false">Done</string>
+    <string name="key_activation_input_title" translatable="false">Activate a key</string>
+    <string name="key_activation_input_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
+    <string name="key_activation_input_paste" translatable="false">Paste</string>
+    <string name="key_activation_input_continue" translatable="false">@string/continuee</string>
+    <string name="key_activation_input_field_title" translatable="false">Key</string>
+    <string name="key_activation_error_device_mismatch" translatable="false">This key is not issued for this device</string>
+    <string name="key_activation_error_email_mismatch" translatable="false">This key is not issued for you</string>
+    <string name="key_activation_error_invalid" translatable="false">This key is invalid</string>
+    <string name="key_activation_error_expired" translatable="false">This key is expired</string>
+    <string name="key_activation_error_no_new_extensions" translatable="false">This key adds no new extensions</string>
+    <string name="template_key_activation_error_failed_processing" translatable="false">Failed to process the key: %1$s</string>
+    <string name="key_activation_success_title" translatable="false">Key activated</string>
+    <string name="key_activation_success_subtitle" translatable="false">New extensions have been added to the gallery 😎</string>
+    <string name="key_activation_success_done" translatable="false">Done</string>
     <plurals name="activated_extensions" translatable="false">
         <item quantity="one">%1$d activated extension</item>
         <item quantity="other">%1$d activated extensions</item>

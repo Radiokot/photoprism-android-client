@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.view
+package ua.com.radiokot.photoprism.features.ext.key.activation.view
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -9,17 +9,17 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityKeyInputBinding
+import ua.com.radiokot.photoprism.databinding.ActivityKeyActivationBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.ext.key.input.view.model.KeyInputViewModel
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
-class KeyInputActivity : BaseActivity() {
+class KeyActivationActivity : BaseActivity() {
     private val log = kLogger("KeyInputActivity")
 
-    private lateinit var view: ActivityKeyInputBinding
-    val viewModel: KeyInputViewModel by viewModel()
+    private lateinit var view: ActivityKeyActivationBinding
+    val viewModel: KeyActivationViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +28,7 @@ class KeyInputActivity : BaseActivity() {
             return
         }
 
-        view = ActivityKeyInputBinding.inflate(layoutInflater)
+        view = ActivityKeyActivationBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -46,11 +46,11 @@ class KeyInputActivity : BaseActivity() {
         }
 
         when (state) {
-            KeyInputViewModel.State.Entering -> {
-                showEntering()
+            KeyActivationViewModel.State.Input -> {
+                showInput()
             }
 
-            is KeyInputViewModel.State.SuccessfullyEntered -> {
+            is KeyActivationViewModel.State.Success -> {
                 SoftInputVisibility.hide(window)
                 // Ensure the keyboard will not re-appear.
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
@@ -72,10 +72,10 @@ class KeyInputActivity : BaseActivity() {
         }
 
         when (event) {
-            KeyInputViewModel.Event.Finish ->
+            KeyActivationViewModel.Event.Finish ->
                 finish()
 
-            is KeyInputViewModel.Event.ShowFloatingError ->
+            is KeyActivationViewModel.Event.ShowFloatingError ->
                 showFloatingError(event.error)
         }
 
@@ -85,21 +85,21 @@ class KeyInputActivity : BaseActivity() {
         }
     }.autoDispose(this)
 
-    private fun showEntering() {
-        if (supportFragmentManager.findFragmentByTag(ENTERING_FRAGMENT_TAG) != null) {
+    private fun showInput() {
+        if (supportFragmentManager.findFragmentByTag(INPUT_FRAGMENT_TAG) != null) {
             log.debug {
-                "showEntering(): already_shown"
+                "showInput(): already_shown"
             }
 
             return
         }
 
         supportFragmentManager.commit {
-            replace(R.id.fragment_container, KeyInputEnteringFragment(), ENTERING_FRAGMENT_TAG)
+            replace(R.id.fragment_container, KeyActivationInputFragment(), INPUT_FRAGMENT_TAG)
             disallowAddToBackStack()
 
             log.debug {
-                "showEntering(): showing"
+                "showInput(): showing"
             }
         }
     }
@@ -114,7 +114,7 @@ class KeyInputActivity : BaseActivity() {
         }
 
         supportFragmentManager.commit {
-            replace(R.id.fragment_container, KeyInputSuccessFragment(), SUCCESS_FRAGMENT_TAG)
+            replace(R.id.fragment_container, KeyActivationSuccessFragment(), SUCCESS_FRAGMENT_TAG)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             disallowAddToBackStack()
 
@@ -124,37 +124,37 @@ class KeyInputActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingError(error: KeyInputViewModel.Error) {
+    private fun showFloatingError(error: KeyActivationViewModel.Error) {
         Snackbar.make(view.fragmentContainer, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .show()
     }
 
-    private val KeyInputViewModel.Error.localizedMessage: String
+    private val KeyActivationViewModel.Error.localizedMessage: String
         get() = when (this) {
-            KeyInputViewModel.Error.KeyError.DeviceMismatch ->
-                getString(R.string.key_input_error_device_mismatch)
+            KeyActivationViewModel.Error.KeyError.DeviceMismatch ->
+                getString(R.string.key_activation_error_device_mismatch)
 
-            KeyInputViewModel.Error.KeyError.EmailMismatch ->
-                getString(R.string.key_input_error_email_mismatch)
+            KeyActivationViewModel.Error.KeyError.EmailMismatch ->
+                getString(R.string.key_activation_error_email_mismatch)
 
-            KeyInputViewModel.Error.KeyError.Expired ->
-                getString(R.string.key_input_error_expired)
+            KeyActivationViewModel.Error.KeyError.Expired ->
+                getString(R.string.key_activation_error_expired)
 
-            KeyInputViewModel.Error.KeyError.Invalid ->
-                getString(R.string.key_input_error_invalid)
+            KeyActivationViewModel.Error.KeyError.Invalid ->
+                getString(R.string.key_activation_error_invalid)
 
-            KeyInputViewModel.Error.KeyError.NoNewExtensions ->
-                getString(R.string.key_input_error_no_new_extensions)
+            KeyActivationViewModel.Error.KeyError.NoNewExtensions ->
+                getString(R.string.key_activation_error_no_new_extensions)
 
-            is KeyInputViewModel.Error.FailedProcessing ->
+            is KeyActivationViewModel.Error.FailedProcessing ->
                 getString(
-                    R.string.template_key_input_error_failed_processing,
+                    R.string.template_key_activation_error_failed_processing,
                     shortSummary,
                 )
         }
 
     private companion object {
-        private const val ENTERING_FRAGMENT_TAG = "entering"
+        private const val INPUT_FRAGMENT_TAG = "input"
         private const val SUCCESS_FRAGMENT_TAG = "success"
     }
 }

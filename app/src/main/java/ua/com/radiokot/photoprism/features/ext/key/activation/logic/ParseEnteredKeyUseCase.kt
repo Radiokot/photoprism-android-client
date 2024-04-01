@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.logic
+package ua.com.radiokot.photoprism.features.ext.key.activation.logic
 
 import com.fasterxml.jackson.core.Base64Variants
 import io.reactivex.rxjava3.core.Single
@@ -9,7 +9,7 @@ import ua.com.radiokot.license.OfflineLicenseKeys
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
-import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
+import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey

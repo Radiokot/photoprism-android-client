@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.data.model
+package ua.com.radiokot.photoprism.features.ext.key.activation.data.model
 
 import ua.com.radiokot.license.OfflineLicenseKey
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension

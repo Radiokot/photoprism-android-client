@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="16dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_entering_title"
+                android:text="@string/key_activation_input_title"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                 app:drawableTopCompat="@mipmap/splash_logo" />
 
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_entering_subtitle"
+                android:text="@string/key_activation_input_subtitle"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -45,8 +45,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:hint="@string/key_input_entering_input_title"
-                app:endIconContentDescription="@string/key_input_entering_paste"
+                android:hint="@string/key_activation_input_field_title"
+                app:endIconContentDescription="@string/key_activation_input_paste"
                 app:endIconDrawable="@drawable/ic_content_paste_go"
                 app:endIconMode="custom"
                 app:endIconTint="@color/text_input_layout_end_icon_tint">
@@ -72,7 +72,7 @@
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="@string/key_input_entering_continue"
+            android:text="@string/key_activation_input_continue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

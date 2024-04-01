@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.view
+package ua.com.radiokot.photoprism.features.ext.key.activation.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,13 +9,13 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.databinding.FragmentKeyInputSuccessBinding
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.ext.key.input.view.model.GalleryExtensionListItem
-import ua.com.radiokot.photoprism.features.ext.key.input.view.model.KeyInputViewModel
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.GalleryExtensionListItem
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 
-class KeyInputSuccessFragment : Fragment() {
+class KeyActivationSuccessFragment : Fragment() {
     private lateinit var view: FragmentKeyInputSuccessBinding
-    private val viewModel: KeyInputViewModel
-        get() = (requireActivity() as KeyInputActivity).viewModel
+    private val viewModel: KeyActivationViewModel
+        get() = (requireActivity() as KeyActivationActivity).viewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,8 +35,8 @@ class KeyInputSuccessFragment : Fragment() {
 
     private fun initList() {
         val successState =
-            checkNotNull(viewModel.currentState as? KeyInputViewModel.State.SuccessfullyEntered) {
-                "This screen can only be shown in the successfully entered state"
+            checkNotNull(viewModel.currentState as? KeyActivationViewModel.State.Success) {
+                "This screen can only be shown in the successful state"
             }
 
         // TODO show expiration if set, above or below the list

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.logic
+package ua.com.radiokot.photoprism.features.ext.key.activation.logic
 
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -7,7 +7,7 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
-import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
+import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 
 class ActivateParsedKeyUseCase(

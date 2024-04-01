@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.view
+package ua.com.radiokot.photoprism.features.ext.key.activation.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
-import ua.com.radiokot.photoprism.databinding.FragmentKeyInputEnteringBinding
+import ua.com.radiokot.photoprism.databinding.FragmentKeyActivationInputBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.ext.key.input.view.model.KeyInputViewModel
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 
-class KeyInputEnteringFragment : Fragment() {
-    private lateinit var view: FragmentKeyInputEnteringBinding
-    private val viewModel: KeyInputViewModel
-        get() = (requireActivity() as KeyInputActivity).viewModel
+class KeyActivationInputFragment : Fragment() {
+    private lateinit var view: FragmentKeyActivationInputBinding
+    private val viewModel: KeyActivationViewModel
+        get() = (requireActivity() as KeyActivationActivity).viewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        view = FragmentKeyInputEnteringBinding.inflate(inflater)
+        view = FragmentKeyActivationInputBinding.inflate(inflater)
         return view.root
     }
 

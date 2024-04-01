@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.view.model
+package ua.com.radiokot.photoprism.features.ext.key.activation.view.model
 
 import android.view.View
 import androidx.annotation.StringRes
@@ -12,7 +12,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryExtensionBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
-import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.view.GalleryExtensionResources
 

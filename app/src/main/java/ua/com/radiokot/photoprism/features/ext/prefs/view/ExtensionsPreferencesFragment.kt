@@ -18,7 +18,7 @@ import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
-import ua.com.radiokot.photoprism.features.ext.key.input.view.KeyInputActivity
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
@@ -50,7 +50,7 @@ class ExtensionsPreferencesFragment :
     private fun initGeneralPreferences() = with(preferenceScreen) {
         with(requirePreference(R.string.pk_ext_enter_key)) {
             setOnPreferenceClickListener {
-                startActivity(Intent(requireActivity(), KeyInputActivity::class.java))
+                startActivity(Intent(requireActivity(), KeyActivationActivity::class.java))
                 true
             }
         }

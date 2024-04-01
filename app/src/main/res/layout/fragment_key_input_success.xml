@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="16dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_success_title"
+                android:text="@string/key_activation_success_title"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                 app:drawableTopCompat="@mipmap/splash_logo" />
 
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                android:text="@string/key_input_success_subtitle"
+                android:text="@string/key_activation_success_subtitle"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -57,7 +57,7 @@
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="32dp"
-            android:text="@string/key_input_success_done"
+            android:text="@string/key_activation_success_done"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

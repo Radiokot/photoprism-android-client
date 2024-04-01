@@ -44,7 +44,7 @@ import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
-import ua.com.radiokot.photoprism.features.ext.key.input.view.KeyInputActivity
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -282,7 +282,7 @@ class PreferencesFragment :
                         ExtensionsPreferencesFragment.EXTENSIONS_WITH_PREFERENCES
                             .any { it.feature in featureFlags }
                     if (!hasAnyExtensionsWithPreferences) {
-                        startActivity(Intent(requireContext(), KeyInputActivity::class.java))
+                        startActivity(Intent(requireContext(), KeyActivationActivity::class.java))
                         true
                     } else {
                         false

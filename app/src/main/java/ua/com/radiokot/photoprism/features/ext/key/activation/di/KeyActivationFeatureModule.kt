@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.di
+package ua.com.radiokot.photoprism.features.ext.key.activation.di
 
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
@@ -6,13 +6,13 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.ext.di.galleryExtensionsFeatureModule
-import ua.com.radiokot.photoprism.features.ext.key.input.logic.ActivateParsedKeyUseCase
-import ua.com.radiokot.photoprism.features.ext.key.input.logic.ParseEnteredKeyUseCase
-import ua.com.radiokot.photoprism.features.ext.key.input.view.model.KeyInputViewModel
+import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ActivateParsedKeyUseCase
+import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ParseEnteredKeyUseCase
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 import ua.com.radiokot.photoprism.features.ext.key.logic.AndroidHardwareIdentifier
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 
-val keyInputFeatureModule = module {
+val keyActivationFeatureModule = module {
     includes(galleryExtensionsFeatureModule)
 
     single {
@@ -23,6 +23,6 @@ val keyInputFeatureModule = module {
     singleOf(ActivateParsedKeyUseCase::Factory)
 
     scope<EnvSession> {
-        viewModelOf(::KeyInputViewModel)
+        viewModelOf(::KeyActivationViewModel)
     }
 }

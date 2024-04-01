@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.input.view.model
+package ua.com.radiokot.photoprism.features.ext.key.activation.view.model
 
 import android.app.Application
 import android.content.ClipboardManager
@@ -17,12 +17,12 @@ import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
-import ua.com.radiokot.photoprism.features.ext.key.input.data.model.ParsedKey
-import ua.com.radiokot.photoprism.features.ext.key.input.logic.ActivateParsedKeyUseCase
-import ua.com.radiokot.photoprism.features.ext.key.input.logic.ParseEnteredKeyUseCase
+import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
+import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ActivateParsedKeyUseCase
+import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ParseEnteredKeyUseCase
 import java.util.Date
 
-class KeyInputViewModel(
+class KeyActivationViewModel(
     private val application: Application,
     private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
     private val activateParsedKeyUseCaseFactory: ActivateParsedKeyUseCase.Factory,
@@ -32,7 +32,7 @@ class KeyInputViewModel(
     val key = MutableLiveData<String>()
     val canSubmitKeyInput = MutableLiveData<Boolean>()
 
-    private val stateSubject = BehaviorSubject.createDefault<State>(State.Entering)
+    private val stateSubject = BehaviorSubject.createDefault<State>(State.Input)
     val state = stateSubject.toMainThreadObservable()
     val currentState: State
         get() = stateSubject.value!!
@@ -52,8 +52,8 @@ class KeyInputViewModel(
     }
 
     fun onKeyInputPasteClicked() {
-        check(currentState is State.Entering) {
-            "Paste button can only be clicked in the entering state"
+        check(currentState is State.Input) {
+            "Paste button can only be clicked in the input state"
         }
 
         val clipboardText = application.getSystemService<ClipboardManager>()
@@ -80,10 +80,10 @@ class KeyInputViewModel(
 
     fun onKeyInputSubmit() {
         check(
-            currentState is State.Entering
+            currentState is State.Input
                     && canSubmitKeyInput.value == true
         ) {
-            "This input can only submitted in the entering state when it is allowed"
+            "This input can only submitted in the input state when it is allowed"
         }
 
         parseAndActivateEnteredKey()
@@ -189,7 +189,7 @@ class KeyInputViewModel(
                         }
 
                         stateSubject.onNext(
-                            State.SuccessfullyEntered(
+                            State.Success(
                                 addedExtensions = addedExtensions
                                     .map(ActivatedGalleryExtension::type),
                                 expiresAt = parsedKey.expiresAt,
@@ -225,8 +225,8 @@ class KeyInputViewModel(
     }
 
     fun onSuccessDoneClicked() {
-        check(currentState is State.SuccessfullyEntered) {
-            "Done button can only be clicked in the successfully entered state"
+        check(currentState is State.Success) {
+            "Done button can only be clicked in the successful state"
         }
 
         log.debug {
@@ -249,9 +249,9 @@ class KeyInputViewModel(
     }
 
     sealed interface State {
-        object Entering : State
+        object Input : State
 
-        class SuccessfullyEntered(
+        class Success(
             val addedExtensions: Collection<GalleryExtension>,
             val expiresAt: Date?,
         ) : State

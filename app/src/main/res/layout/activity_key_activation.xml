@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".features.ext.key.input.view.KeyInputActivity">
+    tools:context=".features.ext.key.activation.view.KeyActivationActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
