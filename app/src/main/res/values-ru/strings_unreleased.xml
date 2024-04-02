@@ -19,8 +19,6 @@
     <string name="extension_memories_notification_preference_summary">Отправлять уведомление когда находятся новые воспоминания</string>
     <string name="key_activation_input_title">Активация ключа</string>
     <string name="key_activation_input_subtitle">Вставьте ваш ключ для активации расширений</string>
-    <string name="key_activation_input_paste">Вставить</string>
-    <string name="key_activation_input_continue">@string/continuee</string>
     <string name="key_activation_input_field_title">Ключ</string>
     <string name="key_activation_error_device_mismatch">Этот ключ выдан не для этого устройства</string>
     <string name="key_activation_error_email_mismatch">Этот ключ выдан не вам</string>

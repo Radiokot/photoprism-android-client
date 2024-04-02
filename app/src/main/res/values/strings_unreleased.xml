@@ -19,8 +19,6 @@
     <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
     <string name="key_activation_input_title" translatable="false">Activate a key</string>
     <string name="key_activation_input_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
-    <string name="key_activation_input_paste" translatable="false">Paste</string>
-    <string name="key_activation_input_continue" translatable="false">@string/continuee</string>
     <string name="key_activation_input_field_title" translatable="false">Key</string>
     <string name="key_activation_error_device_mismatch" translatable="false">This key is not issued for this device</string>
     <string name="key_activation_error_email_mismatch" translatable="false">This key is not issued for you</string>

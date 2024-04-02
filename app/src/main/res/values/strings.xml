@@ -166,4 +166,9 @@
         <item>Huge</item>
     </string-array>
     <string name="language_preference">Language</string>
+    <string name="paste">Paste</string>
+    <string name="tfa_code_dialog_title">Verification code</string>
+    <string name="tfa_code_dialog_message">Enter or paste the code from the authenticator</string>
+    <string name="tfa_code_dialog_input_hint">Code</string>
+    <string name="error_invalid_tfa_code">Invalid verification code</string>
 </resources>

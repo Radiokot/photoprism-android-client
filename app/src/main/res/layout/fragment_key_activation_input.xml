@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:hint="@string/key_activation_input_field_title"
-                app:endIconContentDescription="@string/key_activation_input_paste"
+                app:endIconContentDescription="@string/paste"
                 app:endIconDrawable="@drawable/ic_content_paste_go"
                 app:endIconMode="custom"
                 app:endIconTint="@color/text_input_layout_end_icon_tint">
@@ -72,7 +72,7 @@
             android:layout_height="64dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="@string/key_activation_input_continue"
+            android:text="@string/continuee"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

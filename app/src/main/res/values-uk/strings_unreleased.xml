@@ -19,8 +19,6 @@
     <string name="extension_memories_notification_preference_summary">Відправляти сповіщення коли знаходяться нові спогади</string>
     <string name="key_activation_input_title">Активація ключа</string>
     <string name="key_activation_input_subtitle">Вставте ваш ключ для активації розширень</string>
-    <string name="key_activation_input_paste">Вставити</string>
-    <string name="key_activation_input_continue">@string/continuee</string>
     <string name="key_activation_input_field_title">Ключ</string>
     <string name="key_activation_error_device_mismatch">Цей ключ видано не для цього пристрою</string>
     <string name="key_activation_error_email_mismatch">Цей ключ видано не вам</string>

@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.databinding.DialogSearchBookmarkBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
@@ -89,15 +90,15 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
             viewLifecycleOwner,
             viewBinding.saveButton::setEnabled
         )
-        viewBinding.saveButton.setOnClickListener {
+        viewBinding.saveButton.setThrottleOnClickListener {
             viewModel.onSaveButtonClicked()
         }
 
-        viewBinding.deleteButton.setOnClickListener {
+        viewBinding.deleteButton.setThrottleOnClickListener {
             viewModel.onDeleteButtonClicked()
         }
 
-        viewBinding.closeButton.setOnClickListener {
+        viewBinding.closeButton.setThrottleOnClickListener {
             dialog?.cancel()
         }
     }
