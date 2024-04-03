@@ -80,6 +80,7 @@ class TfaCodeDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_tfa_cod
             ?: return
 
         setFragmentResult(REQUEST_KEY, bundleOf(CODE_EXTRA to filteredInput))
+        SoftInputVisibility.hide(dialog?.window!!)
         dismiss()
     }
 
