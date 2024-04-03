@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.getKoin
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -67,29 +68,12 @@ class EnvConnectionActivity : BaseActivity() {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
             viewModel.rootUrlError.observe(this@EnvConnectionActivity) { rootUrlError ->
-                when (rootUrlError) {
-                    is EnvConnectionViewModel.RootUrlError.Inaccessible -> {
-                        isErrorEnabled = true
-                        error = getString(
-                            R.string.template_error_inaccessible_library_url,
-                            rootUrlError.shortSummary,
-                        )
-                    }
-
-                    EnvConnectionViewModel.RootUrlError.InvalidFormat -> {
-                        isErrorEnabled = true
-                        error = getString(R.string.error_invalid_library_url_format)
-                    }
-
-                    EnvConnectionViewModel.RootUrlError.RequiresCredentials -> {
-                        isErrorEnabled = true
-                        error = getString(R.string.error_library_requires_credentials)
-                    }
-
-                    null -> {
-                        isErrorEnabled = false
-                        error = null
-                    }
+                if (rootUrlError != null) {
+                    isErrorEnabled = true
+                    error = rootUrlError.localizedMessage
+                } else {
+                    isErrorEnabled = false
+                    error = null
                 }
             }
 
@@ -114,16 +98,12 @@ class EnvConnectionActivity : BaseActivity() {
             }
 
             viewModel.passwordError.observe(this@EnvConnectionActivity) { passwordError ->
-                when (passwordError) {
-                    EnvConnectionViewModel.PasswordError.Invalid -> {
-                        isErrorEnabled = true
-                        error = getString(R.string.error_invalid_password)
-                    }
-
-                    null -> {
-                        isErrorEnabled = false
-                        error = null
-                    }
+                if (passwordError != null) {
+                    isErrorEnabled = true
+                    error = passwordError.localizedMessage
+                } else {
+                    isErrorEnabled = false
+                    error = null
                 }
             }
         }
@@ -243,6 +223,11 @@ class EnvConnectionActivity : BaseActivity() {
 
                 is EnvConnectionViewModel.Event.RequestTfaCodeInput ->
                     showTfaCodeDialog()
+
+                is EnvConnectionViewModel.Event.ShowFloatingError ->
+                    showFloatingError(
+                        error = event.error,
+                    )
             }
 
             log.debug {
@@ -345,6 +330,32 @@ class EnvConnectionActivity : BaseActivity() {
                 .show(supportFragmentManager, TfaCodeDialogFragment.TAG)
         }
     }
+
+    private fun showFloatingError(error: EnvConnectionViewModel.Error) {
+        Snackbar.make(view.root, error.localizedMessage, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    private val EnvConnectionViewModel.Error.localizedMessage: String
+        get() = when (this) {
+            EnvConnectionViewModel.Error.InvalidTfaCode ->
+                getString(R.string.error_invalid_tfa_code)
+
+            EnvConnectionViewModel.Error.PasswordError.Invalid ->
+                getString(R.string.error_invalid_password)
+
+            is EnvConnectionViewModel.Error.RootUrlError.Inaccessible ->
+                getString(
+                    R.string.template_error_inaccessible_library_url,
+                    shortSummary,
+                )
+
+            EnvConnectionViewModel.Error.RootUrlError.InvalidFormat ->
+                getString(R.string.error_invalid_library_url_format)
+
+            EnvConnectionViewModel.Error.RootUrlError.RequiresCredentials ->
+                getString(R.string.error_library_requires_credentials)
+        }
 
     private fun goToGallery() {
         log.debug {

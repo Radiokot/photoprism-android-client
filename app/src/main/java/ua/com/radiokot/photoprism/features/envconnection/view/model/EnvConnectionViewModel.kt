@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.TfaCodeInvalidException
 import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -26,10 +27,10 @@ class EnvConnectionViewModel(
     private val log = kLogger("EnvConnectionVM")
 
     val rootUrl = MutableLiveData<String>()
-    val rootUrlError = MutableLiveData<RootUrlError?>(null)
+    val rootUrlError = MutableLiveData<Error.RootUrlError?>(null)
     val username = MutableLiveData<String>()
     val password = MutableLiveData<String>()
-    val passwordError = MutableLiveData<PasswordError?>(null)
+    val passwordError = MutableLiveData<Error.PasswordError?>(null)
     val isClientCertificateSelectionAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     val clientCertificateAlias = MutableLiveData<String?>()
 
@@ -66,14 +67,14 @@ class EnvConnectionViewModel(
         }
         val clearCredentialsErrors = { _: Any? ->
             passwordError.value = null
-            if (rootUrlError.value == RootUrlError.RequiresCredentials) {
+            if (rootUrlError.value == Error.RootUrlError.RequiresCredentials) {
                 rootUrlError.value = null
             }
         }
         username.observeForever(clearCredentialsErrors)
         password.observeForever(clearCredentialsErrors)
         clientCertificateAlias.observeForever {
-            if (rootUrlError.value is RootUrlError.Inaccessible) {
+            if (rootUrlError.value is Error.RootUrlError.Inaccessible) {
                 rootUrlError.value = null
             }
         }
@@ -180,7 +181,7 @@ class EnvConnectionViewModel(
             log.warn(e) { "connect(): connection_creation_failed" }
 
             stateSubject.onNext(State.Idle)
-            rootUrlError.value = RootUrlError.InvalidFormat
+            rootUrlError.value = Error.RootUrlError.InvalidFormat
 
             return
         }
@@ -238,10 +239,10 @@ class EnvConnectionViewModel(
 
                     when (error) {
                         is InvalidCredentialsException ->
-                            passwordError.value = PasswordError.Invalid
+                            passwordError.value = Error.PasswordError.Invalid
 
                         is EnvIsNotPublicException ->
-                            rootUrlError.value = RootUrlError.RequiresCredentials
+                            rootUrlError.value = Error.RootUrlError.RequiresCredentials
 
                         is WebPageInteractionRequiredException ->
                             // If proxy is blocking the access,
@@ -257,22 +258,37 @@ class EnvConnectionViewModel(
                                 Event.RequestTfaCodeInput
                             )
 
+                        is TfaCodeInvalidException -> {
+                            eventsSubject.onNext(
+                                Event.ShowFloatingError(
+                                    error = Error.InvalidTfaCode
+                                )
+                            )
+                            eventsSubject.onNext(
+                                Event.RequestTfaCodeInput
+                            )
+                        }
+
                         else ->
-                            rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
+                            rootUrlError.value = Error.RootUrlError.Inaccessible(error.shortSummary)
                     }
                 }
             )
             .autoDispose(this)
     }
 
-    sealed interface RootUrlError {
-        class Inaccessible(val shortSummary: String) : RootUrlError
-        object InvalidFormat : RootUrlError
-        object RequiresCredentials : RootUrlError
-    }
+    sealed interface Error {
+        sealed interface RootUrlError : Error {
+            class Inaccessible(val shortSummary: String) : RootUrlError
+            object InvalidFormat : RootUrlError
+            object RequiresCredentials : RootUrlError
+        }
 
-    sealed interface PasswordError {
-        object Invalid : PasswordError
+        sealed interface PasswordError : Error {
+            object Invalid : PasswordError
+        }
+
+        object InvalidTfaCode : Error
     }
 
     sealed interface State {
@@ -286,6 +302,7 @@ class EnvConnectionViewModel(
         object ShowMissingClientCertificatesNotice : Event
         object OpenConnectionGuide : Event
         object OpenClientCertificateGuide : Event
+        class ShowFloatingError(val error: Error) : Event
 
         /**
          * Call [onWebViewerHandledRedirect] on successful result.

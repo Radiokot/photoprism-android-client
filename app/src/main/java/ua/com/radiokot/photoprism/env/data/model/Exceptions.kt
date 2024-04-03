@@ -53,3 +53,5 @@ class WebPageInteractionRequiredException :
 }
 
 class TfaRequiredException: IOException()
+
+class TfaCodeInvalidException: IOException()

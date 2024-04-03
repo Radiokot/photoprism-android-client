@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.TfaCodeInvalidException
 import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import java.net.HttpURLConnection
@@ -65,6 +66,9 @@ class PhotoPrismSessionCreator(
                 when (photoPrismSessionError?.code) {
                     PhotoPrismSessionError.CODE_PASSCODE_REQUIRED ->
                         throw TfaRequiredException()
+
+                    PhotoPrismSessionError.CODE_INVALID_PASSCODE ->
+                        throw TfaCodeInvalidException()
 
                     else ->
                         throw InvalidCredentialsException()
