@@ -30,8 +30,9 @@ typealias PhotoPrismConfigServiceFactory =
 class ConnectToEnvUseCase(
     private val connectionParams: EnvConnectionParams,
     private val auth: EnvAuth,
+    private val tfaCode: String?,
     private val configServiceFactory: PhotoPrismConfigServiceFactory,
-    private val sessionCreator: SessionCreator,
+    private val sessionCreatorFactory: SessionCreator.Factory,
     private val envSessionHolder: EnvSessionHolder?,
     private val envSessionPersistence: ObjectPersistence<EnvSession>?,
     private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
@@ -74,8 +75,9 @@ class ConnectToEnvUseCase(
     }
 
     private fun getSession(): Single<EnvSession> = {
-        sessionCreator.createSession(
+        sessionCreatorFactory.get(connectionParams).createSession(
             auth = auth,
+            tfaCode = tfaCode,
         )
     }
         .toSingle()
@@ -129,10 +131,26 @@ class ConnectToEnvUseCase(
         }
     }
 
-    fun interface Factory {
+    class Factory(
+        private val configServiceFactory: PhotoPrismConfigServiceFactory,
+        private val sessionCreatorFactory: SessionCreator.Factory,
+        private val envSessionHolder: EnvSessionHolder?,
+        private val envSessionPersistence: ObjectPersistence<EnvSession>?,
+        private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
+    ) {
         fun get(
-            connection: EnvConnectionParams,
+            connectionParams: EnvConnectionParams,
             auth: EnvAuth,
-        ): ConnectToEnvUseCase
+            tfaCode: String?,
+        ) = ConnectToEnvUseCase(
+            connectionParams = connectionParams,
+            auth = auth,
+            tfaCode = tfaCode,
+            configServiceFactory = configServiceFactory,
+            sessionCreatorFactory = sessionCreatorFactory,
+            envSessionHolder = envSessionHolder,
+            envSessionPersistence = envSessionPersistence,
+            envAuthPersistence = envAuthPersistence,
+        )
     }
 }

@@ -7,4 +7,6 @@ class PhotoPrismSessionCredentials(
     val username: String,
     @JsonProperty("password")
     val password: String,
+    @JsonProperty("passcode")
+    val passcode: String?,
 )

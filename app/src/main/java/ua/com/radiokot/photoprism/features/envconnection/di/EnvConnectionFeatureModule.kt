@@ -5,20 +5,17 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
 import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme
 import androidx.security.crypto.MasterKey
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
-import ua.com.radiokot.photoprism.di.EnvSessionCreatorParams
 import ua.com.radiokot.photoprism.di.IMAGE_CACHE_DIRECTORY
-import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.di.envModule
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
-import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.data.storage.KoinScopeEnvSessionHolder
@@ -29,11 +26,6 @@ import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnv
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 
 private const val AUTH_PREFERENCES = "auth"
-
-private class ConnectToEnvUseCaseParams(
-    val connectionParams: EnvConnectionParams,
-    val auth: EnvAuth,
-) : SelfParameterHolder()
 
 val envConnectionFeatureModule = module {
     includes(envModule)
@@ -72,17 +64,9 @@ val envConnectionFeatureModule = module {
         )
     }.bind(EnvSessionHolder::class)
 
-    factory(_q<ConnectToEnvUseCaseParams>()) { params ->
-        params as ConnectToEnvUseCaseParams
-
-        ConnectToEnvUseCase(
-            connectionParams = params.connectionParams,
-            auth = params.auth,
-            sessionCreator = get(_q<EnvSessionCreatorParams>()) {
-                EnvSessionCreatorParams(
-                    envConnectionParams = params.connectionParams,
-                )
-            },
+    single {
+        ConnectToEnvUseCase.Factory(
+            sessionCreatorFactory = get(),
             configServiceFactory = { envConnectionParams, sessionId ->
                 get(_q<EnvPhotoPrismClientConfigServiceParams>()) {
                     EnvPhotoPrismClientConfigServiceParams(
@@ -95,7 +79,7 @@ val envConnectionFeatureModule = module {
             envSessionPersistence = getOrNull(_q<EnvSession>()),
             envAuthPersistence = get(_q<EnvAuth>()),
         )
-    } bind ConnectToEnvUseCase::class
+    } bind ConnectToEnvUseCase.Factory::class
 
     scope<EnvSession> {
         factory {
@@ -113,16 +97,5 @@ val envConnectionFeatureModule = module {
         } bind DisconnectFromEnvUseCase::class
     }
 
-    viewModel {
-        EnvConnectionViewModel(
-            connectToEnvUseCaseFactory = { connectionParams, auth ->
-                get(_q<ConnectToEnvUseCaseParams>()) {
-                    ConnectToEnvUseCaseParams(
-                        connectionParams = connectionParams,
-                        auth = auth,
-                    )
-                }
-            },
-        )
-    }
+    viewModelOf(::EnvConnectionViewModel)
 }

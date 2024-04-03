@@ -42,10 +42,6 @@ class EnvHttpClientParams(
     }
 }
 
-class EnvSessionCreatorParams(
-    val envConnectionParams: EnvConnectionParams,
-) : SelfParameterHolder()
-
 val envModule = module {
     includes(ioModules)
 
@@ -105,18 +101,19 @@ val envModule = module {
             .build()
     } bind HttpClient::class
 
-    factory(_q<EnvSessionCreatorParams>()) { params ->
-        params as EnvSessionCreatorParams
-        PhotoPrismSessionCreator(
-            sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
-                EnvPhotoPrismSessionServiceParams(
-                    envConnectionParams = params.envConnectionParams,
-                )
-            },
-            envConnectionParams = params.envConnectionParams,
-            jsonObjectMapper = get(),
-        )
-    } bind SessionCreator::class
+    single {
+        SessionCreator.Factory { envConnectionParams: EnvConnectionParams ->
+            PhotoPrismSessionCreator(
+                sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
+                    EnvPhotoPrismSessionServiceParams(
+                        envConnectionParams = envConnectionParams,
+                    )
+                },
+                envConnectionParams = envConnectionParams,
+                jsonObjectMapper = get(),
+            )
+        }
+    } bind SessionCreator.Factory::class
 
     scope<EnvSession> {
         scoped {
@@ -132,11 +129,9 @@ val envModule = module {
                                 "There must be an auth data in order to renew the session"
                             }
                         },
-                        sessionCreator = get(_q<EnvSessionCreatorParams>()) {
-                            EnvSessionCreatorParams(
-                                envConnectionParams = session.envConnectionParams,
-                            )
-                        },
+                        sessionCreator = get<SessionCreator.Factory>().get(
+                            envConnectionParams = session.envConnectionParams,
+                        ),
                         onSessionRenewed = { newSession ->
                             session.id = newSession.id
                             session.downloadToken = newSession.downloadToken

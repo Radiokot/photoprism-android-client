@@ -10,7 +10,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.env.data.model.TfaNotYetSupportedException
+import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import java.net.HttpURLConnection
 
@@ -21,7 +21,8 @@ class PhotoPrismSessionCreator(
 ) : SessionCreator {
 
     override fun createSession(
-        auth: EnvAuth
+        auth: EnvAuth,
+        tfaCode: String?,
     ): EnvSession {
         return try {
             when (auth) {
@@ -31,6 +32,7 @@ class PhotoPrismSessionCreator(
                             PhotoPrismSessionCredentials(
                                 username = auth.username,
                                 password = auth.password,
+                                passcode = tfaCode,
                             )
                         )
                         .let { photoPrismSession ->
@@ -62,7 +64,7 @@ class PhotoPrismSessionCreator(
 
                 when (photoPrismSessionError?.code) {
                     PhotoPrismSessionError.CODE_PASSCODE_REQUIRED ->
-                        throw TfaNotYetSupportedException()
+                        throw TfaRequiredException()
 
                     else ->
                         throw InvalidCredentialsException()

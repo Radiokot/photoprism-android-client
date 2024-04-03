@@ -56,6 +56,7 @@ class EnvConnectionActivity : BaseActivity() {
 
         initFields()
         initButtons()
+        initTfaCodeDialog()
 
         subscribeToState()
         subscribeToEvents()
@@ -160,6 +161,17 @@ class EnvConnectionActivity : BaseActivity() {
         }
     }
 
+    private fun initTfaCodeDialog() {
+        supportFragmentManager.setFragmentResultListener(
+            TfaCodeDialogFragment.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            viewModel.onTfaCodeEntered(
+                enteredTfaCode = TfaCodeDialogFragment.getResult(bundle),
+            )
+        }
+    }
+
     private fun subscribeToState() {
         viewModel.state.subscribeBy { state ->
             log.debug {
@@ -228,6 +240,9 @@ class EnvConnectionActivity : BaseActivity() {
                     openWebViewerForRedirectHandling(
                         url = event.url,
                     )
+
+                is EnvConnectionViewModel.Event.RequestTfaCodeInput ->
+                    showTfaCodeDialog()
             }
 
             log.debug {
@@ -321,6 +336,13 @@ class EnvConnectionActivity : BaseActivity() {
     private fun onWebViewerRedirectHandlingResult(result: ActivityResult) {
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.onWebViewerHandledRedirect()
+        }
+    }
+
+    private fun showTfaCodeDialog() {
+        if (supportFragmentManager.findFragmentByTag(TfaCodeDialogFragment.TAG) == null) {
+            TfaCodeDialogFragment()
+                .show(supportFragmentManager, TfaCodeDialogFragment.TAG)
         }
     }
 

@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogTfaCodeBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
 class TfaCodeDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_tfa_code) {
     private lateinit var viewBinding: DialogTfaCodeBinding

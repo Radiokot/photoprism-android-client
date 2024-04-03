@@ -52,4 +52,4 @@ class WebPageInteractionRequiredException :
     }
 }
 
-class TfaNotYetSupportedException: IOException()
+class TfaRequiredException: IOException()

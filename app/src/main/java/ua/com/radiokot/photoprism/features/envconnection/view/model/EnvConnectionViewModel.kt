@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -149,7 +150,25 @@ class EnvConnectionViewModel(
         }
     }
 
-    private fun connect() {
+    fun onTfaCodeEntered(enteredTfaCode: String) {
+        if (canConnect) {
+            log.debug {
+                "onTfaCodeEntered(): connecting_once_again"
+            }
+
+            connect(
+                tfaCode = enteredTfaCode,
+            )
+        } else {
+            log.warn {
+                "onTfaCodeEntered(): cant_connect_now"
+            }
+        }
+    }
+
+    private fun connect(
+        tfaCode: String? = null,
+    ) {
         stateSubject.onNext(State.Connecting)
 
         val connectionParams: EnvConnectionParams = try {
@@ -184,13 +203,15 @@ class EnvConnectionViewModel(
         log.debug {
             "connect(): connecting:" +
                     "\nconnectionParams=$connectionParams," +
-                    "\nauth=$auth"
+                    "\nauth=$auth," +
+                    "\ntfaCode=$tfaCode"
         }
 
         connectToEnvUseCaseFactory
             .get(
-                connection = connectionParams,
+                connectionParams = connectionParams,
                 auth = auth,
+                tfaCode = tfaCode,
             )
             .invoke()
             .subscribeOn(Schedulers.io())
@@ -231,6 +252,11 @@ class EnvConnectionViewModel(
                                 )
                             )
 
+                        is TfaRequiredException ->
+                            eventsSubject.onNext(
+                                Event.RequestTfaCodeInput
+                            )
+
                         else ->
                             rootUrlError.value = RootUrlError.Inaccessible(error.shortSummary)
                     }
@@ -265,5 +291,10 @@ class EnvConnectionViewModel(
          * Call [onWebViewerHandledRedirect] on successful result.
          */
         class OpenWebViewerForRedirectHandling(val url: String) : Event
+
+        /**
+         * Call [onTfaCodeEntered] on successful result.
+         */
+        object RequestTfaCodeInput : Event
     }
 }
