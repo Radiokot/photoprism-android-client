@@ -261,6 +261,15 @@ class GalleryActivity : BaseActivity() {
                 GalleryViewModel.Error.CredentialsHaveBeenChanged ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,
+                        imageRes = R.drawable.image_melting,
+                        retryButtonText = getString(R.string.disconnect_from_library),
+                        retryButtonClickListener = viewModel::onErrorDisconnectClicked
+                    )
+
+                GalleryViewModel.Error.SessionHasBeenExpired ->
+                    ErrorView.Error.General(
+                        message = error.localizedMessage,
+                        imageRes = R.drawable.image_melting,
                         retryButtonText = getString(R.string.disconnect_from_library),
                         retryButtonClickListener = viewModel::onErrorDisconnectClicked
                     )
@@ -934,6 +943,9 @@ class GalleryActivity : BaseActivity() {
 
             GalleryViewModel.Error.CredentialsHaveBeenChanged ->
                 getString(R.string.error_invalid_password)
+
+            GalleryViewModel.Error.SessionHasBeenExpired ->
+                getString(R.string.error_session_expired)
         }
 
     private companion object {

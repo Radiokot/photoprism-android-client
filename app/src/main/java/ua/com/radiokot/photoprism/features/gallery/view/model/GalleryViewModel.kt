@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
+import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -420,6 +421,9 @@ class GalleryViewModel(
 
                     is InvalidCredentialsException ->
                         Error.CredentialsHaveBeenChanged
+
+                    is TfaRequiredException ->
+                        Error.SessionHasBeenExpired
 
                     else ->
                         Error.LoadingFailed(error.shortSummary)
@@ -1265,6 +1269,12 @@ class GalleryViewModel(
          * have been changed. Disconnect is required.
          */
         object CredentialsHaveBeenChanged : Error
+
+        /**
+         * The session is expired and can't be renewed automatically.
+         * Disconnect is required.
+         */
+        object SessionHasBeenExpired: Error
     }
 
     private sealed class MediaRepositoryChange(

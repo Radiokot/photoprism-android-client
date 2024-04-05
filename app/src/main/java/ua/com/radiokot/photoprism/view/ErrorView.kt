@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import ua.com.radiokot.photoprism.R
@@ -66,6 +67,8 @@ constructor(
 
         class General(
             val message: String,
+            @DrawableRes
+            val imageRes: Int = R.drawable.image_error,
             val retryButtonText: String? = null,
             val retryButtonClickListener: (() -> Unit)? = null
         ) : Error {
@@ -100,7 +103,7 @@ constructor(
                     imageView.setImageDrawable(
                         ContextCompat.getDrawable(
                             imageView.context,
-                            R.drawable.image_error
+                            imageRes
                         )
                     )
                 }

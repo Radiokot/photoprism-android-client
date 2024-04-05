@@ -171,4 +171,5 @@
     <string name="tfa_code_dialog_message">Enter or paste the code from the authenticator</string>
     <string name="tfa_code_dialog_input_hint">Code</string>
     <string name="error_invalid_tfa_code">Invalid verification code</string>
+    <string name="error_session_expired">The session has been expired. Consider using an app-specific password</string>
 </resources>
