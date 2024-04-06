@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for the upcoming 2FA feature
+
 ### Fixed
 - Not handling Authelia when connecting to the library with credentials 
 - Improper display of multiple files download progress on German language
