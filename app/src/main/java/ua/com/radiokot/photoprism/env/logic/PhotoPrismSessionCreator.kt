@@ -33,7 +33,7 @@ class PhotoPrismSessionCreator(
                             PhotoPrismSessionCredentials(
                                 username = auth.username,
                                 password = auth.password,
-                                passcode = tfaCode,
+                                code = tfaCode,
                             )
                         )
                         .let { photoPrismSession ->
