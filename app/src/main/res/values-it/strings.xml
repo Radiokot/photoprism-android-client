@@ -162,4 +162,11 @@
         <item>Enorme</item>
     </string-array>
     <string name="language_preference">Lingua</string>
+    <string name="paste">Incolla</string>
+    <string name="tfa_code_dialog_title">Codice di verifica</string>
+    <string name="tfa_code_dialog_message">Inserisci o incolla il codice dall\'autenticatore</string>
+    <string name="tfa_code_dialog_input_hint">Codice</string>
+    <string name="error_invalid_tfa_code">Codice di verifica non valido</string>
+    <string name="error_session_expired">La sessione è scaduta. Considera di utilizzare una password dedicata per la galleria</string>
+
 </resources>

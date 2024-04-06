@@ -162,4 +162,11 @@
         <item>Çok büyük</item>
     </string-array>
     <string name="language_preference">Dil</string>
+    <string name="paste">Yapıştır</string>
+    <string name="tfa_code_dialog_title">Doğrulama kodu</string>
+    <string name="tfa_code_dialog_message">Authenticator\'dan kodu girin veya yapıştırın</string>
+    <string name="tfa_code_dialog_input_hint">Kod</string>
+    <string name="error_invalid_tfa_code">Geçersiz doğrulama kodu</string>
+    <string name="error_session_expired">Oturum süresi doldu. Galeri için özel bir şifre kullanmayı düşünün</string>
+
 </resources>

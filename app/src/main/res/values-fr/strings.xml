@@ -163,4 +163,11 @@
         <item>Énorme</item>
     </string-array>
     <string name="language_preference">Langue</string>
+    <string name="paste">Coller</string>
+    <string name="tfa_code_dialog_title">Code de vérification</string>
+    <string name="tfa_code_dialog_message">Entrez ou collez le code de l\'authentificateur</string>
+    <string name="tfa_code_dialog_input_hint">Code</string>
+    <string name="error_invalid_tfa_code">Code de vérification invalide</string>
+    <string name="error_session_expired">La session a expiré. Pensez à utiliser un mot de passe dédié pour la galerie</string>
+
 </resources>

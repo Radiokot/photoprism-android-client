@@ -162,4 +162,11 @@
         <item>Величезний</item>
     </string-array>
     <string name="language_preference">Мова</string>
+    <string name="paste">Вставити</string>
+    <string name="tfa_code_dialog_title">Код підтвердження</string>
+    <string name="tfa_code_dialog_message">Введіть або вставте код з аутентифікатора</string>
+    <string name="tfa_code_dialog_input_hint">Код</string>
+    <string name="error_invalid_tfa_code">Недійсний код підтвердження</string>
+    <string name="error_session_expired">Сесія закінчилася. Розгляньте створення окремого пароля для галереї</string>
+
 </resources>

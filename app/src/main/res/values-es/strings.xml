@@ -163,4 +163,11 @@
         <item>Enorme</item>
     </string-array>
     <string name="language_preference">Idioma</string>
+    <string name="paste">Pegar</string>
+    <string name="tfa_code_dialog_title">Código de verificación</string>
+    <string name="tfa_code_dialog_message">Ingresa o pega el código del autenticador</string>
+    <string name="tfa_code_dialog_input_hint">Código</string>
+    <string name="error_invalid_tfa_code">Código de verificación no válido</string>
+    <string name="error_session_expired">La sesión ha expirado. Considere usar una contraseña específica para la galería</string>
+
 </resources>

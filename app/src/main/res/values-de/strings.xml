@@ -47,7 +47,7 @@
     <string name="error_invalid_password">Falsches Passwort</string>
     <string name="template_error_failed_to_load_content">Konnte Inhalt nicht laden: %1$s</string>
     <string name="error_library_not_accessible_try_again">Kein Zugriff auf Sammlung. Bitte Verbindung prüfen und nochmal versuchen</string>
-    <string name="try_again">Bitte nochmal versuchen</string>
+    <string name="try_again">Erneut versuchen</string>
     <string name="load_more">Weitere laden</string>
     <string name="template_started_download_file">Datei wird in Downloads gespeichert: %1$s</string>
     <string name="error_storage_permission_is_required">Zugriffsberechtigung wird benötigt</string>
@@ -158,4 +158,11 @@
         <item>Riesig</item>
     </string-array>
     <string name="language_preference">Sprache</string>
+    <string name="paste">Einfügen</string>
+    <string name="tfa_code_dialog_title">Bestätigungscode</string>
+    <string name="tfa_code_dialog_message">Gib den Code aus dem Authenticator ein oder füge ihn ein</string>
+    <string name="tfa_code_dialog_input_hint">Code</string>
+    <string name="error_invalid_tfa_code">Ungültiger Bestätigungscode</string>
+    <string name="error_session_expired">Die Sitzung ist abgelaufen. Erwägen Sie die Verwendung eines speziellen Passworts für die Galerie</string>
+
 </resources>

@@ -162,4 +162,11 @@
         <item>巨大的</item>
     </string-array>
     <string name="language_preference">語言</string>
+    <string name="paste">粘贴</string>
+    <string name="tfa_code_dialog_title">验证码</string>
+    <string name="tfa_code_dialog_message">输入或粘贴来自身份验证器的代码</string>
+    <string name="tfa_code_dialog_input_hint">验证码</string>
+    <string name="error_invalid_tfa_code">无效的验证码</string>
+    <string name="error_session_expired">会话已过期。请考虑使用专用密码保护图库</string>
+
 </resources>

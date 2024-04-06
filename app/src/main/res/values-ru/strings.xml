@@ -162,4 +162,11 @@
         <item>Огромный</item>
     </string-array>
     <string name="language_preference">Язык</string>
+    <string name="paste">Вставить</string>
+    <string name="tfa_code_dialog_title">Код подтверждения</string>
+    <string name="tfa_code_dialog_message">Введите или вставьте код из аутентификатора</string>
+    <string name="tfa_code_dialog_input_hint">Код</string>
+    <string name="error_invalid_tfa_code">Недействительный код подтверждения</string>
+    <string name="error_session_expired">Сессия истекла. Рассмотрите создание отдельного пароля для галереи</string>
+
 </resources>

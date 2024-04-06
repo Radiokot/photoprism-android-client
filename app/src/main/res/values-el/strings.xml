@@ -162,4 +162,11 @@
         <item>Τεράστιο</item>
     </string-array>
     <string name="language_preference">Γλώσσα</string>
+    <string name="paste">Επικόλληση</string>
+    <string name="tfa_code_dialog_title">Κωδικός eπαλήθευσης</string>
+    <string name="tfa_code_dialog_message">Εισάγετε ή επικολλήστε τον κωδικό από τον Authenticator</string>
+    <string name="tfa_code_dialog_input_hint">Κωδικός</string>
+    <string name="error_invalid_tfa_code">Μη έγκυρος κωδικός επαλήθευσης</string>
+    <string name="error_session_expired">Η συνεδρία έχει λήξει. Εξετάστε τη χρήση ενός ειδικού κωδικού πρόσβασης για τη συλλογή</string>
+
 </resources>
