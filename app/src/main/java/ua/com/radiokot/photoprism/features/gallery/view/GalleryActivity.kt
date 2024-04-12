@@ -359,7 +359,9 @@ class GalleryActivity : BaseActivity() {
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
-                    goToEnvConnection()
+                    goToEnvConnection(
+                        rootUrl = event.rootUrl,
+                    )
                 }
 
 

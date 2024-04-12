@@ -33,13 +33,13 @@ class EnvConnectionViewModel(
     val passwordError = MutableLiveData<Error.PasswordError?>(null)
     val isClientCertificateSelectionAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     val clientCertificateAlias = MutableLiveData<String?>()
+    val isConnectButtonEnabled = MutableLiveData<Boolean>()
+    private var isInitialized = false
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
     val state = stateSubject.toMainThreadObservable()
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
-
-    val isConnectButtonEnabled = MutableLiveData<Boolean>()
 
     private val canConnect: Boolean
         get() = stateSubject.value is State.Idle
@@ -78,6 +78,18 @@ class EnvConnectionViewModel(
                 rootUrlError.value = null
             }
         }
+    }
+
+    fun initOnce(
+        rootUrl: String?,
+    ) {
+        if (isInitialized) {
+            return
+        }
+
+        rootUrl?.also(this.rootUrl::setValue)
+
+        isInitialized = true
     }
 
     fun onConnectButtonClicked() {

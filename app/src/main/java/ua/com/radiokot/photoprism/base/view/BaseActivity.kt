@@ -75,13 +75,22 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
 
     /**
      * Goes to the [EnvConnectionActivity] finishing this activity and all the underlying.
+     *
+     * @param rootUrl to pre-fill the library root URL field with.
      */
-    protected open fun goToEnvConnection() {
+    protected open fun goToEnvConnection(rootUrl: String? = null) {
         log.debug {
             "goToEnvConnection(): going_to_env_connection"
         }
 
-        startActivity(Intent(this, EnvConnectionActivity::class.java))
+        startActivity(
+            Intent(this, EnvConnectionActivity::class.java)
+                .putExtras(
+                    EnvConnectionActivity.getBundle(
+                        rootUrl = rootUrl,
+                    )
+                )
+        )
         finishAffinity()
     }
 

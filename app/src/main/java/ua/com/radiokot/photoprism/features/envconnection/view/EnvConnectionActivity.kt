@@ -55,6 +55,10 @@ class EnvConnectionActivity : BaseActivity() {
         fields = IncludeEnvConnectionFieldsBinding.bind(view.root)
         setContentView(view.root)
 
+        viewModel.initOnce(
+            rootUrl = intent.getStringExtra(ROOT_URL_KEY),
+        )
+
         initFields()
         initButtons()
         initTfaCodeDialog()
@@ -63,7 +67,7 @@ class EnvConnectionActivity : BaseActivity() {
         subscribeToEvents()
     }
 
-    private fun initFields() = with(fields) {
+    private fun initFields() = fields.apply {
         with(rootUrlTextInput) {
             editText!!.bindTextTwoWay(viewModel.rootUrl)
 
@@ -364,5 +368,13 @@ class EnvConnectionActivity : BaseActivity() {
 
         startActivity(Intent(this, GalleryActivity::class.java))
         finishAffinity()
+    }
+
+    companion object {
+        private const val ROOT_URL_KEY = "root_url"
+
+        fun getBundle(rootUrl: String?) = Bundle().apply {
+            putString(ROOT_URL_KEY, rootUrl)
+        }
     }
 }

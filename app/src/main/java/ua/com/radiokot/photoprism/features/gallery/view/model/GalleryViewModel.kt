@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
@@ -1073,7 +1074,11 @@ class GalleryViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onComplete = {
-                    eventsSubject.onNext(Event.GoToEnvConnection)
+                    eventsSubject.onNext(
+                        Event.GoToEnvConnection(
+                            rootUrl = connectionParams.rootUrl.withMaskedCredentials().toString(),
+                        )
+                    )
                 },
                 onError = { error ->
                     log.error(error) {
@@ -1220,9 +1225,10 @@ class GalleryViewModel(
         class EnsureListItemVisible(val listItemIndex: Int) : Event
 
         /**
-         * Close the screen and go to the connection.
+         * Close the screen and go to the connection,
+         * providing the [rootUrl] parameter.
          */
-        object GoToEnvConnection : Event
+        class GoToEnvConnection(val rootUrl: String) : Event
 
         object ShowFilesDownloadedMessage : Event
 
@@ -1274,7 +1280,7 @@ class GalleryViewModel(
          * The session is expired and can't be renewed automatically.
          * Disconnect is required.
          */
-        object SessionHasBeenExpired: Error
+        object SessionHasBeenExpired : Error
     }
 
     private sealed class MediaRepositoryChange(
