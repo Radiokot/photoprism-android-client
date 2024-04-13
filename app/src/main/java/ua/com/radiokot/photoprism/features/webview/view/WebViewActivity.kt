@@ -21,7 +21,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityWebViewBinding
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewWVClient
 
@@ -69,7 +68,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "onCreate(): creating:" +
-                    "\nurl=${url.maskUrlCredentialsIfPresent()}," +
+                    "\nurl=$url," +
                     "\ntitle=${getString(titleRes)}," +
                     "\nfinishOnRedirectEnd=$finishOnRedirectEnd," +
                     "\npageStartedInjectionScripts=${pageStartedInjectionScripts.size}," +
@@ -143,8 +142,8 @@ class WebViewActivity : BaseActivity() {
                 if (!isRedirectStarted && currentHttpUrl != initialHttpUrl) {
                     log.debug {
                         "handleRedirect(): redirect_started:" +
-                                "\ncurrentHttpUrl=${currentHttpUrl.withMaskedCredentials()}," +
-                                "\ninitialHttpUrl=${initialHttpUrl?.withMaskedCredentials()}"
+                                "\ncurrentHttpUrl=$currentHttpUrl," +
+                                "\ninitialHttpUrl=$initialHttpUrl"
                     }
 
                     isRedirectStarted = true
@@ -200,7 +199,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "navigate(): loading_url:" +
-                    "\nurl=${url.maskUrlCredentialsIfPresent()}"
+                    "\nurl=$url"
         }
     }
 
@@ -209,7 +208,7 @@ class WebViewActivity : BaseActivity() {
 
         log.debug {
             "goToBrowserAndFinish(): opening_url:" +
-                    "\nurl=${url.maskUrlCredentialsIfPresent()}"
+                    "\nurl=$url"
         }
 
         try {
@@ -244,10 +243,6 @@ class WebViewActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private fun String.maskUrlCredentialsIfPresent(): String =
-        toHttpUrlOrNull()?.withMaskedCredentials()?.toString()
-            ?: this
 
     companion object {
         private const val URL_EXTRA = "url"

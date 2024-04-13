@@ -123,7 +123,7 @@ class EnvSessionPersistenceOnPrefs(
 
             return StoredEnvSessionV3(
                 id = id,
-                rootUrl = rootHttpUrl.withMaskedCredentials(placeholder = "").toString(),
+                rootUrl = rootHttpUrl.withMaskedCredentials().toString(),
                 clientCertificateAlias = clientCertificateAlias,
                 httpAuth = rootHttpUrl.basicAuth,
                 previewToken = previewToken,

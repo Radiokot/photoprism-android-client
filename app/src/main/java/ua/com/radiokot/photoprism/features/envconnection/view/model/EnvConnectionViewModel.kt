@@ -191,7 +191,7 @@ class EnvConnectionViewModel(
             val rootHttpUrl = rootUrl.value!!.trim().toHttpUrl()
 
             EnvConnectionParams(
-                rootUrl = rootHttpUrl.withMaskedCredentials(placeholder = ""),
+                rootUrl = rootHttpUrl.withMaskedCredentials(),
                 clientCertificateAlias = clientCertificateAlias.value,
                 httpAuth = rootHttpUrl.basicAuth,
             )

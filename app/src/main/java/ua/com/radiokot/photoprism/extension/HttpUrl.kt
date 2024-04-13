@@ -7,7 +7,7 @@ import okhttp3.HttpUrl
  * @return copy of the URL with username and password replaced with [placeholder], if present,
  * or the same instance otherwise.
  */
-fun HttpUrl.withMaskedCredentials(placeholder: String = "xxx"): HttpUrl =
+fun HttpUrl.withMaskedCredentials(placeholder: String = ""): HttpUrl =
     if (username.isNotEmpty() || password.isNotEmpty())
         newBuilder().username(placeholder).password(placeholder).build()
     else
