@@ -17,8 +17,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.api.util.HeaderInterceptor
 import ua.com.radiokot.photoprism.api.util.UrlBasicAuthInterceptor
-import ua.com.radiokot.photoprism.api.util.UserAgentInterceptor
 import ua.com.radiokot.photoprism.util.WebViewCookieJar
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -71,7 +71,7 @@ val ioModules: List<Module> = listOf(
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .addInterceptor(UrlBasicAuthInterceptor())
                 .addInterceptor(
-                    UserAgentInterceptor(
+                    HeaderInterceptor.userAgent(
                         name = "PhotoPrismAndroid",
                         version = BuildConfig.VERSION_NAME,
                         extension = okhttp3.internal.userAgent,
