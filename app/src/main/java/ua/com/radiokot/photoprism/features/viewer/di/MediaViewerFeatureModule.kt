@@ -75,6 +75,7 @@ val mediaViewerFeatureModule = module {
                 EnvHttpClientParams(
                     sessionAwareness = null,
                     clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
+                    authorization = session.envConnectionParams.httpAuth,
                     withLogging = false,
                 )
             }

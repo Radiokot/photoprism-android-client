@@ -11,6 +11,7 @@ import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import ua.com.radiokot.photoprism.api.util.HeaderInterceptor
 import ua.com.radiokot.photoprism.api.util.KeyChainClientCertificateKeyManager
 import ua.com.radiokot.photoprism.api.util.SessionAwarenessInterceptor
 import ua.com.radiokot.photoprism.api.util.SynchronizedSessionRenewalInterceptor
@@ -27,6 +28,7 @@ import java.io.File
 class EnvHttpClientParams(
     val sessionAwareness: SessionAwareness?,
     val clientCertificateAlias: String?,
+    val authorization: String? = null,
     val withLogging: Boolean = true,
     val cache: Cache? = null,
 ) : SelfParameterHolder() {
@@ -89,6 +91,14 @@ val envModule = module {
             builder.sslSocketFactory(sslContext.socketFactory, platformTrustManager)
         }
 
+        if (envParams.authorization != null) {
+            builder.addInterceptor(
+                HeaderInterceptor.authorization(
+                    authorization = envParams.authorization,
+                )
+            )
+        }
+
         if (envParams.withLogging) {
             builder.addInterceptor(get<HttpLoggingInterceptor>())
         }
@@ -149,6 +159,7 @@ val envModule = module {
                         renewal = renewal,
                     ),
                     clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
+                    authorization = session.envConnectionParams.httpAuth,
                 )
             }
         } bind HttpClient::class
@@ -161,6 +172,7 @@ val envModule = module {
                 EnvHttpClientParams(
                     sessionAwareness = null,
                     clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
+                    authorization = session.envConnectionParams.httpAuth,
                     withLogging = false,
                     cache = Cache(cacheDir, CacheConstraints.getOptimalSize(cacheDir))
                 )

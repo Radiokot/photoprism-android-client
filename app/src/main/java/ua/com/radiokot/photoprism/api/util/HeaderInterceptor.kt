@@ -48,10 +48,10 @@ class HeaderInterceptor(
          * @see [Credentials.basic]
          */
         fun authorization(
-            lazyValue: () -> Any,
+            authorization: String,
         ) = HeaderInterceptor(
             name = "Authorization",
-            lazyValue = lazyValue,
+            lazyValue = { authorization },
         )
     }
 }

@@ -18,7 +18,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.util.HeaderInterceptor
-import ua.com.radiokot.photoprism.api.util.UrlBasicAuthInterceptor
 import ua.com.radiokot.photoprism.util.WebViewCookieJar
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -69,7 +68,6 @@ val ioModules: List<Module> = listOf(
                 // may run really slow on low-power servers.
                 .readTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
-                .addInterceptor(UrlBasicAuthInterceptor())
                 .addInterceptor(
                     HeaderInterceptor.userAgent(
                         name = "PhotoPrismAndroid",

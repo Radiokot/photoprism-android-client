@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.env.data.model
 
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /**
  * Holds parameters required to connect to the environment.
@@ -9,8 +8,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 data class EnvConnectionParams(
     /**
      * Instance root URL.
-     *
-     * **May contain HTTP basic auth credentials**
      *
      * [What is Library root URL](https://github.com/Radiokot/photoprism-android-client/wiki/What-is-Library-root-URL%3F)
      */
@@ -20,15 +17,12 @@ data class EnvConnectionParams(
      * Alias (name) of an installed client certificate to use for mTLS.
      */
     val clientCertificateAlias: String?,
-) {
-    constructor(
-        rootUrlString: String,
-        clientCertificateAlias: String?
-    ) : this(
-        rootUrl = rootUrlString.toHttpUrl(),
-        clientCertificateAlias = clientCertificateAlias,
-    )
 
+    /**
+     * Auth required by HTTP server itself. Not the PhotoPrism credentials.
+     */
+    val httpAuth: String?,
+) {
     /**
      * API root URL (not including the version).
      *

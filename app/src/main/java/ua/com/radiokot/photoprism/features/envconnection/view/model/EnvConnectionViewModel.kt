@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvIsNotPublicException
@@ -16,9 +17,11 @@ import ua.com.radiokot.photoprism.env.data.model.TfaCodeInvalidException
 import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.basicAuth
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
 class EnvConnectionViewModel(
@@ -185,9 +188,12 @@ class EnvConnectionViewModel(
         stateSubject.onNext(State.Connecting)
 
         val connectionParams: EnvConnectionParams = try {
+            val rootHttpUrl = rootUrl.value!!.trim().toHttpUrl()
+
             EnvConnectionParams(
-                rootUrlString = rootUrl.value!!.trim(),
+                rootUrl = rootHttpUrl.withMaskedCredentials(placeholder = ""),
                 clientCertificateAlias = clientCertificateAlias.value,
+                httpAuth = rootHttpUrl.basicAuth,
             )
         } catch (e: Exception) {
             log.warn(e) { "connect(): connection_creation_failed" }

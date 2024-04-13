@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.extension
 
+import okhttp3.Credentials
 import okhttp3.HttpUrl
 
 /**
@@ -11,3 +12,13 @@ fun HttpUrl.withMaskedCredentials(placeholder: String = "xxx"): HttpUrl =
         newBuilder().username(placeholder).password(placeholder).build()
     else
         this
+
+/**
+ * Basic auth value from [HttpUrl.username] and [HttpUrl.password], if present.
+ */
+val HttpUrl.basicAuth: String?
+    get() =
+        if (username.isNotEmpty() || password.isNotEmpty())
+            Credentials.basic(username, password)
+        else
+            null
