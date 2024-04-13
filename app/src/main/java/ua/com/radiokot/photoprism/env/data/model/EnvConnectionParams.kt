@@ -5,7 +5,7 @@ import okhttp3.HttpUrl
 /**
  * Holds parameters required to connect to the environment.
  */
-data class EnvConnectionParams(
+class EnvConnectionParams(
     /**
      * Instance root URL.
      *
@@ -46,4 +46,11 @@ data class EnvConnectionParams(
             .addPathSegment("library")
             .addPathSegment("") // Force trailing slash.
             .build()
+
+    override fun toString(): String =
+        "EnvConnectionParams(" +
+                "rootUrl=$rootUrl, " +
+                "clientCertificateAlias=$clientCertificateAlias, " +
+                "httpAuth=${httpAuth?.let { "XXXXXX" }}" +
+                ")"
 }
