@@ -5,8 +5,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.envModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.webview.logic.SessionCertWebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.EnvHttpAuthWebViewHttpAuthRequestHandler
+import ua.com.radiokot.photoprism.features.webview.logic.SessionCertWebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewClientCertRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewHttpAuthRequestHandler
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
@@ -50,7 +50,7 @@ val webViewFeatureModule = module {
         } bind WebViewHttpAuthRequestHandler::class
 
         // WebView client for session scope, which has all the handlers.
-        scoped {
+        factory {
             val session = get<EnvSession>()
 
             WebViewWVClient.Factory(
