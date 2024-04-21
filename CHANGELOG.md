@@ -5,10 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.26.0] - 2024-04-21
 
 ### Added
-- Support for the upcoming 2FA feature
+- PhotoPrism 2FA support. However, consider using a dedicated password for the gallery
 
 ### Fixed
 - Not handling Authelia when connecting to the library with credentials 
@@ -469,7 +469,8 @@ icon on the main screen
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the 
 `PHOTOPRISM_SITE_URL` server config value 
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.25.0(39)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.26.0(40)...HEAD
+[1.26.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.25.0(39)...1.26.0(40)
 [1.25.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.1(38)...1.25.0(39)
 [1.24.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.0(37)...1.24.1(38)
 [1.24.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...1.24.0(37)

@@ -1,0 +1,9 @@
+Full changelog:
+https://radiokot.com.ua/pp-changes
+
+Added:
+- PhotoPrism 2FA support. However, consider using a dedicated password for the gallery
+
+Fixed:
+- Not handling Authelia when connecting to the library with credentials
+- Improper display of multiple files download progress on German language
