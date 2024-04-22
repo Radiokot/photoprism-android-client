@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -24,6 +25,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
@@ -39,6 +41,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesDemoActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
@@ -48,7 +51,6 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.Pers
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
-import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesDemoActivity
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
@@ -88,6 +90,12 @@ class GallerySearchView(
     private lateinit var bookmarksView: GallerySearchBookmarksView
     private lateinit var peopleView: GallerySearchPeopleView
     private lateinit var albumsView: GallerySearchAlbumsView
+    private val colorOnSurfaceVariant: Int by lazy {
+        MaterialColors.getColor(
+            searchView,
+            com.google.android.material.R.attr.colorOnSurfaceVariant
+        )
+    }
 
     fun init(
         searchBar: SearchBar,
@@ -166,12 +174,7 @@ class GallerySearchView(
         }
 
         with(searchView.findViewById<ImageButton>(com.google.android.material.R.id.search_view_clear_button)) {
-            imageTintList = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    this,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant
-                )
-            )
+            imageTintList = ColorStateList.valueOf(colorOnSurfaceVariant)
             setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_backspace))
         }
 
@@ -200,6 +203,9 @@ class GallerySearchView(
         searchView.toolbar.setNavigationOnClickListener(ThrottleOnClickListener {
             viewModel.onConfigurationBackClicked()
         })
+
+        // Fix the back button color. Only this way works.
+        (searchView.toolbar as MaterialToolbar).setNavigationIconTint(colorOnSurfaceVariant)
 
         with(searchBar) {
             setHint(
@@ -293,12 +299,7 @@ class GallerySearchView(
         ).apply {
             setMargins(0, 0, chipSpacing, chipSpacing)
         }
-        val chipIconTint = ColorStateList.valueOf(
-            MaterialColors.getColor(
-                configurationView.mediaTypeChipsLayout,
-                com.google.android.material.R.attr.colorOnSurfaceVariant
-            )
-        )
+        val chipIconTint = ColorStateList.valueOf(colorOnSurfaceVariant)
 
         with(configurationView.mediaTypeChipsLayout) {
             viewModel.availableMediaTypes.observe(this@GallerySearchView) { availableTypes ->
