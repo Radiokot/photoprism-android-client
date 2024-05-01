@@ -15,7 +15,7 @@ import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 
-private class EnvRetrofitParams(
+class EnvRetrofitParams(
     val apiUrl: HttpUrl,
     val httpClient: HttpClient,
 ) : SelfParameterHolder()
