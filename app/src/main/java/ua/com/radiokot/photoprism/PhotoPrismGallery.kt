@@ -2,6 +2,8 @@ package ua.com.radiokot.photoprism
 
 import android.app.Application
 import android.content.Context
+import android.icu.text.NumberFormat
+import android.icu.util.Currency
 import android.os.Build
 import androidx.core.os.ConfigurationCompat
 import io.reactivex.rxjava3.exceptions.UndeliverableException
@@ -41,6 +43,7 @@ import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule
 import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
 import java.io.IOException
+import java.math.BigDecimal
 import java.util.Locale
 import kotlin.concurrent.thread
 
@@ -78,6 +81,12 @@ class PhotoPrismGallery : Application() {
 
         loadSessionIfPresent()
         clearInternalDownloads()
+
+        println("OOLEG " + {
+           NumberFormat.getCurrencyInstance(get<Locale>()).apply {
+               currency = Currency.getInstance("USD")
+           }.format(BigDecimal("2.24"))
+        }())
     }
 
     private fun initRxErrorHandler() {
