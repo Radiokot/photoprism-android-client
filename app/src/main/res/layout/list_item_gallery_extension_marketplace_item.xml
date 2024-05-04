@@ -75,19 +75,26 @@
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:text="@string/extension_marketplace_item_activated"
+            android:visibility="gone"
             app:icon="@drawable/ic_awesome"
             app:iconGravity="textStart"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/buy_button"
             app:layout_constraintStart_toStartOf="@id/buy_button"
             app:layout_constraintTop_toBottomOf="@id/controls_top_space" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/activated_chip"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/activated_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:drawablePadding="12sp"
+            android:gravity="center_vertical"
             android:text="@string/extension_marketplace_item_activated"
-            app:chipIcon="@drawable/ic_awesome"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            android:textColor="?colorOnSurfaceVariant"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/ic_awesome"
+            app:drawableTint="?colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="@id/buy_button"
             app:layout_constraintEnd_toEndOf="@id/buy_button"
             app:layout_constraintTop_toTopOf="@id/buy_button" />
@@ -97,6 +104,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:autoSizeMaxTextSize="22sp"

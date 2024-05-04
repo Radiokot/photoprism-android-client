@@ -30,6 +30,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/items_recycler_view"
             android:layout_width="match_parent"
+            android:paddingBottom="24dp"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"

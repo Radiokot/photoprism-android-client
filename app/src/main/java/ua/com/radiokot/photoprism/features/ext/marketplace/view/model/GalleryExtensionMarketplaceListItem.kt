@@ -90,7 +90,7 @@ class GalleryExtensionMarketplaceListItem(
                 .format(item.price)
 
             view.buyButton.isInvisible = !item.isBuyButtonVisible
-            view.activatedChip.isVisible = item.isActivatedVisible
+            view.activatedLabel.isVisible = item.isActivatedVisible
         }
 
         override fun unbindView(item: GalleryExtensionMarketplaceListItem) {
