@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import ua.com.radiokot.photoprism.databinding.FragmentKeyInputSuccessBinding
+import ua.com.radiokot.photoprism.databinding.FragmentKeyActivationSuccessBinding
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.GalleryExtensionListItem
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 
 class KeyActivationSuccessFragment : Fragment() {
-    private lateinit var view: FragmentKeyInputSuccessBinding
+    private lateinit var view: FragmentKeyActivationSuccessBinding
     private val viewModel: KeyActivationViewModel
         get() = (requireActivity() as KeyActivationActivity).viewModel
 
@@ -22,7 +22,7 @@ class KeyActivationSuccessFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        view = FragmentKeyInputSuccessBinding.inflate(inflater)
+        view = FragmentKeyActivationSuccessBinding.inflate(inflater)
         return view.root
     }
 

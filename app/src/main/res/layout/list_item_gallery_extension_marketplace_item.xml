@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    app:cardBackgroundColor="@android:color/transparent"
+    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/banner_image_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="H,1:0.6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
+            tools:background="@android:color/darker_gray"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintTop_toBottomOf="@id/banner_image_view"
+            tools:text="Memories" />
+
+        <TextView
+            android:id="@+id/description_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintTop_toBottomOf="@id/title_text_view"
+            tools:text="My best extension description\nMy best extension description\nMy best extension description" />
+
+        <Space
+            android:id="@+id/controls_top_space"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            app:layout_constraintTop_toBottomOf="@id/description_text_view" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buy_button"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/extension_marketplace_item_buy_now"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/controls_top_space"
+            app:layout_constraintWidth_percent="0.6"
+            tools:visibility="invisible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/activated_button"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:text="@string/extension_marketplace_item_activated"
+            app:icon="@drawable/ic_awesome"
+            app:iconGravity="textStart"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/buy_button"
+            app:layout_constraintStart_toStartOf="@id/buy_button"
+            app:layout_constraintTop_toBottomOf="@id/controls_top_space" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/activated_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/extension_marketplace_item_activated"
+            app:chipIcon="@drawable/ic_awesome"
+            app:layout_constraintBottom_toBottomOf="@id/buy_button"
+            app:layout_constraintEnd_toEndOf="@id/buy_button"
+            app:layout_constraintTop_toTopOf="@id/buy_button" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/price_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:autoSizeMaxTextSize="22sp"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@id/buy_button"
+            app:layout_constraintEnd_toStartOf="@id/buy_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/buy_button"
+            tools:text="2,55 $" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

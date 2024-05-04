@@ -135,6 +135,12 @@
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
+            android:name=".features.ext.marketplace.view.GalleryExtensionMarketplaceActivity"
+            android:exported="false"
+            android:label="@string/extension_marketplace_title"
+            android:resizeableActivity="true" />
+
+        <activity
             android:name=".features.ext.memories.view.MemoriesDemoActivity"
             android:exported="false"
             android:resizeableActivity="true" />

@@ -15,7 +15,6 @@ import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.model.GalleryExtensionOnSale
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumsOverviewViewModel
 
 class GalleryExtensionMarketplaceViewModel(
     private val extensionsOnSaleRepository: GalleryExtensionsOnSaleRepository,
@@ -23,7 +22,7 @@ class GalleryExtensionMarketplaceViewModel(
 ) : ViewModel() {
     private val log = kLogger("ExtensionMarketplaceVM")
 
-    private val eventsSubject = PublishSubject.create<AlbumsOverviewViewModel.Event>()
+    private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GalleryExtensionMarketplaceListItem>>()
@@ -83,7 +82,7 @@ class GalleryExtensionMarketplaceViewModel(
                 if (itemsList.value == null) {
                     mainError.value = Error.LoadingFailed
                 } else {
-                    eventsSubject.onNext(AlbumsOverviewViewModel.Event.ShowFloatingLoadingFailedError)
+                    eventsSubject.onNext(Event.ShowFloatingLoadingFailedError)
                 }
             }
             .autoDispose(this)
@@ -110,6 +109,14 @@ class GalleryExtensionMarketplaceViewModel(
     fun onRetryClicked() {
         log.debug {
             "onRetryClicked(): updating"
+        }
+
+        update(force = true)
+    }
+
+    fun onSwipeRefreshPulled() {
+        log.debug {
+            "onSwipeRefreshPulled(): force_updating"
         }
 
         update(force = true)

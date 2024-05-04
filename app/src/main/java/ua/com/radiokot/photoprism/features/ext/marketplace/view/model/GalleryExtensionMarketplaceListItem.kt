@@ -2,6 +2,8 @@ package ua.com.radiokot.photoprism.features.ext.marketplace.view.model
 
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
@@ -10,13 +12,14 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ListItemGalleryExtensionBinding
+import ua.com.radiokot.photoprism.databinding.ListItemGalleryExtensionMarketplaceItemBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.ext.marketplace.CURRENCY_NUMBER_FORMAT
 import ua.com.radiokot.photoprism.features.ext.view.GalleryExtensionResources
 import java.math.BigDecimal
 import java.text.NumberFormat
+import java.util.Currency
 
 class GalleryExtensionMarketplaceListItem(
     @StringRes
@@ -28,13 +31,15 @@ class GalleryExtensionMarketplaceListItem(
     /**
      * ISO-4217 3-letter code.
      */
-    val currency: String,
+    currency: String,
     val isBuyButtonVisible: Boolean,
     val isActivatedVisible: Boolean,
     val source: GalleryExtensionMarketplaceItem?,
 ) : AbstractItem<GalleryExtensionMarketplaceListItem.ViewHolder>() {
+    private val currency = Currency.getInstance(currency)
+
     override val layoutRes: Int
-        get() = R.layout.list_item_gallery_extension
+        get() = R.layout.list_item_gallery_extension_marketplace_item
 
     override val type: Int = layoutRes
 
@@ -62,7 +67,7 @@ class GalleryExtensionMarketplaceListItem(
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view = ListItemGalleryExtensionBinding.bind(itemView)
+        private val view = ListItemGalleryExtensionMarketplaceItemBinding.bind(itemView)
         private val picasso: Picasso by inject()
         private val currencyNumberFormat: NumberFormat by inject(named(CURRENCY_NUMBER_FORMAT))
 
@@ -80,6 +85,12 @@ class GalleryExtensionMarketplaceListItem(
 
             view.titleTextView.setText(item.title)
             view.descriptionTextView.setText(item.description)
+            view.priceTextView.text = currencyNumberFormat
+                .apply { currency = item.currency }
+                .format(item.price)
+
+            view.buyButton.isInvisible = !item.isBuyButtonVisible
+            view.activatedChip.isVisible = item.isActivatedVisible
         }
 
         override fun unbindView(item: GalleryExtensionMarketplaceListItem) {

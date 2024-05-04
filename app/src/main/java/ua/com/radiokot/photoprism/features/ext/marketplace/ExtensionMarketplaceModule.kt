@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.marketplace
 
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
@@ -12,6 +13,7 @@ import ua.com.radiokot.photoprism.di.localeModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.features.ext.marketplace.api.FeatureMarketplaceService
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
+import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceViewModel
 import java.text.NumberFormat
 
 const val CURRENCY_NUMBER_FORMAT = "currency-number-format"
@@ -36,4 +38,6 @@ val extensionMarketplaceModule = module {
     factory(named(CURRENCY_NUMBER_FORMAT)) {
         NumberFormat.getCurrencyInstance(get())
     } bind java.text.NumberFormat::class
+
+    viewModelOf(::GalleryExtensionMarketplaceViewModel)
 }

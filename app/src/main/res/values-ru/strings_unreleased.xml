@@ -35,4 +35,5 @@
         <item quantity="many">%1$d активированных расширений</item>
     </plurals>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
+    <string name="extension_marketplace_item_buy_now" translatable="false">Купить</string>
 </resources>

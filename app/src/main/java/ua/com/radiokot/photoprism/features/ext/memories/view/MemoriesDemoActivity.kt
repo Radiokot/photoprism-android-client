@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.ext.memories.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -15,6 +16,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityMemoriesDemoBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
+import ua.com.radiokot.photoprism.features.ext.marketplace.view.GalleryExtensionMarketplaceActivity
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.logic.UpdateMemoriesUseCase
@@ -87,6 +89,10 @@ class MemoriesDemoActivity : BaseActivity() {
                 )
                 .subscribeBy()
                 .autoDispose(this)
+        }
+
+        view.marketplaceButton.setThrottleOnClickListener {
+            startActivity(Intent(this, GalleryExtensionMarketplaceActivity::class.java))
         }
 
         repository
