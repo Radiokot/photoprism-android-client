@@ -2,16 +2,15 @@ package ua.com.radiokot.photoprism.features.ext.marketplace
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import ua.com.radiokot.photoprism.di.EnvRetrofitParams
 import ua.com.radiokot.photoprism.di.localeModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
+import ua.com.radiokot.photoprism.features.ext.di.galleryExtensionsFeatureModule
+import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
 import ua.com.radiokot.photoprism.features.ext.marketplace.api.FeatureMarketplaceService
 import ua.com.radiokot.photoprism.features.ext.marketplace.api.model.FeaturesOnSaleResponse
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
@@ -24,6 +23,7 @@ val extensionMarketplaceModule = module {
     includes(
         retrofitApiModule,
         localeModule,
+        keyActivationFeatureModule,
     )
 
 //    single {
@@ -75,5 +75,12 @@ val extensionMarketplaceModule = module {
         NumberFormat.getCurrencyInstance(get())
     } bind java.text.NumberFormat::class
 
-    viewModelOf(::GalleryExtensionMarketplaceViewModel)
+    viewModel {
+        GalleryExtensionMarketplaceViewModel(
+            extensionsOnSaleRepository = get(),
+            galleryExtensionsStateRepository = get(),
+            onlinePurchaseBaseUrl = "http://10.0.0.125:8041/buy".toHttpUrl(),
+            hardwareIdentifier = get(),
+        )
+    }
 }

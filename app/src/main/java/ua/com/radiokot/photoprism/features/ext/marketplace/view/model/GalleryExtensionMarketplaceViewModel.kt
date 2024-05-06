@@ -7,18 +7,22 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+import okhttp3.HttpUrl
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
+import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.model.GalleryExtensionOnSale
 import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
 
 class GalleryExtensionMarketplaceViewModel(
     private val extensionsOnSaleRepository: GalleryExtensionsOnSaleRepository,
     private val galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
+    private val onlinePurchaseBaseUrl: HttpUrl,
+    private val hardwareIdentifier: HardwareIdentifier,
 ) : ViewModel() {
     private val log = kLogger("ExtensionMarketplaceVM")
 
@@ -122,12 +126,45 @@ class GalleryExtensionMarketplaceViewModel(
         update(force = true)
     }
 
+    fun onBuyNowClicked(listItem: GalleryExtensionMarketplaceListItem) {
+        log.debug {
+            "onBuyNowClicked(): buy_now_clicked:" +
+                    "\nlistItem=$listItem"
+        }
+
+        if (listItem.source != null) {
+            openOnlinePurchase(listItem.source)
+        }
+    }
+
+    private fun openOnlinePurchase(item: GalleryExtensionMarketplaceItem) {
+        val purchaseUrl = onlinePurchaseBaseUrl.newBuilder()
+            .addQueryParameter("f", item.extension.ordinal.toString())
+            .addQueryParameter("hw", hardwareIdentifier.getHardwareIdentifier())
+            .addQueryParameter(
+                "email",
+                galleryExtensionsStateRepository.currentState.primarySubject
+            )
+            .build()
+            .toString()
+
+        log.debug {
+            "openOnlinePurchase(): opening_online_purchase:" +
+                    "\nitem=$item," +
+                    "\npurchaseUrl=$purchaseUrl"
+        }
+
+        eventsSubject.onNext(Event.OpenOnlinePurchase(purchaseUrl))
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
          * Retry is possible: the [onRetryClicked] method should be called.
          */
         object ShowFloatingLoadingFailedError : Event
+
+        class OpenOnlinePurchase(val url: String) : Event
     }
 
     sealed interface Error {

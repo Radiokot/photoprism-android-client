@@ -67,7 +67,7 @@ class GalleryExtensionMarketplaceListItem(
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view = ListItemGalleryExtensionMarketplaceItemBinding.bind(itemView)
+        val view = ListItemGalleryExtensionMarketplaceItemBinding.bind(itemView)
         private val picasso: Picasso by inject()
         private val currencyNumberFormat: NumberFormat by inject(named(CURRENCY_NUMBER_FORMAT))
 

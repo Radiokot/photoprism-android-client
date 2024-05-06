@@ -1,10 +1,12 @@
 package ua.com.radiokot.photoprism.features.ext.marketplace.view
 
 import android.os.Bundle
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -13,9 +15,10 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceListItem
 import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceViewModel
+import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class GalleryExtensionMarketplaceActivity: BaseActivity() {
+class GalleryExtensionMarketplaceActivity : BaseActivity() {
     private val log = kLogger("GalleryExtensionMarketplaceActivity")
 
     private lateinit var view: ActivityExtensionMarketplaceBinding
@@ -33,6 +36,7 @@ class GalleryExtensionMarketplaceActivity: BaseActivity() {
         initList()
         initErrorView()
         initSwipeRefresh()
+        initCustomTabs()
 
         subscribeToData()
         subscribeToEvents()
@@ -42,10 +46,15 @@ class GalleryExtensionMarketplaceActivity: BaseActivity() {
         val itemsAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: GalleryExtensionMarketplaceListItem, _ ->
-//                viewModel.onAlbumItemClicked(item)
-                true
-            }
+            addClickListener(
+                resolveView = { viewHolder: GalleryExtensionMarketplaceListItem.ViewHolder ->
+                    viewHolder.view.buyButton
+                },
+                resolveViews = { null },
+                onClick = { _, _, _, item ->
+                    viewModel.onBuyNowClicked(item)
+                }
+            )
         }
 
         view.itemsRecyclerView.adapter = itemsAdapter
@@ -57,6 +66,10 @@ class GalleryExtensionMarketplaceActivity: BaseActivity() {
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+    }
+
+    private fun initCustomTabs() {
+        SafeCustomTabs.safelyConnectAndInitialize(this)
     }
 
     private fun subscribeToData() {
@@ -91,6 +104,11 @@ class GalleryExtensionMarketplaceActivity: BaseActivity() {
         when (event) {
             GalleryExtensionMarketplaceViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
+
+            is GalleryExtensionMarketplaceViewModel.Event.OpenOnlinePurchase ->
+                openOnlinePurchase(
+                    url = event.url,
+                )
         }
 
         log.debug {
@@ -107,5 +125,18 @@ class GalleryExtensionMarketplaceActivity: BaseActivity() {
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
             .show()
+    }
+
+    private fun openOnlinePurchase(url: String) {
+        SafeCustomTabs.launchWithFallback(
+            context = this,
+            intent = CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setUrlBarHidingEnabled(true)
+                .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                .build(),
+            url = url,
+            titleRes = R.string.extension_marketplace_title,
+        )
     }
 }
