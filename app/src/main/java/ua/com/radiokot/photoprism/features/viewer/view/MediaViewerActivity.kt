@@ -53,7 +53,6 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.*
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
-import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import java.io.File
 import java.text.DateFormat
 import kotlin.math.max
@@ -170,7 +169,6 @@ class MediaViewerActivity : BaseActivity() {
         initMediaFileSelection()
         downloadProgressView.init()
         initFullScreenToggle()
-        initCustomTabs()
         initKeyboardNavigation()
     }
 
@@ -333,10 +331,6 @@ class MediaViewerActivity : BaseActivity() {
                 flags and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN
             viewModel.onFullScreenToggledBySystem(isFullScreen)
         }
-    }
-
-    private fun initCustomTabs() {
-        SafeCustomTabs.safelyConnectAndInitialize(this)
     }
 
     private val keyboardNavigationKeyListener = OnKeyListener { parentView, keyCode, event ->
