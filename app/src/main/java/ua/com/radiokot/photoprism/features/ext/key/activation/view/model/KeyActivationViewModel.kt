@@ -236,6 +236,15 @@ class KeyActivationViewModel(
         eventsSubject.onNext(Event.Finish)
     }
 
+    fun onKeyPassedWithIntent(key: String) {
+        log.debug {
+            "onKeyPassedWithIntent(): replacing_key_with_passed"
+        }
+
+        this.key.value = key
+        parseAndActivateEnteredKey()
+    }
+
     sealed interface Error {
         sealed interface KeyError : Error {
             object Invalid : KeyError

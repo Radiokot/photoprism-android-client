@@ -3,6 +3,7 @@
     <string name="language_code">en</string>
     <string name="app_name">PhotoPrism Gallery</string> <!-- "Gallery" must be translated to your language -->
     <string name="build_year" translatable="false">2024</string>  <!-- Skip non-translatable entries such as this -->
+    <string name="uri_scheme" translatable="false">photoprismgallery</string>
 
     <string name="media_type_image">Image</string>
     <string name="media_type_raw" translatable="false">RAW</string>

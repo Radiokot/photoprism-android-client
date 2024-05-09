@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.key.activation.view
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.fragment.app.FragmentTransaction
@@ -37,6 +39,13 @@ class KeyActivationActivity : BaseActivity() {
 
         subscribeToState()
         subscribeToEvents()
+
+        intent.data?.also(::onIntentData)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.also(::onIntentData)
     }
 
     private fun subscribeToState() = viewModel.state.subscribeBy { state ->
@@ -127,6 +136,32 @@ class KeyActivationActivity : BaseActivity() {
     private fun showFloatingError(error: KeyActivationViewModel.Error) {
         Snackbar.make(view.fragmentContainer, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .show()
+    }
+
+    private fun onIntentData(data: Uri) {
+        val expectedScheme = getString(R.string.uri_scheme)
+        if (data.scheme != getString(R.string.uri_scheme)) {
+            log.error {
+                "onIntentData(): scheme_mismatch:" +
+                        "\nexpected=$expectedScheme," +
+                        "\nactual=${data.scheme}," +
+                        "\nuri=$data"
+            }
+
+            return
+        }
+
+        val keyParam = data.getQueryParameter("key")
+        if (keyParam == null) {
+            log.error {
+                "onIntentData(): missing_key:" +
+                        "\nuri=$data"
+            }
+
+            return
+        }
+
+        viewModel.onKeyPassedWithIntent(keyParam)
     }
 
     private val KeyActivationViewModel.Error.localizedMessage: String

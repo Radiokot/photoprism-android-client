@@ -129,10 +129,23 @@
 
         <activity
             android:name=".features.ext.key.activation.view.KeyActivationActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/key_activation_input_title"
+            android:launchMode="singleTask"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="activate-key"
+                    android:scheme="@string/uri_scheme" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".features.ext.marketplace.view.GalleryExtensionMarketplaceActivity"
