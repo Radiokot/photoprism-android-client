@@ -129,11 +129,15 @@
 
         <activity
             android:name=".features.ext.key.activation.view.KeyActivationActivity"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/key_activation_input_title"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
+
+            <!-- This screen gets enabled or disabled programmatically
+                 on optional features initialization. -->
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -23,12 +23,15 @@ import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setManifestComponentEnabled
 import ua.com.radiokot.photoprism.featureflags.di.allDisabledFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.marketplace.extensionMarketplaceModule
 import ua.com.radiokot.photoprism.features.ext.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
@@ -123,6 +126,11 @@ class PhotoPrismGallery : Application() {
         } else {
             get<CancelDailyMemoriesUpdatesUseCase>().invoke()
         }
+
+        setManifestComponentEnabled(
+            componentClass = KeyActivationActivity::class.java,
+            isEnabled = hasExtensionPreferences
+        )
     }
 
     override fun attachBaseContext(base: Context) =
