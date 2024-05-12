@@ -9,6 +9,12 @@
 
     <Preference
         app:iconSpaceReserved="false"
+        app:key="@string/pk_ext_marketplace"
+        app:persistent="false"
+        app:title="@string/extension_marketplace_preference" />
+
+    <Preference
+        app:iconSpaceReserved="false"
         app:key="@string/pk_ext_enter_key"
         app:persistent="false"
         app:title="@string/enter_key_preference" />

@@ -11,6 +11,7 @@
     <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
     <string name="extensions_preferences" translatable="false">Extensions</string>
     <string name="extensions_preferences_summary" translatable="false">Extra features for the gallery</string>
+    <string name="extension_marketplace_preference" translatable="false">@string/extension_marketplace</string>
     <string name="enter_key_preference" translatable="false">Activate another key</string>
     <string name="extension_memories_title" translatable="false">Memories</string>
     <string name="extension_memories_description" translatable="false">Get daily collection of photos and videos from the same day in past years</string>
@@ -34,7 +35,8 @@
         <item quantity="other">%1$d activated extensions</item>
     </plurals>
     <string name="template_extensions_preferences_activated_extensions_for" translatable="false">%1$s for %2$s</string>
-    <string name="extension_marketplace_title" translatable="false">Marketplace</string>
+    <string name="extension_marketplace" translatable="false">Marketplace</string>
+    <string name="extension_marketplace_title" translatable="false">@string/extension_marketplace</string>
     <string name="extension_marketplace_item_buy_now" translatable="false">Buy now</string>
     <string name="extension_marketplace_item_activated" translatable="false">Activated</string>
     <string name="extension_marketplace_failed_loading" translatable="false">Failed to load extensions</string>

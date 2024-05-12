@@ -49,9 +49,16 @@ class ExtensionsPreferencesFragment :
     }
 
     private fun initGeneralPreferences() = with(preferenceScreen) {
-        with(requirePreference(R.string.pk_ext_enter_key)) {
+        with(requirePreference(R.string.pk_ext_marketplace)) {
             setOnPreferenceClickListener {
                 startActivity(Intent(requireActivity(), GalleryExtensionMarketplaceActivity::class.java))
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_ext_enter_key)) {
+            setOnPreferenceClickListener {
+                startActivity(Intent(requireActivity(), KeyActivationActivity::class.java))
                 true
             }
         }
