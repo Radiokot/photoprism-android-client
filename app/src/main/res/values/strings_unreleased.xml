@@ -38,4 +38,5 @@
     <string name="extension_marketplace_item_buy_now" translatable="false">Buy now</string>
     <string name="extension_marketplace_item_activated" translatable="false">Activated</string>
     <string name="extension_marketplace_failed_loading" translatable="false">Failed to load extensions</string>
+    <string name="extension_marketplace_activate_key" translatable="false">Activate a key</string>
 </resources>

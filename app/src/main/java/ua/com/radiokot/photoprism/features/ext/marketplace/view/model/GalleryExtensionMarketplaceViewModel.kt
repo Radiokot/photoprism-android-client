@@ -157,6 +157,14 @@ class GalleryExtensionMarketplaceViewModel(
         eventsSubject.onNext(Event.OpenOnlinePurchase(purchaseUrl))
     }
 
+    fun onActivateKeyClicked() {
+        log.debug {
+            "onActivateKeyClicked(): activate_key_clicked"
+        }
+
+        eventsSubject.onNext(Event.OpenKeyActivation)
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
@@ -165,6 +173,8 @@ class GalleryExtensionMarketplaceViewModel(
         object ShowFloatingLoadingFailedError : Event
 
         class OpenOnlinePurchase(val url: String) : Event
+
+        object OpenKeyActivation : Event
     }
 
     sealed interface Error {

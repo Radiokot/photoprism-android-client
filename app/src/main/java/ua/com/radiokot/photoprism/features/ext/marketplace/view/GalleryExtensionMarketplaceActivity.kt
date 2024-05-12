@@ -1,6 +1,9 @@
 package ua.com.radiokot.photoprism.features.ext.marketplace.view
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -13,6 +16,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityExtensionMarketplaceBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceListItem
 import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceViewModel
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
@@ -109,6 +113,9 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
                 openOnlinePurchase(
                     url = event.url,
                 )
+
+            GalleryExtensionMarketplaceViewModel.Event.OpenKeyActivation ->
+                startActivity(Intent(this, KeyActivationActivity::class.java))
         }
 
         log.debug {
@@ -138,5 +145,18 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
             url = url,
             titleRes = R.string.extension_marketplace_title,
         )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.extension_marketplace, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.activate_key) {
+            viewModel.onActivateKeyClicked()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }
