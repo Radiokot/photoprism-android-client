@@ -5,4 +5,14 @@
         <item quantity="few">импортировано %1$d закладки</item>
         <item quantity="many">импортировано %1$d закладок</item>
     </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">%1$d год назад</item>
+        <item quantity="few">%1$d года назад</item>
+        <item quantity="many">%1$d лет назад</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d активированное расширение</item>
+        <item quantity="few">%1$d активированных расширения</item>
+        <item quantity="many">%1$d активированных расширений</item>
+    </plurals>
 </resources>

@@ -4,4 +4,12 @@
         <item quantity="one">εισαγωγή %1$d σελιδοδείκτης</item>
         <item quantity="other">εισαγωγή %1$d σελιδοδείκτες</item>
     </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Ένα χρόνο πριν</item>
+        <item quantity="other">%1$d χρόνια πριν</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d ενεργοποιημένη επέκταση</item>
+        <item quantity="other">%1$d ενεργοποιημένες επεκτάσεις</item>
+    </plurals>
 </resources>

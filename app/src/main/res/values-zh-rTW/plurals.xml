@@ -7,6 +7,6 @@
         <item quantity="other">%1$d 年前</item>
     </plurals>
     <plurals name="activated_extensions">
-        <item quantity="other">%1$d 个激活的扩展</item>
+        <item quantity="other">%1$d 個啟動的擴展</item>
     </plurals>
 </resources>

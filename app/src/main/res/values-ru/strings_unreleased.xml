@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="years_ago">
-        <item quantity="one">%1$d год назад</item>
-        <item quantity="few">%1$d года назад</item>
-        <item quantity="many">%1$d лет назад</item>
-    </plurals>
     <string name="memories_notification_new_memories_title">Новые воспоминания</string>
     <string name="memories_notification_new_memories_text">Вспомните моменты из прошлого</string>
     <string name="memories_notification_channel_name">@string/extension_memories_title</string>
@@ -29,11 +24,6 @@
     <string name="key_activation_success_title">Ключ активирован</string>
     <string name="key_activation_success_subtitle">Новые расширения добавлены в галерею 😎</string>
     <string name="key_activation_success_done">Готово</string>
-    <plurals name="activated_extensions">
-        <item quantity="one">%1$d активированное расширение</item>
-        <item quantity="few">%1$d активированных расширения</item>
-        <item quantity="many">%1$d активированных расширений</item>
-    </plurals>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
     <string name="extension_marketplace" translatable="false">Магазин</string>
     <string name="extension_marketplace_item_buy_now" translatable="false">Купить</string>

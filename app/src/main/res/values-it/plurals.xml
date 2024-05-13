@@ -4,4 +4,12 @@
         <item quantity="one">importati %1$d segnalibro</item>
         <item quantity="other">importati %1$d segnalibri</item>
     </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Un anno fa</item>
+        <item quantity="other">%1$d anni fa</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d estensione attivata</item>
+        <item quantity="other">%1$d estensioni attivate</item>
+    </plurals>
 </resources>

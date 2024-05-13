@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Do not translate these strings.-->
-    <plurals name="years_ago" translatable="false">
-        <item quantity="one">Year ago</item>
-        <item quantity="other">%1$d years ago</item>
-    </plurals>
     <string name="memories_notification_new_memories_title" translatable="false">New memories found</string>
     <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
     <string name="memories_notification_channel_name" translatable="false">@string/extension_memories_title</string>
@@ -30,10 +26,6 @@
     <string name="key_activation_success_title" translatable="false">Key activated</string>
     <string name="key_activation_success_subtitle" translatable="false">New extensions have been added to the gallery 😎</string>
     <string name="key_activation_success_done" translatable="false">Done</string>
-    <plurals name="activated_extensions" translatable="false">
-        <item quantity="one">%1$d activated extension</item>
-        <item quantity="other">%1$d activated extensions</item>
-    </plurals>
     <string name="template_extensions_preferences_activated_extensions_for" translatable="false">%1$s for %2$s</string>
     <string name="extension_marketplace" translatable="false">Marketplace</string>
     <string name="extension_marketplace_title" translatable="false">@string/extension_marketplace</string>

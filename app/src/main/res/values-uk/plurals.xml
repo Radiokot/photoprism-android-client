@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="years_ago">
+        <item quantity="one">%1$d рік тому</item>
+        <item quantity="few">%1$d роки тому</item>
+        <item quantity="many">%1$d років тому</item>
+    </plurals>
     <plurals name="imported_search_bookmarks">
         <item quantity="one">імпортовано %1$d закладку</item>
         <item quantity="few">імпортовано %1$d закладки</item>
         <item quantity="many">імпортовано %1$d закладок</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d активоване розширення</item>
+        <item quantity="few">%1$d активованих розширення</item>
+        <item quantity="many">%1$d активованих розширень</item>
     </plurals>
 </resources>

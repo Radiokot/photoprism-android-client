@@ -4,4 +4,12 @@
         <item quantity="one">içeri aktarıldı %1$d yer imi</item>
         <item quantity="other">içeri aktarıldı %1$d yer imleri</item>
     </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Bir yıl önce</item>
+        <item quantity="other">%1$d yıl önce</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d etkinleştirilmiş uzatma</item>
+        <item quantity="other">%1$d etkinleştirilmiş uzantı</item>
+    </plurals>
 </resources>

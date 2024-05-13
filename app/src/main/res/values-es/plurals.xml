@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="imported_search_bookmarks">
-        <item quantity="many">importados %1$d favoritos</item>
         <item quantity="one">importado %1$d favorito</item>
         <item quantity="other">importados %1$d favorits</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Hace un año</item>
+        <item quantity="other">%1$d años atrás</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d extensión activada</item>
+        <item quantity="other">%1$d extensiones activadas</item>
     </plurals>
 </resources>

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="imported_search_bookmarks">
-        <item quantity="zero">%1$d Lesezeichen importiert</item>
         <item quantity="one">%1$d Lesezeichen imporiert</item>
         <item quantity="other">%1$d Lesezeichen importiert</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Vor Jahr</item>
+        <item quantity="other">Vor %1$d Jahren</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d aktivierte Erweiterung</item>
+        <item quantity="other">%1$d aktivierte Erweiterungen</item>
     </plurals>
 </resources>

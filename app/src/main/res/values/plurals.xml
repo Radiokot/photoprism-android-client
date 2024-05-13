@@ -5,4 +5,12 @@
         <item quantity="one">imported %1$d bookmark</item>
         <item quantity="other">imported %1$d bookmarks</item>
     </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Year ago</item>
+        <item quantity="other">%1$d years ago</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d activated extension</item>
+        <item quantity="other">%1$d activated extensions</item>
+    </plurals>
 </resources>
