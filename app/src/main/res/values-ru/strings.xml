@@ -168,5 +168,11 @@
     <string name="tfa_code_dialog_input_hint">Код</string>
     <string name="error_invalid_tfa_code">Недействительный код подтверждения</string>
     <string name="error_session_expired">Сессия истекла. Рассмотрите создание отдельного пароля для галереи</string>
+    <string name="memories_notification_new_memories_title">Новые воспоминания</string>
+    <string name="memories_notification_new_memories_text">Вспомните моменты из прошлого</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Когда находятся новые воспоминания</string>
+    <string name="extensions_preferences">Расширения</string>
+    <string name="extensions_preferences_summary">Дополнительные функции для галереи</string>
 
 </resources>

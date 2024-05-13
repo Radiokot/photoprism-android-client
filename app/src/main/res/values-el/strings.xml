@@ -168,5 +168,11 @@
     <string name="tfa_code_dialog_input_hint">Κωδικός</string>
     <string name="error_invalid_tfa_code">Μη έγκυρος κωδικός επαλήθευσης</string>
     <string name="error_session_expired">Η συνεδρία έχει λήξει. Εξετάστε τη χρήση ενός ειδικού κωδικού πρόσβασης για τη συλλογή</string>
+    <string name="memories_notification_new_memories_title">Βρέθηκαν νέες αναμνήσεις</string>
+    <string name="memories_notification_new_memories_text">Θυμηθείτε στιγμές από το παρελθόν</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Κάθε φορά που βρίσκονται νέες αναμνήσεις</string>
+    <string name="extensions_preferences">Επεκτάσεις</string>
+    <string name="extensions_preferences_summary">Επιπλέον χαρακτηριστικά για τη συλλογή</string>
 
 </resources>

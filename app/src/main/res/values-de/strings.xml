@@ -164,5 +164,11 @@
     <string name="tfa_code_dialog_input_hint">Code</string>
     <string name="error_invalid_tfa_code">Ungültiger Bestätigungscode</string>
     <string name="error_session_expired">Die Sitzung ist abgelaufen. Erwägen Sie die Verwendung eines speziellen Passworts für die Galerie</string>
+    <string name="memories_notification_new_memories_title">Neue Erinnerungen gefunden</string>
+    <string name="memories_notification_new_memories_text">Erinnere dich an Momente aus der Vergangenheit</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Immer wenn neue Erinnerungen gefunden werden</string>
+    <string name="extensions_preferences">Erweiterungen</string>
+    <string name="extensions_preferences_summary">Erweiterungen für die Galerie</string>
 
 </resources>

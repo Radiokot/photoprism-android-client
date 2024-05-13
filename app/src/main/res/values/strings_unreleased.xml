@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Do not translate these strings.-->
-    <string name="memories_notification_new_memories_title" translatable="false">New memories found</string>
-    <string name="memories_notification_new_memories_text" translatable="false">Remember moments from the past</string>
-    <string name="memories_notification_channel_name" translatable="false">@string/extension_memories_title</string>
-    <string name="memories_notification_channel_description" translatable="false">Whenever new memories are found</string>
-    <string name="extensions_preferences" translatable="false">Extensions</string>
-    <string name="extensions_preferences_summary" translatable="false">Extra features for the gallery</string>
     <string name="extension_marketplace_preference" translatable="false">@string/extension_marketplace</string>
     <string name="enter_key_preference" translatable="false">Activate another key</string>
     <string name="extension_memories_title" translatable="false">Memories</string>

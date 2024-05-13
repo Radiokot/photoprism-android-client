@@ -168,5 +168,11 @@
     <string name="tfa_code_dialog_input_hint">验证码</string>
     <string name="error_invalid_tfa_code">无效的验证码</string>
     <string name="error_session_expired">会话已过期。请考虑使用专用密码保护图库</string>
+    <string name="memories_notification_new_memories_title">发现新的回忆</string>
+    <string name="memories_notification_new_memories_text">记住过去的时刻</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">每当发现新的回忆时</string>
+    <string name="extensions_preferences">扩展</string>
+    <string name="extensions_preferences_summary">图库的额外功能</string>
 
 </resources>

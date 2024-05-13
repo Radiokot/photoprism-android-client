@@ -168,5 +168,11 @@
     <string name="tfa_code_dialog_input_hint">Codice</string>
     <string name="error_invalid_tfa_code">Codice di verifica non valido</string>
     <string name="error_session_expired">La sessione è scaduta. Considera di utilizzare una password dedicata per la galleria</string>
+    <string name="memories_notification_new_memories_title">Nuovi ricordi trovati</string>
+    <string name="memories_notification_new_memories_text">Ricorda momenti del passato</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Ogni volta che vengono trovati nuovi ricordi</string>
+    <string name="extensions_preferences">Estensioni</string>
+    <string name="extensions_preferences_summary">Funzionalità extra per la galleria</string>
 
 </resources>

@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="memories_notification_new_memories_title">Нові спогади</string>
-    <string name="memories_notification_new_memories_text">Пригадайте моменти з минулого</string>
-    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
-    <string name="memories_notification_channel_description">Коли знаходяться нові спогади</string>
-    <string name="extensions_preferences">Розширення</string>
-    <string name="extensions_preferences_summary">Додаткові функції для вашої галереї</string>
     <string name="enter_key_preference">Активувати ще один ключ</string>
     <string name="extension_memories_title">Спогади</string>
     <string name="extension_memories_description">Щоденна добірка фотографій і відео, зроблених цього дня в минулі роки</string>

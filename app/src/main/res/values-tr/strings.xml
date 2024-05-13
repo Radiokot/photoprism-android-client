@@ -168,5 +168,11 @@
     <string name="tfa_code_dialog_input_hint">Kod</string>
     <string name="error_invalid_tfa_code">Geçersiz doğrulama kodu</string>
     <string name="error_session_expired">Oturum süresi doldu. Galeri için özel bir şifre kullanmayı düşünün</string>
+    <string name="memories_notification_new_memories_title">Yeni anılar bulundu</string>
+    <string name="memories_notification_new_memories_text">Geçmişten anıları hatırla</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Her yeni anı bulunduğunda</string>
+    <string name="extensions_preferences">Eklentiler</string>
+    <string name="extensions_preferences_summary">Galeri için ek özellikler</string>
 
 </resources>
