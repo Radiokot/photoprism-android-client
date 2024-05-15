@@ -530,6 +530,13 @@ class MediaViewerActivity : BaseActivity() {
             true
         }
 
+        R.id.archive -> {
+            viewModel.onArchiveClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
         else ->
             super.onOptionsItemSelected(item)
     }

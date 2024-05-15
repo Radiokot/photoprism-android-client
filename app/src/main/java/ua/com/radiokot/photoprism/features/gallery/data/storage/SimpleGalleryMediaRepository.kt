@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
@@ -250,6 +251,22 @@ class SimpleGalleryMediaRepository(
                     itemToChange.isFavorite = isFavorite
                     broadcast()
                 }
+        }
+
+    fun archive(
+        itemUids: Collection<String>
+    ): Completable = {
+        photoPrismPhotosService.batchArchive(PhotoPrismBatchPhotoUids(itemUids))
+        val itemUidsSet = itemUids.toSet()
+        synchronized(this@SimpleGalleryMediaRepository) {
+            mutableItemsList
+                .removeAll { it.uid in itemUidsSet  }
+        }
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            broadcast()
         }
 
     override fun update(): Completable {

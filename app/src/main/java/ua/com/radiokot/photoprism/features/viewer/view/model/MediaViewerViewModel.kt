@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
+import ua.com.radiokot.photoprism.features.viewer.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -30,6 +31,7 @@ class MediaViewerViewModel(
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val setGalleryMediaFavoriteUseCaseFactory: SetGalleryMediaFavoriteUseCase.Factory,
+    private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -250,6 +252,39 @@ class MediaViewerViewModel(
         }
 
         eventsSubject.onNext(Event.OpenWebViewer(url = item.webViewUrl))
+    }
+
+    fun onArchiveClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onArchiveClicked(): archiving:" +
+                    "\nitem=$item"
+        }
+
+        archiveGalleryMediaUseCaseFactory
+            .get(
+                mediaUid = item.uid,
+                currentGalleryMediaRepository = galleryMediaRepository,
+            )
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onArchiveClicked(): failed_archiving:" +
+                                "\nitem=$item"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onFavoriteClicked(): successfully_archived:" +
+                                "\nitem=$item"
+                    }
+                }
+            )
+            .autoDispose(this)
     }
 
     fun onDownloadClicked(position: Int) {
@@ -623,7 +658,7 @@ class MediaViewerViewModel(
         class DateTime(
             val localDate: LocalDate,
             val withYear: Boolean,
-        ): SubtitleValue
+        ) : SubtitleValue
     }
 
     sealed interface Event {

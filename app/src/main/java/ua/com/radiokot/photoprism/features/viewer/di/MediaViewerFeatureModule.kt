@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.viewer.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
@@ -63,6 +64,7 @@ val mediaViewerFeatureModule = module {
                 downloadMediaFileViewModel = get(),
                 backgroundMediaFileDownloadManager = get(),
                 setGalleryMediaFavoriteUseCaseFactory = get(),
+                archiveGalleryMediaUseCaseFactory = get(),
             )
         }
 
@@ -90,5 +92,6 @@ val mediaViewerFeatureModule = module {
         viewModelOf(::VideoPlayerCacheViewModel)
 
         scopedOf(SetGalleryMediaFavoriteUseCase::Factory)
+        scopedOf(ArchiveGalleryMediaUseCase::Factory)
     }
 }

@@ -179,5 +179,5 @@
     <string name="memories_notification_channel_description">Whenever new memories are found</string>
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Extra features for the gallery</string>
-
+    <string name="archive_action">Archive</string>
 </resources>
