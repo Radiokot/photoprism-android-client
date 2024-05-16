@@ -282,6 +282,10 @@ class MediaViewerViewModel(
                         "onFavoriteClicked(): successfully_archived:" +
                                 "\nitem=$item"
                     }
+
+                    // As item at this position disappears,
+                    // the handler must be called manually.
+                    onPageChanged(position)
                 }
             )
             .autoDispose(this)
