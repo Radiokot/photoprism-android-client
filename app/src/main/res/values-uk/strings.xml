@@ -174,5 +174,6 @@
     <string name="memories_notification_channel_description">Коли знаходяться нові спогади</string>
     <string name="extensions_preferences">Розширення</string>
     <string name="extensions_preferences_summary">Додаткові функції для галереї</string>
+    <string name="archive_action">Архівувати</string>
 
 </resources>

@@ -170,5 +170,6 @@
     <string name="memories_notification_channel_description">Immer wenn neue Erinnerungen gefunden werden</string>
     <string name="extensions_preferences">Erweiterungen</string>
     <string name="extensions_preferences_summary">Erweiterungen für die Galerie</string>
+    <string name="archive_action">Archivieren</string>
 
 </resources>

@@ -174,5 +174,6 @@
     <string name="memories_notification_channel_description">每当发现新的回忆时</string>
     <string name="extensions_preferences">扩展</string>
     <string name="extensions_preferences_summary">图库的额外功能</string>
+    <string name="archive_action">存档</string>
 
 </resources>

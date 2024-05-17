@@ -174,5 +174,6 @@
     <string name="memories_notification_channel_description">Her yeni anı bulunduğunda</string>
     <string name="extensions_preferences">Eklentiler</string>
     <string name="extensions_preferences_summary">Galeri için ek özellikler</string>
+    <string name="archive_action">Arşivle</string>
 
 </resources>

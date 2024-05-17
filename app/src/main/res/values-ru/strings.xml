@@ -174,5 +174,6 @@
     <string name="memories_notification_channel_description">Когда находятся новые воспоминания</string>
     <string name="extensions_preferences">Расширения</string>
     <string name="extensions_preferences_summary">Дополнительные функции для галереи</string>
+    <string name="archive_action">Архивировать</string>
 
 </resources>

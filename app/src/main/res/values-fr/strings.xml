@@ -175,5 +175,6 @@
     <string name="memories_notification_channel_description">Chaque fois que de nouveaux souvenirs sont trouvés</string>
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Fonctionnalités supplémentaires pour la galerie</string>
+    <string name="archive_action">Archiver</string>
 
 </resources>

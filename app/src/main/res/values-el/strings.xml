@@ -174,5 +174,6 @@
     <string name="memories_notification_channel_description">Κάθε φορά που βρίσκονται νέες αναμνήσεις</string>
     <string name="extensions_preferences">Επεκτάσεις</string>
     <string name="extensions_preferences_summary">Επιπλέον χαρακτηριστικά για τη συλλογή</string>
+    <string name="archive_action">Αρχειοθέτηση</string>
 
 </resources>
