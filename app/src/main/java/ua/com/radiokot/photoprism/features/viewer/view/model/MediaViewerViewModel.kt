@@ -133,7 +133,17 @@ class MediaViewerViewModel(
     private fun subscribeToRepository() {
         galleryMediaRepository.items
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { broadcastItemsFromRepository() }
+            .subscribe {
+                if (it.isEmpty() && galleryMediaRepository.isFresh) {
+                    log.debug {
+                        "subscribeToRepository(): finishing_as_nothing_left"
+                    }
+
+                    eventsSubject.onNext(Event.Finish)
+                } else {
+                    broadcastItemsFromRepository()
+                }
+            }
             .autoDispose(this)
 
         galleryMediaRepository.loading
@@ -279,7 +289,7 @@ class MediaViewerViewModel(
                 },
                 onComplete = {
                     log.debug {
-                        "onFavoriteClicked(): successfully_archived:" +
+                        "onArchiveClicked(): successfully_archived:" +
                                 "\nitem=$item"
                     }
 
@@ -588,12 +598,19 @@ class MediaViewerViewModel(
     }
 
     fun onPageChanged(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
 
         log.debug {
             "onPageChanged(): page_changed:" +
                     "\nposition=$position," +
                     "\nitem=$item"
+        }
+
+        if (item == null) {
+            log.warn {
+                "onPageChanged(): position_out_of_range"
+            }
+            return
         }
 
         subscribeToMediaBackgroundDownloadStatus(
@@ -688,6 +705,8 @@ class MediaViewerViewModel(
             val mediaIndex: Int,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
         ) : Event
+
+        object Finish : Event
     }
 
     sealed interface State {

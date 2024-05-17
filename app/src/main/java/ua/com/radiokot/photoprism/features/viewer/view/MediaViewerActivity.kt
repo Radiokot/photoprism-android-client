@@ -753,6 +753,9 @@ class MediaViewerActivity : BaseActivity() {
                         mediaIndex = event.mediaIndex,
                         repositoryParams = event.repositoryParams,
                     )
+
+                MediaViewerViewModel.Event.Finish ->
+                    finish()
             }
 
             log.debug {
