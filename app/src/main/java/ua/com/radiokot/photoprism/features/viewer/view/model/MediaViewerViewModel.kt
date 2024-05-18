@@ -50,7 +50,6 @@ class MediaViewerViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
-    val state: Observable<State> = stateSubject.toMainThreadObservable()
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isToolbarVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -765,7 +764,7 @@ class MediaViewerViewModel(
         object OpenDeletionConfirmationDialog : Event
     }
 
-    sealed interface State {
+    private sealed interface State {
         object Idle : State
         object Sharing : State
         object OpeningIn : State
