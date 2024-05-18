@@ -34,4 +34,12 @@
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="never"
         tools:ignore="PrivateResource" />
+
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_delete_forever"
+        android:title="@string/delete"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never"
+        tools:ignore="PrivateResource" />
 </menu>

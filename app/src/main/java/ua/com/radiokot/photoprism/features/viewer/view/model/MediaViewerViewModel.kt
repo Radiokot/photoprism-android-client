@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.features.viewer.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -32,6 +33,7 @@ class MediaViewerViewModel(
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val setGalleryMediaFavoriteUseCaseFactory: SetGalleryMediaFavoriteUseCase.Factory,
     private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
+    private val deleteGalleryMediaUseCaseFactory: DeleteGalleryMediaUseCase.Factory,
 ) : ViewModel() {
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -290,6 +292,43 @@ class MediaViewerViewModel(
                 onComplete = {
                     log.debug {
                         "onArchiveClicked(): successfully_archived:" +
+                                "\nitem=$item"
+                    }
+
+                    // As item at this position disappears,
+                    // the handler must be called manually.
+                    onPageChanged(position)
+                }
+            )
+            .autoDispose(this)
+    }
+
+    fun onDeleteClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList[position]
+
+        log.debug {
+            "onDeleteClicked(): deleting:" +
+                    "\nitem=$item"
+        }
+
+        deleteGalleryMediaUseCaseFactory
+            .get(
+                mediaUid = item.uid,
+                currentGalleryMediaRepository = galleryMediaRepository,
+            )
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onDeleteClicked(): failed_deleting:" +
+                                "\nitem=$item"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onDeleteClicked(): successfully_deleted:" +
                                 "\nitem=$item"
                     }
 

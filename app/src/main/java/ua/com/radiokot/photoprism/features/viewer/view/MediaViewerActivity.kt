@@ -537,6 +537,13 @@ class MediaViewerActivity : BaseActivity() {
             true
         }
 
+        R.id.delete ->{
+            viewModel.onDeleteClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
         else ->
             super.onOptionsItemSelected(item)
     }

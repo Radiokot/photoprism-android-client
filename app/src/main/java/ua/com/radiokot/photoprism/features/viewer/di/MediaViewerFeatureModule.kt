@@ -23,6 +23,7 @@ import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
+import ua.com.radiokot.photoprism.features.viewer.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
@@ -65,6 +66,7 @@ val mediaViewerFeatureModule = module {
                 backgroundMediaFileDownloadManager = get(),
                 setGalleryMediaFavoriteUseCaseFactory = get(),
                 archiveGalleryMediaUseCaseFactory = get(),
+                deleteGalleryMediaUseCaseFactory = get(),
             )
         }
 
@@ -93,5 +95,6 @@ val mediaViewerFeatureModule = module {
 
         scopedOf(SetGalleryMediaFavoriteUseCase::Factory)
         scopedOf(ArchiveGalleryMediaUseCase::Factory)
+        scopedOf(DeleteGalleryMediaUseCase::Factory)
     }
 }
