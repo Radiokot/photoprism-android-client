@@ -250,12 +250,27 @@ class MediaViewerActivity : BaseActivity() {
             }
         ))
 
-        registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            private var prevSelectedPagePosition = -1
+        var lastSelectedPageId = -1L
+        var lastSelectedPagePosition = -1
 
+        fastAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+            override fun onChanged() {
+                // Detect changing the item at the same position.
+                // For example, when an item gets deleted but there are more.
+                val currentPosition = currentItem
+                if (currentPosition == lastSelectedPagePosition) {
+                    if (lastSelectedPageId != fastAdapter.getItemId(currentPosition)) {
+                        viewModel.onPageChanged(currentPosition)
+                    }
+                }
+            }
+        })
+
+        registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                if (position != prevSelectedPagePosition) {
-                    prevSelectedPagePosition = position
+                if (position != lastSelectedPagePosition) {
+                    lastSelectedPagePosition = position
+                    lastSelectedPageId = fastAdapter.getItemId(position)
                     viewModel.onPageChanged(position)
                 }
             }

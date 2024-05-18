@@ -294,10 +294,6 @@ class MediaViewerViewModel(
                         "onArchiveClicked(): successfully_archived:" +
                                 "\nitem=$item"
                     }
-
-                    // As item at this position disappears,
-                    // the handler must be called manually.
-                    onPageChanged(position)
                 }
             )
             .autoDispose(this)
@@ -350,10 +346,6 @@ class MediaViewerViewModel(
                         "onDeletionConfirmed(): successfully_deleted:" +
                                 "\nitem=$item"
                     }
-
-                    //TODO: As item at this position disappears,
-                    // the handler must be called manually.
-//                    onPageChanged(position)
                 }
             )
             .autoDispose(this)
