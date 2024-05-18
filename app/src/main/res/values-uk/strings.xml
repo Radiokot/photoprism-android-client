@@ -175,5 +175,6 @@
     <string name="extensions_preferences">Розширення</string>
     <string name="extensions_preferences_summary">Додаткові функції для галереї</string>
     <string name="archive_action">Архівувати</string>
+    <string name="media_viewer_deletion_confirmation">Видалити цей елемент назавжди?</string>
 
 </resources>

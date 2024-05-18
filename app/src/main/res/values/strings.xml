@@ -180,4 +180,6 @@
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Extra features for the gallery</string>
     <string name="archive_action">Archive</string>
+    <string name="media_viewer_deletion_confirmation">Delete this item forever?</string>
+
 </resources>

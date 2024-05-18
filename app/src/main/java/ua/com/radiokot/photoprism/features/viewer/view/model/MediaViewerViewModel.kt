@@ -307,7 +307,23 @@ class MediaViewerViewModel(
         val item = galleryMediaRepository.itemsList[position]
 
         log.debug {
-            "onDeleteClicked(): deleting:" +
+            "onDeleteClicked(): start_deleting:" +
+                    "\nitem=$item"
+        }
+
+        stateSubject.onNext(State.Deleting(item))
+        eventsSubject.onNext(Event.OpenDeletionConfirmationDialog)
+    }
+
+    fun onDeletionConfirmed() {
+        val deletionState = checkNotNull(stateSubject.value as? State.Deleting) {
+            "Deletion can only be confirmed in the deleting state"
+        }
+
+        val item = deletionState.media
+
+        log.debug {
+            "onDeletionConfirmed(): deleting:" +
                     "\nitem=$item"
         }
 
@@ -319,22 +335,25 @@ class MediaViewerViewModel(
             .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                stateSubject.onNext(State.Idle)
+            }
             .subscribeBy(
                 onError = { error ->
                     log.error(error) {
-                        "onDeleteClicked(): failed_deleting:" +
+                        "onDeletionConfirmed(): failed_deleting:" +
                                 "\nitem=$item"
                     }
                 },
                 onComplete = {
                     log.debug {
-                        "onDeleteClicked(): successfully_deleted:" +
+                        "onDeletionConfirmed(): successfully_deleted:" +
                                 "\nitem=$item"
                     }
 
-                    // As item at this position disappears,
+                    //TODO: As item at this position disappears,
                     // the handler must be called manually.
-                    onPageChanged(position)
+//                    onPageChanged(position)
                 }
             )
             .autoDispose(this)
@@ -746,12 +765,19 @@ class MediaViewerViewModel(
         ) : Event
 
         object Finish : Event
+
+        /**
+         * Show item deletion confirmation, reporting the choice
+         * to the [onDeletionConfirmed] method.
+         */
+        object OpenDeletionConfirmationDialog : Event
     }
 
     sealed interface State {
         object Idle : State
         object Sharing : State
         object OpeningIn : State
+        class Deleting(val media: GalleryMedia) : State
         class DownloadingToExternalStorage(val media: GalleryMedia) : State
     }
 }

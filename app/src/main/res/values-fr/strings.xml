@@ -176,5 +176,6 @@
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Fonctionnalités supplémentaires pour la galerie</string>
     <string name="archive_action">Archiver</string>
+    <string name="media_viewer_deletion_confirmation">Supprimer cet élément définitivement ?</string>
 
 </resources>

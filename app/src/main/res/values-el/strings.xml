@@ -175,5 +175,6 @@
     <string name="extensions_preferences">Επεκτάσεις</string>
     <string name="extensions_preferences_summary">Επιπλέον χαρακτηριστικά για τη συλλογή</string>
     <string name="archive_action">Αρχειοθέτηση</string>
+    <string name="media_viewer_deletion_confirmation">Διαγραφή αυτού του στοιχείου για πάντα;</string>
 
 </resources>

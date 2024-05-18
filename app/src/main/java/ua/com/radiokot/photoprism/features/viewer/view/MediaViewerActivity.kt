@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -537,7 +538,7 @@ class MediaViewerActivity : BaseActivity() {
             true
         }
 
-        R.id.delete ->{
+        R.id.delete -> {
             viewModel.onDeleteClicked(
                 position = view.viewPager.currentItem
             )
@@ -763,6 +764,9 @@ class MediaViewerActivity : BaseActivity() {
 
                 MediaViewerViewModel.Event.Finish ->
                     finish()
+
+                MediaViewerViewModel.Event.OpenDeletionConfirmationDialog ->
+                    openDeletionConfirmationDialog()
             }
 
             log.debug {
@@ -889,6 +893,16 @@ class MediaViewerActivity : BaseActivity() {
                 )
             )
         )
+    }
+
+    private fun openDeletionConfirmationDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.media_viewer_deletion_confirmation)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                viewModel.onDeletionConfirmed()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     // Swipe to dismiss happens here.

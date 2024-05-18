@@ -175,5 +175,6 @@
     <string name="extensions_preferences">擴展</string>
     <string name="extensions_preferences_summary">圖庫的額外功能</string>
     <string name="archive_action">存檔</string>
+    <string name="media_viewer_deletion_confirmation">永久刪除此項目？</string>
 
 </resources>
