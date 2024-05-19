@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.marketplace.api.model
+package ua.com.radiokot.photoprism.features.ext.store.api.model
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

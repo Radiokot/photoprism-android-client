@@ -19,7 +19,4 @@
     <string name="key_activation_success_subtitle">Нові розширення додано до галереї 😎</string>
     <string name="key_activation_success_done">Готово</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
-    <string name="extension_marketplace" translatable="false">Магазин</string>
-    <string name="extension_marketplace_item_buy_now" translatable="false">Купити</string>
-    <string name="extension_marketplace_activate_key" translatable="false">Активувати ключ</string>
 </resources>

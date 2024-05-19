@@ -176,5 +176,12 @@
     <string name="extensions_preferences_summary">Funzionalità extra per la galleria</string>
     <string name="archive_action">Archivia</string>
     <string name="media_viewer_deletion_confirmation">Eliminare questo elemento per sempre?</string>
+    <string name="extension_store">Negozio di estensioni</string>
+    <string name="extension_store_preference">@string/extension_store</string>
+    <string name="extension_store_title">@string/extension_store</string>
+    <string name="extension_store_item_buy">Acquista</string>
+    <string name="extension_store_item_activated">Attivato</string>
+    <string name="extension_store_failed_loading">Impossibile caricare le estensioni</string>
+    <string name="extension_marketplace_activate_key">Attivare una chiave</string>
 
 </resources>

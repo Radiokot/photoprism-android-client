@@ -9,9 +9,9 @@
 
     <Preference
         app:iconSpaceReserved="false"
-        app:key="@string/pk_ext_marketplace"
+        app:key="@string/pk_ext_store"
         app:persistent="false"
-        app:title="@string/extension_marketplace_preference" />
+        app:title="@string/extension_store_preference" />
 
     <Preference
         app:iconSpaceReserved="false"

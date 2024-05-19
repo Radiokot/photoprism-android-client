@@ -1,9 +1,9 @@
-package ua.com.radiokot.photoprism.features.ext.marketplace.view.model
+package ua.com.radiokot.photoprism.features.ext.store.view.model
 
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import java.math.BigDecimal
 
-class GalleryExtensionMarketplaceItem(
+class GalleryExtensionStoreItem(
     val extension: GalleryExtension,
     val price: BigDecimal,
     /**

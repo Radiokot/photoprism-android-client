@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:title="@string/extension_marketplace_title" />
+        tools:title="@string/extension_store_title" />
 
     <ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -36,7 +36,7 @@
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="2"
-            tools:listitem="@layout/list_item_gallery_extension_marketplace_item" />
+            tools:listitem="@layout/list_item_gallery_extension_store_item" />
     </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 
     <ua.com.radiokot.photoprism.view.ErrorView

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.marketplace
+package ua.com.radiokot.photoprism.features.ext.store
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -9,17 +9,16 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.localeModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
-import ua.com.radiokot.photoprism.features.ext.di.galleryExtensionsFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
-import ua.com.radiokot.photoprism.features.ext.marketplace.api.FeatureMarketplaceService
-import ua.com.radiokot.photoprism.features.ext.marketplace.api.model.FeaturesOnSaleResponse
-import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
-import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceViewModel
+import ua.com.radiokot.photoprism.features.ext.store.api.FeatureStoreService
+import ua.com.radiokot.photoprism.features.ext.store.api.model.FeaturesOnSaleResponse
+import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
+import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreViewModel
 import java.text.NumberFormat
 
 const val CURRENCY_NUMBER_FORMAT = "currency-number-format"
 
-val extensionMarketplaceModule = module {
+val extensionStoreModule = module {
     includes(
         retrofitApiModule,
         localeModule,
@@ -32,11 +31,11 @@ val extensionMarketplaceModule = module {
 //                apiUrl = "http://10.0.0.125:8041".toHttpUrl(),
 //                httpClient = get(),
 //            )
-//        }.create(FeatureMarketplaceService::class.java)
-//    } bind FeatureMarketplaceService::class
+//        }.create(FeatureStoreService::class.java)
+//    } bind FeatureStoreService::class
 
     single {
-        object : FeatureMarketplaceService {
+        object : FeatureStoreService {
             override fun getFeaturesOnSale(): FeaturesOnSaleResponse {
                 Thread.sleep(1000)
 
@@ -67,7 +66,7 @@ val extensionMarketplaceModule = module {
                 )
             }
         }
-    } bind FeatureMarketplaceService::class
+    } bind FeatureStoreService::class
 
     singleOf(::GalleryExtensionsOnSaleRepository)
 
@@ -76,7 +75,7 @@ val extensionMarketplaceModule = module {
     } bind java.text.NumberFormat::class
 
     viewModel {
-        GalleryExtensionMarketplaceViewModel(
+        GalleryExtensionStoreViewModel(
             extensionsOnSaleRepository = get(),
             galleryExtensionsStateRepository = get(),
             onlinePurchaseBaseUrl = "http://10.0.0.125:8041/buy".toHttpUrl(),

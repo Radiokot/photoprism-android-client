@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.marketplace.view.model
+package ua.com.radiokot.photoprism.features.ext.store.view.model
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,21 +15,21 @@ import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtens
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
-import ua.com.radiokot.photoprism.features.ext.marketplace.data.model.GalleryExtensionOnSale
-import ua.com.radiokot.photoprism.features.ext.marketplace.data.storage.GalleryExtensionsOnSaleRepository
+import ua.com.radiokot.photoprism.features.ext.store.data.model.GalleryExtensionOnSale
+import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
 
-class GalleryExtensionMarketplaceViewModel(
+class GalleryExtensionStoreViewModel(
     private val extensionsOnSaleRepository: GalleryExtensionsOnSaleRepository,
     private val galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
     private val onlinePurchaseBaseUrl: HttpUrl,
     private val hardwareIdentifier: HardwareIdentifier,
 ) : ViewModel() {
-    private val log = kLogger("ExtensionMarketplaceVM")
+    private val log = kLogger("ExtensionStoreVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<GalleryExtensionMarketplaceListItem>>()
+    val itemsList = MutableLiveData<List<GalleryExtensionStoreListItem>>()
     val mainError = MutableLiveData<Error?>(null)
 
     init {
@@ -61,7 +61,7 @@ class GalleryExtensionMarketplaceViewModel(
                 val onSale = extensionsOnSaleByIndex[galleryExtension.ordinal]
                     ?: return@mapNotNull null
 
-                GalleryExtensionMarketplaceItem(
+                GalleryExtensionStoreItem(
                     extension = galleryExtension,
                     price = onSale.price,
                     currency = onSale.currency,
@@ -71,8 +71,8 @@ class GalleryExtensionMarketplaceViewModel(
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { extensionMarketplaceItems ->
-                itemsList.postValue(extensionMarketplaceItems.map(::GalleryExtensionMarketplaceListItem))
+            .subscribeBy { extensionStoreItems ->
+                itemsList.postValue(extensionStoreItems.map(::GalleryExtensionStoreListItem))
             }
             .autoDispose(this)
 
@@ -126,7 +126,7 @@ class GalleryExtensionMarketplaceViewModel(
         update(force = true)
     }
 
-    fun onBuyNowClicked(listItem: GalleryExtensionMarketplaceListItem) {
+    fun onBuyNowClicked(listItem: GalleryExtensionStoreListItem) {
         log.debug {
             "onBuyNowClicked(): buy_now_clicked:" +
                     "\nlistItem=$listItem"
@@ -137,7 +137,7 @@ class GalleryExtensionMarketplaceViewModel(
         }
     }
 
-    private fun openOnlinePurchase(item: GalleryExtensionMarketplaceItem) {
+    private fun openOnlinePurchase(item: GalleryExtensionStoreItem) {
         val purchaseUrl = onlinePurchaseBaseUrl.newBuilder()
             .addQueryParameter("f", item.extension.ordinal.toString())
             .addQueryParameter("hw", hardwareIdentifier.getHardwareIdentifier())

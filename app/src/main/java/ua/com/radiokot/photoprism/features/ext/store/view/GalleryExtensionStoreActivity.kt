@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.marketplace.view
+package ua.com.radiokot.photoprism.features.ext.store.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,25 +13,25 @@ import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityExtensionMarketplaceBinding
+import ua.com.radiokot.photoprism.databinding.ActivityExtensionStoreBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
-import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceListItem
-import ua.com.radiokot.photoprism.features.ext.marketplace.view.model.GalleryExtensionMarketplaceViewModel
+import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreListItem
+import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreViewModel
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class GalleryExtensionMarketplaceActivity : BaseActivity() {
-    private val log = kLogger("GalleryExtensionMarketplaceActivity")
+class GalleryExtensionStoreActivity : BaseActivity() {
+    private val log = kLogger("GalleryExtensionStoreActivity")
 
-    private lateinit var view: ActivityExtensionMarketplaceBinding
-    private val viewModel: GalleryExtensionMarketplaceViewModel by viewModel()
-    private val adapter = ItemAdapter<GalleryExtensionMarketplaceListItem>()
+    private lateinit var view: ActivityExtensionStoreBinding
+    private val viewModel: GalleryExtensionStoreViewModel by viewModel()
+    private val adapter = ItemAdapter<GalleryExtensionStoreListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view = ActivityExtensionMarketplaceBinding.inflate(layoutInflater)
+        view = ActivityExtensionStoreBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -51,7 +51,7 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
-                resolveView = { viewHolder: GalleryExtensionMarketplaceListItem.ViewHolder ->
+                resolveView = { viewHolder: GalleryExtensionStoreListItem.ViewHolder ->
                     viewHolder.view.buyButton
                 },
                 resolveViews = { null },
@@ -83,11 +83,11 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                GalleryExtensionMarketplaceViewModel.Error.LoadingFailed ->
+                GalleryExtensionStoreViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
-                            messageRes = R.string.extension_marketplace_failed_loading,
+                            messageRes = R.string.extension_store_failed_loading,
                             retryButtonTextRes = R.string.try_again,
                             retryButtonClickListener = viewModel::onRetryClicked
                         )
@@ -106,15 +106,15 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
         }
 
         when (event) {
-            GalleryExtensionMarketplaceViewModel.Event.ShowFloatingLoadingFailedError ->
+            GalleryExtensionStoreViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is GalleryExtensionMarketplaceViewModel.Event.OpenOnlinePurchase ->
+            is GalleryExtensionStoreViewModel.Event.OpenOnlinePurchase ->
                 openOnlinePurchase(
                     url = event.url,
                 )
 
-            GalleryExtensionMarketplaceViewModel.Event.OpenKeyActivation ->
+            GalleryExtensionStoreViewModel.Event.OpenKeyActivation ->
                 startActivity(Intent(this, KeyActivationActivity::class.java))
         }
 
@@ -127,7 +127,7 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(
             view.swipeRefreshLayout,
-            getString(R.string.extension_marketplace_failed_loading),
+            getString(R.string.extension_store_failed_loading),
             Snackbar.LENGTH_SHORT
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
@@ -143,12 +143,12 @@ class GalleryExtensionMarketplaceActivity : BaseActivity() {
                 .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
                 .build(),
             url = url,
-            titleRes = R.string.extension_marketplace_title,
+            titleRes = R.string.extension_store_title,
         )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.extension_marketplace, menu)
+        menuInflater.inflate(R.menu.extension_store, menu)
         return super.onCreateOptionsMenu(menu)
     }
 

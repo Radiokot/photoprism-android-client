@@ -152,9 +152,9 @@
         </activity>
 
         <activity
-            android:name=".features.ext.marketplace.view.GalleryExtensionMarketplaceActivity"
+            android:name=".features.ext.store.view.GalleryExtensionStoreActivity"
             android:exported="false"
-            android:label="@string/extension_marketplace_title"
+            android:label="@string/extension_store_title"
             android:resizeableActivity="true" />
 
         <activity
