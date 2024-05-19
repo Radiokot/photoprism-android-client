@@ -46,19 +46,5 @@ class DefaultVideoPlayerFactory(
                         )
                 )
             )
-            // So basically non-transcoded previews of live photos
-            // contain two video tracks for some reason: one actual
-            // and one with a single frame, but higher resolution:
-            //
-            // Video: MPEG4 Video (H264) 1440x1080 29.417fps 12862kbps - OK
-            // Video: MPEG4 Video (H264) 2048x1536 0.604fps 1080kbps - WTF?
-            //
-            // The default track selector prefers the larger one,
-            // therefore the preview is not played properly.
-            // Forcing selection of the highest frame rate track instead fixes this.
-            //
-            // Assumption: in other cases PhotoPrism video preview
-            // doesn't contain multiple video tracks.
-            .setTrackSelector(MaxFrameRateVideoTrackSelector(context))
             .build()
 }
