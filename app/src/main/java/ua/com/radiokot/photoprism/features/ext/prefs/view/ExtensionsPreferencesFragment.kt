@@ -56,7 +56,7 @@ class ExtensionsPreferencesFragment :
             }
         }
 
-        with(requirePreference(R.string.pk_ext_enter_key)) {
+        with(requirePreference(R.string.pk_ext_activate_key)) {
             setOnPreferenceClickListener {
                 startActivity(Intent(requireActivity(), KeyActivationActivity::class.java))
                 true

@@ -183,5 +183,11 @@
     <string name="extension_store_item_activated">已啟用</string>
     <string name="extension_store_failed_loading">無法載入擴展</string>
     <string name="extension_marketplace_activate_key">啟用金鑰</string>
+    <string name="activate_key_preference">啟用另一個金鑰</string>
+    <string name="extension_memories_title">回憶</string>
+    <string name="extension_memories_description">獲得往年同一天的每日照片和視頻收藏</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">通知</string>
+    <string name="extension_memories_notification_preference_summary">在發現新的回憶時發送通知</string>
 
 </resources>

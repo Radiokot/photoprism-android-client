@@ -183,5 +183,11 @@
     <string name="extension_store_item_activated">Активовано</string>
     <string name="extension_store_failed_loading">Не вдалося завантажити розширення</string>
     <string name="extension_marketplace_activate_key">Активувати ключ</string>
+    <string name="activate_key_preference">Активувати ще один ключ</string>
+    <string name="extension_memories_title">Спогади</string>
+    <string name="extension_memories_description">Щоденна добірка фотографій і відео, зроблених цього дня в минулі роки</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Сповіщення</string>
+    <string name="extension_memories_notification_preference_summary">Відправляти сповіщення коли знаходяться нові спогади</string>
 
 </resources>

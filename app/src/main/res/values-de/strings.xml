@@ -179,5 +179,11 @@
     <string name="extension_store_item_activated" translatable="false">Activated</string>
     <string name="extension_store_failed_loading">Erweiterungen konnten nicht geladen werden</string>
     <string name="extension_marketplace_activate_key">Schlüssel aktivieren</string>
+    <string name="activate_key_preference">Aktiviere einen anderen Schlüssel</string>
+    <string name="extension_memories_title">Erinnerungen</string>
+    <string name="extension_memories_description">Erhalte täglich eine Sammlung von Fotos und Videos vom selben Tag in vergangenen Jahren</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Benachrichtigungen</string>
+    <string name="extension_memories_notification_preference_summary">Sende eine Benachrichtigung, wenn neue Erinnerungen gefunden werden</string>
 
 </resources>

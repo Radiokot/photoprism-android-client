@@ -183,5 +183,11 @@
     <string name="extension_store_item_activated">Активировано</string>
     <string name="extension_store_failed_loading">Не удалось загрузить расширения</string>
     <string name="extension_marketplace_activate_key">Активировать ключ</string>
+    <string name="activate_key_preference">Активировать еще один ключ</string>
+    <string name="extension_memories_title">Воспоминания</string>
+    <string name="extension_memories_description">Ежедневная подборка фотографий и видео, сделанных в этот день в прошлые годы</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Уведомления</string>
+    <string name="extension_memories_notification_preference_summary">Отправлять уведомление когда находятся новые воспоминания</string>
 
 </resources>

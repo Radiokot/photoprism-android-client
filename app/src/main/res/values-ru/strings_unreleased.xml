@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="enter_key_preference">Активировать еще один ключ</string>
-    <string name="extension_memories_title">Воспоминания</string>
-    <string name="extension_memories_description">Ежедневная подборка фотографий и видео, сделанных в этот день в прошлые годы</string>
-    <string name="extension_memories_notification_preference">Уведомления</string>
-    <string name="extension_memories_notification_preference_summary">Отправлять уведомление когда находятся новые воспоминания</string>
     <string name="key_activation_input_title">Активация ключа</string>
     <string name="key_activation_input_subtitle">Вставьте ваш ключ для активации расширений</string>
     <string name="key_activation_input_field_title">Ключ</string>

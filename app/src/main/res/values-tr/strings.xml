@@ -183,5 +183,11 @@
     <string name="extension_store_item_activated">Aktif</string>
     <string name="extension_store_failed_loading">Uzantılar yüklenemedi</string>
     <string name="extension_marketplace_activate_key">Anahtarı etkinleştir</string>
+    <string name="activate_key_preference">Başka bir anahtarı etkinleştir</string>
+    <string name="extension_memories_title">Anılar</string>
+    <string name="extension_memories_description">Geçmiş yıllardaki aynı günün günlük fotoğraf ve video koleksiyonunu alın</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Bildirimler</string>
+    <string name="extension_memories_notification_preference_summary">Yeni anılar bulunduğunda bir bildirim gönder</string>
 
 </resources>

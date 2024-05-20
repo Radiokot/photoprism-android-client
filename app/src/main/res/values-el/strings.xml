@@ -183,5 +183,11 @@
     <string name="extension_store_item_activated">Ενεργά</string>
     <string name="extension_store_failed_loading">Αποτυχία φόρτωσης επεκτάσεων</string>
     <string name="extension_marketplace_activate_key">Ενεργοποίηση κλειδιού</string>
+    <string name="activate_key_preference">Ενεργοποίηση άλλου κλειδιού</string>
+    <string name="extension_memories_title">Αναμνήσεις</string>
+    <string name="extension_memories_description">Λάβετε καθημερινή συλλογή φωτογραφιών και βίντεο από την ίδια ημέρα σε προηγούμενα έτη</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Ειδοποιήσεις</string>
+    <string name="extension_memories_notification_preference_summary">Στείλτε μια ειδοποίηση όταν βρεθούν νέες αναμνήσεις</string>
 
 </resources>

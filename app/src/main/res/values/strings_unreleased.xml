@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Do not translate these strings.-->
-    <string name="enter_key_preference" translatable="false">Activate another key</string>
-    <string name="extension_memories_title" translatable="false">Memories</string>
-    <string name="extension_memories_description" translatable="false">Get daily collection of photos and videos from the same day in past years</string>
-    <string name="extension_memories_preferences" translatable="false">@string/extension_memories_title</string>
-    <string name="extension_memories_notification_preference" translatable="false">Notifications</string>
-    <string name="extension_memories_notification_preference_summary" translatable="false">Send a notification whenever new memories are found</string>
     <string name="key_activation_input_title" translatable="false">Activate a key</string>
     <string name="key_activation_input_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
     <string name="key_activation_input_field_title" translatable="false">Key</string>

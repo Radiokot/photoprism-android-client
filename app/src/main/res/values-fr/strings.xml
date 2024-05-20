@@ -184,5 +184,11 @@
     <string name="extension_store_item_activated">Activé</string>
     <string name="extension_store_failed_loading">Échec du chargement des extensions</string>
     <string name="extension_marketplace_activate_key">Activer une clé</string>
+    <string name="activate_key_preference">Activer une autre clé</string>
+    <string name="extension_memories_title">Souvenirs</string>
+    <string name="extension_memories_description">Recevez une collection quotidienne de photos et de vidéos du même jour dans les années passées</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Notifications</string>
+    <string name="extension_memories_notification_preference_summary">Envoyer une notification lorsque de nouveaux souvenirs sont trouvés</string>
 
 </resources>

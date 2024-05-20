@@ -15,9 +15,9 @@
 
     <Preference
         app:iconSpaceReserved="false"
-        app:key="@string/pk_ext_enter_key"
+        app:key="@string/pk_ext_activate_key"
         app:persistent="false"
-        app:title="@string/enter_key_preference" />
+        app:title="@string/activate_key_preference" />
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
