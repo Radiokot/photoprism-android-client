@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Do not translate these strings.-->
-    <string name="key_activation_input_title" translatable="false">Activate a key</string>
-    <string name="key_activation_input_subtitle" translatable="false">Paste the key you\'ve got to enable extensions</string>
-    <string name="key_activation_input_field_title" translatable="false">Key</string>
-    <string name="key_activation_error_device_mismatch" translatable="false">This key is not issued for this device</string>
-    <string name="key_activation_error_email_mismatch" translatable="false">This key is not issued for you</string>
-    <string name="key_activation_error_invalid" translatable="false">This key is invalid</string>
-    <string name="key_activation_error_expired" translatable="false">This key is expired</string>
-    <string name="key_activation_error_no_new_extensions" translatable="false">This key adds no new extensions</string>
-    <string name="template_key_activation_error_failed_processing" translatable="false">Failed to process the key: %1$s</string>
-    <string name="key_activation_success_title" translatable="false">Key activated</string>
-    <string name="key_activation_success_subtitle" translatable="false">New extensions have been added to the gallery 😎</string>
-    <string name="key_activation_success_done" translatable="false">Done</string>
-    <string name="template_extensions_preferences_activated_extensions_for" translatable="false">%1$s for %2$s</string>
 </resources>

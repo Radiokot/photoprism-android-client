@@ -190,5 +190,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Notifications</string>
     <string name="extension_memories_notification_preference_summary">Envoyer une notification lorsque de nouveaux souvenirs sont trouvés</string>
+    <string name="key_activation_input_title">Activer une clé</string>
+    <string name="key_activation_input_subtitle">Collez la clé que vous avez pour activer les extensions</string>
+    <string name="key_activation_input_field_title">Clé</string>
+    <string name="key_activation_error_device_mismatch">Cette clé n\'est pas attribuée à cet appareil</string>
+    <string name="key_activation_error_email_mismatch">Cette clé n\'est pas attribuée à vous</string>
+    <string name="key_activation_error_invalid">Cette clé n\'est pas valide</string>
+    <string name="key_activation_error_expired">Cette clé a expiré</string>
+    <string name="key_activation_error_no_new_extensions">Cette clé n\'ajoute pas de nouvelles extensions</string>
+    <string name="template_key_activation_error_failed_processing">Échec du traitement de la clé : %1$s</string>
+    <string name="key_activation_success_title">Clé activée</string>
+    <string name="key_activation_success_subtitle">De nouvelles extensions ont été ajoutées à la galerie 😎</string>
+    <string name="key_activation_success_done">Terminé</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s pour %2$s</string>
 
 </resources>

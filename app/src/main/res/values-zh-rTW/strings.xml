@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">通知</string>
     <string name="extension_memories_notification_preference_summary">在發現新的回憶時發送通知</string>
+    <string name="key_activation_input_title">啟用金鑰</string>
+    <string name="key_activation_input_subtitle">貼上您獲得的金鑰以啟用擴展</string>
+    <string name="key_activation_input_field_title">金鑰</string>
+    <string name="key_activation_error_device_mismatch">此金鑰不適用於此設備</string>
+    <string name="key_activation_error_email_mismatch">此金鑰不適用於您</string>
+    <string name="key_activation_error_invalid">此金鑰無效</string>
+    <string name="key_activation_error_expired">此金鑰已過期</string>
+    <string name="key_activation_error_no_new_extensions">此金鑰不新增任何擴展</string>
+    <string name="template_key_activation_error_failed_processing">處理金鑰失敗：%1$s</string>
+    <string name="key_activation_success_title">金鑰已啟用</string>
+    <string name="key_activation_success_subtitle">新擴展已添加到圖庫 😎</string>
+    <string name="key_activation_success_done">完成</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s適用於 %2$s</string>
 
 </resources>

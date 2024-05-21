@@ -185,5 +185,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Benachrichtigungen</string>
     <string name="extension_memories_notification_preference_summary">Sende eine Benachrichtigung, wenn neue Erinnerungen gefunden werden</string>
+    <string name="key_activation_input_title">Aktiviere einen Schlüssel</string>
+    <string name="key_activation_input_subtitle">Füge den erhaltenen Schlüssel ein, um Erweiterungen zu aktivieren</string>
+    <string name="key_activation_input_field_title">Schlüssel</string>
+    <string name="key_activation_error_device_mismatch">Dieser Schlüssel ist nicht für dieses Gerät ausgestellt</string>
+    <string name="key_activation_error_email_mismatch">Dieser Schlüssel ist nicht für Sie ausgestellt</string>
+    <string name="key_activation_error_invalid">Dieser Schlüssel ist ungültig</string>
+    <string name="key_activation_error_expired">Dieser Schlüssel ist abgelaufen</string>
+    <string name="key_activation_error_no_new_extensions">Dieser Schlüssel fügt keine neuen Erweiterungen hinzu</string>
+    <string name="template_key_activation_error_failed_processing">Verarbeitung des Schlüssels fehlgeschlagen: %1$s</string>
+    <string name="key_activation_success_title">Schlüssel aktiviert</string>
+    <string name="key_activation_success_subtitle">Neue Erweiterungen wurden zur Galerie hinzugefügt 😎</string>
+    <string name="key_activation_success_done">Fertig</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s für %2$s</string>
 
 </resources>

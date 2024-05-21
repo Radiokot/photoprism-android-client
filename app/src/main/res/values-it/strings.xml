@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Notifiche</string>
     <string name="extension_memories_notification_preference_summary">Invia una notifica quando vengono trovati nuovi ricordi</string>
+    <string name="key_activation_input_title">Attiva una chiave</string>
+    <string name="key_activation_input_subtitle">Incolla la chiave che hai per abilitare le estensioni</string>
+    <string name="key_activation_input_field_title">Chiave</string>
+    <string name="key_activation_error_device_mismatch">Questa chiave non è stata emessa per questo dispositivo</string>
+    <string name="key_activation_error_email_mismatch">Questa chiave non è stata emessa per te</string>
+    <string name="key_activation_error_invalid">Questa chiave non è valida</string>
+    <string name="key_activation_error_expired">Questa chiave è scaduta</string>
+    <string name="key_activation_error_no_new_extensions">Questa chiave non aggiunge nuove estensioni</string>
+    <string name="template_key_activation_error_failed_processing">Impossibile elaborare la chiave: %1$s</string>
+    <string name="key_activation_success_title">Chiave attivata</string>
+    <string name="key_activation_success_subtitle">Sono state aggiunte nuove estensioni alla galleria 😎</string>
+    <string name="key_activation_success_done">Fatto</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s per %2$s</string>
 
 </resources>

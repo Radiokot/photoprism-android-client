@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">通知</string>
     <string name="extension_memories_notification_preference_summary">在发现新的回忆时发送通知</string>
+    <string name="key_activation_input_title">激活密钥</string>
+    <string name="key_activation_input_subtitle">粘贴您获得的密钥以启用扩展</string>
+    <string name="key_activation_input_field_title">密钥</string>
+    <string name="key_activation_error_device_mismatch">此密钥不适用于此设备</string>
+    <string name="key_activation_error_email_mismatch">此密钥不适用于您</string>
+    <string name="key_activation_error_invalid">此密钥无效</string>
+    <string name="key_activation_error_expired">此密钥已过期</string>
+    <string name="key_activation_error_no_new_extensions">此密钥不添加新的扩展</string>
+    <string name="template_key_activation_error_failed_processing">处理密钥失败：%1$s</string>
+    <string name="key_activation_success_title">密钥已激活</string>
+    <string name="key_activation_success_subtitle">新扩展已添加到图库 😎</string>
+    <string name="key_activation_success_done">完成</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s适用于 %2$s</string>
 
 </resources>

@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Ειδοποιήσεις</string>
     <string name="extension_memories_notification_preference_summary">Στείλτε μια ειδοποίηση όταν βρεθούν νέες αναμνήσεις</string>
+    <string name="key_activation_input_title">Ενεργοποίηση κλειδιού</string>
+    <string name="key_activation_input_subtitle">Επικόλλησε το κλειδί που έχεις για να ενεργοποιήσεις τις επεκτάσεις</string>
+    <string name="key_activation_input_field_title">Κλειδί</string>
+    <string name="key_activation_error_device_mismatch">Αυτό το κλειδί δεν έχει εκδοθεί για αυτήν τη συσκευή</string>
+    <string name="key_activation_error_email_mismatch">Αυτό το κλειδί δεν έχει εκδοθεί για εσάς</string>
+    <string name="key_activation_error_invalid">Αυτό το κλειδί δεν είναι έγκυρο</string>
+    <string name="key_activation_error_expired">Αυτό το κλειδί έχει λήξει</string>
+    <string name="key_activation_error_no_new_extensions">Αυτό το κλειδί δεν προσθέτει νέες επεκτάσεις</string>
+    <string name="template_key_activation_error_failed_processing">Αποτυχία επεξεργασίας του κλειδιού: %1$s</string>
+    <string name="key_activation_success_title">Το κλειδί ενεργοποιήθηκε</string>
+    <string name="key_activation_success_subtitle">Νέες επεκτάσεις προστέθηκαν στη συλλογή 😎</string>
+    <string name="key_activation_success_done">Ολοκληρώθηκε</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s για %2$s</string>
 
 </resources>

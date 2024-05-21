@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Bildirimler</string>
     <string name="extension_memories_notification_preference_summary">Yeni anılar bulunduğunda bir bildirim gönder</string>
+    <string name="key_activation_input_title">Bir anahtarı etkinleştir</string>
+    <string name="key_activation_input_subtitle">Uzantıları etkinleştirmek için elinizdeki anahtarı yapıştırın</string>
+    <string name="key_activation_input_field_title">Anahtar</string>
+    <string name="key_activation_error_device_mismatch">Bu anahtar bu cihaz için verilmemiştir</string>
+    <string name="key_activation_error_email_mismatch">Bu anahtar size verilmemiştir</string>
+    <string name="key_activation_error_invalid">Bu anahtar geçersiz</string>
+    <string name="key_activation_error_expired">Bu anahtar süresi dolmuş</string>
+    <string name="key_activation_error_no_new_extensions">Bu anahtar yeni uzantılar eklemiyor</string>
+    <string name="template_key_activation_error_failed_processing">Anahtar işlenemedi: %1$s</string>
+    <string name="key_activation_success_title">Anahtar etkinleştirildi</string>
+    <string name="key_activation_success_subtitle">Yeni uzantılar galeriye eklendi 😎</string>
+    <string name="key_activation_success_done">Tamam</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s için %2$s</string>
 
 </resources>

@@ -190,5 +190,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Notificaciones</string>
     <string name="extension_memories_notification_preference_summary">Envía una notificación cuando se encuentren nuevos recuerdos</string>
+    <string name="key_activation_input_title">Activar una clave</string>
+    <string name="key_activation_input_subtitle">Pega la clave que tienes para habilitar las extensiones</string>
+    <string name="key_activation_input_field_title">Clave</string>
+    <string name="key_activation_error_device_mismatch">Esta clave no está emitida para este dispositivo</string>
+    <string name="key_activation_error_email_mismatch">Esta clave no está emitida para usted</string>
+    <string name="key_activation_error_invalid">Esta clave no es válida</string>
+    <string name="key_activation_error_expired">Esta clave ha caducado</string>
+    <string name="key_activation_error_no_new_extensions">Esta clave no agrega nuevas extensiones</string>
+    <string name="template_key_activation_error_failed_processing">Error al procesar la clave: %1$s</string>
+    <string name="key_activation_success_title">Clave activada</string>
+    <string name="key_activation_success_subtitle">Se han añadido nuevas extensiones a la galería 😎</string>
+    <string name="key_activation_success_done">Hecho</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s para %2$s</string>
 
 </resources>

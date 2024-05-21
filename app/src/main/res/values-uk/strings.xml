@@ -189,5 +189,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Сповіщення</string>
     <string name="extension_memories_notification_preference_summary">Відправляти сповіщення коли знаходяться нові спогади</string>
+    <string name="key_activation_input_title">Активація ключа</string>
+    <string name="key_activation_input_subtitle">Вставте ваш ключ для активації розширень</string>
+    <string name="key_activation_input_field_title">Ключ</string>
+    <string name="key_activation_error_device_mismatch">Цей ключ видано не для цього пристрою</string>
+    <string name="key_activation_error_email_mismatch">Цей ключ видано не вам</string>
+    <string name="key_activation_error_invalid">Цей ключ неправильний</string>
+    <string name="key_activation_error_expired">Цей ключ прострочений</string>
+    <string name="key_activation_error_no_new_extensions">Цей ключ не додає нових розширень</string>
+    <string name="template_key_activation_error_failed_processing">Не вдалося розпізнати ключ: %1$s</string>
+    <string name="key_activation_success_title">Ключ активовано</string>
+    <string name="key_activation_success_subtitle">Нові розширення додано до галереї 😎</string>
+    <string name="key_activation_success_done">Готово</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
 
 </resources>

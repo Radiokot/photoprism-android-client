@@ -194,5 +194,18 @@
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Notifications</string>
     <string name="extension_memories_notification_preference_summary">Send a notification whenever new memories are found</string>
+    <string name="key_activation_input_title">Activate a key</string>
+    <string name="key_activation_input_subtitle">Paste the key you\'ve got to enable extensions</string>
+    <string name="key_activation_input_field_title">Key</string>
+    <string name="key_activation_error_device_mismatch">This key is not issued for this device</string>
+    <string name="key_activation_error_email_mismatch">This key is not issued for you</string>
+    <string name="key_activation_error_invalid">This key is invalid</string>
+    <string name="key_activation_error_expired">This key is expired</string>
+    <string name="key_activation_error_no_new_extensions">This key adds no new extensions</string>
+    <string name="template_key_activation_error_failed_processing">Failed to process the key: %1$s</string>
+    <string name="key_activation_success_title">Key activated</string>
+    <string name="key_activation_success_subtitle">New extensions have been added to the gallery 😎</string>
+    <string name="key_activation_success_done">Done</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s for %2$s</string>
 
 </resources>
