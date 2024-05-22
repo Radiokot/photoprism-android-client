@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaCodecVideoFormatSupport
@@ -124,6 +125,7 @@ val galleryFeatureModule = module {
                 downloadMediaFileViewModel = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
                 galleryPreferences = get(),
+                archiveGalleryMediaUseCaseFactory = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
@@ -131,5 +133,7 @@ val galleryFeatureModule = module {
                 galleryExtensionsStateRepository = get(),
             )
         }
+
+        scopedOf(ArchiveGalleryMediaUseCase::Factory)
     }
 }

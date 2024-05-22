@@ -1,16 +1,16 @@
-package ua.com.radiokot.photoprism.features.viewer.logic
+package ua.com.radiokot.photoprism.features.gallery.logic
 
 import io.reactivex.rxjava3.core.Completable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 
 class ArchiveGalleryMediaUseCase(
-    private val mediaUid: String,
+    private val mediaUids: Collection<String>,
     private val currentGalleryMediaRepository: SimpleGalleryMediaRepository,
 ) {
     operator fun invoke(): Completable =
         currentGalleryMediaRepository
             .archive(
-                itemUids = setOf(mediaUid)
+                itemUids = mediaUids
             )
 
     class Factory {
@@ -22,8 +22,21 @@ class ArchiveGalleryMediaUseCase(
             mediaUid: String,
             currentGalleryMediaRepository: SimpleGalleryMediaRepository,
         ): ArchiveGalleryMediaUseCase =
+            get(
+                setOf(mediaUid),
+                currentGalleryMediaRepository,
+            )
+
+        /**
+         * @param currentGalleryMediaRepository repository currently used to present the gallery,
+         * which will be updated on successful archiving.
+         */
+        fun get(
+            mediaUids: Collection<String>,
+            currentGalleryMediaRepository: SimpleGalleryMediaRepository,
+        ): ArchiveGalleryMediaUseCase =
             ArchiveGalleryMediaUseCase(
-                mediaUid,
+                mediaUids,
                 currentGalleryMediaRepository,
             )
     }

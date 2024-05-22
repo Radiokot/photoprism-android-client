@@ -13,4 +13,10 @@
         android:title="@string/download"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/archive"
+        android:icon="@drawable/ic_archive"
+        android:title="@string/archive_action"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom" />
 </menu>

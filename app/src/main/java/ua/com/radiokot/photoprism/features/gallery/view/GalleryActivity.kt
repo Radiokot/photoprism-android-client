@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.forEach
 import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -678,6 +679,9 @@ class GalleryActivity : BaseActivity() {
 
                     R.id.download ->
                         viewModel.onDownloadMultipleSelectionClicked()
+
+                    R.id.archive ->
+                        viewModel.onArchiveMultipleSelectionClicked()
                 }
 
                 true
@@ -713,8 +717,9 @@ class GalleryActivity : BaseActivity() {
             multipleSelectionItemsCount > 0 && state is GalleryViewModel.State.Selecting.ForUser
 
         with(view.selectionBottomAppBar.menu) {
-            findItem(R.id.share)?.isVisible = areUserSelectionItemsVisible
-            findItem(R.id.download)?.isVisible = areUserSelectionItemsVisible
+            forEach { menuItem ->
+                menuItem.isVisible = areUserSelectionItemsVisible
+            }
         }
     }
 

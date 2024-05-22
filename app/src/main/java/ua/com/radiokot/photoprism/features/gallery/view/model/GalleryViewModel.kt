@@ -31,6 +31,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -47,6 +48,7 @@ class GalleryViewModel(
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,
     private val galleryPreferences: GalleryPreferences,
+    private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -1025,6 +1027,52 @@ class GalleryViewModel(
                 intent = DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE,
             )
         }
+    }
+
+    fun onArchiveMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Archive multiple selection button is only clickable when selecting"
+        }
+
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+            "Archive multiple selection button is only clickable when something is selected"
+        }
+
+        val repository = currentMediaRepository.checkNotNull {
+            "There must be a media repository to archive items from"
+        }
+
+        val mediaUids = multipleSelectionFilesByMediaUid.keys
+
+        archiveGalleryMediaUseCaseFactory
+            .get(
+                mediaUids = mediaUids,
+                currentGalleryMediaRepository = repository,
+            )
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "onArchiveMultipleSelectionClicked(): start_archiving:" +
+                            "\nitems=${mediaUids.size}"
+                }
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onArchiveMultipleSelectionClicked(): failed_archiving"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onArchiveMultipleSelectionClicked(): successfully_archived"
+                    }
+
+                    switchToViewing()
+                }
+            )
+            .autoDispose(this)
     }
 
     fun onStoragePermissionResult(isGranted: Boolean) {
