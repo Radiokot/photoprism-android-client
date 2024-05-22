@@ -521,6 +521,14 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
+        val actionItems = listOf(
+            menu?.findItem(R.id.archive),
+            menu?.findItem(R.id.delete),
+        )
+        viewModel.areActionsVisible.observe(this) { areActionsVisible ->
+            actionItems.forEach { it?.isVisible = areActionsVisible }
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
