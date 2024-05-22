@@ -39,6 +39,7 @@ import java.io.File
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
 class GalleryViewModel(
@@ -57,6 +58,7 @@ class GalleryViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
+    private val galleryItemsPostingSubject = PublishSubject.create<Any>()
     private val currentLocalDate = LocalDate()
 
     // Current search config regardless the fast scroll.
@@ -181,6 +183,7 @@ class GalleryViewModel(
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
         subscribeToPreferences()
+        subscribeGalleryItemsPosting()
         resetRepositoryToInitial()
     }
 
@@ -390,11 +393,8 @@ class GalleryViewModel(
                     "\nrepository=$currentMediaRepository"
         }
 
-        // Do not observe items on the main thread,
-        // item preparation should not block the UI.
         currentMediaRepository.items
-            .observeOn(Schedulers.computation())
-            .subscribe { postGalleryItems() }
+            .subscribe { postGalleryItemsAsync() }
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -466,12 +466,29 @@ class GalleryViewModel(
                     }
 
                     if (postItems) {
-                        postGalleryItems()
+                        postGalleryItemsAsync()
                     }
                 }
             }
             .autoDispose(this)
     }
+
+    private fun subscribeGalleryItemsPosting() =
+        galleryItemsPostingSubject
+            .observeOn(Schedulers.computation())
+            // Small debounce is nice for situations when multiple changes
+            // trigger items posting, e.g. state and repository.
+            .debounce(30, TimeUnit.MILLISECONDS)
+            .subscribeBy { postGalleryItems() }
+            .autoDispose(this)
+
+    /**
+     * Schedules preparation and posting the items in a non-main thread.
+     *
+     * @see subscribeGalleryItemsPosting
+     */
+    private fun postGalleryItemsAsync() =
+        galleryItemsPostingSubject.onNext(Unit)
 
     private fun postGalleryItems() {
         val repository = currentMediaRepository.checkNotNull {
@@ -503,60 +520,59 @@ class GalleryViewModel(
         val onlyGroupByMonths = itemScale == GalleryItemScale.TINY
 
         // Add date headers.
-        galleryMediaList
-            .forEachIndexed { i, galleryMedia ->
-                val takenAtLocal = galleryMedia.takenAtLocal
+        galleryMediaList.forEachIndexed { i, galleryMedia ->
+            val takenAtLocal = galleryMedia.takenAtLocal
 
-                // Month header.
-                //
-                // For the first item – show if only grouping by months, or if its month
-                // doesn't match the current (e.g. it is November, but the first photo is from October).
-                //
-                // For other items – show on month change, that is when the item's month
-                // doesn't match the previous one's.
-                if (i == 0 && (onlyGroupByMonths || !takenAtLocal.isSameMonthAs(currentLocalDate))
-                    || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
-                ) {
-                    newListItems.add(
-                        GalleryListItem.Header.month(
-                            localDate = takenAtLocal,
-                            withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
-                        )
-                    )
-                }
-
-                // Day header.
-                //
-                // Do not show if only grouping by months.
-                //
-                // For the first item – always show.
-                //
-                // For other items – show on day change, that is when the item's day
-                // doesn't match the previous one's.
-                if (!onlyGroupByMonths
-                    && (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal))
-                ) {
-                    newListItems.add(
-                        if (takenAtLocal.isSameDayAs(currentLocalDate))
-                            GalleryListItem.Header.today()
-                        else
-                            GalleryListItem.Header.day(
-                                localDate = takenAtLocal,
-                                withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
-                            )
-                    )
-                }
-
+            // Month header.
+            //
+            // For the first item – show if only grouping by months, or if its month
+            // doesn't match the current (e.g. it is November, but the first photo is from October).
+            //
+            // For other items – show on month change, that is when the item's month
+            // doesn't match the previous one's.
+            if (i == 0 && (onlyGroupByMonths || !takenAtLocal.isSameMonthAs(currentLocalDate))
+                || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
+            ) {
                 newListItems.add(
-                    GalleryListItem.Media(
-                        source = galleryMedia,
-                        isViewButtonVisible = areViewButtonsVisible,
-                        isSelectionViewVisible = areSelectionViewsVisible,
-                        isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
-                        itemScale = itemScale,
+                    GalleryListItem.Header.month(
+                        localDate = takenAtLocal,
+                        withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
                     )
                 )
             }
+
+            // Day header.
+            //
+            // Do not show if only grouping by months.
+            //
+            // For the first item – always show.
+            //
+            // For other items – show on day change, that is when the item's day
+            // doesn't match the previous one's.
+            if (!onlyGroupByMonths
+                && (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal))
+            ) {
+                newListItems.add(
+                    if (takenAtLocal.isSameDayAs(currentLocalDate))
+                        GalleryListItem.Header.today()
+                    else
+                        GalleryListItem.Header.day(
+                            localDate = takenAtLocal,
+                            withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
+                        )
+                )
+            }
+
+            newListItems.add(
+                GalleryListItem.Media(
+                    source = galleryMedia,
+                    isViewButtonVisible = areViewButtonsVisible,
+                    isSelectionViewVisible = areSelectionViewsVisible,
+                    isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
+                    itemScale = itemScale,
+                )
+            )
+        }
 
         itemsList.postValue(newListItems)
     }
@@ -666,7 +682,7 @@ class GalleryViewModel(
         // Automatically select the target media.
         toggleMediaMultipleSelection(target)
 
-        postGalleryItems()
+        postGalleryItemsAsync()
         postMultipleSelectionItemsCount()
 
         // Make the back button press switch back to viewing.
@@ -721,7 +737,7 @@ class GalleryViewModel(
                     "\nmediaUid=${file.mediaUid}"
         }
 
-        postGalleryItems()
+        postGalleryItemsAsync()
         postMultipleSelectionItemsCount()
     }
 
@@ -748,7 +764,7 @@ class GalleryViewModel(
             switchToViewing()
         }
 
-        postGalleryItems()
+        postGalleryItemsAsync()
         postMultipleSelectionItemsCount()
     }
 
@@ -970,7 +986,7 @@ class GalleryViewModel(
 
     private fun clearMultipleSelection() {
         multipleSelectionFilesByMediaUid.clear()
-        postGalleryItems()
+        postGalleryItemsAsync()
         postMultipleSelectionItemsCount()
     }
 
