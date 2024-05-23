@@ -8,13 +8,12 @@ import androidx.lifecycle.MutableLiveData
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogDownloadProgressBinding
-import kotlin.math.roundToInt
 
 class DownloadProgressDialogFragment :
     BaseMaterialDialogFragment(R.layout.dialog_download_progress) {
 
     private lateinit var viewBinding: DialogDownloadProgressBinding
-    private val progressPercent: MutableLiveData<Double> = MutableLiveData()
+    private val progressPercent: MutableLiveData<Int> = MutableLiveData()
     private val currentDownloadNumberOf: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
 
     val cancellationEvent: MutableLiveData<Unit> = MutableLiveData()
@@ -38,14 +37,13 @@ class DownloadProgressDialogFragment :
 
     private fun initProgress() {
         with(viewBinding.progressIndicator) {
-            max = 10000
-
             progressPercent.observe(viewLifecycleOwner) { percent ->
                 if (percent < 0) {
                     isIndeterminate = true
                 } else {
+                    val wasIndeterminate = isIndeterminate
                     isIndeterminate = false
-                    progress = ((max / 100) * percent).roundToInt()
+                    setProgressCompat(percent, !wasIndeterminate)
                 }
             }
         }
@@ -71,7 +69,7 @@ class DownloadProgressDialogFragment :
      * @param downloadsCount count of downloads to perform in series.
      */
     fun setProgress(
-        percent: Double,
+        percent: Int,
         currentDownloadNumber: Int = 1,
         downloadsCount: Int = 1,
     ) = apply {

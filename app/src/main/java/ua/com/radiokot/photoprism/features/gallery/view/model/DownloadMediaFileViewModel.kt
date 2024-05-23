@@ -12,9 +12,12 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import java.io.File
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 class DownloadMediaFileViewModel(
     private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
@@ -22,10 +25,12 @@ class DownloadMediaFileViewModel(
     private val log = kLogger("DownloadMediaFileVM")
 
     private val downloadStateSubject = BehaviorSubject.create<DownloadProgressViewModel.State>()
-    override val downloadState: Observable<DownloadProgressViewModel.State> = downloadStateSubject
+    override val downloadState: Observable<DownloadProgressViewModel.State> =
+        downloadStateSubject.toMainThreadObservable()
 
     private val downloadEventsSubject = PublishSubject.create<DownloadProgressViewModel.Event>()
-    override val downloadEvents: Observable<DownloadProgressViewModel.Event> = downloadEventsSubject
+    override val downloadEvents: Observable<DownloadProgressViewModel.Event> =
+        downloadEventsSubject.toMainThreadObservable()
 
     private var lastDownloadedFile: DownloadedFile? = null
 
@@ -74,7 +79,7 @@ class DownloadMediaFileViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                downloadStateSubject.onNext(DownloadProgressViewModel.State.Running(-1.0))
+                downloadStateSubject.onNext(DownloadProgressViewModel.State.Running())
             }
             .doOnDispose {
                 try {
@@ -85,15 +90,11 @@ class DownloadMediaFileViewModel(
             }
             .subscribeBy(
                 onNext = { progress ->
-                    val percent = progress.percent
-
-                    log.debug {
-                        "downloadFile(): download_in_progress:" +
-                                "\nurl=$downloadUrl" +
-                                "\nprogress=$percent"
-                    }
-
-                    downloadStateSubject.onNext(DownloadProgressViewModel.State.Running(progress.percent))
+                    downloadStateSubject.onNext(
+                        DownloadProgressViewModel.State.Running(
+                            percent = progress.percent.roundToInt(),
+                        )
+                    )
                 },
                 onError = { error ->
                     log.error(error) {
@@ -146,6 +147,7 @@ class DownloadMediaFileViewModel(
                     )
                     .invoke()
                     .subscribeOn(Schedulers.io())
+                    .throttleLatest(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
                         log.debug {
@@ -156,25 +158,15 @@ class DownloadMediaFileViewModel(
 
                         downloadStateSubject.onNext(
                             DownloadProgressViewModel.State.Running(
-                                percent = -1.0,
                                 currentDownloadNumber = currentDownloadIndex + 1,
                                 downloadsCount = filesAndDestinations.size,
                             )
                         )
                     }
                     .doOnNext { progress ->
-                        val percent = progress.percent
-
-                        log.debug {
-                            "downloadFiles(): file_download_in_progress:" +
-                                    "\nurl=$downloadUrl" +
-                                    "\nprogress=$percent," +
-                                    "\ncurrentDownloadIndex=$currentDownloadIndex"
-                        }
-
                         downloadStateSubject.onNext(
                             DownloadProgressViewModel.State.Running(
-                                percent = percent,
+                                percent = progress.percent.roundToInt().coerceAtLeast(1),
                                 currentDownloadNumber = currentDownloadIndex + 1,
                                 downloadsCount = filesAndDestinations.size,
                             )

@@ -16,13 +16,14 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
@@ -685,6 +686,7 @@ class MediaViewerViewModel(
 
         backgroundDownloadProgressDisposable?.dispose()
         backgroundDownloadProgressDisposable = statusObservable
+            .throttleLatest(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { resetDownloadViews() }
             .doOnDispose(resetDownloadViews)
@@ -696,7 +698,8 @@ class MediaViewerViewModel(
                         status is BackgroundMediaFileDownloadManager.Status.Ended.Completed
 
                     if (status is BackgroundMediaFileDownloadManager.Status.InProgress) {
-                        cancelDownloadButtonProgressPercent.value = status.percent.roundToInt()
+                        cancelDownloadButtonProgressPercent.value =
+                            status.percent.roundToInt().coerceAtLeast(1)
                     }
                 }
             )

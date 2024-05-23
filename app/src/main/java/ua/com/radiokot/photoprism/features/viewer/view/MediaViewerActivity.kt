@@ -23,6 +23,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
+import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -662,20 +663,27 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        viewModel.cancelDownloadButtonProgressPercent.observe(this) { downloadProgressPercent ->
-            view.cancelDownloadButtonProgress.progress = downloadProgressPercent
-            view.cancelDownloadButtonProgress.isIndeterminate = downloadProgressPercent < 0
-        }
-
-        viewModel.isCancelDownloadButtonVisible.observe(this) { isVisible ->
-            if (isVisible) {
-                view.cancelDownloadButtonLayout.isVisible = true
-                view.cancelDownloadButtonProgress.show()
+        viewModel.cancelDownloadButtonProgressPercent.observe(this) { percent ->
+            if (percent < 0) {
+                view.cancelDownloadButtonProgress.isIndeterminate = true
             } else {
-                view.cancelDownloadButtonLayout.isVisible = false
-                view.cancelDownloadButtonProgress.hide()
+                val wasIndeterminate = view.cancelDownloadButtonProgress.isIndeterminate
+                view.cancelDownloadButtonProgress.isIndeterminate = false
+                view.cancelDownloadButtonProgress.setProgressCompat(percent, !wasIndeterminate)
             }
         }
+
+        Transformations.distinctUntilChanged(viewModel.isCancelDownloadButtonVisible)
+            .observe(this) { isVisible ->
+                if (isVisible) {
+                    view.cancelDownloadButtonLayout.isVisible = true
+                    view.cancelDownloadButtonProgress.show()
+                    view.cancelDownloadButtonProgress.progress = 0
+                } else {
+                    view.cancelDownloadButtonLayout.isVisible = false
+                    view.cancelDownloadButtonProgress.hide()
+                }
+            }
 
         viewModel.isDownloadButtonVisible.observe(
             this,

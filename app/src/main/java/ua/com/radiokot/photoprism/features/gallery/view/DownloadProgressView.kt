@@ -25,11 +25,6 @@ class DownloadProgressView(
 
     private fun subscribeToState() {
         viewModel.downloadState.subscribe { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
-            }
-
             when (state) {
                 DownloadProgressViewModel.State.Idle ->
                     dismissDownloadProgress()
@@ -39,11 +34,6 @@ class DownloadProgressView(
                         currentDownloadNumber = state.currentDownloadNumber,
                         downloadsCount = state.downloadsCount,
                     )
-            }
-
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
             }
         }.autoDispose(this)
     }
@@ -68,7 +58,7 @@ class DownloadProgressView(
     }
 
     private fun showDownloadProgress(
-        percent: Double,
+        percent: Int,
         currentDownloadNumber: Int = 1,
         downloadsCount: Int = 1,
     ) {
