@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to archive or delete a single gallery item from the media viewer
 - Ability to archive gallery items selected with a long press
 
+### Fixed
+- Not canceling the download on closing the dialog if the screen was rotated
+
 ## [1.26.0] - 2024-04-21
 
 ### Added

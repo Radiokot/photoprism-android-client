@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.MutableLiveData
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
@@ -15,8 +16,6 @@ class DownloadProgressDialogFragment :
     private lateinit var viewBinding: DialogDownloadProgressBinding
     private val progressPercent: MutableLiveData<Int> = MutableLiveData()
     private val currentDownloadNumberOf: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
-
-    val cancellationEvent: MutableLiveData<Unit> = MutableLiveData()
 
     override fun onDialogViewCreated(dialogView: View, savedInstanceState: Bundle?) {
         viewBinding = DialogDownloadProgressBinding.bind(dialogView)
@@ -78,6 +77,10 @@ class DownloadProgressDialogFragment :
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        cancellationEvent.value = Unit
+        setFragmentResult(CANCELLATION_REQUEST_KEY, Bundle.EMPTY)
+    }
+
+    companion object {
+        const val CANCELLATION_REQUEST_KEY = "cancellation"
     }
 }

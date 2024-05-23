@@ -21,6 +21,13 @@ class DownloadProgressView(
     fun init() {
         subscribeToState()
         subscribeToEvents()
+
+        fragmentManager.setFragmentResultListener(
+            DownloadProgressDialogFragment.CANCELLATION_REQUEST_KEY,
+            this
+        ) { _, _ ->
+            viewModel.onDownloadProgressDialogCancelled()
+        }
     }
 
     private fun subscribeToState() {
@@ -28,6 +35,7 @@ class DownloadProgressView(
             when (state) {
                 DownloadProgressViewModel.State.Idle ->
                     dismissDownloadProgress()
+
                 is DownloadProgressViewModel.State.Running ->
                     showDownloadProgress(
                         percent = state.percent,
@@ -64,11 +72,7 @@ class DownloadProgressView(
     ) {
         val fragment =
             (fragmentManager.findFragmentByTag(DOWNLOAD_PROGRESS_DIALOG_TAG) as? DownloadProgressDialogFragment)
-                ?: DownloadProgressDialogFragment().apply {
-                    cancellationEvent.observe(this@DownloadProgressView) {
-                        viewModel.onDownloadProgressDialogCancelled()
-                    }
-                }
+                ?: DownloadProgressDialogFragment()
 
         if (!fragment.isAdded || !fragment.showsDialog) {
             fragment.showNow(fragmentManager, DOWNLOAD_PROGRESS_DIALOG_TAG)
