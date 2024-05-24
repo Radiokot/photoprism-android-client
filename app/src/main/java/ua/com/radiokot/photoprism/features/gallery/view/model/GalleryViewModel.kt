@@ -58,7 +58,7 @@ class GalleryViewModel(
 ) : ViewModel() {
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
-    private val galleryItemsPostingSubject = PublishSubject.create<Any>()
+    private val galleryItemsPostingSubject = PublishSubject.create<SimpleGalleryMediaRepository>()
     private val currentLocalDate = LocalDate()
 
     // Current search config regardless the fast scroll.
@@ -476,10 +476,22 @@ class GalleryViewModel(
     private fun subscribeGalleryItemsPosting() =
         galleryItemsPostingSubject
             .observeOn(Schedulers.computation())
+            // Post empty lists immediately for better visual,
+            // therefore do not proceed further.
+            .filter { repository ->
+                if (repository.itemsList.isEmpty()) {
+                    postGalleryItems(repository)
+                    false
+                } else {
+                    true
+                }
+            }
             // Small debounce is nice for situations when multiple changes
             // trigger items posting, e.g. state and repository.
             .debounce(30, TimeUnit.MILLISECONDS)
-            .subscribeBy { postGalleryItems() }
+            // Proceed only if the repository remained the same.
+            .filter { it == currentMediaRepository }
+            .subscribe(::postGalleryItems)
             .autoDispose(this)
 
     /**
@@ -487,13 +499,14 @@ class GalleryViewModel(
      *
      * @see subscribeGalleryItemsPosting
      */
-    private fun postGalleryItemsAsync() =
-        galleryItemsPostingSubject.onNext(Unit)
-
-    private fun postGalleryItems() {
+    private fun postGalleryItemsAsync() {
         val repository = currentMediaRepository.checkNotNull {
             "There must be a media repository to post items from"
         }
+        galleryItemsPostingSubject.onNext(repository)
+    }
+
+    private fun postGalleryItems(repository: SimpleGalleryMediaRepository) {
         val galleryMediaList = repository.itemsList
         val itemScale = itemScale.value.checkNotNull {
             "There must be an item scale to consider"

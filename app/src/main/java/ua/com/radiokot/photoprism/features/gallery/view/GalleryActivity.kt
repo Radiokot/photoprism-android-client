@@ -424,12 +424,6 @@ class GalleryActivity : BaseActivity() {
                     else
                         null
 
-//                @SuppressLint("RestrictedApi")
-//                if (state is GalleryViewModel.State.Selecting.ForUser) {
-//                    inflateMenu(R.menu.gallery_selecting_for_user)
-//                } else {
-//                    menu.clear()
-//                }
                 updateMultipleSelectionMenuVisibility()
             }
 
