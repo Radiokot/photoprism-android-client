@@ -19,4 +19,10 @@
         android:title="@string/archive_action"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_delete_forever"
+        android:title="@string/delete"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom"/>
 </menu>

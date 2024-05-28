@@ -36,6 +36,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 
@@ -126,6 +127,7 @@ val galleryFeatureModule = module {
                 connectionParams = get<EnvSession>().envConnectionParams,
                 galleryPreferences = get(),
                 archiveGalleryMediaUseCaseFactory = get(),
+                deleteGalleryMediaUseCaseFactory = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
@@ -135,5 +137,6 @@ val galleryFeatureModule = module {
         }
 
         scopedOf(ArchiveGalleryMediaUseCase::Factory)
+        scopedOf(DeleteGalleryMediaUseCase::Factory)
     }
 }

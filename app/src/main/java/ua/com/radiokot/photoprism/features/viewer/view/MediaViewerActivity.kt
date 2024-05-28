@@ -796,8 +796,8 @@ class MediaViewerActivity : BaseActivity() {
                 MediaViewerViewModel.Event.Finish ->
                     finish()
 
-                MediaViewerViewModel.Event.OpenDeletionConfirmationDialog ->
-                    openDeletionConfirmationDialog()
+                MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
+                    openDeletingConfirmationDialog()
             }
 
             log.debug {
@@ -926,11 +926,11 @@ class MediaViewerActivity : BaseActivity() {
         )
     }
 
-    private fun openDeletionConfirmationDialog() {
+    private fun openDeletingConfirmationDialog() {
         MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.media_viewer_deletion_confirmation)
+            .setMessage(R.string.media_viewer_deleting_confirmation)
             .setPositiveButton(R.string.delete) { _, _ ->
-                viewModel.onDeletionConfirmed()
+                viewModel.onDeletingConfirmed()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

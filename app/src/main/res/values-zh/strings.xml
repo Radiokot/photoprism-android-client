@@ -175,7 +175,7 @@
     <string name="extensions_preferences">扩展</string>
     <string name="extensions_preferences_summary">图库的额外功能</string>
     <string name="archive_action">存档</string>
-    <string name="media_viewer_deletion_confirmation">永久删除此项？</string>
+    <string name="media_viewer_deleting_confirmation">永久删除此项？</string>
     <string name="extension_store">扩展商店</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
@@ -202,5 +202,6 @@
     <string name="key_activation_success_subtitle">新扩展已添加到图库 😎</string>
     <string name="key_activation_success_done">完成</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s适用于 %2$s</string>
+    <string name="gallery_deleting_confirmation">永久删除所选项目？</string>
 
 </resources>

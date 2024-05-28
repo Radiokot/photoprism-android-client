@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -387,6 +388,10 @@ class GalleryActivity : BaseActivity() {
                         url = event.url,
                     )
                 }
+
+                GalleryViewModel.Event.OpenDeletingConfirmationDialog -> {
+                    openDeletingConfirmationDialog()
+                }
             }
 
             log.debug {
@@ -676,6 +681,9 @@ class GalleryActivity : BaseActivity() {
 
                     R.id.archive ->
                         viewModel.onArchiveMultipleSelectionClicked()
+
+                    R.id.delete->
+                        viewModel.onDeleteMultipleSelectionClicked()
                 }
 
                 true
@@ -871,6 +879,16 @@ class GalleryActivity : BaseActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.onWebViewerHandledRedirect()
         }
+    }
+
+    private fun openDeletingConfirmationDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.gallery_deleting_confirmation)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                viewModel.onDeletingMultipleSelectionConfirmed()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private var backPressResetDisposable: Disposable? = null

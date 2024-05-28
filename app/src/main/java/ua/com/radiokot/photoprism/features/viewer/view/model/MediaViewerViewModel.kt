@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.logic.DeleteGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -308,18 +308,18 @@ class MediaViewerViewModel(
         }
 
         stateSubject.onNext(State.Deleting(item))
-        eventsSubject.onNext(Event.OpenDeletionConfirmationDialog)
+        eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
     }
 
-    fun onDeletionConfirmed() {
-        val deletionState = checkNotNull(stateSubject.value as? State.Deleting) {
-            "Deletion can only be confirmed in the deleting state"
+    fun onDeletingConfirmed() {
+        val deletingState = checkNotNull(stateSubject.value as? State.Deleting) {
+            "Deleting can only be confirmed in the deleting state"
         }
 
-        val item = deletionState.media
+        val item = deletingState.media
 
         log.debug {
-            "onDeletionConfirmed(): deleting:" +
+            "onDeletingConfirmed(): deleting:" +
                     "\nitem=$item"
         }
 
@@ -337,13 +337,13 @@ class MediaViewerViewModel(
             .subscribeBy(
                 onError = { error ->
                     log.error(error) {
-                        "onDeletionConfirmed(): failed_deleting:" +
+                        "onDeletingConfirmed(): failed_deleting:" +
                                 "\nitem=$item"
                     }
                 },
                 onComplete = {
                     log.debug {
-                        "onDeletionConfirmed(): successfully_deleted:" +
+                        "onDeletingConfirmed(): successfully_deleted:" +
                                 "\nitem=$item"
                     }
                 }
@@ -762,9 +762,9 @@ class MediaViewerViewModel(
 
         /**
          * Show item deletion confirmation, reporting the choice
-         * to the [onDeletionConfirmed] method.
+         * to the [onDeletingConfirmed] method.
          */
-        object OpenDeletionConfirmationDialog : Event
+        object OpenDeletingConfirmationDialog : Event
     }
 
     private sealed interface State {

@@ -175,7 +175,7 @@
     <string name="extensions_preferences">Расширения</string>
     <string name="extensions_preferences_summary">Дополнительные функции для галереи</string>
     <string name="archive_action">Архивировать</string>
-    <string name="media_viewer_deletion_confirmation">Удалить этот элемент навсегда?</string>
+    <string name="media_viewer_deleting_confirmation">Удалить этот элемент навсегда?</string>
     <string name="extension_store">Магазин расширений</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
@@ -202,5 +202,6 @@
     <string name="key_activation_success_subtitle">Новые расширения добавлены в галерею 😎</string>
     <string name="key_activation_success_done">Готово</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
+    <string name="gallery_deleting_confirmation">Удалить выбранные элементы навсегда?</string>
 
 </resources>

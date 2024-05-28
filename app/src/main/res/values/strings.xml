@@ -180,7 +180,7 @@
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Extra features for the gallery</string>
     <string name="archive_action">Archive</string>
-    <string name="media_viewer_deletion_confirmation">Delete this item forever?</string>
+    <string name="media_viewer_deleting_confirmation">Delete this item forever?</string>
     <string name="extension_store">Extension store</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
@@ -207,5 +207,5 @@
     <string name="key_activation_success_subtitle">New extensions have been added to the gallery 😎</string>
     <string name="key_activation_success_done">Done</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s for %2$s</string>
-
+    <string name="gallery_deleting_confirmation">Delete selected items forever?</string>
 </resources>

@@ -33,6 +33,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferenc
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -50,6 +51,7 @@ class GalleryViewModel(
     private val connectionParams: EnvConnectionParams,
     private val galleryPreferences: GalleryPreferences,
     private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
+    private val deleteGalleryMediaUseCaseFactory: DeleteGalleryMediaUseCase.Factory,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -1104,6 +1106,56 @@ class GalleryViewModel(
             .autoDispose(this)
     }
 
+    fun onDeleteMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Delete multiple selection button is only clickable when selecting"
+        }
+
+        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+            "Delete multiple selection button is only clickable when something is selected"
+        }
+
+        eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
+    }
+
+    fun onDeletingMultipleSelectionConfirmed() {
+        val repository = currentMediaRepository.checkNotNull {
+            "There must be a media repository to delete items from"
+        }
+
+        val mediaUids = multipleSelectionFilesByMediaUid.keys
+
+        deleteGalleryMediaUseCaseFactory
+            .get(
+                mediaUids = mediaUids,
+                currentGalleryMediaRepository = repository,
+            )
+            .invoke()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "onDeletingMultipleSelectionConfirmed(): start_deleting:" +
+                            "\nitems=${mediaUids.size}"
+                }
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onDeletingMultipleSelectionConfirmed(): failed_deleting"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onDeletingMultipleSelectionConfirmed(): successfully_deleted"
+                    }
+
+                    switchToViewing()
+                }
+            )
+            .autoDispose(this)
+    }
+
     fun onStoragePermissionResult(isGranted: Boolean) {
         log.debug {
             "onStoragePermissionResult(): received_result:" +
@@ -1320,6 +1372,12 @@ class GalleryViewModel(
          * Call [onWebViewerHandledRedirect] on successful result.
          */
         class OpenWebViewerForRedirectHandling(val url: String) : Event
+
+        /**
+         * Show item deletion confirmation, reporting the choice
+         * to the [onDeletingMultipleSelectionConfirmed] method.
+         */
+        object OpenDeletingConfirmationDialog : Event
     }
 
     sealed interface Error {

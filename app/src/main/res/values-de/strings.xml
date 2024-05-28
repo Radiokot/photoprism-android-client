@@ -171,7 +171,7 @@
     <string name="extensions_preferences">Erweiterungen</string>
     <string name="extensions_preferences_summary">Erweiterungen für die Galerie</string>
     <string name="archive_action">Archivieren</string>
-    <string name="media_viewer_deletion_confirmation">Diesen Artikel endgültig löschen?</string>
+    <string name="media_viewer_deleting_confirmation">Diesen Artikel endgültig löschen?</string>
     <string name="extension_store">Erweiterungsspeicher</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
@@ -198,5 +198,6 @@
     <string name="key_activation_success_subtitle">Neue Erweiterungen wurden zur Galerie hinzugefügt 😎</string>
     <string name="key_activation_success_done">Fertig</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s für %2$s</string>
+    <string name="gallery_deleting_confirmation">Ausgewählte Elemente endgültig löschen?</string>
 
 </resources>
