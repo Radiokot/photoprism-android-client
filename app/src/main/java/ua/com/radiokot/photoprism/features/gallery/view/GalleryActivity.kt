@@ -41,6 +41,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
@@ -670,6 +671,8 @@ class GalleryActivity : BaseActivity() {
             setNavigationOnClickListener {
                 viewModel.onClearMultipleSelectionClicked()
             }
+
+            menu.showOverflowItemIcons()
 
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {

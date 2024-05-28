@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.InsetDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.Size
 import android.view.KeyEvent
@@ -19,7 +17,6 @@ import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
@@ -464,27 +461,10 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     @SuppressLint("RestrictedApi")
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.media_viewer, menu)
 
-        (menu as? MenuBuilder)?.apply {
-            // Enable icons for overflow menu items.
-            setOptionalIconsVisible(true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Apply horizontal margin for overflow menu item icons for more pleasant look.
-                val iconMarginHorizontal =
-                    resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
-                visibleItems.forEach { menuItem ->
-                    if (!menuItem.requestsActionButton()) {
-                        menuItem.icon = InsetDrawable(
-                            menuItem.icon,
-                            iconMarginHorizontal, 0, iconMarginHorizontal, 0
-                        )
-                    }
-                }
-            }
-        }
+        menu.showOverflowItemIcons()
 
         // Keyboard navigation focus workarounds.
         with(view.toolbar) {
@@ -523,11 +503,11 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         val actionItems = listOf(
-            menu?.findItem(R.id.archive),
-            menu?.findItem(R.id.delete),
+            menu.findItem(R.id.archive),
+            menu.findItem(R.id.delete),
         )
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
-            actionItems.forEach { it?.isVisible = areActionsVisible }
+            actionItems.forEach { it.isVisible = areActionsVisible }
         }
 
         return super.onCreateOptionsMenu(menu)
