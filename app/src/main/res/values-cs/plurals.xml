@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="zero">importováno %1$d záložek</item>
+        <item quantity="one">importována %1$d záložka</item>
+        <item quantity="other">importováno %1$d záložek</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">Před rokem</item>
+        <item quantity="other">%1$d let zpátky</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d aktivované rozšíření</item>
+        <item quantity="other">%1$d aktivovaných rozšíření</item>
+    </plurals>
+</resources>

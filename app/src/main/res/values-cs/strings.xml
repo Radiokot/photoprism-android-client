@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Czech -->
+    <string name="language_code">cs</string>
+    <string name="app_name">PhotoPrism Galerie</string>
+
+    <string name="media_type_image">Obrázek</string>
+    <string name="media_type_animated">Animace</string>
+    <string name="media_type_live">Živá fotka</string>
+    <string name="media_type_video">Video</string>
+    <string name="media_type_vector">Vektor</string>
+    <string name="media_type_sidecar">Postranní soubor</string>
+    <string name="media_type_text">Text</string>
+    <string name="media_type_other">Jiný typ souboru</string>
+    <string name="media_type_unknown">Neznámy typ souboru</string>
+    <string name="select_media_file">Vyberte soubor</string>
+    <string name="file_thumbnail">Miniatura</string>
+    <string name="downloading_progress">Stahování…</string>
+    <string name="cancel">Zrušit</string>
+    <string name="failed_to_download_file">Soubor se nepodařilo stáhnout</string>
+    <string name="select_content">Vyberte obsah</string>
+    <string name="library">Knihovna</string>
+    <string name="preview_is_not_available">Náhled není k dispozici</string>
+    <string name="share">Sdílet</string>
+    <string name="download">Stáhnout</string>
+    <string name="open_with">Otevřít pomocí</string>
+    <string name="add_to_favorites">Přidat do oblíbených</string>
+    <string name="remove_from_favorites">Odstranit z oblíbených</string>
+    <string name="failed_to_load_the_preview">Nepodařilo se načíst náhled</string>
+    <string name="failed_to_load_the_thumbnail">Nepodařilo se načíst miniatury</string>
+    <string name="today">Dnes</string>
+    <string name="search_the_library">Vyhledávání v knihovně</string>
+    <string name="use_mouse_to_search_the_library">Vyhledávání v knihovně (použíjte myš)</string>
+    <string name="enter_the_query">Zadejte dotaz</string>
+    <string name="media_type">Typ</string>
+    <string name="apply_search">Použít</string>
+    <string name="reset_search">Obnovit</string>
+    <string name="error_you_have_to_connect_to_library">Nejprve se musíte připojit ke knihovně</string>
+    <string name="library_root_url">URL adresa knihovny</string>
+    <string name="username_optional">Přihlašovací jméno (volitelné)</string>
+    <string name="password_optional">Heslo (volitelné)</string>
+    <string name="connect_to_a_library">Připojit ke knihovně</string>
+    <string name="connect">Připojit</string>
+    <string name="template_error_inaccessible_library_url">Knihovna není dostupná: %1$s</string>
+    <string name="error_invalid_library_url_format">Nesprávný formát URL adresy. Ujistěte se, že obsahuje protokol</string>
+    <string name="error_library_requires_credentials">Knihovna vyžaduje přihlašovací údaje</string>
+    <string name="error_invalid_password">Neplatné heslo</string>
+    <string name="template_error_failed_to_load_content">Nepodařilo se načíst obsah: %1$s</string>
+    <string name="error_library_not_accessible_try_again">Knihovna není dostupná. Zkontrolujte připojení a zkuste to znovu</string>
+    <string name="try_again">Zkusit znovu</string>
+    <string name="load_more">Načít více</string>
+    <string name="template_started_download_file">Soubor bude uložen do Stažených souborů: %1$s</string>
+    <string name="error_storage_permission_is_required">Je vyžadováno oprávnění k přístupu k úložišti</string>
+    <string name="add_search_bookmark">Přidal záložku</string>
+    <string name="edit_search_bookmark">Upravit záložku</string>
+    <string name="search_bookmark_name">Název</string>
+    <string name="save">Uložit</string>
+    <string name="delete">Smazat</string>
+    <string name="search_bookmarks">Záložky</string>
+    <string name="template_error_failed_to_add_bookmark">Nepodařilo se přidat záložku: %1$s</string>
+    <string name="template_error_failed_to_edit_bookmark">Nepodařilo se upravit záložku: %1$s</string>
+    <string name="template_error_failed_to_delete_bookmark">Nepodařilo se smazat záložku: %1$s</string>
+    <string name="how_to_search_the_library">Jak vyhledávat v knihovně</string>
+    <string name="some_types_are_not_available_when_selecting">K dispozici jsou pouze typy podporované touto aplikací</string>
+    <string name="include_private_content">Zahrnout soukromý obsah</string>
+    <string name="only_favorite_content">Jenom oblíbené</string>
+    <string name="client_certificate_optional">Certifikát klienta (volitelné)</string>
+    <string name="clear">Vymazat</string>
+    <string name="how_to_use_client_certificate">Jak používat klientské certifikáty</string>
+    <string name="p12_certificate_guide">
+        1. Stáhněte si svůj PKCS12 (.p12) balíček do zařízení;\n\n
+        2. Nainstalujte balíček otevřením v průzkumníku souborů. Použíjte typ \"VPN a aplikace\";\n\n
+        3. Vraťte se do galerie a vyberte nainstalovaný certifikát.</string>
+    <string name="ok">OK</string>
+    <string name="learn_more">Zjistit více</string>
+    <string name="preferences">Nastavení</string>
+    <string name="library_preferences">@string/library</string>
+    <string name="about">O aplikaci</string>
+    <string name="report_an_issue">Nahlásit problém</string>
+    <string name="template_error_failed_to_export_bookmarks">Nepodařilo se exportovat záložky: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Export</string>
+    <string name="export_bookmarks">Exportovat záložky</string>
+    <string name="importt">Import</string>
+    <string name="import_bookmarks">Importovat záložky</string>
+    <string name="template_error_failed_to_import_bookmarks">Nepodařilo se importovat záložky: %1$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Úspěšně %1$s</string>
+    <string name="replace_current_bookmarks_with_saved">Nahradit aktuální záložky uloženými záložkami</string>
+    <string name="save_current_bookmarks_to_file">Uložit aktuální záložky do souboru</string>
+    <string name="your_bookmarks_will_be_replaced">Vaše aktuální záložky budou nahrazeny. Pokračovat?</string>
+    <string name="continuee">Pokračovat</string>
+    <string name="disconnect_from_library">Odhlásit se</string>
+    <string name="your_bookmarks_will_be_kept">Vaše záložky budou zachovány</string>
+    <string name="template_error_failed_to_disconnect">Nepodařilo se odpojit: %1$s</string>
+    <string name="no_media_found">Nebyla nalezena žádná média</string>
+    <string name="view_media">Zobrazit</string>
+    <string name="open_in_web_viewer">Otevřít ve webovém prohlížeči</string>
+    <string name="albums">Alba</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
+    <string name="no_albums_found">Nebyla nalezena žádná alba</string>
+    <string name="clear_selection">Vymazat výběr</string>
+    <string name="done_selecting">Hotovo</string>
+    <string name="template_current_of">%1$d z %2$d</string>
+    <string name="search_doesnt_fit_allowed_types">Vyhledávací dotaz neodpovídá povoleným typům</string>
+    <string name="save_file_to_the_storage">Uložit soubor do úložiště</string>
+    <string name="share_the_file">Sdílet soubor</string>
+    <string name="download_is_completed">Stahovaní bylo dokončeno</string>
+    <string name="welcome_title">Vítejte v galerii</string>
+    <string name="welcome_text">Upozorňujeme, že tato aplikace není oficiálním klientem aplikace PhotoPrism.
+        Tuto aplikaci spravuje Oleg\u00A0Koretsky (Radiokot) a nemá žádnou vazbu na hlavní tým.\n\nPokud
+        je s aplikací něco v nepořádku, zanechte prosím zpětnou vazbu na Google Play,
+        <a href="#issue">odešlete hlášení o chybě</a> nebo pošlete dopis na adresu <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nDěkuji.
+    </string>
+    <string name="used_open_source_software">Použitý open-source software</string>
+    <string name="user_guides">Uživatelská příručka</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky a přispěvatelé z GitHubu</string>
+    <string name="people">Lidé</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Nebyly nalezeny žádné osoby</string>
+    <string name="reload">Znovu načíst</string>
+    <string name="loading_data_progress">Načítání dat…</string>
+    <string name="search_preferences">Hledání</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Zobrazit osoby a nové tváře na obrazovce vyhledávání</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Zobrazit alba na obrazovce vyhledávání</string>
+    <string name="see_all_albums">Zobrazit všechny</string>
+    <string name="see_all_people">Zobrazit všechny</string>
+    <string name="search_albums">Vyhledat</string>
+    <string name="failed_to_load_albums">Nepodařilo se načíst alba</string>
+    <string name="failed_to_load_people">Nepodařilo se načíst osoby</string>
+    <string name="show_album_folders">Složky</string>
+    <string name="show_album_folders_explanation">Zobrazit složky v seznamu alb</string>
+    <string name="files_saved_to_downloads">Soubory byly uloženy so Stažených souborů</string>
+    <string name="start_slideshow">Prezentace</string>
+    <string name="slideshow_previous">Předchozí</string>
+    <string name="slideshow_guide_got_it">Chápu</string>
+    <string name="slideshow_next">Další</string>
+    <string name="slideshow_guide_show_system_buttons">Zobrazit systémová tlačítka</string>
+    <string name="slideshow_exit">Ukončit prezentace</string>
+    <string name="slideshow_guide_speed">Rychlost lze změnit v nastavení</string>
+    <string name="viewing_preferences">Zobrazení</string>
+    <string name="slideshow_speed_preference">Rychlost prezentace</string>
+    <string name="slideshow_speed_preference_explanation">Jak rychle přepínat fotky</string>
+    <string-array name="slideshow_speed_array">
+        <!-- Must be aligned with SlideshowSpeed enum -->
+        <item>Pomalu</item>
+        <item>Pomaleji</item>
+        <item>Normálně</item>
+        <item>Rychleji</item>
+        <item>Rychle</item>
+    </string-array>
+    <string name="gallery_item_scale_preference">Velikost fotek v galerii</string>
+    <string name="gallery_item_scale_preference_explanation">Jak velké budou fotky v mřížce</string>
+    <string-array name="gallery_item_scale_array">
+        <!-- Must be aligned with GalleryItemScale enum -->
+        <item>Drobné</item>
+        <item>Malé</item>
+        <item>Normální</item>
+        <item>Velké</item>
+        <item>Obrovské</item>
+    </string-array>
+    <string name="language_preference">Jazyk</string>
+    <string name="paste">Vložit</string>
+    <string name="tfa_code_dialog_title">Ověřovací kód</string>
+    <string name="tfa_code_dialog_message">Zadejte nebo vložte kód z autentizátoru</string>
+    <string name="tfa_code_dialog_input_hint">Kód</string>
+    <string name="error_invalid_tfa_code">Neplatný ověřovací kód</string>
+    <string name="error_session_expired">Relace byla ukončena. Zvažte použití speciálního hesla pro galerii</string>
+    <string name="memories_notification_new_memories_title">Byly nalezeny nové vzpomínky</string>
+    <string name="memories_notification_new_memories_text">Vzpomeňte si na okamžiky z minulosti</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Kdykoli se objeví nové vzpomínky</string>
+    <string name="extensions_preferences">Rozšíření</string>
+    <string name="extensions_preferences_summary"></string>
+    <string name="archive_action">Archivovat</string>
+    <string name="media_viewer_deleting_confirmation">Smazat tuto položku navždy?</string>
+    <string name="extension_store">Obchod s rozšířeními</string>
+    <string name="extension_store_preference">@string/extension_store</string>
+    <string name="extension_store_title">@string/extension_store</string>
+    <string name="extension_store_item_buy">Koupit nyní</string>
+    <string name="extension_store_item_activated">Aktivovaný</string>
+    <string name="extension_store_failed_loading">Nepodařilo se načíst rozšíření</string>
+    <string name="extension_marketplace_activate_key">Aktivovat klíče</string>
+    <string name="activate_key_preference">Aktivovat další klíč</string>
+    <string name="extension_memories_title">Vzpomínky</string>
+    <string name="extension_memories_description">Získejte denní sbírku fotografií a videí ze stejného dne v minulých letech</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Notifikace</string>
+    <string name="extension_memories_notification_preference_summary">Zobrazit oznámení při nalezení nových vzpomínek</string>
+    <string name="key_activation_input_title">Aktivovat klíč</string>
+    <string name="key_activation_input_subtitle">Vložte klíč, který jste získali pro povolení rozšíření</string>
+    <string name="key_activation_input_field_title">Klíč</string>
+    <string name="key_activation_error_device_mismatch">Tento klíč není určen pro toto zařízení</string>
+    <string name="key_activation_error_email_mismatch">Tento klíč není určen pro Vás</string>
+    <string name="key_activation_error_invalid">Tento klíč je neplatný</string>
+    <string name="key_activation_error_expired">Platnost tohoto klíče vypršela</string>
+    <string name="key_activation_error_no_new_extensions">Tento klíč nepřidává žádná nová rozšíření</string>
+    <string name="template_key_activation_error_failed_processing">Nepodařilo se zpracovat klíč: %1$s</string>
+    <string name="key_activation_success_title">Klíč aktivován</string>
+    <string name="key_activation_success_subtitle">Do galerie byla přidána nová rozšíření 😎</string>
+    <string name="key_activation_success_done">Hotovo</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s za %2$s</string>
+    <string name="gallery_deleting_confirmation">Smazat vybrané položky navždy?</string>
+
+</resources>
