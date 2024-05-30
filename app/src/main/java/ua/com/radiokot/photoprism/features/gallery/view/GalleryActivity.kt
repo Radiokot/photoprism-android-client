@@ -672,7 +672,7 @@ class GalleryActivity : BaseActivity() {
                 viewModel.onClearMultipleSelectionClicked()
             }
 
-            menu.showOverflowItemIcons()
+            menu.showOverflowItemIcons(isBottomBar = true)
 
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {

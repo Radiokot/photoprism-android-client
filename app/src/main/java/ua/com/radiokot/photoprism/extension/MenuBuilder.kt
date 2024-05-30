@@ -8,7 +8,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import ua.com.radiokot.photoprism.R
 
 @SuppressLint("RestrictedApi")
-fun MenuBuilder.showOverflowItemIcons() {
+fun MenuBuilder.showOverflowItemIcons(isBottomBar: Boolean) {
     // Enable icons for overflow menu items.
     setOptionalIconsVisible(true)
 
@@ -17,7 +17,9 @@ fun MenuBuilder.showOverflowItemIcons() {
         val iconMarginHorizontal =
             context.resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
         visibleItems.forEach { menuItem ->
-            if (!menuItem.requestsActionButton()) {
+            if (isBottomBar && menuItem.requestsActionButton()
+                || !isBottomBar && !menuItem.requestsActionButton()
+            ) {
                 menuItem.icon = InsetDrawable(
                     menuItem.icon,
                     iconMarginHorizontal, 0, iconMarginHorizontal, 0
@@ -27,5 +29,5 @@ fun MenuBuilder.showOverflowItemIcons() {
     }
 }
 
-fun Menu.showOverflowItemIcons() =
-    (this as? MenuBuilder)?.showOverflowItemIcons()
+fun Menu.showOverflowItemIcons(isBottomBar: Boolean) =
+    (this as? MenuBuilder)?.showOverflowItemIcons(isBottomBar)

@@ -464,7 +464,7 @@ class MediaViewerActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.media_viewer, menu)
 
-        menu.showOverflowItemIcons()
+        menu.showOverflowItemIcons(isBottomBar = false)
 
         // Keyboard navigation focus workarounds.
         with(view.toolbar) {
