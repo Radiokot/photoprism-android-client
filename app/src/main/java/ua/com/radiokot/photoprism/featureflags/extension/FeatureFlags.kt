@@ -7,3 +7,6 @@ val FeatureFlags.hasMemoriesExtension: Boolean
 
 val FeatureFlags.hasExtensionPreferences: Boolean
     get() = hasFeature(FeatureFlags.Feature.EXTENSION_PREFERENCES)
+
+val FeatureFlags.hasExtensionStore: Boolean
+    get() = hasFeature(FeatureFlags.Feature.EXTENSION_STORE)

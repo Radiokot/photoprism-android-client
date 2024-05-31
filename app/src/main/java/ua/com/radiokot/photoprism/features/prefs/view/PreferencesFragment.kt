@@ -41,10 +41,12 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
+import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
-import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
+import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment
+import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
@@ -272,21 +274,25 @@ class PreferencesFragment :
         }
 
         with(requirePreference(R.string.pk_extensions)) {
-            if (featureFlags.hasExtensionPreferences) {
-                isVisible = true
-                setOnPreferenceClickListener {
-                    val hasAnyExtensionsWithPreferences =
-                        ExtensionsPreferencesFragment.EXTENSIONS_WITH_PREFERENCES
-                            .any { it.feature in featureFlags }
-                    if (!hasAnyExtensionsWithPreferences) {
-                        startActivity(Intent(requireContext(), GalleryExtensionStoreActivity::class.java))
-                        true
-                    } else {
-                        false
-                    }
+            isVisible = featureFlags.hasExtensionPreferences
+            setOnPreferenceClickListener {
+                val hasAnyExtensionsWithPreferences =
+                    ExtensionsPreferencesFragment.EXTENSIONS_WITH_PREFERENCES
+                        .any { it.feature in featureFlags }
+                if (!hasAnyExtensionsWithPreferences) {
+                    startActivity(
+                        Intent(
+                            requireContext(),
+                            if (featureFlags.hasExtensionStore)
+                                GalleryExtensionStoreActivity::class.java
+                            else
+                                KeyActivationActivity::class.java
+                        )
+                    )
+                    true
+                } else {
+                    false
                 }
-            } else {
-                isVisible = false
             }
         }
     }

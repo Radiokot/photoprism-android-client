@@ -14,14 +14,15 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
-import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
 // When renaming or moving this fragment,
@@ -50,6 +51,7 @@ class ExtensionsPreferencesFragment :
 
     private fun initGeneralPreferences() = with(preferenceScreen) {
         with(requirePreference(R.string.pk_ext_store)) {
+            isVisible = featureFlags.hasExtensionStore
             setOnPreferenceClickListener {
                 startActivity(Intent(requireActivity(), GalleryExtensionStoreActivity::class.java))
                 true
