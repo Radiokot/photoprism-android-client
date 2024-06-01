@@ -12,6 +12,13 @@ import java.util.Locale
 val localeModule = module {
     // Primary locale.
     factory {
+        // This method works in combination with
+        // .attachBaseContext hooks and is able to detect either
+        // the locale of currently picked resources or the one
+        // selected in Android 13 language preferences.
+        //
+        // The combination looks complicated, yet trying to simplify it
+        // so far led to locale bugs on either new or old Android versions.
         val application = androidApplication()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             (application.getSystemService<LocaleManager>()?.applicationLocales

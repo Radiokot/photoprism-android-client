@@ -138,6 +138,9 @@ class PhotoPrismGallery : Application() {
             LocalizedContextFactory(base)
                 .getLocalizedContext()
                 .also { newBase ->
+                    // The most important part happens in BaseActivity.attachBaseContext
+                    // and in the DI locale module.
+                    // Setting Java default locale is the last resort.
                     ConfigurationCompat.getLocales(newBase.resources.configuration)[0]
                         ?.also(Locale::setDefault)
                 }

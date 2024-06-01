@@ -100,12 +100,14 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
                 .getLocalizedContext()
                 .also { newBase ->
                     // Update the global configuration with the most recent one.
+                    // This is very important and affects DI locale module.
                     @Suppress("DEPRECATION")
                     base.applicationContext.resources.updateConfiguration(
                         newBase.resources.configuration,
                         newBase.resources.displayMetrics,
                     )
 
+                    // Last resort.
                     ConfigurationCompat.getLocales(newBase.resources.configuration)[0]
                         ?.also(Locale::setDefault)
                 }
