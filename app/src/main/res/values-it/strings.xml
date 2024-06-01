@@ -203,5 +203,6 @@
     <string name="key_activation_success_done">Fatto</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s per %2$s</string>
     <string name="gallery_deleting_confirmation">Eliminare gli elementi selezionati per sempre?</string>
+    <string name="general_preferences">Generale</string>
 
 </resources>

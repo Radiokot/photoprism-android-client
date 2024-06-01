@@ -204,5 +204,6 @@
     <string name="key_activation_success_done">Hotovo</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s za %2$s</string>
     <string name="gallery_deleting_confirmation">Smazat vybrané položky navždy?</string>
+    <string name="general_preferences">Obecné</string>
 
 </resources>

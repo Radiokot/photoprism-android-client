@@ -203,5 +203,6 @@
     <string name="key_activation_success_done">Готово</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
     <string name="gallery_deleting_confirmation">Удалить выбранные элементы навсегда?</string>
+    <string name="general_preferences">Основные</string>
 
 </resources>

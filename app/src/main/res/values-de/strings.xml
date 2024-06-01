@@ -199,5 +199,6 @@
     <string name="key_activation_success_done">Fertig</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s für %2$s</string>
     <string name="gallery_deleting_confirmation">Ausgewählte Elemente endgültig löschen?</string>
+    <string name="general_preferences">Allgemein</string>
 
 </resources>

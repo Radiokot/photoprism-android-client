@@ -4,6 +4,26 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/general_preferences">
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_language"
+            app:persistent="false"
+            app:title="@string/language_preference" />
+
+        <Preference
+            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_extensions"
+            app:persistent="false"
+            app:summary="@string/extensions_preferences_summary"
+            app:title="@string/extensions_preferences" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/library_preferences">
 
         <Preference
@@ -93,20 +113,6 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/about">
-
-        <Preference
-            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment"
-            app:iconSpaceReserved="false"
-            app:key="@string/pk_extensions"
-            app:persistent="false"
-            app:summary="@string/extensions_preferences_summary"
-            app:title="@string/extensions_preferences" />
-
-        <Preference
-            app:iconSpaceReserved="false"
-            app:key="@string/pk_language"
-            app:persistent="false"
-            app:title="@string/language_preference" />
 
         <Preference
             app:iconSpaceReserved="false"

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Not canceling the download on closing the dialog if the screen was rotated
 
+### Changed
+- Language preference moved to the newly added "General" section at the top
+
 ## [1.26.0] - 2024-04-21
 
 ### Added

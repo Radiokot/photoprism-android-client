@@ -203,5 +203,6 @@
     <string name="key_activation_success_done">完成</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s适用于 %2$s</string>
     <string name="gallery_deleting_confirmation">永久删除所选项目？</string>
+    <string name="general_preferences">常规</string>
 
 </resources>
