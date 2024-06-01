@@ -3,7 +3,8 @@ package ua.com.radiokot.photoprism.extension
 import java.util.Locale
 
 /**
- * Replace of the deprecated [capitalize] method.
+ * Replacement of the deprecated [capitalize] method.
+ * Turns the first char into the title case.
  */
 fun String.capitalized(locale: Locale = Locale.getDefault()) =
-    replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+    replaceFirstChar { it.titlecase(locale) }

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Language preference moved to the newly added "General" section at the top
+- Language preference now shows the current language
 
 ## [1.26.0] - 2024-04-21
 

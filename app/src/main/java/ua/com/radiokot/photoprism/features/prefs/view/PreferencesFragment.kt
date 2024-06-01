@@ -38,6 +38,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
@@ -62,6 +63,7 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.Slidesh
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
+import java.util.Locale
 
 class PreferencesFragment :
     PreferenceFragmentCompat(),
@@ -98,6 +100,7 @@ class PreferencesFragment :
         this::writeBookmarksExportToFile
     )
     private val featureFlags: FeatureFlags by inject()
+    private val locale: Locale by inject()
 
     private val issueReportingUrl: String = getKoin()
         .getProperty<String>("issueReportingUrl")
@@ -280,6 +283,7 @@ class PreferencesFragment :
 
         with(requirePreference(R.string.pk_language)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                summary = locale.displayLanguage.capitalized(locale)
                 setOnPreferenceClickListener {
                     openAppLanguagePreferences()
                     true
