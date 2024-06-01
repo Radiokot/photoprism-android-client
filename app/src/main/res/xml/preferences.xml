@@ -15,7 +15,7 @@
             tools:isPreferenceVisible="true" />
 
         <Preference
-            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment"
+            app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPreferencesFragment"
             app:iconSpaceReserved="false"
             app:key="@string/pk_extensions"
             app:persistent="false"

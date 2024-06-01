@@ -29,7 +29,7 @@ import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
 // When renaming or moving this fragment,
 // make sure to manually update the preference "fragment" value in preferences.xml.
-class ExtensionsPreferencesFragment :
+class GalleryExtensionPreferencesFragment :
     PreferenceFragmentCompat(),
     AndroidScopeComponent {
 

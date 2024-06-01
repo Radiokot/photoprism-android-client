@@ -46,7 +46,7 @@ import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
-import ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment
+import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPreferencesFragment
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -290,7 +290,7 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_extensions)) {
             setOnPreferenceClickListener {
                 val hasAnyExtensionsWithPreferences =
-                    ExtensionsPreferencesFragment.EXTENSIONS_WITH_PREFERENCES
+                    GalleryExtensionPreferencesFragment.EXTENSIONS_WITH_PREFERENCES
                         .any { it.feature in featureFlags }
                 if (!hasAnyExtensionsWithPreferences) {
                     startActivity(
