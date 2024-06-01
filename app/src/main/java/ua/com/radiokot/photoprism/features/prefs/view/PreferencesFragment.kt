@@ -14,6 +14,7 @@ import androidx.preference.ListPreference
 import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
+import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -112,6 +113,11 @@ class PreferencesFragment :
         setPreferencesFromResource(R.xml.preferences, rootKey)
     }
 
+    override fun setPreferenceScreen(preferenceScreen: PreferenceScreen) {
+        initPreferenceVisibility(preferenceScreen)
+        super.setPreferenceScreen(preferenceScreen)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -158,6 +164,19 @@ class PreferencesFragment :
                                 "\noptionId=$optionId"
                     }
             }
+        }
+    }
+
+    private fun initPreferenceVisibility(
+        preferenceScreen: PreferenceScreen
+    ) = with(preferenceScreen) {
+        with(requirePreference(R.string.pk_language)) {
+            isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    && getAppLanguagePreferencesIntent().resolveActivity(requireContext().packageManager) != null
+        }
+
+        with(requirePreference(R.string.pk_extensions)) {
+            isVisible = featureFlags.hasExtensionPreferences
         }
     }
 
@@ -261,20 +280,14 @@ class PreferencesFragment :
 
         with(requirePreference(R.string.pk_language)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                isVisible = getAppLanguagePreferencesIntent()
-                    .resolveActivity(requireContext().packageManager) != null
-
                 setOnPreferenceClickListener {
                     openAppLanguagePreferences()
                     true
                 }
-            } else {
-                isVisible = false
             }
         }
 
         with(requirePreference(R.string.pk_extensions)) {
-            isVisible = featureFlags.hasExtensionPreferences
             setOnPreferenceClickListener {
                 val hasAnyExtensionsWithPreferences =
                     ExtensionsPreferencesFragment.EXTENSIONS_WITH_PREFERENCES

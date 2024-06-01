@@ -2,7 +2,9 @@ package ua.com.radiokot.photoprism.features.ext.prefs.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -43,13 +45,20 @@ class ExtensionsPreferencesFragment :
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.extensions_preferences, rootKey)
+    }
 
-        initGeneralPreferences()
+    override fun setPreferenceScreen(preferenceScreen: PreferenceScreen) {
+        initGeneralPreferences(preferenceScreen)
+        super.setPreferenceScreen(preferenceScreen)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         subscribeToExtensionsState()
     }
 
-    private fun initGeneralPreferences() = with(preferenceScreen) {
+    private fun initGeneralPreferences(preferenceScreen: PreferenceScreen) = with(preferenceScreen) {
         with(requirePreference(R.string.pk_ext_store)) {
             isVisible = featureFlags.hasExtensionStore
             setOnPreferenceClickListener {

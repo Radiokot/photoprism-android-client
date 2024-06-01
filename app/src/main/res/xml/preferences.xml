@@ -8,9 +8,11 @@
 
         <Preference
             app:iconSpaceReserved="false"
+            app:isPreferenceVisible="false"
             app:key="@string/pk_language"
             app:persistent="false"
-            app:title="@string/language_preference" />
+            app:title="@string/language_preference"
+            tools:isPreferenceVisible="true" />
 
         <Preference
             app:fragment="ua.com.radiokot.photoprism.features.ext.prefs.view.ExtensionsPreferencesFragment"

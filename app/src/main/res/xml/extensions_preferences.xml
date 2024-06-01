@@ -5,13 +5,16 @@
         app:iconSpaceReserved="false"
         app:key="@string/pk_ext_summary"
         app:persistent="false"
+        app:summary=" "
         tools:summary="2 extensions activated for test@local" />
 
     <Preference
         app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
         app:key="@string/pk_ext_store"
         app:persistent="false"
-        app:title="@string/extension_store_preference" />
+        app:title="@string/extension_store_preference"
+        tools:isPreferenceVisible="true" />
 
     <Preference
         app:iconSpaceReserved="false"
