@@ -106,10 +106,17 @@
     <string name="share_the_file">分享文件</string>
     <string name="download_is_completed">下载完成</string>
     <string name="welcome_title">欢迎来到画廊</string>
-    <string name="welcome_text">此应用并非PhotoPrism官方客户端.
-        它由 Oleg\u00A0Koretsky (Radiokot) 维护且与官方团队无关\n\nIf
+    <string name="template_welcome_text">
+        <![CDATA[
+        此应用并非PhotoPrism官方客户端.
+        它由 Oleg\u00A0Koretsky (Radiokot) 维护且与官方团队无关
+        <br><br>
         如果在使用过程中遇到问题, 请在 Google Play 留下反馈,
-        <a href="#issue">报告漏洞</a> 或发送邮件至 <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\n谢谢.
+        <a href="#issue">报告漏洞</a>
+        或发送邮件至 <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        谢谢.
+        ]]>
     </string>
     <string name="used_open_source_software">使用的开源程序</string>
     <string name="user_guides">用户指引</string>

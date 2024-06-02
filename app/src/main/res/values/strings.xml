@@ -111,10 +111,17 @@
     <string name="photoprism_web" translatable="false">PhotoPrism Web</string>
     <string name="open_in_browser" translatable="false">@string/fallback_menu_item_open_in_browser</string>
     <string name="welcome_title">Welcome to the gallery</string>
-    <string name="welcome_text">Please note that this app is not an official PhotoPrism client.
-        It is maintained by Oleg\u00A0Koretsky (Radiokot) and has no relationship to the core team.\n\nIf
-        something is wrong with the app, please leave feedback on Google Play,
-        <a href="#issue">submit a bug report</a> or send a letter to <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nThank you.
+    <string name="template_welcome_text">
+        <![CDATA[
+        Please note that this app is not an official PhotoPrism client.
+        It is maintained by Oleg\u00A0Koretsky (Radiokot) and has no relationship to the core team.
+        <br><br>
+        If something is wrong with the app, please leave feedback on Google Play,
+        <a href="#issue">submit a bug report</a>
+        or send a letter to <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Thank you.
+        ]]>
     </string> <!-- When translating this, make sure you keep unbreakable space (\u00A0), line breaks (\n) and all the HTML tags-->
     <string name="used_open_source_software">Used open-source software</string>
     <string name="user_guides">User guide</string>

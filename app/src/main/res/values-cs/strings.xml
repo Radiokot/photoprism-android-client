@@ -107,10 +107,17 @@
     <string name="share_the_file">Sdílet soubor</string>
     <string name="download_is_completed">Stahovaní bylo dokončeno</string>
     <string name="welcome_title">Vítejte v galerii</string>
-    <string name="welcome_text">Upozorňujeme, že tato aplikace není oficiálním klientem aplikace PhotoPrism.
-        Tuto aplikaci spravuje Oleg\u00A0Koretsky (Radiokot) a nemá žádnou vazbu na hlavní tým.\n\nPokud
-        je s aplikací něco v nepořádku, zanechte prosím zpětnou vazbu na Google Play,
-        <a href="#issue">odešlete hlášení o chybě</a> nebo pošlete dopis na adresu <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nDěkuji.
+    <string name="template_welcome_text">
+        <![CDATA[
+        Upozorňujeme, že tato aplikace není oficiálním klientem aplikace PhotoPrism.
+        Tuto aplikaci spravuje Oleg\u00A0Koretsky (Radiokot) a nemá žádnou vazbu na hlavní tým.
+        <br><br>
+        Pokud je s aplikací něco v nepořádku, zanechte prosím zpětnou vazbu na Google Play,
+        <a href="#issue">odešlete hlášení o chybě</a>
+        nebo pošlete dopis na adresu <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Děkuji.
+        ]]>
     </string>
     <string name="used_open_source_software">Použitý open-source software</string>
     <string name="user_guides">Uživatelská příručka</string>

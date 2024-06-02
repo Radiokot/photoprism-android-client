@@ -34,7 +34,7 @@
         android:layout_marginBottom="72dp"
         android:focusable="true"
         android:nextFocusRight="@id/continue_button"
-        android:text="@string/welcome_text"
+        android:text="@string/template_welcome_text"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         tools:targetApi="o" />
 

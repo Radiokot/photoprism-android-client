@@ -106,10 +106,17 @@
     <string name="share_the_file">Отправить файл</string>
     <string name="download_is_completed">Скачивание завершено</string>
     <string name="welcome_title">Добро пожаловать в галерею</string>
-    <string name="welcome_text">Пожалуйста, имейте в виду, что это не официальное приложение PhotoPrism.
-        Оно поддерживается Олегом\u00A0Корецким (Radiokot) и не имеет отношения к основной команде.\n\nЕсли
-        с приложением что-то не так, пожалуйста, оставьте отзыв в Google Play,
-        <a href="#issue">отправьте отчет об ошибке</a> или напишите на <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nСпасибо.
+    <string name="template_welcome_text">
+        <![CDATA[
+        Пожалуйста, имейте в виду, что это не официальное приложение PhotoPrism.
+        Оно поддерживается Олегом\u00A0Корецким (Radiokot) и не имеет отношения к основной команде.
+        <br><br>
+        Если с приложением что-то не так, пожалуйста, оставьте отзыв в Google Play,
+        <a href="#issue">отправьте отчет об ошибке</a>
+        или напишите на <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Спасибо.
+        ]]>
     </string>
     <string name="used_open_source_software">Используемое ПО с открытым кодом</string>
     <string name="user_guides">Руководство пользователя</string>

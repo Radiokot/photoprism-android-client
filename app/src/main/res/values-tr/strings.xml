@@ -106,10 +106,17 @@
     <string name="share_the_file">Dosyayı paylaş</string>
     <string name="download_is_completed">İndirme tamamlandı</string>
     <string name="welcome_title">Galeriye hoş geldiniz</string>
-    <string name="welcome_text">Lütfen bunun resmi bir PhotoPrism uygulaması olmadığını unutmayın.
-        Oleg\u00A0Koretsky (Radiokot) tarafından sürdürülür ve çekirdek ekiple hiçbir ilişkisi yoktur.\n\nUygulamayla
-        ilgili bir sorun varsa, lütfen Google Play\'de geri bildirim bırakın,
-        <a href="#issue">bir hata raporu</a> gönderin veya <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a> adresine bir mektup gönderin.\n\nTeşekkür ederim.
+    <string name="template_welcome_text">
+        <![CDATA[
+        Lütfen bunun resmi bir PhotoPrism uygulaması olmadığını unutmayın.
+        Oleg\u00A0Koretsky (Radiokot) tarafından sürdürülür ve çekirdek ekiple hiçbir ilişkisi yoktur.
+        <br><br>
+        Uygulamayla ilgili bir sorun varsa, lütfen Google Play\'de geri bildirim bırakın,
+        <a href="#issue">bir hata raporu</a>
+        gönderin veya <a href="mailto:%1$s">%1$s</a> adresine bir mektup gönderin.
+        <br><br>
+        Teşekkür ederim.
+        ]]>
     </string>
     <string name="used_open_source_software">Kullanılan açık kaynaklı yazılım</string>
     <string name="user_guides">Kullanici rehberi</string>

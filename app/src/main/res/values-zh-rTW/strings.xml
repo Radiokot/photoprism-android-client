@@ -106,10 +106,17 @@
     <string name="share_the_file">分享檔案</string>
     <string name="download_is_completed">下載完成</string>
     <string name="welcome_title">歡迎來到相簿</string>
-    <string name="welcome_text">此應用並非PhotoPrism官方客戶端.
-        它由 Oleg\u00A0Koretsky (Radiokot) 維護且與官方團隊無關\n\nIf
+    <string name="template_welcome_text">
+        <![CDATA[
+        此應用並非PhotoPrism官方客戶端.
+        它由 Oleg\u00A0Koretsky (Radiokot) 維護且與官方團隊無關
+        <br><br>
         如果在使用過程中遇到問題, 請在 Google Play 留下反饋,
-        <a href="#issue">報告漏洞</a> 或發送郵件至 <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\n謝謝.
+        <a href="#issue">報告漏洞</a>
+        或發送郵件至 <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        謝謝.
+        ]]>
     </string>
     <string name="used_open_source_software">使用的開源程式</string>
     <string name="user_guides">用戶指南</string>

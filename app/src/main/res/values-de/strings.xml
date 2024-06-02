@@ -104,9 +104,18 @@
     <string name="share_the_file">Datei teilen</string>
     <string name="download_is_completed">Herunterladen vollständig</string>
     <string name="welcome_title">Willkommen</string>
-    <string name="welcome_text">Bitte beachten: Dies ist keine offizielle App der PhotoPrism Entwickler.
-        Diese App wird von Oleg\u00A0Koretsky (Radiokot) gepflegt, unabhängig vom PhotoPrism Entwickler Team.\n\nSollte ein Problem auftauchen, bitte ein Feedback auf Google Play hinterlassen,
-        <a href="#issue">einen Fehlerbericht einreichen</a> oder eine Nachricht an <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a> senden.\n\nBesten Dank!</string>
+    <string name="template_welcome_text">
+        <![CDATA[
+        Bitte beachten: Dies ist keine offizielle App der PhotoPrism Entwickler.
+        Diese App wird von Oleg\u00A0Koretsky (Radiokot) gepflegt, unabhängig vom PhotoPrism Entwickler Team.
+        <br><br>
+        Sollte ein Problem auftauchen, bitte ein Feedback auf Google Play hinterlassen,
+        <a href="#issue">einen Fehlerbericht einreichen</a>
+        oder eine Nachricht an <a href="mailto:%1$s">%1$s</a> senden.
+        <br><br>
+        Besten Dank!
+        ]]>
+    </string>
     <string name="used_open_source_software">Verwendete Open-Source Software</string>
     <string name="user_guides">Handbuch</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky und Mitwirkende von GitHub</string>

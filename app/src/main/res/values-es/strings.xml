@@ -107,10 +107,17 @@
     <string name="share_the_file">Compartir el fichero</string>
     <string name="download_is_completed">Descarga completada</string>
     <string name="welcome_title">Bienvenido a la galería</string>
-    <string name="welcome_text">Por favor: ten en cuenta que esta no es la aplicación oficial del cliente PhotoPrism.
-        Lo mantiene Oleg\u00A0Koretsky (Radiokot) y no tiene relación con el equipo central.\n\nSi
-        algo va mal con la aplicación, deja tu opinión en Google Play
-        <a href="#issue">envía un informe de errores</a> o una carta a <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nMuchas gracias.
+    <string name="template_welcome_text">
+        <![CDATA[
+        Por favor: ten en cuenta que esta no es la aplicación oficial del cliente PhotoPrism.
+        Lo mantiene Oleg\u00A0Koretsky (Radiokot) y no tiene relación con el equipo central.
+        <br><br>
+        Si algo va mal con la aplicación, deja tu opinión en Google Play
+        <a href="#issue">envía un informe de errores</a>
+        o una carta a <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Muchas gracias.
+        ]]>
     </string>
     <string name="used_open_source_software">Software de código abierto utilizado</string>
     <string name="user_guides">Guía de uso</string>

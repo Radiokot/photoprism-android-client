@@ -105,11 +105,18 @@
     <string name="save_file_to_the_storage">αποθήκευση αρχείου στο δίσκο</string>
     <string name="share_the_file">κοινοποίηση αρχείου</string>
     <string name="download_is_completed">Η λήψη ολοκληρώθηκε</string>
-    <string name="welcome_title">Καλώς ήρθατε στην Gallery</string>
-    <string name="welcome_text">Λάβετε υπόψη ότι αυτή η εφαρμογή δεν είναι ένας επίσημος PhotoPrism client.
-        Συντηρείται απο τον Oleg\u00A0Koretsky (Radiokot) και δεν συσχετίζεται με την επίσημη ομάδα.\n\nΑν
-        κάτι πάει λάθος παρακαλώ αφήστε ενα σχόλιο στο Google Play,
-        <a href="#issue">υποβάλετε μια αναφορά σφάλματος</a> ή στείλτε ενα μέιλ στο <a href="mailto:oleg@radiokot.com.ua">oleg@radiokot.com.ua</a>.\n\nΕυχαριστώ.
+    <string name="welcome_title">Καλώς ήρθατε στην γκαλερί</string>
+    <string name="template_welcome_text">
+        <![CDATA[
+        Λάβετε υπόψη ότι αυτή η εφαρμογή δεν είναι ένας επίσημος PhotoPrism client.
+        Συντηρείται απο τον Oleg\u00A0Koretsky (Radiokot) και δεν συσχετίζεται με την επίσημη ομάδα.
+        <br><br>
+        Αν κάτι πάει λάθος παρακαλώ αφήστε ενα σχόλιο στο Google Play,
+        <a href="#issue">υποβάλετε μια αναφορά σφάλματος</a>
+        ή στείλτε ενα μέιλ στο <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Ευχαριστώ.
+        ]]>
     </string>
     <string name="used_open_source_software">Χρησιμοποιηθέντα προγράμματα ανοιχτού κώδικα</string>
     <string name="user_guides">Οδηγός χρήσης</string>
