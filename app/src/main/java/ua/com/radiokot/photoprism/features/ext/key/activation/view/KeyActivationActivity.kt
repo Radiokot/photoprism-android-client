@@ -3,6 +3,8 @@ package ua.com.radiokot.photoprism.features.ext.key.activation.view
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.WindowManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
@@ -86,6 +88,9 @@ class KeyActivationActivity : BaseActivity() {
 
             is KeyActivationViewModel.Event.ShowFloatingError ->
                 showFloatingError(event.error)
+
+            is KeyActivationViewModel.Event.LaunchHelpEmailIntent ->
+                startActivity(Intent.createChooser(event.intent, getString(R.string.learn_more)))
         }
 
         log.debug {
@@ -162,6 +167,19 @@ class KeyActivationActivity : BaseActivity() {
         }
 
         viewModel.onKeyPassedWithIntent(keyParam)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.key_activation, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.get_help) {
+            viewModel.onGetHelpClicked()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     private val KeyActivationViewModel.Error.localizedMessage: String

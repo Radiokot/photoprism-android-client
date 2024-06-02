@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ActivatePars
 import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ParseEnteredKeyUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 import ua.com.radiokot.photoprism.features.ext.key.logic.AndroidHardwareIdentifier
+import ua.com.radiokot.photoprism.features.ext.key.logic.CreateExtensionsHelpEmailUseCase
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 
 val keyActivationFeatureModule = module {
@@ -21,6 +22,13 @@ val keyActivationFeatureModule = module {
 
     singleOf(ParseEnteredKeyUseCase::Factory)
     singleOf(ActivateParsedKeyUseCase::Factory)
+
+    single {
+        CreateExtensionsHelpEmailUseCase(
+            helpEmailAddress = getProperty("helpEmailAddress"),
+            hardwareIdentifier = get(),
+        )
+    } bind CreateExtensionsHelpEmailUseCase::class
 
     scope<EnvSession> {
         viewModelOf(::KeyActivationViewModel)

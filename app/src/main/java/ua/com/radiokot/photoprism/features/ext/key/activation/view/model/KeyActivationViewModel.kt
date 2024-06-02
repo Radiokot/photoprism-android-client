@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.ext.key.activation.view.model
 
 import android.app.Application
 import android.content.ClipboardManager
+import android.content.Intent
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,12 +21,14 @@ import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
 import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ActivateParsedKeyUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ParseEnteredKeyUseCase
+import ua.com.radiokot.photoprism.features.ext.key.logic.CreateExtensionsHelpEmailUseCase
 import java.util.Date
 
 class KeyActivationViewModel(
     private val application: Application,
     private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
     private val activateParsedKeyUseCaseFactory: ActivateParsedKeyUseCase.Factory,
+    private val createExtensionsHelpEmailUseCase: CreateExtensionsHelpEmailUseCase,
 ) : ViewModel() {
     private val log = kLogger("KeyInputVM")
 
@@ -245,6 +248,18 @@ class KeyActivationViewModel(
         parseAndActivateEnteredKey()
     }
 
+    fun onGetHelpClicked() {
+        log.debug {
+            "onGetHelpClicked(): creating_help_email"
+        }
+
+        eventsSubject.onNext(
+            Event.LaunchHelpEmailIntent(
+                intent = createExtensionsHelpEmailUseCase()
+            )
+        )
+    }
+
     sealed interface Error {
         sealed interface KeyError : Error {
             object Invalid : KeyError
@@ -269,5 +284,6 @@ class KeyActivationViewModel(
     sealed interface Event {
         object Finish : Event
         class ShowFloatingError(val error: Error) : Event
+        class LaunchHelpEmailIntent(val intent: Intent) : Event
     }
 }
