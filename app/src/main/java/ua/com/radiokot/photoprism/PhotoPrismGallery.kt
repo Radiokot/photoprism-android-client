@@ -22,8 +22,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setManifestComponentEnabled
-import ua.com.radiokot.photoprism.featureflags.di.allDisabledFeatureFlagsModule
-import ua.com.radiokot.photoprism.featureflags.di.featureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.di.releaseFeatureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.di.devFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
@@ -57,7 +57,7 @@ class PhotoPrismGallery : Application() {
             modules(
                 retrofitApiModule
                         + appDbModule
-                        + (if (BuildConfig.DEBUG) featureFlagsModule else allDisabledFeatureFlagsModule)
+                        + (if (BuildConfig.DEBUG) devFeatureFlagsModule else releaseFeatureFlagsModule)
 
                         + galleryFeatureModule
                         + mediaViewerFeatureModule

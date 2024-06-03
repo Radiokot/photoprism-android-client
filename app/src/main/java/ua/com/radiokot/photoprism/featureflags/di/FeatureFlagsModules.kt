@@ -6,7 +6,7 @@ import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureSetFeatureFlags
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 
-val featureFlagsModule = module {
+val devFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
             FeatureFlags.Feature.EXTENSION_PREFERENCES,
@@ -15,8 +15,10 @@ val featureFlagsModule = module {
     } bind FeatureFlags::class
 }
 
-val allDisabledFeatureFlagsModule = module {
+val releaseFeatureFlagsModule = module {
     single {
-        FeatureSetFeatureFlags()
+        FeatureSetFeatureFlags(
+            FeatureFlags.Feature.EXTENSION_PREFERENCES,
+        ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
