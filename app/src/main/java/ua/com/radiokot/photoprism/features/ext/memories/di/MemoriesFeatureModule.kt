@@ -10,7 +10,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
-import ua.com.radiokot.photoprism.db.DevAppDatabase
+import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismClientConfigServiceParams
 import ua.com.radiokot.photoprism.di.ioModules
@@ -32,7 +32,7 @@ val memoriesFeatureModule = module {
     includes(ioModules)
 
     single {
-        get<DevAppDatabase>().memories()
+        get<AppDatabase>().memories()
     } bind MemoriesDbDao::class
 
     single {
