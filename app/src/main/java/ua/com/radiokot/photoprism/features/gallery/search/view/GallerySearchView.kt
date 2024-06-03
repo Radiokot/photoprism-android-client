@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -32,16 +31,12 @@ import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.*
-import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
-import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
-import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesDemoActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
@@ -222,14 +217,6 @@ class GallerySearchView(
             post {
                 setThrottleOnClickListener {
                     viewModel.onSearchBarClicked()
-                }
-
-                // TODO: Just for demo purposes.
-                if (get<FeatureFlags>().hasMemoriesExtension) {
-                    setOnLongClickListener {
-                        context.startActivity(Intent(context, MemoriesDemoActivity::class.java))
-                        true
-                    }
                 }
             }
         }
