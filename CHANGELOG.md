@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Ability to archive or delete a single gallery item from the media viewer
 - Ability to archive or delete gallery items selected with a long press
+- Ability to activate gallery extensions for those having early access
 - Czech translation
 
 ### Fixed
