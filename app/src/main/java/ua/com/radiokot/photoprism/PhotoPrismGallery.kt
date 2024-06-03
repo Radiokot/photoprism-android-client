@@ -17,8 +17,6 @@ import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.appDbModule
-import ua.com.radiokot.photoprism.di.devDbModule
-import ua.com.radiokot.photoprism.di.memoryOnlyDevDbModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
@@ -32,10 +30,10 @@ import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
-import ua.com.radiokot.photoprism.features.ext.store.extensionStoreModule
 import ua.com.radiokot.photoprism.features.ext.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
+import ua.com.radiokot.photoprism.features.ext.store.extensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
@@ -59,7 +57,6 @@ class PhotoPrismGallery : Application() {
             modules(
                 retrofitApiModule
                         + appDbModule
-                        + (if (BuildConfig.DEBUG) devDbModule else memoryOnlyDevDbModule)
                         + (if (BuildConfig.DEBUG) featureFlagsModule else allDisabledFeatureFlagsModule)
 
                         + galleryFeatureModule

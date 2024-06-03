@@ -6,7 +6,6 @@ import androidx.room.Room
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.db.AppDatabase
-import ua.com.radiokot.photoprism.db.DevAppDatabase
 import ua.com.radiokot.photoprism.db.roomMigration
 
 val appDbModule = module {
@@ -46,23 +45,4 @@ val appDbModule = module {
             )
             .build()
     } bind AppDatabase::class
-}
-
-val devDbModule = module {
-    single {
-        Room.databaseBuilder(
-            context = get(),
-            klass = DevAppDatabase::class.java,
-            name = "dev-database"
-        ).build()
-    } bind DevAppDatabase::class
-}
-
-val memoryOnlyDevDbModule = module {
-    single {
-        Room.inMemoryDatabaseBuilder(
-            context = get(),
-            klass = DevAppDatabase::class.java,
-        ).build()
-    } bind DevAppDatabase::class
 }
