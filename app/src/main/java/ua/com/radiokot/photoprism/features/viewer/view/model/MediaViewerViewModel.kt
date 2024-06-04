@@ -210,11 +210,13 @@ class MediaViewerViewModel(
     }
 
     fun onShareClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
 
-        log.debug {
-            "onShareClicked(): start_sharing:" +
-                    "\nitem=$item"
+        if (item == null) {
+            log.warn {
+                "onShareClicked(): position_out_of_range"
+            }
+            return
         }
 
         stateSubject.onNext(State.Sharing)
@@ -243,7 +245,14 @@ class MediaViewerViewModel(
     }
 
     fun onOpenInClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onOpenInClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onOpenInClicked(): start_opening:" +
@@ -262,7 +271,14 @@ class MediaViewerViewModel(
     }
 
     fun onOpenInWebViewerClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onOpenInWebViewerClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onOpenInWebViewerClicked(): opening_viewer:" +
@@ -273,7 +289,14 @@ class MediaViewerViewModel(
     }
 
     fun onArchiveClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onArchiveClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onArchiveClicked(): archiving:" +
@@ -306,7 +329,14 @@ class MediaViewerViewModel(
     }
 
     fun onDeleteClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onDeleteClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onDeleteClicked(): start_deleting:" +
@@ -362,7 +392,14 @@ class MediaViewerViewModel(
             "The button can't be clicked while it is not visible"
         }
 
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onDownloadClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onDownloadClicked(): start_downloading_to_external_storage:" +
@@ -373,7 +410,14 @@ class MediaViewerViewModel(
     }
 
     fun onCancelDownloadClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onCancelDownloadClicked(): position_out_of_range"
+            }
+            return
+        }
 
         log.debug {
             "onCancelDownloadClicked(): canceling_download"
@@ -384,7 +428,15 @@ class MediaViewerViewModel(
     }
 
     fun onFavoriteClicked(position: Int) {
-        val item = galleryMediaRepository.itemsList[position]
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onFavoriteClicked(): position_out_of_range"
+            }
+            return
+        }
+
         // Switch currently shown favorite state.
         val toSetFavorite = isFavorite.value != true
 
