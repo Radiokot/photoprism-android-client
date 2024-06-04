@@ -115,6 +115,9 @@ class MediaViewerActivity : BaseActivity() {
     private val windowInsetsController: WindowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
+    private val isPageIndicatorEnabled: Boolean by lazy {
+        intent.getBooleanExtra(IS_PAGE_INDICATOR_ENABLED_KEY, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,6 +150,7 @@ class MediaViewerActivity : BaseActivity() {
                     "\nmediaIndex=$mediaIndex," +
                     "\nrepositoryParams=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled," +
+                    "\nisPageIndicatorEnabled=$isPageIndicatorEnabled" +
                     "\nstaticSubtitle=$staticSubtitle," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
@@ -154,6 +158,7 @@ class MediaViewerActivity : BaseActivity() {
         viewModel.initOnce(
             repositoryParams = repositoryParams,
             areActionsEnabled = areActionsEnabled,
+            isPageIndicatorEnabled = isPageIndicatorEnabled,
             staticSubtitle = staticSubtitle,
         )
 
@@ -287,6 +292,10 @@ class MediaViewerActivity : BaseActivity() {
                 resources.getDimensionPixelSize(R.dimen.media_viewer_page_margin)
             )
         )
+
+        if (isPageIndicatorEnabled) {
+            view.dotsIndicator.attachTo(this)
+        }
     }
 
     private fun initButtons() {
@@ -631,6 +640,11 @@ class MediaViewerActivity : BaseActivity() {
         viewModel.isToolbarVisible.observe(
             this,
             view.toolbar::fadeVisibility
+        )
+
+        viewModel.isPageIndicatorVisible.observe(
+            this,
+            view.dotsIndicator::fadeVisibility
         )
 
         viewModel.isFullScreen.observe(this) { isFullScreen ->
@@ -984,6 +998,7 @@ class MediaViewerActivity : BaseActivity() {
         private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
         private const val STATIC_SUBTITLE_KEY = "static-subtitle"
+        private const val IS_PAGE_INDICATOR_ENABLED_KEY = "is-page-indicator-enabled"
 
         private val SWIPE_TO_DISMISS_DIRECTIONS = setOf(
             SwipeDirection.DOWN,
@@ -994,17 +1009,20 @@ class MediaViewerActivity : BaseActivity() {
          * @param mediaIndex index of the media to start from
          * @param repositoryParams params of the media repository to view
          * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not
+         * @param isPageIndicatorEnabled whether the dot page indicator is visible or not
          * @param staticSubtitle if set, will be shown in subtitle
          */
         fun getBundle(
             mediaIndex: Int,
             repositoryParams: SimpleGalleryMediaRepository.Params,
-            areActionsEnabled: Boolean,
+            areActionsEnabled: Boolean = true,
+            isPageIndicatorEnabled: Boolean = false,
             staticSubtitle: String? = null,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
+            putBoolean(IS_PAGE_INDICATOR_ENABLED_KEY, isPageIndicatorEnabled)
             putString(STATIC_SUBTITLE_KEY, staticSubtitle)
         }
 

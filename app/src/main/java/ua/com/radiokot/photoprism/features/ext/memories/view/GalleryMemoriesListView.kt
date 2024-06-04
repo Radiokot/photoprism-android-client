@@ -7,10 +7,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.MemoriesListListItem
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.MemoryTitle
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 
 class GalleryMemoriesListView(
@@ -75,7 +75,7 @@ class GalleryMemoriesListView(
                     MediaViewerActivity.getBundle(
                         mediaIndex = 0,
                         repositoryParams = repositoryParams,
-                        areActionsEnabled = true,
+                        isPageIndicatorEnabled = true,
                         staticSubtitle = staticSubtitle.getString(activity),
                     )
                 )

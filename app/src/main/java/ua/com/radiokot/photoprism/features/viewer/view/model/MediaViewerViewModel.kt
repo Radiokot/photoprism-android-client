@@ -17,9 +17,9 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -40,6 +40,7 @@ class MediaViewerViewModel(
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
     private var areActionsEnabled = false
+    private var isPageIndicatorEnabled = false
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
 
@@ -52,6 +53,7 @@ class MediaViewerViewModel(
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isPageIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isToolbarVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDownloadButtonVisible: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -95,6 +97,7 @@ class MediaViewerViewModel(
     fun initOnce(
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
+        isPageIndicatorEnabled: Boolean,
         staticSubtitle: String?,
     ) {
         if (isInitialized) {
@@ -108,6 +111,7 @@ class MediaViewerViewModel(
         subscribeToRepository()
 
         this.areActionsEnabled = areActionsEnabled
+        this.isPageIndicatorEnabled = isPageIndicatorEnabled
         this.staticSubtitle = staticSubtitle
 
         initControlsVisibility()
@@ -118,6 +122,7 @@ class MediaViewerViewModel(
             "initOnce(): initialized:" +
                     "\nrepositoryParam=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled," +
+                    "\nisPageIndicatorEnabled=$isPageIndicatorEnabled," +
                     "\nstaticSubtitle=$staticSubtitle"
         }
 
@@ -128,6 +133,7 @@ class MediaViewerViewModel(
         fun updateControlsVisibility(isFullScreen: Boolean) {
             areActionsVisible.value = !isFullScreen && areActionsEnabled
             isToolbarVisible.value = !isFullScreen
+            isPageIndicatorVisible.value = !isFullScreen && isPageIndicatorEnabled
         }
         isFullScreen.observeForever(::updateControlsVisibility)
     }
