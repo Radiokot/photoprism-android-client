@@ -197,9 +197,13 @@ android.applicationVariants.all { variant ->
 // Android Studio can't find the imports; this does not affect the actual build
 // since Gradle can find them just fine.
 
+
 import com.android.tools.profgen.ArtProfileKt
 import com.android.tools.profgen.ArtProfileSerializer
 import com.android.tools.profgen.DexFile
+
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 project.afterEvaluate {
     tasks.each { task ->
@@ -223,5 +227,20 @@ project.afterEvaluate {
                 }
             }
         }
+    }
+}
+
+// Pretty license report.
+project.afterEvaluate {
+    Task licenseReportTask = tasks.findByName("licenseReleaseReport")
+    licenseReportTask.outputs.upToDateWhen { false }
+    licenseReportTask.doLast {
+        def report = file("src/main/assets/open_source_licenses.html")
+        List<String> lines = Files.readAllLines(report.toPath(), StandardCharsets.UTF_8)
+        // Remove the "Notice for packages" header.
+        lines[6] = ""
+        // Reduce the font size.
+        lines[2] = lines[2].replace("body {", "body { font-size: 75%;")
+        Files.write(report.toPath(), lines, StandardCharsets.UTF_8)
     }
 }
