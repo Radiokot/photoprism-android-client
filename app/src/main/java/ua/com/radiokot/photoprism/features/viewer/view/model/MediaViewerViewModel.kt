@@ -744,7 +744,9 @@ class MediaViewerViewModel(
 
         backgroundDownloadProgressDisposable?.dispose()
         backgroundDownloadProgressDisposable = statusObservable
-            .throttleLatest(500, TimeUnit.MILLISECONDS)
+            // Here it is important to emit the last item,
+            // as the subscription has no separate handler for Observable completion.
+            .throttleLatest(500, TimeUnit.MILLISECONDS, true)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { resetDownloadViews() }
             .doOnDispose(resetDownloadViews)
@@ -759,7 +761,7 @@ class MediaViewerViewModel(
                         cancelDownloadButtonProgressPercent.value =
                             status.percent.roundToInt().coerceAtLeast(1)
                     }
-                }
+                },
             )
             .autoDispose(this)
     }
