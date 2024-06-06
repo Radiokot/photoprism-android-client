@@ -35,7 +35,7 @@ object GalleryExtensionResources {
 
     fun getBannerUrl(extension: GalleryExtension):String=when(extension){
         GalleryExtension.MEMORIES ->
-            "https://feed.radiokot.com.ua/thumb/architecture.jpg"
+            "https://radiokot.com.ua/Radiokot/pp-memories.jpg"
 
         GalleryExtension.TEST ->
             "https://img3.teletype.in/files/6e/f5/6ef5b234-528c-400f-8ac7-bb00da2ce2c9.jpeg"
