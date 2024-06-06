@@ -73,6 +73,8 @@ android {
 
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority + ".clone"
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + ".clone" + "\""
+
+            matchingFallbacks = ["release"]
         }
     }
 
