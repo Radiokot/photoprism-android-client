@@ -8,6 +8,13 @@
 
         <Preference
             app:iconSpaceReserved="false"
+            app:key="@string/pk_library_root_url"
+            app:persistent="false"
+            app:summary="***"
+            app:title="@string/library_root_url" />
+
+        <Preference
+            app:iconSpaceReserved="false"
             app:isPreferenceVisible="false"
             app:key="@string/pk_language"
             app:persistent="false"
@@ -21,19 +28,6 @@
             app:persistent="false"
             app:summary="@string/extensions_preferences_summary"
             app:title="@string/extensions_preferences" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:iconSpaceReserved="false"
-        app:title="@string/library_preferences">
-
-        <Preference
-            app:iconSpaceReserved="false"
-            app:key="@string/pk_library_root_url"
-            app:persistent="false"
-            app:summary="***"
-            app:title="@string/library_root_url" />
 
         <Preference
             app:iconSpaceReserved="false"
