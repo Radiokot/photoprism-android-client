@@ -17,8 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Not canceling the download on closing the dialog if the screen was rotated
 
 ### Changed
-- Language preference moved to the newly added "General" section at the top
+- Language preference moved to the newly added General section at the top
 - Language preference now shows the current language
+- Library root URL and Disconnect preferences merged and moved to the General section.
+To disconnect, click the Library preference and confirm the action
 
 ## [1.26.0] - 2024-04-21
 

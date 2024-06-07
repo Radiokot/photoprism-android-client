@@ -184,11 +184,8 @@ class PreferencesFragment :
     }
 
     private fun initPreferences() = with(preferenceScreen) {
-        with(requirePreference(R.string.pk_library_root_url)) {
+        with(requirePreference(R.string.pk_library)) {
             summary = session.envConnectionParams.rootUrl.toString()
-        }
-
-        with(requirePreference(R.string.pk_library_disconnect)) {
             setOnPreferenceClickListener {
                 disconnect()
                 true
@@ -315,28 +312,34 @@ class PreferencesFragment :
     }
 
     private fun disconnect() {
-        log.debug { "disconnect(): begin_disconnect" }
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(R.string.disconnect_from_library_confirmation)
+            .setPositiveButton(R.string.disconnect_from_library) { _, _ ->
+                log.debug { "disconnect(): begin_disconnect" }
 
-        get<DisconnectFromEnvUseCase>()
-            .invoke()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onComplete = ::goToEnvConnection,
-                onError = { error ->
-                    log.error(error) {
-                        "disconnect(): error_occurred"
-                    }
+                get<DisconnectFromEnvUseCase>()
+                    .invoke()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                        onComplete = ::goToEnvConnection,
+                        onError = { error ->
+                            log.error(error) {
+                                "disconnect(): error_occurred"
+                            }
 
-                    showError(
-                        getString(
-                            R.string.template_error_failed_to_disconnect,
-                            error.shortSummary
-                        )
+                            showError(
+                                getString(
+                                    R.string.template_error_failed_to_disconnect,
+                                    error.shortSummary
+                                )
+                            )
+                        }
                     )
-                }
-            )
-            .autoDispose(viewLifecycleOwner)
+                    .autoDispose(viewLifecycleOwner)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun exportBookmarks() {

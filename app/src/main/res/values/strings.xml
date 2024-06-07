@@ -92,7 +92,7 @@
     <string name="your_bookmarks_will_be_replaced">Your current bookmarks will be replaced. Continue?</string>
     <string name="continuee">Continue</string>
     <string name="disconnect_from_library">Disconnect</string>
-    <string name="your_bookmarks_will_be_kept">Your bookmarks will be kept</string>
+    <string name="disconnect_from_library_confirmation">Disconnect from the library? Your bookmarks will be kept</string>
     <string name="template_error_failed_to_disconnect">Failed to disconnect: %1$s</string>
     <string name="no_media_found">No media found</string>
     <string name="view_media">View</string>
