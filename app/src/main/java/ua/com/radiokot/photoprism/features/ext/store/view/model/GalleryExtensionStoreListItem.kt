@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.store.view.model
 
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -14,7 +15,6 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryExtensionStoreItemBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.ext.store.CURRENCY_NUMBER_FORMAT
 import ua.com.radiokot.photoprism.features.ext.view.GalleryExtensionResources
 import java.math.BigDecimal
@@ -26,7 +26,8 @@ class GalleryExtensionStoreListItem(
     val title: Int,
     @StringRes
     val description: Int,
-    val bannerUrl: String,
+    @DrawableRes
+    val banner: Int,
     val price: BigDecimal,
     /**
      * ISO-4217 3-letter code.
@@ -50,7 +51,7 @@ class GalleryExtensionStoreListItem(
     ) : this(
         title = GalleryExtensionResources.getTitle(source.extension),
         description = GalleryExtensionResources.getDescription(source.extension),
-        bannerUrl = GalleryExtensionResources.getBannerUrl(source.extension),
+        banner = GalleryExtensionResources.getBanner(source.extension),
         price = source.price,
         currency = source.currency,
         isBuyButtonVisible = !source.isAlreadyActivated,
@@ -74,14 +75,7 @@ class GalleryExtensionStoreListItem(
         override fun bindView(item: GalleryExtensionStoreListItem, payloads: List<Any>) {
             view.bannerImageView.contentDescription =
                 view.bannerImageView.context.getString(item.title)
-
-            picasso
-                .load(item.bannerUrl)
-                .hardwareConfigIfAvailable()
-                .placeholder(R.drawable.image_placeholder)
-                .fit()
-                .centerCrop()
-                .into(view.bannerImageView)
+            view.bannerImageView.setImageResource(item.banner)
 
             view.titleTextView.setText(item.title)
             view.descriptionTextView.setText(item.description)

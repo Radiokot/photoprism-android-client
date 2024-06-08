@@ -6,15 +6,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 
 object GalleryExtensionResources {
-    @DrawableRes
-    fun getIcon(extension: GalleryExtension): Int = when (extension) {
-        GalleryExtension.MEMORIES ->
-            R.drawable.ic_photo_album_white
-
-        GalleryExtension.TEST ->
-            R.drawable.ic_sledding
-    }
-
     @StringRes
     fun getTitle(extension: GalleryExtension): Int = when (extension) {
         GalleryExtension.MEMORIES ->
@@ -33,11 +24,12 @@ object GalleryExtensionResources {
             R.string.media_type_unknown
     }
 
-    fun getBannerUrl(extension: GalleryExtension):String=when(extension){
+    @DrawableRes
+    fun getBanner(extension: GalleryExtension): Int = when (extension) {
         GalleryExtension.MEMORIES ->
-            "https://radiokot.com.ua/Radiokot/pp-memories.jpg"
+            R.drawable.banner_memories
 
         GalleryExtension.TEST ->
-            "https://img3.teletype.in/files/6e/f5/6ef5b234-528c-400f-8ac7-bb00da2ce2c9.jpeg"
+            R.drawable.tv_banner
     }
 }

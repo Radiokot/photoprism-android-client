@@ -17,13 +17,15 @@
             android:id="@+id/banner_image_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:scaleType="fitXY"
             app:layout_constraintDimensionRatio="H,1:0.6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
             tools:background="@android:color/darker_gray"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:srcCompat="@drawable/banner_memories" />
 
         <TextView
             android:id="@+id/title_text_view"
