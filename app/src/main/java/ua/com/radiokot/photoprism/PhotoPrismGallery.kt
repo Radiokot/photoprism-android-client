@@ -22,8 +22,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setManifestComponentEnabled
-import ua.com.radiokot.photoprism.featureflags.di.releaseFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.di.devFeatureFlagsModule
+import ua.com.radiokot.photoprism.featureflags.di.releaseFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
@@ -35,6 +35,7 @@ import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemorie
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.store.extensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.importt.view.ImportDebugActivity
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
@@ -127,6 +128,10 @@ class PhotoPrismGallery : Application() {
         setManifestComponentEnabled(
             componentClass = KeyActivationActivity::class.java,
             isEnabled = hasExtensionPreferences
+        )
+        setManifestComponentEnabled(
+            componentClass = ImportDebugActivity::class.java,
+            isEnabled = hasFeature(FeatureFlags.Feature.IMPORT)
         )
     }
 
