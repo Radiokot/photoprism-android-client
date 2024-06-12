@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.api.faces.service.PhotoPrismFacesService
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.subjects.service.PhotoPrismSubjectsService
+import ua.com.radiokot.photoprism.api.upload.service.PhotoPrismUploadService
 import ua.com.radiokot.photoprism.api.util.SyncCallAdapter
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
@@ -108,6 +109,11 @@ val retrofitApiModule = module {
         scoped<PhotoPrismFacesService> {
             get<Retrofit>()
                 .create(PhotoPrismFacesService::class.java)
+        }
+
+        scoped<PhotoPrismUploadService> {
+            get<Retrofit>()
+                .create(PhotoPrismUploadService::class.java)
         }
     }
 }

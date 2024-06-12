@@ -5,7 +5,6 @@ import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Part
 import retrofit2.http.Path
 import ua.com.radiokot.photoprism.api.upload.model.PhotoPrismUploadOptions
 import java.io.IOException
@@ -19,8 +18,8 @@ interface PhotoPrismUploadService {
         userId: String,
         @Path("uploadToken")
         uploadToken: String,
-        @Part("files")
-        filesPart: MultipartBody.Part,
+        @Body
+        multipartBody: MultipartBody,
     )
 
     @kotlin.jvm.Throws(IOException::class)
