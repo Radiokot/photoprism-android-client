@@ -11,4 +11,6 @@ constructor(
     val id: String,
     @JsonProperty("config")
     val config: PhotoPrismClientConfig,
+    @JsonProperty("user")
+    val user: PhotoPrismUser,
 )
