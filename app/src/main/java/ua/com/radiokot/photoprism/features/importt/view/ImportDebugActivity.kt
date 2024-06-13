@@ -1,13 +1,18 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore.MediaColumns
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -18,10 +23,21 @@ import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 
 class ImportDebugActivity : BaseActivity() {
     private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
-    
+    private val mediaLocationPermissionLauncher: ActivityResultLauncher<Unit>? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+                this::onMediaLocationPermissionResult
+            )
+        else
+            null
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mediaLocationPermissionLauncher?.launch(Unit)
 
         val uris: Set<Uri> =
             (intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)?.let(::setOf) ?: emptySet()) +
@@ -63,7 +79,8 @@ class ImportDebugActivity : BaseActivity() {
                         },
                         onComplete = {
                             dialog.dismiss()
-                            Toast.makeText(context, "Uploaded successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Uploaded successfully", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     )
                     .autoDispose(this@ImportDebugActivity)
@@ -97,5 +114,9 @@ class ImportDebugActivity : BaseActivity() {
     } catch (e: Exception) {
         e.printStackTrace()
         "failed"
+    }
+
+    private fun onMediaLocationPermissionResult(isGranted: Boolean) {
+        Toast.makeText(this, "Can access location: $isGranted", Toast.LENGTH_SHORT).show()
     }
 }
