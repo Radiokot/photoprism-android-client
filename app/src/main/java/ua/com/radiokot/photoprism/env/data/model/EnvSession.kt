@@ -12,7 +12,9 @@ data class EnvSession(
         photoPrismSession: PhotoPrismSession,
         envConnectionParams: EnvConnectionParams,
     ) : this(
-        id = photoPrismSession.id,
+        id = requireNotNull(photoPrismSession.id) {
+            "Missing session ID"
+        },
         previewToken = photoPrismSession.config.previewToken,
         downloadToken = photoPrismSession.config.downloadToken,
         envConnectionParams = envConnectionParams,
