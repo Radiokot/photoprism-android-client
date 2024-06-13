@@ -1,14 +1,24 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore.MediaColumns
 import android.widget.TextView
+import android.widget.Toast
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.base.view.BaseActivity
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 
 class ImportDebugActivity : BaseActivity() {
+    private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
+    
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +41,33 @@ class ImportDebugActivity : BaseActivity() {
                         "#${index} ${describeFile(uri)}"
                     }
                 }
+                
+                    Click to upload
                 """.trimIndent()
+
+            setOnClickListener {
+                val dialog = ProgressDialog(context)
+                importFilesUseCaseFactory.get(
+                    files = uris,
+                    uploadToken = System.currentTimeMillis().toString(),
+                )
+                    .invoke()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { dialog.show() }
+                    .subscribeBy(
+                        onError = { error ->
+                            dialog.dismiss()
+                            error.printStackTrace()
+                            Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+                        },
+                        onComplete = {
+                            dialog.dismiss()
+                            Toast.makeText(context, "Uploaded successfully", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                    .autoDispose(this@ImportDebugActivity)
+            }
         })
     }
 

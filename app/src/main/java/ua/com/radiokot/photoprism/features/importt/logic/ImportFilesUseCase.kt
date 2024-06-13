@@ -44,8 +44,8 @@ class ImportFilesUseCase(
     private fun uploadFiles(): Completable = {
         val bodyBuilder = MultipartBody.Builder()
 
-        files.forEach { uri ->
-            bodyBuilder.addFormDataPart(
+        val parts = files.map { uri ->
+            MultipartBody.Part.createFormData(
                 name = "files",
                 filename = "file.jpg", // TODO use proper name
                 body = object : RequestBody() {
@@ -72,7 +72,7 @@ class ImportFilesUseCase(
         photoPrismUploadService.uploadUserFiles(
             userId = userId,
             uploadToken = uploadToken,
-            multipartBody = bodyBuilder.build(),
+            files = parts,
         )
     }.toCompletable()
 
