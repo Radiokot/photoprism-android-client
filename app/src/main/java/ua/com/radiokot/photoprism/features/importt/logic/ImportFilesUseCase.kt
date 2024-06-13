@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.importt.logic
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.net.Uri
+import android.provider.MediaStore.MediaColumns
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toCompletable
@@ -42,13 +43,26 @@ class ImportFilesUseCase(
     }.toSingle().subscribeOn(Schedulers.io())
 
     private fun uploadFiles(): Completable = {
-        val bodyBuilder = MultipartBody.Builder()
-
         val parts = files.map { uri ->
+            val (size: Long, name: String) = contentResolver.query(
+                uri, arrayOf(
+                    MediaColumns.SIZE, MediaColumns.DISPLAY_NAME,
+                ), null, null, null
+            )?.use { cursor ->
+                cursor.moveToNext()
+                Pair(
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaColumns.SIZE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME)),
+                )
+            } ?: error("Can't query size and name for $uri")
+
             MultipartBody.Part.createFormData(
                 name = "files",
-                filename = "file.jpg", // TODO use proper name
+                filename = name,
                 body = object : RequestBody() {
+                    override fun contentLength(): Long =
+                        size
+
                     override fun contentType(): MediaType? =
                         contentResolver.getType(uri)
                             ?.toMediaTypeOrNull()
