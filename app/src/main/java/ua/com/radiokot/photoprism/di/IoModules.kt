@@ -2,11 +2,11 @@ package ua.com.radiokot.photoprism.di
 
 import android.content.Context
 import android.os.Environment
+import android.util.Log
 import android.webkit.CookieManager
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import mu.KotlinLogging
 import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,6 +16,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.slf4j.impl.HandroidLoggerAdapter
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.util.HeaderInterceptor
 import ua.com.radiokot.photoprism.util.WebViewCookieJar
@@ -44,10 +45,14 @@ val ioModules: List<Module> = listOf(
     // HTTP
     module {
         single {
-            val logger = KotlinLogging.logger("HTTP")
-            HttpLoggingInterceptor(logger::info).apply {
+            // Native logger to be used for HTTP until SLF4J adapter is fixed:
+            // https://gitlab.com/mvysny/slf4j-handroid/-/issues/11
+            val nativeHttpLogger = HttpLoggingInterceptor.Logger { message ->
+                Log.i("${HandroidLoggerAdapter.APP_NAME}:HTTP", message)
+            }
+            HttpLoggingInterceptor(nativeHttpLogger).apply {
                 level =
-                    if (logger.isDebugEnabled)
+                    if (BuildConfig.DEBUG)
                         HttpLoggingInterceptor.Level.BODY
                     else
                         HttpLoggingInterceptor.Level.BASIC
