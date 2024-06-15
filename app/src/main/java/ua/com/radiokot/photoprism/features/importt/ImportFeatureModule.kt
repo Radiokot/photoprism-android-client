@@ -8,6 +8,7 @@ import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.di.EnvPhotoPrismSessionServiceParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
+import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 
 val importFeatureModule = module {
     scope<EnvSession> {
@@ -27,4 +28,10 @@ val importFeatureModule = module {
             )
         } bind ImportFilesUseCase.Factory::class
     }
+
+    single {
+        ParseImportIntentUseCase.Factory(
+            contentResolver = androidApplication().contentResolver,
+        )
+    } bind ParseImportIntentUseCase.Factory::class
 }
