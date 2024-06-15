@@ -186,6 +186,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
+configurations.testImplementation {
+    exclude module: 'slf4j-handroid'
+}
+
 // Make the built APKs have a release-style name.
 android.applicationVariants.all { variant ->
     variant.outputs.all { output ->
