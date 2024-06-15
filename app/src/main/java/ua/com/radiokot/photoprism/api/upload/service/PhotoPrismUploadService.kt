@@ -15,7 +15,7 @@ interface PhotoPrismUploadService {
     /**
      * @param userId session user ID (`useibtXXXX`)
      * @param uploadToken a random string which is later used to [processUserUpload]
-     * @param files one or more parts named "files" with the content to upload.
+     * @param files one or more parts named [UPLOAD_FILES_PART_NAME] with the content to upload.
      */
     @kotlin.jvm.Throws(IOException::class)
     @Multipart
@@ -45,4 +45,8 @@ interface PhotoPrismUploadService {
         @Body
         uploadOptions: PhotoPrismUploadOptions,
     ): Any
+
+    companion object {
+        const val UPLOAD_FILES_PART_NAME = "files"
+    }
 }

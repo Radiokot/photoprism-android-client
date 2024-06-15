@@ -18,7 +18,6 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
-import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 
 class ImportDebugActivity : BaseActivity() {
     private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
@@ -59,7 +58,7 @@ class ImportDebugActivity : BaseActivity() {
             setOnClickListener {
                 val dialog = ProgressDialog(context)
                 importFilesUseCaseFactory.get(
-                    files = files.map(ImportableFile::contentUri),
+                    files = files,
                     uploadToken = System.currentTimeMillis().toString(),
                 )
                     .invoke()
