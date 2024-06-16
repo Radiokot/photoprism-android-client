@@ -6,6 +6,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.internal.closeQuietly
 import okio.BufferedSink
+import ua.com.radiokot.photoprism.util.downloader.ReadingProgressSource
 
 class ImportableFileRequestBody(
     private val importableFile: ImportableFile,
@@ -18,7 +19,14 @@ class ImportableFileRequestBody(
         importableFile.mimeType?.toMediaTypeOrNull()
 
     override fun writeTo(sink: BufferedSink) {
-        val fileSource = importableFile.source(contentResolver)
+        val fileSource =
+            ReadingProgressSource(
+                delegate = importableFile.source(contentResolver),
+                onReadingProgress = { bytesRead: Long ->
+                    println("OOLEG read $bytesRead of ${contentLength()}")
+                }
+            )
+
         try {
             sink.writeAll(fileSource)
         } finally {

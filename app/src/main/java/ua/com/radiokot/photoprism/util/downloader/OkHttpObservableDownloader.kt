@@ -24,13 +24,14 @@ class OkHttpObservableDownloader(
                 val originalResponse = chain.proceed(chain.request())
                 val originalBody = originalResponse.body
                     ?: return@addNetworkInterceptor originalResponse
+                val contentLength = originalBody.contentLength()
 
                 return@addNetworkInterceptor originalResponse
                     .newBuilder()
                     .body(
-                        ProgressResponseBody(
+                        ReadingProgressResponseBody(
                             observingBody = originalBody,
-                            progressListener = { bytesRead, contentLength ->
+                            onReadingProgress = { bytesRead: Long ->
                                 val emitter = emittersMap.getValue(emitterKey)
                                 emitter.onNext(
                                     ObservableDownloader.Progress(
