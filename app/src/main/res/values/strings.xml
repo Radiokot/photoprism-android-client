@@ -216,4 +216,10 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s for %2$s</string>
     <string name="gallery_deleting_confirmation">Delete selected items forever?</string>
     <string name="general_preferences">General</string>
+    <string name="import_notification_channel_name">Import</string>
+    <string name="import_notification_channel_description">Progress of the background import</string>
+    <string name="import_notification_progress_title">Uploading files…</string>
+    <string name="import_notification_failed_title">Upload failed</string>
+    <string name="import_notification_failed_text">Please, try again</string>
+    <string name="import_notification_success_title">Uploaded successfully</string>
 </resources>

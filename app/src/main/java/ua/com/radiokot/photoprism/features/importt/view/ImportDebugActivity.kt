@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.net.toUri
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -75,6 +76,7 @@ class ImportDebugActivity : BaseActivity() {
                                 )
                             )
                             .addTag(ImportFilesWorker.TAG)
+                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                             .build()
                     )
                 Toast.makeText(context, "Uploading in background", Toast.LENGTH_SHORT).show()

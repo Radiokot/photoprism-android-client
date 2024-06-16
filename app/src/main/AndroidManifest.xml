@@ -4,7 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION">
+        <!-- For importing files to include location data on SDK >= 29 -->
+    </uses-permission>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE">
+        <!-- For background import to work with a notification on SDK >= 28 -->
+    </uses-permission>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC">
+        <!-- For background import to work with a notification on SDK >= 34 -->
+    </uses-permission>
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -189,6 +197,11 @@
         <receiver
             android:name=".features.gallery.view.ShareSheetShareEventReceiver"
             android:exported="false" />
+
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
     </application>
 
 </manifest>

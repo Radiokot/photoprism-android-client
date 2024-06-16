@@ -1,8 +1,10 @@
 package ua.com.radiokot.photoprism.features.importt.logic
 
 import android.content.Context
-import android.widget.Toast
+import android.content.pm.ServiceInfo
+import android.os.Build
 import androidx.work.Data
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -15,6 +17,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
+import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 
 class ImportFilesWorker(
     appContext: Context,
@@ -30,11 +33,13 @@ class ImportFilesWorker(
 
     private val jsonObjectMapper: JsonObjectMapper by inject()
     private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
+    private val importNotificationsManager: ImportNotificationsManager by inject()
     private val files: List<ImportableFile> by lazy {
         jsonObjectMapper
             .readerForListOf(ImportableFile::class.java)
             .readValue(workerParams.inputData.getString(FILES_JSON_KEY))
     }
+    private val uploadToken = System.currentTimeMillis().toString()
 
     override fun createWork(): Single<Result> {
         if (scope.id != DI_SCOPE_SESSION) {
@@ -45,11 +50,19 @@ class ImportFilesWorker(
             return Single.just(Result.success())
         }
 
-        return importFilesUseCaseFactory.get(
+        val useCase = importFilesUseCaseFactory.get(
             files = files,
-            uploadToken = System.currentTimeMillis().toString(),
+            uploadToken = uploadToken,
         )
-            .invoke()
+
+        return foregroundInfo
+            .flatMapCompletable(::setForeground)
+            .doOnComplete {
+                log.debug {
+                    "createWork(): foreground_set"
+                }
+            }
+            .andThen(useCase.invoke())
             .onErrorReturn { error ->
                 log.error(error) {
                     "createWork(): error_occurred"
@@ -60,20 +73,44 @@ class ImportFilesWorker(
             .defaultIfEmpty(Result.success())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { result ->
+                log.debug {
+                    "createWork(): complete_with_result:" +
+                            "\nresult=$result"
+                }
+
                 if (result is Result.Success) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Successfully uploaded ${files.size} files",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else if (result is Result.Failure) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Failed uploading ${files.size} files",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    importNotificationsManager.notifySuccessfulImport(
+                        uploadToken = uploadToken,
+                    )
+                } else {
+                    importNotificationsManager.notifyFailedImport(
+                        uploadToken = uploadToken,
+                    )
                 }
             }
+    }
+
+    override fun getForegroundInfo(): Single<ForegroundInfo> {
+        val notification = importNotificationsManager.getImportProgressNotification(
+            progressPercent = -1.0,
+        )
+        val notificationId = ImportNotificationsManager.getImportProgressNotificationId(
+            uploadToken = uploadToken,
+        )
+
+        return Single.just(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                ForegroundInfo(
+                    notificationId,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                )
+            else
+                ForegroundInfo(
+                    notificationId,
+                    notification,
+                )
+        )
     }
 
     companion object {

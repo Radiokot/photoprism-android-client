@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.importt
 
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -9,6 +10,7 @@ import ua.com.radiokot.photoprism.di.EnvPhotoPrismSessionServiceParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
+import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 
 val importFeatureModule = module {
     scope<EnvSession> {
@@ -34,4 +36,6 @@ val importFeatureModule = module {
             contentResolver = androidApplication().contentResolver,
         )
     } bind ParseImportIntentUseCase.Factory::class
+
+    singleOf(::ImportNotificationsManager)
 }
