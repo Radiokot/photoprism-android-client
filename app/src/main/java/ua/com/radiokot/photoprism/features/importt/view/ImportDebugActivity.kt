@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.features.importt.view
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
@@ -10,13 +10,14 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
+import androidx.core.net.toUri
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
+import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 
 class ImportDebugActivity : BaseActivity() {
@@ -56,28 +57,28 @@ class ImportDebugActivity : BaseActivity() {
                 """.trimIndent()
 
             setOnClickListener {
-                val dialog = ProgressDialog(context)
-                importFilesUseCaseFactory.get(
-                    files = files,
-                    uploadToken = System.currentTimeMillis().toString(),
-                )
-                    .invoke()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { dialog.show() }
-                    .subscribeBy(
-                        onError = { error ->
-                            dialog.dismiss()
-                            error.printStackTrace()
-                            Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
-                        },
-                        onComplete = {
-                            dialog.dismiss()
-                            Toast.makeText(context, "Uploaded successfully", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                // Allow reading the URIs after the activity is finished.
+                files.forEach { file ->
+                    this@ImportDebugActivity.grantUriPermission(
+                        packageName,
+                        file.contentUri.toUri(),
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
                     )
-                    .autoDispose(this@ImportDebugActivity)
+                }
+                WorkManager.getInstance(this@ImportDebugActivity)
+                    .enqueue(
+                        OneTimeWorkRequestBuilder<ImportFilesWorker>()
+                            .setInputData(
+                                ImportFilesWorker.getInputData(
+                                    files = files,
+                                    jsonObjectMapper = get(),
+                                )
+                            )
+                            .addTag(ImportFilesWorker.TAG)
+                            .build()
+                    )
+                Toast.makeText(context, "Uploading in background", Toast.LENGTH_SHORT).show()
+                finish()
             }
         })
     }

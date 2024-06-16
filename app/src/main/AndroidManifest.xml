@@ -163,6 +163,7 @@
             android:name=".features.importt.view.ImportDebugActivity"
             android:enabled="false"
             android:exported="true"
+            android:noHistory="true"
             android:resizeableActivity="true">
 
             <!-- TODO: This screen gets enabled or disabled programmatically

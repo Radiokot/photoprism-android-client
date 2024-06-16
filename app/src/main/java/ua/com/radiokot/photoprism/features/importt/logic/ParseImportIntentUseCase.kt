@@ -68,7 +68,7 @@ class ParseImportIntentUseCase(
             }
 
             ImportableFile(
-                contentUri = uri,
+                contentUri = uri.toString(),
                 mimeType = mimeType,
                 size = size,
                 displayName = displayName,
