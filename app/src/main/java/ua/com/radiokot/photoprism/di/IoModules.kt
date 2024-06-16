@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import okhttp3.CookieJar
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -51,11 +52,15 @@ val ioModules: List<Module> = listOf(
                 Log.i("${HandroidLoggerAdapter.APP_NAME}:HTTP", message)
             }
             HttpLoggingInterceptor(nativeHttpLogger).apply {
-                level =
-                    if (BuildConfig.DEBUG)
-                        HttpLoggingInterceptor.Level.BODY
-                    else
-                        HttpLoggingInterceptor.Level.BASIC
+                if (BuildConfig.DEBUG) {
+                    level = HttpLoggingInterceptor.Level.BODY
+
+                    // Do not log multipart forms.
+                    // Logging them may cause OOM if there are big files.
+                    skipBody(MultipartBody.FORM)
+                } else {
+                    level = HttpLoggingInterceptor.Level.BASIC
+                }
             }
         } bind HttpLoggingInterceptor::class
 
