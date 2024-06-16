@@ -167,6 +167,7 @@ class MemoriesNotificationsManager(
             )
                 .setName(context.getString(R.string.memories_notification_channel_name))
                 .setDescription(context.getString(R.string.memories_notification_channel_description))
+                .setLightsEnabled(true)
                 .setLightColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
                 .build()
         )
