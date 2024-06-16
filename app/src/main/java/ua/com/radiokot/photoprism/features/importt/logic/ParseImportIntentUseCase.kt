@@ -18,9 +18,19 @@ class ParseImportIntentUseCase(
             "The intent has unsupported action ${intent.action}"
         }
 
-        val uris: Set<Uri> = (intent.data?.let(::setOf) ?: emptySet()) +
-                (intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM) ?: emptySet()) +
-                (intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)?.let(::setOf) ?: emptySet())
+        val uris = mutableSetOf<Uri>()
+        intent.data?.also(uris::add)
+
+        @Suppress("DEPRECATION")
+        when (intent.action) {
+            Intent.ACTION_SEND ->
+                intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                    ?.also(uris::add)
+
+            Intent.ACTION_SEND_MULTIPLE ->
+                intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                    ?.also(uris::addAll)
+        }
 
         check(uris.isNotEmpty()) {
             "The intent has no URIs"
@@ -44,7 +54,7 @@ class ParseImportIntentUseCase(
 
             if (queryCursor == null) {
                 log.warn {
-                    "invoke(): cant_query_uri:" +
+                    "invoke(): uri_query_failed:" +
                             "\nuri=$uri"
                 }
 
