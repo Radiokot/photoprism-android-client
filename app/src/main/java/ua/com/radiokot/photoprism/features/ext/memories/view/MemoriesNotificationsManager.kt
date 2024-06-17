@@ -93,6 +93,7 @@ class MemoriesNotificationsManager(
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle(context.getString(R.string.memories_notification_new_memories_title))
+            .setTicker(context.getString(R.string.memories_notification_new_memories_title))
             .setContentText(context.getString(R.string.memories_notification_new_memories_text))
             .setColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
             // White icon is used for Android 5 compatibility.
