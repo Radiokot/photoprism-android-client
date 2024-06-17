@@ -1,10 +1,12 @@
 package ua.com.radiokot.photoprism.features.importt.logic
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.work.Data
 import androidx.work.ForegroundInfo
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -30,7 +32,9 @@ class ImportFilesWorker(
     }
 
     private val log = kLogger("ImportFilesWorker")
-
+    private val cancelIntent: PendingIntent by lazy {
+        WorkManager.getInstance(appContext).createCancelPendingIntent(id)
+    }
     private val jsonObjectMapper: JsonObjectMapper by inject()
     private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
     private val importNotificationsManager: ImportNotificationsManager by inject()
@@ -73,6 +77,14 @@ class ImportFilesWorker(
             .defaultIfEmpty(Result.success())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { result ->
+                if (isStopped) {
+                    log.debug {
+                        "createWork(): stopped"
+                    }
+
+                    return@doOnSuccess
+                }
+
                 log.debug {
                     "createWork(): complete_with_result:" +
                             "\nresult=$result"
@@ -93,6 +105,7 @@ class ImportFilesWorker(
     override fun getForegroundInfo(): Single<ForegroundInfo> {
         val notification = importNotificationsManager.getImportProgressNotification(
             progressPercent = -1.0,
+            cancelIntent = cancelIntent,
         )
         val notificationId = ImportNotificationsManager.getImportProgressNotificationId(
             uploadToken = uploadToken,

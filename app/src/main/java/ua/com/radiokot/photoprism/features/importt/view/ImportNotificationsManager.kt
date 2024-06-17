@@ -25,7 +25,10 @@ class ImportNotificationsManager(
     private val areNotificationsEnabled: Boolean
         get() = notificationsManager.areNotificationsEnabled()
 
-    fun getImportProgressNotification(progressPercent: Double): Notification =
+    fun getImportProgressNotification(
+        progressPercent: Double,
+        cancelIntent: PendingIntent,
+    ): Notification =
         NotificationCompat.Builder(
             context,
             CHANNEL_ID
@@ -40,6 +43,7 @@ class ImportNotificationsManager(
             // White icon is used for Android 5 compatibility.
             .setSmallIcon(R.drawable.ic_upload_white)
             .setAutoCancel(true)
+            .addAction(R.drawable.ic_close, context.getString(R.string.cancel), cancelIntent)
             .build()
             .also { ensureChannel() }
 
