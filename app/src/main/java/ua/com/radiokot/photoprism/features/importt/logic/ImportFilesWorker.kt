@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
+import java.util.concurrent.TimeUnit
 
 class ImportFilesWorker(
     appContext: Context,
@@ -44,6 +45,8 @@ class ImportFilesWorker(
             .readValue(workerParams.inputData.getString(FILES_JSON_KEY))
     }
     private val uploadToken = System.currentTimeMillis().toString()
+    private var importStatus: ImportFilesUseCase.Status =
+        ImportFilesUseCase.Status.Uploading.INDETERMINATE
 
     override fun createWork(): Single<Result> {
         if (scope.id != DI_SCOPE_SESSION) {
@@ -59,14 +62,12 @@ class ImportFilesWorker(
             uploadToken = uploadToken,
         )
 
-        return foregroundInfo
-            .flatMapCompletable(::setForeground)
-            .doOnComplete {
-                log.debug {
-                    "createWork(): foreground_set"
-                }
+        return useCase.invoke()
+            .throttleLast(500, TimeUnit.MILLISECONDS)
+            .switchMapCompletable { status ->
+                importStatus = status
+                foregroundInfo.flatMapCompletable(::setForeground)
             }
-            .andThen(useCase.invoke())
             .onErrorReturn { error ->
                 log.error(error) {
                     "createWork(): error_occurred"
@@ -104,7 +105,13 @@ class ImportFilesWorker(
 
     override fun getForegroundInfo(): Single<ForegroundInfo> {
         val notification = importNotificationsManager.getImportProgressNotification(
-            progressPercent = -1.0,
+            progressPercent = when (val status = importStatus) {
+                is ImportFilesUseCase.Status.Uploading ->
+                    status.percent
+
+                ImportFilesUseCase.Status.ProcessingUpload ->
+                    -1.0
+            },
             cancelIntent = cancelIntent,
         )
         val notificationId = ImportNotificationsManager.getImportProgressNotificationId(
