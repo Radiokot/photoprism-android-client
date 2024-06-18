@@ -57,7 +57,7 @@ class ImportNotificationsManager(
             .setContentTitle(context.getString(R.string.import_notification_success_title))
             .setColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
             // White icon is used for Android 5 compatibility.
-            .setSmallIcon(R.drawable.ic_upload_white)
+            .setSmallIcon(R.drawable.ic_awesome_white)
             .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
