@@ -115,7 +115,12 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Reset the splash background.
-        window.setBackgroundDrawable(ColorDrawable(windowBackgroundColor))
+        window.setBackgroundDrawable(
+            if (windowBackgroundColor == Color.TRANSPARENT)
+                null
+            else
+                ColorDrawable(windowBackgroundColor)
+        )
 
         super.onCreate(savedInstanceState)
 

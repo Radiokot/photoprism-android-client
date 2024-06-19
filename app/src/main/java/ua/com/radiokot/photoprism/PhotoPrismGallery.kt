@@ -36,7 +36,7 @@ import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemor
 import ua.com.radiokot.photoprism.features.ext.store.extensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
-import ua.com.radiokot.photoprism.features.importt.view.ImportDebugActivity
+import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
@@ -132,7 +132,7 @@ class PhotoPrismGallery : Application() {
             isEnabled = hasExtensionPreferences
         )
         setManifestComponentEnabled(
-            componentClass = ImportDebugActivity::class.java,
+            componentClass = ImportActivity::class.java,
             isEnabled = hasFeature(FeatureFlags.Feature.IMPORT)
         )
     }

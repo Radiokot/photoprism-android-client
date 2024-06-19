@@ -1,11 +1,10 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,12 +16,15 @@ import androidx.work.WorkManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
+import ua.com.radiokot.photoprism.databinding.ActivityImportBinding
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 
-class ImportDebugActivity : BaseActivity() {
-    private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
+class ImportActivity : BaseActivity() {
+    private val log = kLogger("ImportActivity")
+
+    private lateinit var view: ActivityImportBinding
     private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory by inject()
     private val mediaLocationPermissionLauncher: ActivityResultLauncher<Unit>? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
@@ -34,55 +36,63 @@ class ImportDebugActivity : BaseActivity() {
         else
             null
 
-    @SuppressLint("SetTextI18n")
+    override val windowBackgroundColor: Int
+        get() = Color.TRANSPARENT
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (goToEnvConnectionIfNoSession()) {
+            return
+        }
+
+        view = ActivityImportBinding.inflate(layoutInflater)
+        setContentView(view.root)
 
         mediaLocationPermissionLauncher?.launch(Unit)
 
         val files = parseImportIntentUseCaseFactory.get(intent).invoke()
 
-        setContentView(TextView(this).apply {
-            setPadding(40, 40, 40, 40)
-            text =
-                """
+        view.debugTextView.text =
+            """
                     Action: ${intent.action}
                     
                     Describe: ${
-                    files.mapIndexed { index, file ->
-                        "#${index} $file"
-                    }
+                files.mapIndexed { index, file ->
+                    "#${index} $file"
                 }
-                
-                    Click to upload
+            }
                 """.trimIndent()
 
-            setOnClickListener {
-                // Allow reading the URIs after the activity is finished.
-                files.forEach { file ->
-                    this@ImportDebugActivity.grantUriPermission(
-                        packageName,
-                        file.contentUri.toUri(),
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                    )
-                }
-                WorkManager.getInstance(this@ImportDebugActivity)
-                    .enqueue(
-                        OneTimeWorkRequestBuilder<ImportFilesWorker>()
-                            .setInputData(
-                                ImportFilesWorker.getInputData(
-                                    files = files,
-                                    jsonObjectMapper = get(),
-                                )
-                            )
-                            .addTag(ImportFilesWorker.TAG)
-                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                            .build()
-                    )
-                Toast.makeText(context, "Uploading in background", Toast.LENGTH_SHORT).show()
-                finish()
+        view.primaryButton.setOnClickListener {
+            // Allow reading the URIs after the activity is finished.
+            files.forEach { file ->
+                this@ImportActivity.grantUriPermission(
+                    packageName,
+                    file.contentUri.toUri(),
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                )
             }
-        })
+            WorkManager.getInstance(this@ImportActivity)
+                .enqueue(
+                    OneTimeWorkRequestBuilder<ImportFilesWorker>()
+                        .setInputData(
+                            ImportFilesWorker.getInputData(
+                                files = files,
+                                jsonObjectMapper = get(),
+                            )
+                        )
+                        .addTag(ImportFilesWorker.TAG)
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                        .build()
+                )
+            Toast.makeText(this, "Uploading in background", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+        view.cancelButton.setOnClickListener {
+            finish()
+        }
     }
 
     private fun onMediaLocationPermissionResult(isGranted: Boolean) {

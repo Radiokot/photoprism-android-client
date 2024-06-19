@@ -168,11 +168,13 @@
 
 
         <activity
-            android:name=".features.importt.view.ImportDebugActivity"
+            android:name=".features.importt.view.ImportActivity"
             android:enabled="false"
             android:exported="true"
+            android:label="@string/import_title"
             android:noHistory="true"
-            android:resizeableActivity="true">
+            android:resizeableActivity="true"
+            android:theme="@style/UtilDialogTheme">
 
             <!-- TODO: This screen gets enabled or disabled programmatically
                  upon env connection/disconnection. -->
