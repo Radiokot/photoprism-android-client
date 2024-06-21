@@ -224,4 +224,6 @@
     <string name="import_notification_success_title">Uploaded successfully</string>
     <string name="import_start">Start import</string>
     <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">To be uploaded</string>
 </resources>
