@@ -226,4 +226,5 @@
     <string name="import_title">@string/importt</string>
     <string name="template_import_files_size">%1$s, %2$.2f MB</string>
     <string name="import_to_be_uploaded">To be uploaded</string>
+    <string name="import_started_in_background">Upload started in background</string>
 </resources>

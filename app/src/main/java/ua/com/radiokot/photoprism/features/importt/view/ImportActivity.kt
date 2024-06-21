@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.importt.view
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -13,26 +12,20 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.annotation.StringRes
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
-import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityImportBinding
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
-import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
-import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
+import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
 
 class ImportActivity : BaseActivity() {
     private val log = kLogger("ImportActivity")
 
     private lateinit var view: ActivityImportBinding
-    private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory by inject()
+    private val viewModel: ImportViewModel by viewModel()
     private val mediaLocationPermissionLauncher: ActivityResultLauncher<Unit>? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             registerForActivityResult(
@@ -56,52 +49,69 @@ class ImportActivity : BaseActivity() {
         view = ActivityImportBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        mediaLocationPermissionLauncher?.launch(Unit)
+        viewModel.initOnce(intent)
 
-        val files = parseImportIntentUseCaseFactory.get(intent).invoke()
+        initButtons()
+
+        subscribeToData()
+        subscribeToEvents()
+
+        mediaLocationPermissionLauncher?.launch(Unit)
+    }
+
+    private fun initButtons() {
+        view.primaryButton.setOnClickListener {
+            viewModel.onStartClicked()
+        }
+
+        view.cancelButton.setOnClickListener {
+            viewModel.onCancelClicked()
+        }
+    }
+
+    private fun subscribeToData() {
+        viewModel.summary.observe(
+            this,
+            ::showSummary
+        )
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            ImportViewModel.Event.Finish ->
+                finish()
+
+            ImportViewModel.Event.ShowStartedInBackgroundMessage ->
+                Toast.makeText(this, R.string.import_started_in_background, Toast.LENGTH_SHORT)
+                    .show()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }
+
+    private fun showSummary(summary: ImportViewModel.Summary) {
+        view.summaryItemsLayout.removeAllViews()
 
         addSummaryItem(
-            "https://heh",
-            R.string.library_root_url
+            content = summary.libraryRootUrl,
+            summary = R.string.library_root_url,
         )
         addSummaryItem(
             content = getString(
                 R.string.template_import_files_size,
-                resources.getQuantityString(R.plurals.files, files.size, files.size),
-                files.sumOf(ImportableFile::size).toDouble() / (1024 * 1024)
+                resources.getQuantityString(R.plurals.files, summary.fileCount, summary.fileCount),
+                summary.sizeMb,
             ),
-            R.string.import_to_be_uploaded
+            summary = R.string.import_to_be_uploaded,
         )
-
-        view.primaryButton.setOnClickListener {
-            // Allow reading the URIs after the activity is finished.
-            files.forEach { file ->
-                this@ImportActivity.grantUriPermission(
-                    packageName,
-                    file.contentUri.toUri(),
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                )
-            }
-            WorkManager.getInstance(this@ImportActivity)
-                .enqueue(
-                    OneTimeWorkRequestBuilder<ImportFilesWorker>()
-                        .setInputData(
-                            ImportFilesWorker.getInputData(
-                                files = files,
-                                jsonObjectMapper = get(),
-                            )
-                        )
-                        .addTag(ImportFilesWorker.TAG)
-                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                        .build()
-                )
-            Toast.makeText(this, "Uploading in background", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        view.cancelButton.setOnClickListener {
-            finish()
-        }
     }
 
     @SuppressLint("PrivateResource")
@@ -110,18 +120,15 @@ class ImportActivity : BaseActivity() {
         @StringRes
         summary: Int,
     ) {
-        val itemLayout =
-            layoutInflater.inflate(
-                androidx.preference.R.layout.preference_material,
-                view.summaryItemsLayout,
-                false
-            )
-        itemLayout.apply {
+        layoutInflater.inflate(
+            androidx.preference.R.layout.preference_material,
+            view.summaryItemsLayout,
+            false
+        ).apply {
             findViewById<ViewGroup>(androidx.preference.R.id.icon_frame).isVisible = false
             findViewById<TextView>(android.R.id.title).text = content
             findViewById<TextView>(android.R.id.summary).setText(summary)
-        }
-        view.summaryItemsLayout.addView(itemLayout)
+        }.also(view.summaryItemsLayout::addView)
     }
 
     private fun onMediaLocationPermissionResult(isGranted: Boolean) {
