@@ -1,18 +1,16 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -26,15 +24,11 @@ class ImportActivity : BaseActivity() {
 
     private lateinit var view: ActivityImportBinding
     private val viewModel: ImportViewModel by viewModel()
-    private val mediaLocationPermissionLauncher: ActivityResultLauncher<Unit>? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission(),
-                Manifest.permission.ACCESS_MEDIA_LOCATION,
-                this::onMediaLocationPermissionResult
-            )
-        else
-            null
+    private val multiplePermissionsLauncher: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions(),
+            this::onMultiplePermissionsResult
+        )
 
     override val windowBackgroundColor: Int
         get() = Color.TRANSPARENT
@@ -55,8 +49,6 @@ class ImportActivity : BaseActivity() {
 
         subscribeToData()
         subscribeToEvents()
-
-        mediaLocationPermissionLauncher?.launch(Unit)
     }
 
     private fun initButtons() {
@@ -74,6 +66,22 @@ class ImportActivity : BaseActivity() {
             this,
             ::showSummary
         )
+
+        fun permissionRationaleObserver(rationaleView: TextView) = Observer { isVisible: Boolean ->
+            rationaleView.isVisible = isVisible
+            if (isVisible) {
+                view.rationaleDivider.isVisible = true
+                view.rationaleBottomSpace.isVisible = true
+            }
+        }
+        viewModel.isNotificationPermissionRationaleVisible.observe(
+            this,
+            permissionRationaleObserver(view.notificationsPermissionRationaleTextView)
+        )
+        viewModel.isNotificationPermissionRationaleVisible.observe(
+            this,
+            permissionRationaleObserver(view.mediaPermissionRationaleTextView)
+        )
     }
 
     private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->
@@ -89,6 +97,9 @@ class ImportActivity : BaseActivity() {
             ImportViewModel.Event.ShowStartedInBackgroundMessage ->
                 Toast.makeText(this, R.string.import_started_in_background, Toast.LENGTH_SHORT)
                     .show()
+
+            is ImportViewModel.Event.CheckPermissions ->
+                multiplePermissionsLauncher.launch(event.permissions)
         }
 
         log.debug {
@@ -131,7 +142,10 @@ class ImportActivity : BaseActivity() {
         }.also(view.summaryItemsLayout::addView)
     }
 
-    private fun onMediaLocationPermissionResult(isGranted: Boolean) {
-        Toast.makeText(this, "Can access location: $isGranted", Toast.LENGTH_SHORT).show()
+    private fun onMultiplePermissionsResult(results: Map<String, Boolean>) {
+        log.debug {
+            "onMultiplePermissionsResult(): got_results:" +
+                    "\nresults=${results.entries}"
+        }
     }
 }

@@ -28,3 +28,6 @@ fun Context.setManifestComponentEnabled(
         PackageManager.DONT_KILL_APP,
     )
 }
+
+fun Context.isSelfPermissionGranted(permission: String): Boolean =
+    checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED

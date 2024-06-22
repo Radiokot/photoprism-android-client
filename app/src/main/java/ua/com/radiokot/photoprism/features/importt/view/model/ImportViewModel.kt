@@ -1,7 +1,9 @@
 package ua.com.radiokot.photoprism.features.importt.view.model
 
+import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.os.Build
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +13,7 @@ import androidx.work.WorkManager
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
@@ -27,8 +30,11 @@ class ImportViewModel(
     private val context = getApplication<Application>()
     private var isInitialized = false
     private lateinit var files: List<ImportableFile>
+    private val permissionsToCheckBeforeStart = mutableListOf<String>()
 
     val summary: MutableLiveData<Summary> = MutableLiveData()
+    val isNotificationPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isMediaPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
 
@@ -45,11 +51,25 @@ class ImportViewModel(
             sizeMb = files.sumOf(ImportableFile::size).toDouble() / (1024 * 1024),
         )
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+            && !context.isSelfPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
+        ) {
+            isMediaPermissionRationaleVisible.value = true
+            permissionsToCheckBeforeStart += Manifest.permission.ACCESS_MEDIA_LOCATION
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && !context.isSelfPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)
+        ) {
+            isNotificationPermissionRationaleVisible.value = true
+            permissionsToCheckBeforeStart += Manifest.permission.POST_NOTIFICATIONS
+        }
+
         isInitialized = true
 
         log.debug {
             "initOnce(): initialized:" +
-                    "\nsummary=$summary"
+                    "\nsummary=$summary," +
+                    "\npermissionsToCheckBeforeStart=$permissionsToCheckBeforeStart"
         }
     }
 
@@ -107,5 +127,8 @@ class ImportViewModel(
     sealed interface Event {
         object Finish : Event
         object ShowStartedInBackgroundMessage : Event
+        class CheckPermissions(
+            val permissions: Array<String>,
+        ) : Event
     }
 }
