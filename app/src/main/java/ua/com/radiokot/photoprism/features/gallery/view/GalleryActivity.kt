@@ -121,7 +121,7 @@ class GalleryActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onViewerResult,
     )
-    private val storagePermissionsLauncher =
+    private val storagePermissionRequestLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -374,8 +374,8 @@ class GalleryActivity : BaseActivity() {
                     )
                 }
 
-                is GalleryViewModel.Event.CheckStoragePermission -> {
-                    checkStoragePermission()
+                is GalleryViewModel.Event.RequestStoragePermission -> {
+                    requestStoragePermission()
                 }
 
                 is GalleryViewModel.Event.ShowMissingStoragePermissionMessage -> {
@@ -849,8 +849,8 @@ class GalleryActivity : BaseActivity() {
             .show()
     }
 
-    private fun checkStoragePermission() {
-        storagePermissionsLauncher.launch(Unit)
+    private fun requestStoragePermission() {
+        storagePermissionRequestLauncher.launch(Unit)
     }
 
     private fun onStoragePermissionResult(isGranted: Boolean) {

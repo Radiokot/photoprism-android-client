@@ -499,10 +499,10 @@ class MediaViewerViewModel(
 
         if (downloadMediaFileViewModel.isExternalDownloadStoragePermissionRequired) {
             log.debug {
-                "startDownloadToExternalStorage(): must_check_storage_permission"
+                "startDownloadToExternalStorage(): must_request_storage_permission"
             }
 
-            eventsSubject.onNext(Event.CheckStoragePermission)
+            eventsSubject.onNext(Event.RequestStoragePermission)
         } else {
             log.debug {
                 "startDownloadToExternalStorage(): no_need_to_check_storage_permission"
@@ -809,7 +809,7 @@ class MediaViewerViewModel(
             val displayName: String,
         ) : Event
 
-        object CheckStoragePermission : Event
+        object RequestStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
         class ShowStartedDownloadMessage(val destinationFileName: String) : Event
         class OpenWebViewer(val url: String) : Event

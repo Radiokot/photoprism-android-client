@@ -82,7 +82,7 @@ class MediaViewerActivity : BaseActivity() {
             lifecycleOwner = this
         )
     }
-    private val storagePermissionsLauncher =
+    private val storagePermissionRequestLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -765,8 +765,8 @@ class MediaViewerActivity : BaseActivity() {
                         displayName = event.displayName,
                     )
 
-                is MediaViewerViewModel.Event.CheckStoragePermission ->
-                    checkStoragePermission()
+                is MediaViewerViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
 
                 is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
                     showStartedDownloadMessage(
@@ -862,8 +862,8 @@ class MediaViewerActivity : BaseActivity() {
         startActivity(resultIntent)
     }
 
-    private fun checkStoragePermission() {
-        storagePermissionsLauncher.launch(Unit)
+    private fun requestStoragePermission() {
+        storagePermissionRequestLauncher.launch(Unit)
     }
 
     private fun onStoragePermissionResult(isGranted: Boolean) {

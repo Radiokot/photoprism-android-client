@@ -24,7 +24,7 @@ class ImportActivity : BaseActivity() {
 
     private lateinit var view: ActivityImportBinding
     private val viewModel: ImportViewModel by viewModel()
-    private val permissionsCheckLauncher: ActivityResultLauncher<Array<String>> =
+    private val permissionsRequestLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
             this::onPermissionsResult
@@ -98,8 +98,8 @@ class ImportActivity : BaseActivity() {
                 Toast.makeText(this, R.string.import_started_in_background, Toast.LENGTH_SHORT)
                     .show()
 
-            is ImportViewModel.Event.CheckPermissions ->
-                permissionsCheckLauncher.launch(event.permissions)
+            is ImportViewModel.Event.RequestPermissions ->
+                permissionsRequestLauncher.launch(event.permissions)
         }
 
         log.debug {

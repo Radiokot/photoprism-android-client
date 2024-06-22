@@ -32,8 +32,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
@@ -1045,10 +1045,10 @@ class GalleryViewModel(
 
         if (downloadMediaFileViewModel.isExternalDownloadStoragePermissionRequired) {
             log.debug {
-                "onDownloadMultipleSelectionClicked(): must_check_storage_permission"
+                "onDownloadMultipleSelectionClicked(): must_request_storage_permission"
             }
 
-            eventsSubject.onNext(Event.CheckStoragePermission)
+            eventsSubject.onNext(Event.RequestStoragePermission)
         } else {
             log.debug {
                 "onDownloadMultipleSelectionClicked(): no_need_to_check_storage_permission"
@@ -1361,10 +1361,10 @@ class GalleryViewModel(
         object ShowFilesDownloadedMessage : Event
 
         /**
-         * Check the external storage write permission reporting the result
+         * Request the external storage write permission reporting the result
          * to the [onStoragePermissionResult] method.
          */
-        object CheckStoragePermission : Event
+        object RequestStoragePermission : Event
 
         object ShowMissingStoragePermissionMessage : Event
 

@@ -76,10 +76,10 @@ class ImportViewModel(
     fun onStartClicked() {
         if (permissionsToCheckBeforeStart.isNotEmpty()) {
             log.debug {
-                "onStartClicked(): checking_permissions_first"
+                "onStartClicked(): requesting_permissions_first"
             }
 
-            eventsSubject.onNext(Event.CheckPermissions(permissionsToCheckBeforeStart.toTypedArray()))
+            eventsSubject.onNext(Event.RequestPermissions(permissionsToCheckBeforeStart.toTypedArray()))
         } else {
             log.debug {
                 "onStartClicked(): starting_import_in_background"
@@ -157,7 +157,7 @@ class ImportViewModel(
          * Request given [permissions] reporting the result
          * to the [onPermissionsResult] method.
          */
-        class CheckPermissions(
+        class RequestPermissions(
             val permissions: Array<String>,
         ) : Event
     }
