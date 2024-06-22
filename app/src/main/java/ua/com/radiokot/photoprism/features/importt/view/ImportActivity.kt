@@ -24,10 +24,10 @@ class ImportActivity : BaseActivity() {
 
     private lateinit var view: ActivityImportBinding
     private val viewModel: ImportViewModel by viewModel()
-    private val multiplePermissionsLauncher: ActivityResultLauncher<Array<String>> =
+    private val permissionsCheckLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
-            this::onMultiplePermissionsResult
+            this::onPermissionsResult
         )
 
     override val windowBackgroundColor: Int
@@ -78,7 +78,7 @@ class ImportActivity : BaseActivity() {
             this,
             permissionRationaleObserver(view.notificationsPermissionRationaleTextView)
         )
-        viewModel.isNotificationPermissionRationaleVisible.observe(
+        viewModel.isMediaPermissionRationaleVisible.observe(
             this,
             permissionRationaleObserver(view.mediaPermissionRationaleTextView)
         )
@@ -99,7 +99,7 @@ class ImportActivity : BaseActivity() {
                     .show()
 
             is ImportViewModel.Event.CheckPermissions ->
-                multiplePermissionsLauncher.launch(event.permissions)
+                permissionsCheckLauncher.launch(event.permissions)
         }
 
         log.debug {
@@ -142,10 +142,6 @@ class ImportActivity : BaseActivity() {
         }.also(view.summaryItemsLayout::addView)
     }
 
-    private fun onMultiplePermissionsResult(results: Map<String, Boolean>) {
-        log.debug {
-            "onMultiplePermissionsResult(): got_results:" +
-                    "\nresults=${results.entries}"
-        }
-    }
+    private fun onPermissionsResult(results: Map<String, Boolean>) =
+        viewModel.onPermissionsResult(results)
 }

@@ -74,10 +74,43 @@ class ImportViewModel(
     }
 
     fun onStartClicked() {
+        if (permissionsToCheckBeforeStart.isNotEmpty()) {
+            log.debug {
+                "onStartClicked(): checking_permissions_first"
+            }
+
+            eventsSubject.onNext(Event.CheckPermissions(permissionsToCheckBeforeStart.toTypedArray()))
+        } else {
+            log.debug {
+                "onStartClicked(): starting_import_in_background"
+            }
+
+            startImportInBackgroundAndFinish()
+        }
+    }
+
+    fun onCancelClicked() {
         log.debug {
-            "onStartClicked(): starting_worker"
+            "onCancelClicked(): finishing"
         }
 
+        eventsSubject.onNext(Event.Finish)
+    }
+
+    fun onPermissionsResult(results: Map<String, Boolean>) {
+        log.debug {
+            "onPermissionsResult(): result_received:" +
+                    "\nresults:${results.entries}"
+        }
+
+        log.debug {
+            "onPermissionsResult(): starting_import_in_background"
+        }
+
+        startImportInBackgroundAndFinish()
+    }
+
+    private fun startImportInBackgroundAndFinish() {
         // Allow reading the URIs after the activity is finished.
         files.forEach { file ->
             context.grantUriPermission(
@@ -104,15 +137,7 @@ class ImportViewModel(
         eventsSubject.onNext(Event.ShowStartedInBackgroundMessage)
 
         log.debug {
-            "onStartClicked(): finishing"
-        }
-
-        eventsSubject.onNext(Event.Finish)
-    }
-
-    fun onCancelClicked() {
-        log.debug {
-            "onCancelClicked(): finishing"
+            "startImportInBackgroundAndFinish(): finishing_after_start"
         }
 
         eventsSubject.onNext(Event.Finish)
@@ -127,6 +152,11 @@ class ImportViewModel(
     sealed interface Event {
         object Finish : Event
         object ShowStartedInBackgroundMessage : Event
+
+        /**
+         * Request given [permissions] reporting the result
+         * to the [onPermissionsResult] method.
+         */
         class CheckPermissions(
             val permissions: Array<String>,
         ) : Event
