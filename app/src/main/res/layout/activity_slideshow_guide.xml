@@ -8,7 +8,6 @@
 
     <!-- There is a landscape version too -->
 
-
     <TextView
         android:id="@+id/speed_text_view"
         android:layout_width="match_parent"
