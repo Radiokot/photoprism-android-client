@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="@layout/activity_import">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:drawablePadding="16dp"
+                android:gravity="center_horizontal"
+                android:text="@string/import_title"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                app:drawableTopCompat="@mipmap/splash_logo" />
+
+            <LinearLayout
+                android:id="@+id/summary_items_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical" />
+
+            <View
+                android:id="@+id/rationale_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
+                android:background="?colorOutlineVariant"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/notifications_permission_rationale_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:drawablePadding="12dp"
+                android:paddingVertical="4dp"
+                android:text="@string/import_notifications_permission_rationale"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_bell_outline_16"
+                app:drawableTint="?colorOnSurfaceVariant"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/media_permission_rationale_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:drawablePadding="12dp"
+                android:paddingVertical="4dp"
+                android:text="@string/import_media_permission_rationale"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_album_16"
+                app:drawableTint="?colorOnSurfaceVariant"
+                tools:visibility="visible" />
+
+            <Space
+                android:id="@+id/rationale_bottom_space"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</merge>

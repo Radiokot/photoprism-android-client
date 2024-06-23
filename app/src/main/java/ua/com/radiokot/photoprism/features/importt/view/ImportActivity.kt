@@ -16,6 +16,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityImportBinding
+import ua.com.radiokot.photoprism.databinding.IncludeImportCardContentBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
 
@@ -23,6 +24,7 @@ class ImportActivity : BaseActivity() {
     private val log = kLogger("ImportActivity")
 
     private lateinit var view: ActivityImportBinding
+    private lateinit var cardContentView: IncludeImportCardContentBinding
     private val viewModel: ImportViewModel by viewModel()
     private val permissionsRequestLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -41,6 +43,7 @@ class ImportActivity : BaseActivity() {
         }
 
         view = ActivityImportBinding.inflate(layoutInflater)
+        cardContentView = IncludeImportCardContentBinding.bind(view.mainCardView)
         setContentView(view.root)
 
         viewModel.initOnce(intent)
@@ -70,17 +73,17 @@ class ImportActivity : BaseActivity() {
         fun permissionRationaleObserver(rationaleView: TextView) = Observer { isVisible: Boolean ->
             rationaleView.isVisible = isVisible
             if (isVisible) {
-                view.rationaleDivider.isVisible = true
-                view.rationaleBottomSpace.isVisible = true
+                cardContentView.rationaleDivider.isVisible = true
+                cardContentView.rationaleBottomSpace.isVisible = true
             }
         }
         viewModel.isNotificationPermissionRationaleVisible.observe(
             this,
-            permissionRationaleObserver(view.notificationsPermissionRationaleTextView)
+            permissionRationaleObserver(cardContentView.notificationsPermissionRationaleTextView)
         )
         viewModel.isMediaPermissionRationaleVisible.observe(
             this,
-            permissionRationaleObserver(view.mediaPermissionRationaleTextView)
+            permissionRationaleObserver(cardContentView.mediaPermissionRationaleTextView)
         )
     }
 
@@ -109,7 +112,7 @@ class ImportActivity : BaseActivity() {
     }
 
     private fun showSummary(summary: ImportViewModel.Summary) {
-        view.summaryItemsLayout.removeAllViews()
+        cardContentView.summaryItemsLayout.removeAllViews()
 
         addSummaryItem(
             content = summary.libraryRootUrl,
@@ -133,13 +136,13 @@ class ImportActivity : BaseActivity() {
     ) {
         layoutInflater.inflate(
             androidx.preference.R.layout.preference_material,
-            view.summaryItemsLayout,
+            cardContentView.summaryItemsLayout,
             false
         ).apply {
             findViewById<ViewGroup>(androidx.preference.R.id.icon_frame).isVisible = false
             findViewById<TextView>(android.R.id.title).text = content
             findViewById<TextView>(android.R.id.summary).setText(summary)
-        }.also(view.summaryItemsLayout::addView)
+        }.also(cardContentView.summaryItemsLayout::addView)
     }
 
     private fun onPermissionsResult(results: Map<String, Boolean>) =
