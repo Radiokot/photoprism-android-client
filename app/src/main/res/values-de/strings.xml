@@ -209,5 +209,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s für %2$s</string>
     <string name="gallery_deleting_confirmation">Ausgewählte Elemente endgültig löschen?</string>
     <string name="general_preferences">Allgemein</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Fortschritt des Hintergrund Imports</string>
+    <string name="import_notification_progress_title">Dateien werden hochgeladen…</string>
+    <string name="import_notification_failed_title">Hochladen fehlgeschlagen</string>
+    <string name="import_notification_failed_text">Bitte versuchen Sie es erneut</string>
+    <string name="import_notification_success_title">Erfolgreich hochgeladen</string>
+    <string name="import_start">Import starten</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Zum Hochladen</string>
+    <string name="import_started_in_background">Im Hintergrund gestartet</string>
+    <string name="import_notifications_permission_rationale">Die Berechtigung zum Posten von Benachrichtigungen ermöglicht zuverlässigen Hintergrundbetrieb des Imports</string>
+    <string name="import_media_permission_rationale">Die Berechtigung zum Zugriff auf Fotos und Videos verhindert das Löschen von Geolokationsdaten aus den Dateien</string>
 
 </resources>

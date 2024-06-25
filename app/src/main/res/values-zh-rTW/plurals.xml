@@ -9,4 +9,7 @@
     <plurals name="activated_extensions">
         <item quantity="other">%1$d 個啟動的擴展</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="other">%1$d 個文件</item>
+    </plurals>
 </resources>

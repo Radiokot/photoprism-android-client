@@ -45,7 +45,7 @@
     <string name="error_library_requires_credentials">Требуются логин и пароль</string>
     <string name="error_invalid_password">Неправильный пароль</string>
     <string name="template_error_failed_to_load_content">Не удалось загрузить данные: %1$s</string>
-    <string name="error_library_not_accessible_try_again">Библиотека недоступна. Проверьте подключение и попробуйте еще раз</string>
+    <string name="error_library_not_accessible_try_again">Библиотека недоступна. Проверьте подключение и попробуйте ещё раз</string>
     <string name="try_again">Повторить</string>
     <string name="load_more">Загрузить больше</string>
     <string name="template_started_download_file">Файл будет сохранен в Загрузки: %1$s</string>
@@ -112,7 +112,7 @@
         Оно поддерживается Олегом\u00A0Корецким (Radiokot) и не имеет отношения к основной команде.
         <br><br>
         Если с приложением что-то не так, пожалуйста, оставьте отзыв в Google Play,
-        <a href="#issue">отправьте отчет об ошибке</a>
+        <a href="#issue">отправьте отчёт об ошибке</a>
         или напишите на <a href="mailto:%1$s">%1$s</a>.
         <br><br>
         Спасибо.
@@ -190,7 +190,7 @@
     <string name="extension_store_item_activated">Активировано</string>
     <string name="extension_store_failed_loading">Не удалось загрузить расширения</string>
     <string name="extension_marketplace_activate_key">Активировать ключ</string>
-    <string name="activate_key_preference">Активировать еще один ключ</string>
+    <string name="activate_key_preference">Активировать ещё один ключ</string>
     <string name="extension_memories_title">Воспоминания</string>
     <string name="extension_memories_description">Ежедневная подборка фотографий и видео, сделанных в этот день в прошлые годы</string>
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
     <string name="gallery_deleting_confirmation">Удалить выбранные элементы навсегда?</string>
     <string name="general_preferences">Основные</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Прогресс фонового импорта</string>
+    <string name="import_notification_progress_title">Загрузка файлов…</string>
+    <string name="import_notification_failed_title">Загрузка не удалась</string>
+    <string name="import_notification_failed_text">Пожалуйста, попробуйте ещё раз</string>
+    <string name="import_notification_success_title">Успешно загружено</string>
+    <string name="import_start">Начать импорт</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f Мб</string>
+    <string name="import_to_be_uploaded">К загрузке</string>
+    <string name="import_started_in_background">Начато в фоне</string>
+    <string name="import_notifications_permission_rationale">Разрешение на отправку уведомлений обеспечивает надежную работу импорта в фоне</string>
+    <string name="import_media_permission_rationale">Разрешение на доступ к фотографиям и видео предотвращает стирание геоданных из файлов</string>
 
 </resources>

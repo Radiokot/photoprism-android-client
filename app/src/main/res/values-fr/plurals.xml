@@ -3,16 +3,17 @@
     <plurals name="imported_search_bookmarks">
         <item quantity="one">%1$d marque-page importé</item>
         <item quantity="many">%1$d marque-pages importés</item>
-        <item quantity="other">%1$d marque-pages importés</item>
     </plurals>
     <plurals name="years_ago">
         <item quantity="one">Il y a %1$d an</item>
         <item quantity="many">Il y a %1$d ans</item>
-        <item quantity="other">Il y a %1$d ans</item>
     </plurals>
     <plurals name="activated_extensions">
         <item quantity="one">%1$d extension activée</item>
         <item quantity="many">%1$d extensions activées</item>
-        <item quantity="other">%1$d extensions activées</item>
+    </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d fichier</item>
+        <item quantity="many">%1$d fichiers</item>
     </plurals>
 </resources>

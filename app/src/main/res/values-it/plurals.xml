@@ -12,4 +12,8 @@
         <item quantity="one">%1$d estensione attivata</item>
         <item quantity="other">%1$d estensioni attivate</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d file</item>
+        <item quantity="other">%1$d file</item>
+    </plurals>
 </resources>

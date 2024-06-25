@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s για %2$s</string>
     <string name="gallery_deleting_confirmation">Διαγραφή επιλεγμένων στοιχείων για πάντα;</string>
     <string name="general_preferences">Γενικά</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Πρόοδος της φόντου εισαγωγής</string>
+    <string name="import_notification_progress_title">Μεταφόρτωση αρχείων…</string>
+    <string name="import_notification_failed_title">Η μεταφόρτωση απέτυχε</string>
+    <string name="import_notification_failed_text">Παρακαλώ, δοκιμάστε ξανά</string>
+    <string name="import_notification_success_title">Επιτυχής μεταφόρτωση</string>
+    <string name="import_start">Έναρξη εισαγωγής</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Προς μεταφόρτωση</string>
+    <string name="import_started_in_background">Ξεκίνησε στο παρασκήνιο</string>
+    <string name="import_notifications_permission_rationale">Η άδεια για αποστολή ειδοποιήσεων επιτρέπει την αξιόπιστη λειτουργία της εισαγωγής στο παρασκήνιο</string>
+    <string name="import_media_permission_rationale">Η άδεια πρόσβασης σε φωτογραφίες και βίντεο εμποδίζει τη διαγραφή γεωτοποθετικών δεδομένων από τα αρχεία</string>
 
 </resources>

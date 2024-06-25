@@ -212,5 +212,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s para %2$s</string>
     <string name="gallery_deleting_confirmation">¿Eliminar los elementos seleccionados para siempre?</string>
     <string name="general_preferences">General</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Importar progreso en segundo plano</string>
+    <string name="import_notification_progress_title">Subiendo archivos…</string>
+    <string name="import_notification_failed_title">Error al subir archivos</string>
+    <string name="import_notification_failed_text">Por favor, inténtelo de nuevo</string>
+    <string name="import_notification_success_title">Subida exitosa</string>
+    <string name="import_start">Iniciar importación</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Por subir</string>
+    <string name="import_started_in_background">Iniciado en segundo plano</string>
+    <string name="import_notifications_permission_rationale">El permiso para publicar notificaciones permite que la importación se ejecute de manera confiable en segundo plano</string>
+    <string name="import_media_permission_rationale">El permiso para acceder a fotos y videos evita borrar datos de geolocalización de los archivos</string>
 
 </resources>

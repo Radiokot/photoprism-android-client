@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s için %2$s</string>
     <string name="gallery_deleting_confirmation">Seçilen öğeleri sonsuza dek silmek istiyor musunuz?</string>
     <string name="general_preferences">Genel</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Arka plan yükleme ilerlemesi</string>
+    <string name="import_notification_progress_title">Dosyalar yükleniyor…</string>
+    <string name="import_notification_failed_title">Yükleme başarısız</string>
+    <string name="import_notification_failed_text">Lütfen tekrar deneyin</string>
+    <string name="import_notification_success_title">Başarıyla yüklendi</string>
+    <string name="import_start">Başlangıç</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Yüklenecek</string>
+    <string name="import_started_in_background">Arka planda başlatıldı</string>
+    <string name="import_notifications_permission_rationale">Bildirim gönderme izni, arka planda güvenilir bir şekilde içe aktarımın çalışmasını sağlar</string>
+    <string name="import_media_permission_rationale">Fotoğraflara ve videolara erişim izni, dosyalardaki coğrafi konum verilerinin silinmesini engeller</string>
 
 </resources>

@@ -12,4 +12,8 @@
         <item quantity="one">%1$d aktivierte Erweiterung</item>
         <item quantity="other">%1$d aktivierte Erweiterungen</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d Datei</item>
+        <item quantity="other">%1$d Dateien</item>
+    </plurals>
 </resources>

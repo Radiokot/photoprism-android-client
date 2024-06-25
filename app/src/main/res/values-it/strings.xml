@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s per %2$s</string>
     <string name="gallery_deleting_confirmation">Eliminare gli elementi selezionati per sempre?</string>
     <string name="general_preferences">Generale</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Avanzamento dell\'importazione in background</string>
+    <string name="import_notification_progress_title">Caricamento dei file…</string>
+    <string name="import_notification_failed_title">Caricamento non riuscito</string>
+    <string name="import_notification_failed_text">Per favore, riprova</string>
+    <string name="import_notification_success_title">Caricato con successo</string>
+    <string name="import_start">Avvia importazione</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Da caricare</string>
+    <string name="import_started_in_background">Avviato in background</string>
+    <string name="import_notifications_permission_rationale">Il permesso di inviare notifiche consente all\'importazione di funzionare in modo affidabile in background</string>
+    <string name="import_media_permission_rationale">Il permesso di accedere a foto e video impedisce la cancellazione dei dati di geolocalizzazione dai file</string>
 
 </resources>

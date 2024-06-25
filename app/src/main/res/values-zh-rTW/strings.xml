@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s適用於 %2$s</string>
     <string name="gallery_deleting_confirmation">永久刪除所選項目？</string>
     <string name="general_preferences">常規</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">背景匯入進度</string>
+    <string name="import_notification_progress_title">正在上傳檔案…</string>
+    <string name="import_notification_failed_title">上傳失敗</string>
+    <string name="import_notification_failed_text">請再試一次</string>
+    <string name="import_notification_success_title">上傳成功</string>
+    <string name="import_start">開始匯入</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s ，%2$.2f MB</string>
+    <string name="import_to_be_uploaded">待上傳</string>
+    <string name="import_started_in_background">背景中启动</string>
+    <string name="import_notifications_permission_rationale">允許發送通知的權限可確保背景匯入的可靠運行</string>
+    <string name="import_media_permission_rationale">訪問照片和視頻的權限可防止擦除文件中的地理位置數據</string>
 
 </resources>

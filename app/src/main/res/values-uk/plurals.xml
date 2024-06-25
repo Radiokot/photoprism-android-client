@@ -15,4 +15,9 @@
         <item quantity="few">%1$d активованих розширення</item>
         <item quantity="many">%1$d активованих розширень</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d файл</item>
+        <item quantity="few">%1$d файли</item>
+        <item quantity="many">%1$d файлів</item>
+    </plurals>
 </resources>

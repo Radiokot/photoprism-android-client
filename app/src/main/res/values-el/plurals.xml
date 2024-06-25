@@ -12,4 +12,8 @@
         <item quantity="one">%1$d ενεργοποιημένη επέκταση</item>
         <item quantity="other">%1$d ενεργοποιημένες επεκτάσεις</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d αρχείο</item>
+        <item quantity="other">%1$d αρχεία</item>
+    </plurals>
 </resources>

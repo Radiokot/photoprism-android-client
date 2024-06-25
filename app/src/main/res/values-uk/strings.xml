@@ -211,5 +211,18 @@
     <string name="template_extensions_preferences_activated_extensions_for">%1$s для %2$s</string>
     <string name="gallery_deleting_confirmation">Видалити вибрані елементи назавжди?</string>
     <string name="general_preferences">Загальні</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Прогрес фонового імпорту</string>
+    <string name="import_notification_progress_title">Завантаження файлів…</string>
+    <string name="import_notification_failed_title">Завантаження не вдалося</string>
+    <string name="import_notification_failed_text">Будь ласка, спробуйте ще раз</string>
+    <string name="import_notification_success_title">Успішно завантажено</string>
+    <string name="import_start">Почати імпорт</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f Мб</string>
+    <string name="import_to_be_uploaded">До завантаження</string>
+    <string name="import_started_in_background">Запущено у фоні</string>
+    <string name="import_notifications_permission_rationale">Дозвіл на надсилання сповіщень забезпечує надійну роботу імпорту в фоні</string>
+    <string name="import_media_permission_rationale">Дозвіл на доступ до фотографій та відео запобігає видаленню геоданих з файлів</string>
 
 </resources>
