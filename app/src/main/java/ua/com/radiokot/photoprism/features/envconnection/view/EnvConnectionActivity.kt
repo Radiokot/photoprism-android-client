@@ -143,6 +143,11 @@ class EnvConnectionActivity : BaseActivity() {
                 viewModel.onConnectButtonClicked()
             }
         }
+
+        view.titleTextView.setOnLongClickListener {
+            viewModel.onTitleLongClicked()
+            true
+        }
     }
 
     private fun initTfaCodeDialog() {

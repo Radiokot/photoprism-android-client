@@ -26,6 +26,7 @@ import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCa
 
 class EnvConnectionViewModel(
     private val connectToEnvUseCaseFactory: ConnectToEnvUseCase.Factory,
+    private val demoRootUrl: String,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
 
@@ -93,6 +94,28 @@ class EnvConnectionViewModel(
         rootUrl?.also(this.rootUrl::setValue)
 
         isInitialized = true
+    }
+
+    fun onTitleLongClicked() {
+        if (stateSubject.value is State.Idle) {
+            connectToDemo()
+        }
+    }
+
+    private fun connectToDemo() {
+        log.debug {
+            "connectToDemo(): connecting_to_demo:" +
+                    "\nrootUrl=$demoRootUrl"
+        }
+
+        rootUrl.value = demoRootUrl
+        username.value = ""
+        password.value = ""
+        clientCertificateAlias.value = null
+
+        if (canConnect) {
+            connect()
+        }
     }
 
     fun onConnectButtonClicked() {

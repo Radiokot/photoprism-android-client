@@ -5,7 +5,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
 import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme
 import androidx.security.crypto.MasterKey
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -97,5 +97,10 @@ val envConnectionFeatureModule = module {
         } bind DisconnectFromEnvUseCase::class
     }
 
-    viewModelOf(::EnvConnectionViewModel)
+    viewModel {
+        EnvConnectionViewModel(
+            connectToEnvUseCaseFactory = get(),
+            demoRootUrl = getProperty("demoLibraryRootUrl"),
+        )
+    }
 }
