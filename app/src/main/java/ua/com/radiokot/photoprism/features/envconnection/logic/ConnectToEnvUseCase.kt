@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.envconnection.logic
 
+import android.app.Application
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.model.PhotoPrismClientConfig
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
@@ -13,7 +14,9 @@ import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredExcep
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setManifestComponentEnabled
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 
 typealias PhotoPrismConfigServiceFactory =
             (envConnectionParams: EnvConnectionParams, sessionId: String) -> PhotoPrismClientConfigService
@@ -36,6 +39,7 @@ class ConnectToEnvUseCase(
     private val envSessionHolder: EnvSessionHolder?,
     private val envSessionPersistence: ObjectPersistence<EnvSession>?,
     private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
+    private val application: Application,
 ) {
     private val log = kLogger("ConnectToEnvUseCase")
 
@@ -71,6 +75,7 @@ class ConnectToEnvUseCase(
                 }
 
                 updateHoldersAndPersistence()
+                updateManifestComponents()
             }
     }
 
@@ -131,12 +136,24 @@ class ConnectToEnvUseCase(
         }
     }
 
+    private fun updateManifestComponents() {
+        application.setManifestComponentEnabled(
+            componentClass = ImportActivity::class.java,
+            isEnabled = true
+        )
+
+        log.debug {
+            "updateManifestComponents(): enabled_import"
+        }
+    }
+
     class Factory(
         private val configServiceFactory: PhotoPrismConfigServiceFactory,
         private val sessionCreatorFactory: SessionCreator.Factory,
         private val envSessionHolder: EnvSessionHolder?,
         private val envSessionPersistence: ObjectPersistence<EnvSession>?,
         private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
+        private val application: Application,
     ) {
         fun get(
             connectionParams: EnvConnectionParams,
@@ -151,6 +168,7 @@ class ConnectToEnvUseCase(
             envSessionHolder = envSessionHolder,
             envSessionPersistence = envSessionPersistence,
             envAuthPersistence = envAuthPersistence,
+            application = application,
         )
     }
 }

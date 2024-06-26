@@ -11,7 +11,6 @@ val devFeatureFlagsModule = module {
         FeatureSetFeatureFlags(
             FeatureFlags.Feature.EXTENSION_PREFERENCES,
             FeatureFlags.Feature.EXTENSION_STORE,
-            FeatureFlags.Feature.IMPORT,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }

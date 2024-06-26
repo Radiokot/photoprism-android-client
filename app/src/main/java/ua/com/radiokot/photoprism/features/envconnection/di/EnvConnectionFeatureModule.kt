@@ -5,6 +5,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
 import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme
 import androidx.security.crypto.MasterKey
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
@@ -78,6 +79,7 @@ val envConnectionFeatureModule = module {
             envSessionHolder = get(),
             envSessionPersistence = getOrNull(_q<EnvSession>()),
             envAuthPersistence = get(_q<EnvAuth>()),
+            application = androidApplication(),
         )
     } bind ConnectToEnvUseCase.Factory::class
 
@@ -93,6 +95,7 @@ val envConnectionFeatureModule = module {
                 ),
                 cookieManager = getOrNull(),
                 memoriesRepository = getOrNull(),
+                application = androidApplication(),
             )
         } bind DisconnectFromEnvUseCase::class
     }

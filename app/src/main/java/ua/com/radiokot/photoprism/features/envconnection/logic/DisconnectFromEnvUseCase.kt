@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.envconnection.logic
 
+import android.app.Application
 import android.webkit.CookieManager
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.toCompletable
@@ -9,7 +10,9 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setManifestComponentEnabled
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
+import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 import java.io.File
 
 /**
@@ -23,6 +26,7 @@ class DisconnectFromEnvUseCase(
     private val cacheDirectories: Iterable<File>?,
     private val cookieManager: CookieManager?,
     private val memoriesRepository: MemoriesRepository?,
+    private val application: Application,
 ) {
     private val log = kLogger("DisconnectFromEnvUseCase")
 
@@ -56,7 +60,12 @@ class DisconnectFromEnvUseCase(
             log.debug { "invoke(): memories_cleared" }
         }
 
-        Unit
+        application.setManifestComponentEnabled(
+            componentClass = ImportActivity::class.java,
+            isEnabled = false
+        )
+
+        log.debug { "invoke(): disabled_import" }
     }
         .toCompletable()
         .subscribeOn(Schedulers.io())

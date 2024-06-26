@@ -176,7 +176,7 @@
             android:resizeableActivity="true"
             android:theme="@style/UtilDialogTheme">
 
-            <!-- TODO: This screen gets enabled or disabled programmatically
+            <!-- This screen gets enabled or disabled programmatically
                  upon env connection/disconnection. -->
 
             <intent-filter>

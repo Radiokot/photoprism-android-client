@@ -77,10 +77,11 @@ class PhotoPrismGallery : Application() {
 
         initRxErrorHandler()
         initLogging()
-        initOptionalFeatures()
+        clearInternalDownloads()
 
         loadSessionIfPresent()
-        clearInternalDownloads()
+
+        initOptionalFeatures()
     }
 
     private fun initRxErrorHandler() {
@@ -131,9 +132,10 @@ class PhotoPrismGallery : Application() {
             componentClass = KeyActivationActivity::class.java,
             isEnabled = hasExtensionPreferences
         )
+
         setManifestComponentEnabled(
             componentClass = ImportActivity::class.java,
-            isEnabled = hasFeature(FeatureFlags.Feature.IMPORT)
+            isEnabled = get<EnvSessionHolder>().isSet
         )
     }
 
