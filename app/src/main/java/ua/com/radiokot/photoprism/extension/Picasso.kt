@@ -35,6 +35,7 @@ fun RequestCreator.intoSingle(): Single<Bitmap> = Single.create<Bitmap> { emitte
         }
 
         override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+            // Doesn't matter.
         }
     })
 }.subscribeOn(AndroidSchedulers.mainThread())

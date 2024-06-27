@@ -192,6 +192,7 @@ class EnvConnectionActivity : BaseActivity() {
                 }
 
                 EnvConnectionViewModel.State.Idle -> {
+                    // No special handling is needed.
                 }
             }
 

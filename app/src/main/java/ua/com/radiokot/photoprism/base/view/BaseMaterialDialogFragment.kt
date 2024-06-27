@@ -19,9 +19,8 @@ abstract class BaseMaterialDialogFragment(contentLayoutId: Int) : DialogFragment
             .create()
     }
 
-    open fun onDialogViewCreated(
+    abstract fun onDialogViewCreated(
         dialogView: View,
         savedInstanceState: Bundle?,
-    ) {
-    }
+    )
 }

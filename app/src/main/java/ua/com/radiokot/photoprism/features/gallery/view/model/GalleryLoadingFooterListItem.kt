@@ -36,6 +36,8 @@ class GalleryLoadingFooterListItem(
             }
         }
 
-        override fun unbindView(item: GalleryLoadingFooterListItem) {}
+        override fun unbindView(item: GalleryLoadingFooterListItem) {
+            // No special handling is needed.
+        }
     }
 }

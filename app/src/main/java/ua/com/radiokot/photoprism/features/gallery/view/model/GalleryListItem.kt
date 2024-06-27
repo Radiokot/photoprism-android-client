@@ -254,15 +254,9 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             private var ImageView.isBonded: Boolean
-                get() = getTag(R.id.thumbnail_image_view) != null
+                get() = getTag(R.id.thumbnail_image_view) == true
                 set(value) {
-                    setTag(
-                        R.id.thumbnail_image_view,
-                        if (value)
-                            true
-                        else
-                            null
-                    )
+                    setTag(R.id.thumbnail_image_view, value)
                 }
 
             companion object {
@@ -348,6 +342,7 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             override fun unbindView(item: Header) {
+                // No special handling is needed.
             }
         }
 

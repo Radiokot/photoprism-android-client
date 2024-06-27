@@ -261,14 +261,7 @@ class GalleryActivity : BaseActivity() {
                         context = this,
                     )
 
-                GalleryViewModel.Error.CredentialsHaveBeenChanged ->
-                    ErrorView.Error.General(
-                        message = error.localizedMessage,
-                        imageRes = R.drawable.image_melting,
-                        retryButtonText = getString(R.string.disconnect_from_library),
-                        retryButtonClickListener = viewModel::onErrorDisconnectClicked
-                    )
-
+                GalleryViewModel.Error.CredentialsHaveBeenChanged,
                 GalleryViewModel.Error.SessionHasBeenExpired ->
                     ErrorView.Error.General(
                         message = error.localizedMessage,

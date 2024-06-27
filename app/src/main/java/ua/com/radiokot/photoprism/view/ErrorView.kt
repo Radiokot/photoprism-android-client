@@ -63,7 +63,10 @@ constructor(
 
     interface Error {
         fun bindView(view: ViewErrorBinding)
-        fun unbindView(view: ViewErrorBinding) {}
+
+        fun unbindView(view: ViewErrorBinding) {
+            // Special handling is not always needed.
+        }
 
         class General(
             val message: String,

@@ -25,7 +25,6 @@ class GallerySearchBookmarksView(
 
     init {
         subscribeToData()
-        subscribeToState()
     }
 
     private var isListInitialized = false
@@ -92,9 +91,5 @@ class GallerySearchBookmarksView(
         }
 
         viewModel.isBookmarksSectionVisible.observe(this, view.root::isVisible::set)
-    }
-
-    private fun subscribeToState() {
-
     }
 }

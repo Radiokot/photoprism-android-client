@@ -199,10 +199,8 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                         logger.log("Content-Type: $it")
                     }
                 }
-                if (requestBody.contentLength() != -1L) {
-                    if (headers["Content-Length"] == null) {
-                        logger.log("Content-Length: ${requestBody.contentLength()}")
-                    }
+                if (requestBody.contentLength() != -1L && headers["Content-Length"] == null) {
+                    logger.log("Content-Length: ${requestBody.contentLength()}")
                 }
             }
 

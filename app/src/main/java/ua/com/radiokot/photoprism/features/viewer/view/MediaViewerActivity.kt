@@ -19,7 +19,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.ContextCompat
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.doOnNextLayout
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.forEach
+import androidx.core.view.get
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -40,7 +48,14 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_YEAR_DATE_FORMAT
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.fadeVisibility
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.recyclerView
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -48,7 +63,13 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
-import ua.com.radiokot.photoprism.features.viewer.view.model.*
+import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.SwipeDirection
+import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
@@ -261,10 +282,10 @@ class MediaViewerActivity : BaseActivity() {
                 // Detect changing the item at the same position.
                 // For example, when an item gets deleted but there are more.
                 val currentPosition = currentItem
-                if (currentPosition == lastSelectedPagePosition) {
-                    if (lastSelectedPageId != fastAdapter.getItemId(currentPosition)) {
-                        viewModel.onPageChanged(currentPosition)
-                    }
+                if (currentPosition == lastSelectedPagePosition
+                    && lastSelectedPageId != fastAdapter.getItemId(currentPosition)
+                ) {
+                    viewModel.onPageChanged(currentPosition)
                 }
             }
         })
