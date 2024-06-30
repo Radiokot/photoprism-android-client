@@ -41,6 +41,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
@@ -210,35 +211,16 @@ class GalleryActivity : BaseActivity() {
                     && !view.galleryRecyclerView.canScrollVertically(-1)
         }
 
-        val galleryItemsDiffCallback = GalleryListItemDiffCallback()
+        val diffCallback = GalleryListItemDiffCallback()
         viewModel.itemsList.observe(this) { newItems ->
             if (newItems != null) {
-                if (galleryItemsAdapter.adapterItemCount == 0 || newItems.isEmpty()) {
-                    // Do not use DiffUtil to replace an empty list,
-                    // as it causes scrolling to the bottom.
-                    // Do not use it to set an empty list either,
-                    // as it causes an unnecessary "delete" animation.
-                    galleryItemsAdapter.setNewList(newItems)
-                } else {
-                    // Saving the layout manager state apparently prevents
-                    // DiffUtil-induced weird scrolling when items are inserted
-                    // outside the viewable area.
-                    val savedRecyclerState =
-                        view.galleryRecyclerView.layoutManager?.onSaveInstanceState()
-
-                    FastAdapterDiffUtil.set(
-                        adapter = galleryItemsAdapter,
-                        items = newItems,
-                        callback = galleryItemsDiffCallback,
-                        detectMoves = false,
-                    )
-
-                    if (savedRecyclerState != null) {
-                        view.galleryRecyclerView.layoutManager?.onRestoreInstanceState(
-                            savedRecyclerState
-                        )
-                    }
-                }
+                FastAdapterDiffUtil.setBetter(
+                    recyclerView = view.galleryRecyclerView,
+                    adapter = galleryItemsAdapter,
+                    items = newItems,
+                    callback = diffCallback,
+                    detectMoves = false,
+                )
             }
         }
 
