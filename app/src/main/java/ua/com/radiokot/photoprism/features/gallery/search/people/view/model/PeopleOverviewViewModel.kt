@@ -10,8 +10,8 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModelImpl
+import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModel
+import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModelImpl
 
 class PeopleOverviewViewModel(
     private val peopleRepository: PeopleRepository,

@@ -166,7 +166,6 @@
             android:label="@string/extension_store_title"
             android:resizeableActivity="true" />
 
-
         <activity
             android:name=".features.importt.view.ImportActivity"
             android:enabled="false"
@@ -189,6 +188,13 @@
                 <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".features.importt.albums.view.ImportAlbumsActivity"
+            android:exported="false"
+            android:label="@string/albums"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"

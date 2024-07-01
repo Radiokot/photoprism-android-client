@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.importt.albums.view.model
 
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -7,16 +8,19 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel.Event
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
+import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModel
+import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModelImpl
 
 class ImportAlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: ImportAlbum, query: String) -> Boolean,
+    private val exactMatchPredicate: (album: ImportAlbum, query: String) -> Boolean,
 ) : ViewModel(),
-    SearchViewViewModel by SearchViewViewModelImpl() {
+    SearchInputViewModel by SearchInputViewModelImpl() {
 
     private val log = kLogger("ImportAlbumsVM")
 
@@ -25,6 +29,10 @@ class ImportAlbumsViewModel(
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<ImportAlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
+    val isDoneButtonVisible = MutableLiveData(false)
+    val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() = onBackPressed()
+    }
     private var isInitialized = false
     private var albumsToCreate: Set<ImportAlbum.ToCreate> = emptySet()
     private var selectedAlbums: Set<ImportAlbum> = emptySet()
@@ -108,6 +116,7 @@ class ImportAlbumsViewModel(
     private fun postAlbumItems() {
         val allAlbums = albumsToCreate +
                 albumsRepository.itemsList
+                    .filter { it.type == Album.TypeName.ALBUM }
                     .map(ImportAlbum::Existing)
         val searchQuery = currentSearchInput
         val filteredAlbums =
@@ -127,7 +136,8 @@ class ImportAlbumsViewModel(
             }
             .toMutableList()
 
-        if (searchQuery != null) {
+        // Only show "Create new" option if no exact match found.
+        if (searchQuery != null && allAlbums.none { exactMatchPredicate(it, searchQuery) }) {
             newItems.add(
                 0,
                 ImportAlbumListItem.CreateNew(
@@ -198,6 +208,8 @@ class ImportAlbumsViewModel(
 
             selectedAlbums += album
         }
+
+        postAlbumItems()
     }
 
     fun onRetryClicked() {
@@ -214,6 +226,26 @@ class ImportAlbumsViewModel(
         }
 
         update(force = true)
+    }
+
+    private fun onBackPressed() {
+        when {
+            currentSearchInput != null -> {
+                log.debug {
+                    "onBackPressed(): clearing_search"
+                }
+
+                rawSearchInput.value = ""
+            }
+
+            else -> {
+                log.debug {
+                    "onBackPressed(): finishing_without_result"
+                }
+
+                eventsSubject.onNext(Event.Finish)
+            }
+        }
     }
 
     sealed interface Event {

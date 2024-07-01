@@ -11,7 +11,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.material.color.MaterialColors
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModel
+import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModel
 
 /**
  * Binds the raw input and the close/expand state.

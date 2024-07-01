@@ -229,4 +229,6 @@
     <string name="import_started_in_background">Started in background</string>
     <string name="import_notifications_permission_rationale">Permission to post notifications enables the import to run reliably in the background</string>
     <string name="import_media_permission_rationale">Permission to access photos and videos prevents erasing geolocation data out of the files</string>
+    <string name="template_import_album_create_new">Create \"%1$s\"</string>
+    <string name="import_albums_enter_album_title">Enter the album title</string>
 </resources>

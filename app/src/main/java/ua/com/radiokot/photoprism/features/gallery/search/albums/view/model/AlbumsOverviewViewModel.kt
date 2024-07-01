@@ -10,8 +10,8 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchViewViewModelImpl
+import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModel
+import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModelImpl
 
 class AlbumsOverviewViewModel(
     private val albumsRepository: AlbumsRepository,
