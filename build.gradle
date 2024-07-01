@@ -4,7 +4,7 @@ buildscript {
     ext.koin_android_version = "3.3.0"
     ext.room_version = "2.6.1"
     // Must be 2.13.0 for minSdk 21
-    ext.jackson_version = "2.13.0"
+    ext.jackson_version = "2.13.0!!"
 }
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.

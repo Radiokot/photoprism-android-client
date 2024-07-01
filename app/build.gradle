@@ -127,16 +127,8 @@ dependencies {
     // must be updated accordingly.
     implementation 'androidx.preference:preference:1.2.1'
 
-    implementation('com.fasterxml.jackson.core:jackson-databind') {
-        version {
-            strictly jackson_version
-        }
-    }
-    implementation('com.fasterxml.jackson.module:jackson-module-kotlin') {
-        version {
-            strictly jackson_version
-        }
-    }
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
 
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_android_version"
