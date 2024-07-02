@@ -16,6 +16,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
@@ -31,6 +32,7 @@ class ImportViewModel(
     private var isInitialized = false
     private lateinit var files: List<ImportableFile>
     private val permissionsToCheckBeforeStart = mutableListOf<String>()
+    private var selectedAlbums: Set<ImportAlbum> = emptySet()
 
     val summary: MutableLiveData<Summary> = MutableLiveData()
     val isNotificationPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -97,6 +99,29 @@ class ImportViewModel(
         eventsSubject.onNext(Event.Finish)
     }
 
+    fun onAlbumsClicked() {
+        log.debug {
+            "onAlbumsClicked(): opening_selection"
+        }
+
+        eventsSubject.onNext(Event.OpenAlbumSelectionForResult(
+            currentlySelectedAlbums = selectedAlbums,
+        ))
+    }
+
+    fun onAlbumSelectionResult(selectedAlbums: Set<ImportAlbum>) {
+        log.debug {
+            "onAlbumsSelected(): updating_selection:" +
+                    "\nselectedAlbums=${selectedAlbums.size}"
+        }
+
+        this.selectedAlbums = selectedAlbums
+
+        summary.value = summary.value!!.copy(
+            albums = selectedAlbums.map(ImportAlbum::title),
+        )
+    }
+
     fun onPermissionsResult(results: Map<String, Boolean>) {
         log.debug {
             "onPermissionsResult(): result_received:" +
@@ -147,6 +172,7 @@ class ImportViewModel(
         val libraryRootUrl: String,
         val fileCount: Int,
         val sizeMb: Double,
+        val albums: Collection<String> = emptySet(),
     )
 
     sealed interface Event {
@@ -160,5 +186,14 @@ class ImportViewModel(
         class RequestPermissions(
             val permissions: Array<String>,
         ) : Event
+
+        /**
+         * Open import albums selection to get the result.
+         *
+         * [onAlbumSelectionResult] must be called when the result is obtained.
+         */
+        class OpenAlbumSelectionForResult(
+            val currentlySelectedAlbums: Set<ImportAlbum>,
+        ): Event
     }
 }

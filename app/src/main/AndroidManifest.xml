@@ -171,7 +171,6 @@
             android:enabled="false"
             android:exported="true"
             android:label="@string/import_title"
-            android:noHistory="true"
             android:resizeableActivity="true"
             android:theme="@style/UtilDialogTheme">
 

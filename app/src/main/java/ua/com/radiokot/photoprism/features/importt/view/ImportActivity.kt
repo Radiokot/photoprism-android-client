@@ -1,11 +1,14 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -18,6 +21,8 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityImportBinding
 import ua.com.radiokot.photoprism.databinding.IncludeImportCardContentBinding
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.importt.albums.view.ImportAlbumsActivity
 import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
 
 class ImportActivity : BaseActivity() {
@@ -31,6 +36,10 @@ class ImportActivity : BaseActivity() {
             ActivityResultContracts.RequestMultiplePermissions(),
             this::onPermissionsResult
         )
+    private val albumSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onAlbumSelectionResult
+    )
 
     override val windowBackgroundColor: Int
         get() = Color.TRANSPARENT
@@ -103,6 +112,16 @@ class ImportActivity : BaseActivity() {
 
             is ImportViewModel.Event.RequestPermissions ->
                 permissionsRequestLauncher.launch(event.permissions)
+
+            is ImportViewModel.Event.OpenAlbumSelectionForResult ->
+                albumSelectionLauncher.launch(
+                    Intent(this, ImportAlbumsActivity::class.java)
+                        .putExtras(
+                            ImportAlbumsActivity.getBundle(
+                                selectedAlbums = event.currentlySelectedAlbums,
+                            )
+                        )
+                )
         }
 
         log.debug {
@@ -126,6 +145,11 @@ class ImportActivity : BaseActivity() {
             ),
             summary = R.string.import_to_be_uploaded,
         )
+        addSummaryItem(
+            content = summary.albums.joinToString(),
+            summary = R.string.albums,
+            onClick = viewModel::onAlbumsClicked,
+        )
     }
 
     @SuppressLint("PrivateResource")
@@ -133,6 +157,7 @@ class ImportActivity : BaseActivity() {
         content: String,
         @StringRes
         summary: Int,
+        onClick: (() -> Unit)? = null,
     ) {
         layoutInflater.inflate(
             androidx.preference.R.layout.preference_material,
@@ -142,9 +167,24 @@ class ImportActivity : BaseActivity() {
             findViewById<ViewGroup>(androidx.preference.R.id.icon_frame).isVisible = false
             findViewById<TextView>(android.R.id.title).text = content
             findViewById<TextView>(android.R.id.summary).setText(summary)
+
+            if (onClick != null) {
+                setThrottleOnClickListener {
+                    onClick()
+                }
+            }
         }.also(cardContentView.summaryItemsLayout::addView)
     }
 
     private fun onPermissionsResult(results: Map<String, Boolean>) =
         viewModel.onPermissionsResult(results)
+
+    private fun onAlbumSelectionResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onAlbumSelectionResult(
+                selectedAlbums = ImportAlbumsActivity.getSelectedAlbums(bundle)
+            )
+        }
+    }
 }

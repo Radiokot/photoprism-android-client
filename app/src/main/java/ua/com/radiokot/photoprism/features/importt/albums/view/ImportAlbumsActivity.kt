@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.importt.albums.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -15,6 +17,7 @@ import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumListItem
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumsViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
@@ -34,6 +37,12 @@ class ImportAlbumsActivity : BaseActivity() {
 
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        viewModel.initOnce(
+            currentlySelectedAlbums = intent.extras
+                ?.let(::getSelectedAlbums)
+                ?: emptySet()
+        )
 
         initList()
         initSwipeRefresh()
@@ -126,6 +135,9 @@ class ImportAlbumsActivity : BaseActivity() {
 
             is ImportAlbumsViewModel.Event.Finish ->
                 finish()
+
+            is ImportAlbumsViewModel.Event.FinishWithResult ->
+                finishWithResult(event.selectedAlbums)
         }
 
         log.debug {
@@ -133,6 +145,21 @@ class ImportAlbumsActivity : BaseActivity() {
                     "\nevent=$event"
         }
     }.autoDispose(this)
+
+    private fun finishWithResult(selectedAlbums: Set<ImportAlbum>) {
+        log.debug {
+            "finishWithResult(): finishing:" +
+                    "\nselectedAlbumCount=${selectedAlbums.size}"
+        }
+
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                createResult(selectedAlbums)
+            )
+        )
+        finish()
+    }
 
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(
@@ -142,5 +169,24 @@ class ImportAlbumsActivity : BaseActivity() {
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
             .show()
+    }
+
+    companion object {
+        private const val SELECTED_ALBUMS_EXTRA = "selected_albums"
+
+        fun getBundle(selectedAlbums: Set<ImportAlbum>) = Bundle().apply {
+            putParcelableArrayList(SELECTED_ALBUMS_EXTRA, ArrayList(selectedAlbums))
+        }
+
+        private fun createResult(selectedAlbums: Set<ImportAlbum>) =
+            getBundle(selectedAlbums)
+
+        @Suppress("DEPRECATION")
+        fun getSelectedAlbums(bundle: Bundle): Set<ImportAlbum> =
+            requireNotNull(
+                bundle.getParcelableArrayList<ImportAlbum>(SELECTED_ALBUMS_EXTRA)?.toSet()
+            ) {
+                "No $SELECTED_ALBUMS_EXTRA specified"
+            }
     }
 }
