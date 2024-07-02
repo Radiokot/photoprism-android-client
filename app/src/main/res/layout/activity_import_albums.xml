@@ -26,6 +26,7 @@
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"
+            android:paddingVertical="8dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
     </com.google.android.material.appbar.MaterialToolbar>
 
@@ -43,6 +44,24 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_item_import_album" />
     </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
+
+    <!-- Invisible visibility is important for this FAB.
+    Without it there is no initial show animation.
+    It also must be placed before the SearchView -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/done_selecting_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/done_selecting"
+        android:tooltipText="@string/done_selecting"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+        app:srcCompat="@drawable/ic_done"
+        tools:targetApi="o"
+        tools:visibility="visible" />
 
     <ua.com.radiokot.photoprism.view.ErrorView
         android:id="@+id/error_view"

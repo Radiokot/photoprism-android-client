@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumListItem
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumsViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
@@ -64,7 +65,9 @@ class ImportAlbumsActivity : BaseActivity() {
     }
 
     private fun initButtons() {
-
+        view.doneSelectingFab.setThrottleOnClickListener {
+            viewModel.onDoneClicked()
+        }
     }
 
     private fun initSearch() {
@@ -99,6 +102,14 @@ class ImportAlbumsActivity : BaseActivity() {
 
                 null ->
                     view.errorView.hide()
+            }
+        }
+
+        viewModel.isDoneButtonVisible.observe(this) { isDoneButtonVisible ->
+            if (isDoneButtonVisible) {
+                view.doneSelectingFab.show()
+            } else {
+                view.doneSelectingFab.hide()
             }
         }
     }

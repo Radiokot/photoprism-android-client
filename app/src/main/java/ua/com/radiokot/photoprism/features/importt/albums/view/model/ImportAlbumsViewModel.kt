@@ -209,6 +209,8 @@ class ImportAlbumsViewModel(
             selectedAlbums += album
         }
 
+        isDoneButtonVisible.value = selectedAlbums != initiallySelectedAlbums
+
         postAlbumItems()
     }
 
@@ -248,6 +250,14 @@ class ImportAlbumsViewModel(
         }
     }
 
+    fun onDoneClicked() {
+        log.debug {
+            "onDoneClicked(): finishing_with_result"
+        }
+
+        eventsSubject.onNext(Event.FinishWithResult(selectedAlbums))
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
@@ -259,6 +269,13 @@ class ImportAlbumsViewModel(
          * Finish without setting a result.
          */
         object Finish : Event
+
+        /**
+         * Set an OK result with the [selectedAlbums] and finish.
+         */
+        class FinishWithResult(
+            val selectedAlbums: Set<ImportAlbum>,
+        ) : Event
     }
 
     sealed interface Error {
