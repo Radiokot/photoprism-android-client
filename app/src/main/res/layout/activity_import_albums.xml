@@ -41,6 +41,8 @@
             android:id="@+id/albums_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_item_import_album" />
     </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
