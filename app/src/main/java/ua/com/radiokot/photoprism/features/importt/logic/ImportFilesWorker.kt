@@ -76,39 +76,31 @@ class ImportFilesWorker(
                 importStatus = status
                 foregroundInfo.flatMapCompletable(::setForeground)
             }
-            .onErrorReturn { error ->
+            .toSingleDefault(Result.success())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { error ->
                 log.error(error) {
                     "createWork(): error_occurred"
                 }
 
-                Result.failure()
-            }
-            .defaultIfEmpty(Result.success())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { result ->
-                if (isStopped) {
-                    log.debug {
-                        "createWork(): stopped"
-                    }
-
-                    return@doOnSuccess
-                }
-
-                log.debug {
-                    "createWork(): complete_with_result:" +
-                            "\nresult=$result"
-                }
-
-                if (result is Result.Success) {
-                    importNotificationsManager.notifySuccessfulImport(
-                        uploadToken = uploadToken,
-                    )
-                } else {
+                if (!isStopped) {
                     importNotificationsManager.notifyFailedImport(
                         uploadToken = uploadToken,
                     )
                 }
             }
+            .doOnSuccess {
+                log.debug {
+                    "createWork(): completed"
+                }
+
+                if (!isStopped) {
+                    importNotificationsManager.notifySuccessfulImport(
+                        uploadToken = uploadToken,
+                    )
+                }
+            }
+            .onErrorReturnItem(Result.failure())
     }
 
     override fun getForegroundInfo(): Single<ForegroundInfo> {
