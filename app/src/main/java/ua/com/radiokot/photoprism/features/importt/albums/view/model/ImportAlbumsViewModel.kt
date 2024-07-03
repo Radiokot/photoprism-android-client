@@ -188,6 +188,7 @@ class ImportAlbumsViewModel(
         }
 
         albumsToCreate += albumToCreate
+        selectedAlbums += albumToCreate
 
         postAlbumItems()
     }
