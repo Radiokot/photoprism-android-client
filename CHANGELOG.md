@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to import files by sharing them to the gallery
 - Ability to connect to the demo library by long clicking the connection screen title
 
+### Fixed
+- "Done" button on the search people selection screen covering the last person
+
 ## [1.27.0] - 2024-06-09
 
 ### Added
