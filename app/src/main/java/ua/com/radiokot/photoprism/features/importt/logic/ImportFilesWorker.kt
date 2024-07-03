@@ -18,6 +18,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 import java.util.concurrent.TimeUnit
@@ -44,6 +45,12 @@ class ImportFilesWorker(
             .readerForListOf(ImportableFile::class.java)
             .readValue(workerParams.inputData.getString(FILES_JSON_KEY))
     }
+    private val albums: Set<ImportAlbum> by lazy {
+        jsonObjectMapper
+            .readerForListOf(ImportAlbum::class.java)
+            .readValue<Collection<ImportAlbum>>(workerParams.inputData.getString(ALBUMS_JSON_KEY))
+            .toSet()
+    }
     private val uploadToken = System.currentTimeMillis().toString()
     private var importStatus: ImportFilesUseCase.Status =
         ImportFilesUseCase.Status.Uploading.INDETERMINATE
@@ -59,6 +66,7 @@ class ImportFilesWorker(
 
         val useCase = importFilesUseCaseFactory.get(
             files = files,
+            albums = albums,
             uploadToken = uploadToken,
         )
 
@@ -136,12 +144,17 @@ class ImportFilesWorker(
     companion object {
         const val TAG = "ImportFiles"
         private const val FILES_JSON_KEY = "files"
+        private const val ALBUMS_JSON_KEY = "albums"
 
         fun getInputData(
             files: List<ImportableFile>,
+            albums: Set<ImportAlbum>,
             jsonObjectMapper: JsonObjectMapper,
         ) = Data.Builder()
             .putString(FILES_JSON_KEY, jsonObjectMapper.writeValueAsString(files))
+            // Albums must be converted to a typed array to overcome Java type erasure,
+            // which makes @JsonTypeInfo useless when serializing a collection.
+            .putString(ALBUMS_JSON_KEY, jsonObjectMapper.writeValueAsString(albums.toTypedArray()))
             .build()
     }
 }

@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
 import ua.com.radiokot.photoprism.api.upload.model.PhotoPrismUploadOptions
 import ua.com.radiokot.photoprism.api.upload.service.PhotoPrismUploadService
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBody
 
@@ -21,6 +22,7 @@ import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBo
  */
 class ImportFilesUseCase(
     private val files: List<ImportableFile>,
+    private val albums: Set<ImportAlbum>,
     private val uploadToken: String,
     private val contentResolver: ContentResolver,
     private val photoPrismSessionService: PhotoPrismSessionService,
@@ -93,7 +95,15 @@ class ImportFilesUseCase(
             userId = userId,
             uploadToken = uploadToken,
             uploadOptions = PhotoPrismUploadOptions(
-                albums = emptyList(), // TODO set albums
+                albums = albums.map { album->
+                    when (album) {
+                        is ImportAlbum.Existing ->
+                            album.uid
+
+                        is ImportAlbum.ToCreate ->
+                            album.title
+                    }
+                },
             )
         )
     }.toCompletable().subscribeOn(Schedulers.io())
@@ -125,9 +135,11 @@ class ImportFilesUseCase(
     ) {
         fun get(
             files: List<ImportableFile>,
+            albums: Set<ImportAlbum>,
             uploadToken: String,
         ) = ImportFilesUseCase(
             files = files,
+            albums=albums,
             uploadToken = uploadToken,
             contentResolver = contentResolver,
             photoPrismSessionService = photoPrismSessionService,

@@ -32,7 +32,7 @@ class ImportViewModel(
     private var isInitialized = false
     private lateinit var files: List<ImportableFile>
     private val permissionsToCheckBeforeStart = mutableListOf<String>()
-    private var selectedAlbums: Set<ImportAlbum> = emptySet()
+    private var albums: Set<ImportAlbum> = emptySet()
 
     val summary: MutableLiveData<Summary> = MutableLiveData()
     val isNotificationPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -105,7 +105,7 @@ class ImportViewModel(
         }
 
         eventsSubject.onNext(Event.OpenAlbumSelectionForResult(
-            currentlySelectedAlbums = selectedAlbums,
+            currentlySelectedAlbums = albums,
         ))
     }
 
@@ -115,7 +115,7 @@ class ImportViewModel(
                     "\nselectedAlbums=${selectedAlbums.size}"
         }
 
-        this.selectedAlbums = selectedAlbums
+        this.albums = selectedAlbums
 
         summary.value = summary.value!!.copy(
             albums = selectedAlbums.map(ImportAlbum::title),
@@ -151,6 +151,7 @@ class ImportViewModel(
                     .setInputData(
                         ImportFilesWorker.getInputData(
                             files = files,
+                            albums = albums,
                             jsonObjectMapper = jsonObjectMapper,
                         )
                     )
