@@ -8,9 +8,9 @@ class ImportAlbumListItemDiffCallback : DiffCallback<ImportAlbumListItem> {
         oldItem: ImportAlbumListItem,
         newItem: ImportAlbumListItem
     ): Boolean =
-        oldItem.identifier == newItem.identifier
-                && (oldItem is ImportAlbumListItem.Album && newItem is ImportAlbumListItem.Album
-                || oldItem is ImportAlbumListItem.CreateNew && newItem is ImportAlbumListItem.CreateNew)
+        (oldItem is ImportAlbumListItem.Album && newItem is ImportAlbumListItem.Album
+                && oldItem.identifier == newItem.identifier)
+                || oldItem is ImportAlbumListItem.CreateNew && newItem is ImportAlbumListItem.CreateNew
 
     override fun areContentsTheSame(
         oldItem: ImportAlbumListItem,
@@ -20,8 +20,12 @@ class ImportAlbumListItemDiffCallback : DiffCallback<ImportAlbumListItem> {
             oldItem is ImportAlbumListItem.Album && newItem is ImportAlbumListItem.Album ->
                 oldItem.isAlbumSelected == newItem.isAlbumSelected
                         && oldItem.title == newItem.title
+
+            oldItem is ImportAlbumListItem.CreateNew && newItem is ImportAlbumListItem.CreateNew ->
+                oldItem.newAlbumTitle == newItem.newAlbumTitle
+
             else ->
-                true
+                false
         }
 
     override fun getChangePayload(
@@ -34,6 +38,10 @@ class ImportAlbumListItemDiffCallback : DiffCallback<ImportAlbumListItem> {
             && oldItem.isAlbumSelected != newItem.isAlbumSelected
         ) {
             return ImportAlbumListItem.Album.ViewHolder.PAYLOAD_SELECTION_CHANGED
+        } else if (oldItem is ImportAlbumListItem.CreateNew && newItem is ImportAlbumListItem.CreateNew
+            && oldItem.newAlbumTitle != newItem.newAlbumTitle
+        ) {
+            return ImportAlbumListItem.CreateNew.ViewHolder.PAYLOAD_TITLE_CHANGED
         }
         return null
     }

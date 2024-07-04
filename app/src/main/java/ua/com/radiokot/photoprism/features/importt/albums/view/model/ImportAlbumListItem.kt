@@ -21,7 +21,7 @@ sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out Impor
     ) : ImportAlbumListItem() {
 
         override var identifier: Long =
-            newAlbumTitle.hashCode().toLong()
+            "create_new".hashCode().toLong()
 
         override val layoutRes: Int =
             R.layout.list_item_import_album_create_new
@@ -44,6 +44,10 @@ sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out Impor
 
             override fun unbindView(item: CreateNew) {
                 // No special handling is needed.
+            }
+
+            companion object {
+                const val PAYLOAD_TITLE_CHANGED = "title"
             }
         }
     }
