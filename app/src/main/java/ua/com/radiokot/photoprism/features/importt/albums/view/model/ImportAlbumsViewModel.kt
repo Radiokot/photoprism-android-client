@@ -190,6 +190,8 @@ class ImportAlbumsViewModel(
         albumsToCreate += albumToCreate
         selectedAlbums += albumToCreate
 
+        isDoneButtonVisible.value = selectedAlbums != initiallySelectedAlbums
+
         postAlbumItems()
     }
 
@@ -257,6 +259,26 @@ class ImportAlbumsViewModel(
         }
 
         eventsSubject.onNext(Event.FinishWithResult(selectedAlbums))
+    }
+
+    fun onSearchSubmit() {
+        val allItems = itemsList.value
+            ?: return
+
+        val createNewItem = allItems
+            .filterIsInstance<ImportAlbumListItem.CreateNew>()
+            .firstOrNull()
+        val firstAlbumItem = allItems
+            .filterIsInstance<ImportAlbumListItem.Album>()
+            .firstOrNull()
+
+        if (createNewItem != null) {
+            addAlbumToCreate(
+                newAlbumTitle = createNewItem.newAlbumTitle,
+            )
+        } else if (firstAlbumItem?.source != null) {
+            switchAlbumSelection(firstAlbumItem.source)
+        }
     }
 
     sealed interface Event {

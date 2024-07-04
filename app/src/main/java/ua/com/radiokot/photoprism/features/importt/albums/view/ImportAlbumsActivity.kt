@@ -81,6 +81,12 @@ class ImportAlbumsActivity : BaseActivity() {
 
     private fun initSearch() {
         view.searchEditText.bindTextTwoWay(viewModel.rawSearchInput, this)
+        view.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                viewModel.onSearchSubmit()
+            }
+            false
+        }
     }
 
     private fun subscribeToData() {
