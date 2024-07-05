@@ -10,7 +10,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Deleting items without archiving them first
 - Endless session without the need to re-enter the password
 - Connection to both private and public libraries
-- Support of mTLS (mutual TLS), HTTP basic and web portal authentication (Authelia, Cloudflare Access, etc.)
+- Support of mTLS (mutual TLS), HTTP basic auth and SSO like Authelia, Cloudflare Access, etc.
 - TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now)
 
 The gallery is confirmed to work with PhotoPrism versions from May 31, 2024 down to October 9, 2021
