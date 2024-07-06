@@ -146,7 +146,10 @@ class ImportActivity : BaseActivity() {
             summary = R.string.import_to_be_uploaded,
         )
         addSummaryItem(
-            content = summary.albums.joinToString(),
+            content = summary.albums
+                .takeIf(Collection<*>::isNotEmpty)
+                ?.joinToString()
+                ?: getString(R.string.import_albums_not_selected),
             summary = R.string.albums,
             onClick = viewModel::onAlbumsClicked,
         )
