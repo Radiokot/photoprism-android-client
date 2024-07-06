@@ -224,5 +224,8 @@
     <string name="import_started_in_background">Начато в фоне</string>
     <string name="import_notifications_permission_rationale">Разрешение на отправку уведомлений обеспечивает надежную работу импорта в фоне</string>
     <string name="import_media_permission_rationale">Разрешение на доступ к фотографиям и видео предотвращает стирание геоданных из файлов</string>
+    <string name="template_import_album_create_new">Создать \"%1$s\"</string>
+    <string name="import_albums_enter_album_title">Введите название альбома</string>
+    <string name="import_albums_not_selected">Не выбраны</string>
 
 </resources>
