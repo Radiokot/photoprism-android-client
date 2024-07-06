@@ -16,6 +16,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
@@ -23,6 +24,7 @@ import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 
 class ImportViewModel(
     private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory,
+    private val albumsRepository: AlbumsRepository,
     private val session: EnvSession,
     private val jsonObjectMapper: JsonObjectMapper,
     application: Application,
@@ -65,6 +67,9 @@ class ImportViewModel(
             isNotificationPermissionRationaleVisible.value = true
             permissionsToCheckBeforeStart += Manifest.permission.POST_NOTIFICATIONS
         }
+
+        // Update albums now for faster selection.
+        albumsRepository.updateIfNotFresh()
 
         isInitialized = true
 
