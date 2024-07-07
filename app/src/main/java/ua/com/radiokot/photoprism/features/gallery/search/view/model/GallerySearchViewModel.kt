@@ -25,7 +25,7 @@ class GallerySearchViewModel(
     val peopleViewModel: GallerySearchPeopleViewModel,
     private val searchPreferences: SearchPreferences,
 ) : ViewModel() {
-    private val log = kLogger("GallerySearchViewModel")
+    private val log = kLogger("GallerySearchVM")
 
     private val defaultAvailableMediaTypes = setOf(
         GalleryMedia.TypeName.IMAGE,

@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 
 /**
@@ -19,7 +20,7 @@ import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepo
  */
 class GallerySearchAlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
-    searchPreferences: SearchPreferences,
+    private val searchPreferences: SearchPreferences,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchAlbumsVM")
 
@@ -32,6 +33,7 @@ class GallerySearchAlbumsViewModel(
 
     init {
         subscribeToRepository()
+        subscribeToPreferences()
         subscribeToAlbumSelection()
     }
 
@@ -72,14 +74,30 @@ class GallerySearchAlbumsViewModel(
             .autoDispose(this)
     }
 
-    private fun postReadyState() {
-        val repositoryAlbums = albumsRepository.itemsList
+    private fun subscribeToPreferences() {
+        searchPreferences.showAlbumFolders
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                if (stateSubject.value is State.Ready) {
+                    postReadyState()
+                }
+            }
+            .autoDispose(this)
+    }
 
+    private fun postReadyState() {
+        val includeFolders = searchPreferences.showAlbumFolders.value == true
         val selectedAlbumUid = selectedAlbumUid.value
+        val repositoryAlbums = albumsRepository.itemsList
+            .filter { album ->
+                album.type == Album.TypeName.ALBUM
+                        || (includeFolders && album.type == Album.TypeName.FOLDER)
+            }
 
         log.debug {
             "postReadyState(): posting_ready_state:" +
-                    "\nalbumsCount=${repositoryAlbums.size}," +
+                    "\nalbumCount=${repositoryAlbums.size}," +
+                    "\nincludeFolders=$includeFolders," +
                     "\nselectedAlbumUid=$selectedAlbumUid"
         }
 

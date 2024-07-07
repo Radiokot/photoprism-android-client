@@ -14,40 +14,15 @@ import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 /**
  * A repository for albums which the gallery content can be filtered by.
  * Combines albums of multiple types.
- *
- * @see includeFolders
  */
 class AlbumsRepository(
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
+    private val types: Set<Album.TypeName>,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Album>() {
     private val comparator: Comparator<Album> =
         compareByDescending(Album::isFavorite)
             .thenBy(Album::title)
-
-    private val types: MutableSet<String> = mutableSetOf(
-        ALBUM_TYPE,
-        FOLDER_TYPE,
-    )
-
-    /**
-     * Whether or not to load folders.
-     * If changed, causes data invalidation and update if ever updated.
-     */
-    var includeFolders: Boolean
-        get() = FOLDER_TYPE in types
-        set(include) {
-            val wasIncluded = includeFolders
-            if (include) {
-                types += FOLDER_TYPE
-            } else {
-                types -= FOLDER_TYPE
-            }
-            if (wasIncluded != include) {
-                invalidate()
-                updateIfEverUpdated()
-            }
-        }
 
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
@@ -66,7 +41,7 @@ class AlbumsRepository(
     fun getLoadedAlbum(uid: String): Album? =
         itemsList.find { it.uid == uid }
 
-    private fun getAlbumsOfType(type: String): Single<List<Album>> {
+    private fun getAlbumsOfType(type: Album.TypeName): Single<List<Album>> {
         val loader = PagedCollectionLoader(
             pageProvider = { cursor ->
                 {
@@ -76,7 +51,7 @@ class AlbumsRepository(
                         count = PAGE_LIMIT,
                         offset = offset,
                         order = PhotoPrismOrder.FAVORITES,
-                        type = type,
+                        type = type.value,
                     )
 
                     DataPage(

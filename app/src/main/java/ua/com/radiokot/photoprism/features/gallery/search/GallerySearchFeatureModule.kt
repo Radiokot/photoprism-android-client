@@ -81,7 +81,8 @@ val gallerySearchFeatureModules: List<Module> = listOf(
                     albumsRepository = get(),
                     searchPredicate = { album: Album, query: String ->
                         SearchPredicates.generalCondition(query, album.title)
-                    }
+                    },
+                    searchPreferences = get(),
                 )
             }
         }

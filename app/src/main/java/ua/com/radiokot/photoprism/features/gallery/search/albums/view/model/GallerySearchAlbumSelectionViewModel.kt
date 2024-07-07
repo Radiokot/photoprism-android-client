@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
@@ -16,6 +17,7 @@ import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewVi
 class GallerySearchAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
+    private val searchPreferences: SearchPreferences,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
@@ -97,7 +99,12 @@ class GallerySearchAlbumSelectionViewModel(
     }
 
     private fun postAlbumItems() {
+        val includeFolders = searchPreferences.showAlbumFolders.value == true
         val repositoryAlbums = albumsRepository.itemsList
+            .filter { album ->
+                album.type == Album.TypeName.ALBUM
+                        || (includeFolders && album.type == Album.TypeName.FOLDER)
+            }
         val searchQuery = currentSearchInput
         val filteredRepositoryAlbums =
             if (searchQuery != null)
@@ -110,7 +117,8 @@ class GallerySearchAlbumSelectionViewModel(
 
         log.debug {
             "postAlbumItems(): posting_items:" +
-                    "\nalbumsCount=${repositoryAlbums.size}," +
+                    "\nalbumCount=${repositoryAlbums.size}," +
+                    "\nincludeFolders=${includeFolders}," +
                     "\nselectedAlbumUid=$selectedAlbumUid," +
                     "\nsearchQuery=$searchQuery," +
                     "\nfilteredAlbumsCount=${filteredRepositoryAlbums.size}"
