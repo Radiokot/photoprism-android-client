@@ -81,11 +81,11 @@ class ImportAlbumSelectionActivity : BaseActivity() {
 
     private fun initSearch() {
         view.searchEditText.bindTextTwoWay(viewModel.rawSearchInput, this)
-        view.searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
-                viewModel.onSearchSubmit()
-            }
-            false
+        view.searchEditText.setOnEditorActionListener { _, _, _ ->
+            viewModel.onSearchSubmit()
+
+            // Do not close the keyboard.
+            true
         }
     }
 

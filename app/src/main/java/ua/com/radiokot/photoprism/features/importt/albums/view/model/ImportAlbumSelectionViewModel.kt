@@ -8,9 +8,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModelImpl
 
@@ -275,8 +275,12 @@ class ImportAlbumSelectionViewModel(
             addAlbumToCreate(
                 newAlbumTitle = createNewItem.newAlbumTitle,
             )
+
+            rawSearchInput.value = ""
         } else if (firstAlbumItem?.source != null) {
             switchAlbumSelection(firstAlbumItem.source)
+
+            rawSearchInput.value = ""
         }
     }
 
