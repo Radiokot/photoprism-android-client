@@ -10,19 +10,18 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel.Event
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModel
 import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModelImpl
 
-class ImportAlbumsViewModel(
+class ImportAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: ImportAlbum, query: String) -> Boolean,
     private val exactMatchPredicate: (album: ImportAlbum, query: String) -> Boolean,
 ) : ViewModel(),
     SearchInputViewModel by SearchInputViewModelImpl() {
 
-    private val log = kLogger("ImportAlbumsVM")
+    private val log = kLogger("ImportAlbumSelectionVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()

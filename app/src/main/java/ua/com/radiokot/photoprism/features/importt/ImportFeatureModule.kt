@@ -12,7 +12,7 @@ import ua.com.radiokot.photoprism.di.EnvPhotoPrismSessionServiceParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumsViewModel
+import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
@@ -39,7 +39,7 @@ val importFeatureModule = module {
         viewModelOf(::ImportViewModel)
 
         viewModel {
-            ImportAlbumsViewModel(
+            ImportAlbumSelectionViewModel(
                 albumsRepository = get(),
                 searchPredicate = { album: ImportAlbum, query: String ->
                     SearchPredicates.generalCondition(query, album.title)

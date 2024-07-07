@@ -11,7 +11,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityImportAlbumsBinding
+import ua.com.radiokot.photoprism.databinding.ActivityImportAlbumSelectionBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -19,20 +19,20 @@ import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumListItem
-import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumsViewModel
+import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class ImportAlbumsActivity : BaseActivity() {
-    private val log = kLogger("ImportAlbumsActivity")
+class ImportAlbumSelectionActivity : BaseActivity() {
+    private val log = kLogger("ImportAlbumSelectionActivity")
 
-    private lateinit var view: ActivityImportAlbumsBinding
-    private val viewModel: ImportAlbumsViewModel by viewModel()
+    private lateinit var view: ActivityImportAlbumSelectionBinding
+    private val viewModel: ImportAlbumSelectionViewModel by viewModel()
     private val adapter = ItemAdapter<ImportAlbumListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = ActivityImportAlbumsBinding.inflate(layoutInflater)
+        view = ActivityImportAlbumSelectionBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -105,7 +105,7 @@ class ImportAlbumsActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                ImportAlbumsViewModel.Error.LoadingFailed ->
+                ImportAlbumSelectionViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
@@ -136,13 +136,13 @@ class ImportAlbumsActivity : BaseActivity() {
         }
 
         when (event) {
-            ImportAlbumsViewModel.Event.ShowFloatingLoadingFailedError ->
+            ImportAlbumSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is ImportAlbumsViewModel.Event.Finish ->
+            is ImportAlbumSelectionViewModel.Event.Finish ->
                 finish()
 
-            is ImportAlbumsViewModel.Event.FinishWithResult ->
+            is ImportAlbumSelectionViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedAlbums)
         }
 

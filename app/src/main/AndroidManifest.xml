@@ -189,7 +189,7 @@
         </activity>
 
         <activity
-            android:name=".features.importt.albums.view.ImportAlbumsActivity"
+            android:name=".features.importt.albums.view.ImportAlbumSelectionActivity"
             android:exported="false"
             android:label="@string/albums"
             android:resizeableActivity="true"
