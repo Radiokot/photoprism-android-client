@@ -154,7 +154,7 @@ class GallerySearchAlbumsViewModel(
 
     fun onAlbumSelectionResult(newSelectedAlbumUid: String?) {
         log.debug {
-            "onAlbumsOverviewReturnedNewSelection(): setting_selected_album_uid:" +
+            "onAlbumSelectionResult(): setting_selected_album_uid:" +
                     "\nnewUid=$newSelectedAlbumUid"
         }
 
@@ -169,7 +169,7 @@ class GallerySearchAlbumsViewModel(
 
             if (newSelectedAlbumIndex != -1) {
                 log.debug {
-                    "onAlbumsOverviewResult(): ensure_new_selected_item_visible:" +
+                    "onAlbumSelectionResult(): ensure_new_selected_item_visible:" +
                             "\nnewSelectedAlbumIndex=$newSelectedAlbumIndex"
                 }
 

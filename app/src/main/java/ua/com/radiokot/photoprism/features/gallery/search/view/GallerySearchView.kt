@@ -42,7 +42,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.*
@@ -481,7 +481,7 @@ class GallerySearchView(
                         // although it is too big for such a tiny view.
                         // The is most certainly already cached by the people list,
                         // hence can be displayed instantly.
-                        viewSizePx = PersonListItem.DEFAULT_THUMBNAIL_SIZE,
+                        viewSizePx = GallerySearchPersonListItem.DEFAULT_THUMBNAIL_SIZE,
                     )
                         ?: "missing:/"
                     appendCircleImage(thumbnailUrl)

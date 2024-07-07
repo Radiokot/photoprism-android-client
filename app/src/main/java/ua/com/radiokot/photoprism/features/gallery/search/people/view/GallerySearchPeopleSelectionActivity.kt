@@ -24,16 +24,16 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class PeopleOverviewActivity : BaseActivity() {
-    private val log = kLogger("PeopleOverviewActivity")
+class GallerySearchPeopleSelectionActivity : BaseActivity() {
+    private val log = kLogger("GallerySearchPeopleSelectionActivity")
 
     private lateinit var view: ActivityPeopleOverviewBinding
-    private val viewModel: PeopleOverviewViewModel by viewModel()
-    private val adapter = ItemAdapter<PersonListItem>()
+    private val viewModel: GallerySearchPeopleSelectionViewModel by viewModel()
+    private val adapter = ItemAdapter<GallerySearchPersonListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +69,7 @@ class PeopleOverviewActivity : BaseActivity() {
         val peopleAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: PersonListItem, _ ->
+            onClickListener = { _, _, item: GallerySearchPersonListItem, _ ->
                 viewModel.onPersonItemClicked(item)
                 true
             }
@@ -155,7 +155,7 @@ class PeopleOverviewActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                PeopleOverviewViewModel.Error.LoadingFailed ->
+                GallerySearchPeopleSelectionViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
@@ -165,7 +165,7 @@ class PeopleOverviewActivity : BaseActivity() {
                         )
                     )
 
-                PeopleOverviewViewModel.Error.NothingFound ->
+                GallerySearchPeopleSelectionViewModel.Error.NothingFound ->
                     view.errorView.showError(
                         ErrorView.Error.EmptyView(
                             context = view.errorView.context,
@@ -194,13 +194,13 @@ class PeopleOverviewActivity : BaseActivity() {
         }
 
         when (event) {
-            PeopleOverviewViewModel.Event.ShowFloatingLoadingFailedError ->
+            GallerySearchPeopleSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is PeopleOverviewViewModel.Event.FinishWithResult ->
+            is GallerySearchPeopleSelectionViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedPersonIds)
 
-            is PeopleOverviewViewModel.Event.Finish ->
+            is GallerySearchPeopleSelectionViewModel.Event.Finish ->
                 finish()
         }
 
@@ -243,7 +243,7 @@ class PeopleOverviewActivity : BaseActivity() {
             queryHint = getString(R.string.enter_the_query)
             fixCloseButtonColor()
             hideUnderline()
-            bindToViewModel(viewModel, this@PeopleOverviewActivity)
+            bindToViewModel(viewModel, this@GallerySearchPeopleSelectionActivity)
         }
 
         return super.onCreateOptionsMenu(menu)

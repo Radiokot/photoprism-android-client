@@ -13,13 +13,13 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.Pe
 import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModel
 import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModelImpl
 
-class PeopleOverviewViewModel(
+class GallerySearchPeopleSelectionViewModel(
     private val peopleRepository: PeopleRepository,
     private val searchPredicate: (person: Person, query: String) -> Boolean,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
-    private val log = kLogger("PeopleOverviewVM")
+    private val log = kLogger("GallerySearchPeopleSelectionVM")
     private var isInitialized: Boolean = false
 
     private val eventsSubject = PublishSubject.create<Event>()
@@ -28,11 +28,11 @@ class PeopleOverviewViewModel(
     /**
      * Non-null set of the selected person IDs, **empty** if nothing is selected.
      */
-    val selectedPersonIds = MutableLiveData<Set<String>>(emptySet())
+    private val selectedPersonIds = MutableLiveData<Set<String>>(emptySet())
     private var initialSelectedPersonIds: Set<String>? = null
 
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<PersonListItem>>()
+    val itemsList = MutableLiveData<List<GallerySearchPersonListItem>>()
     val mainError = MutableLiveData<Error?>(null)
     val isDoneButtonVisible = MutableLiveData(false)
     val backPressedCallback = object : OnBackPressedCallback(true) {
@@ -146,7 +146,7 @@ class PeopleOverviewViewModel(
 
         itemsList.value =
             filteredRepositoryPeople.map { person ->
-                PersonListItem(
+                GallerySearchPersonListItem(
                     source = person,
                     isPersonSelected = person.id in selectedPersonIds,
                     isNameShown = hasAnyNames,
@@ -164,7 +164,7 @@ class PeopleOverviewViewModel(
             }
     }
 
-    fun onPersonItemClicked(item: PersonListItem) {
+    fun onPersonItemClicked(item: GallerySearchPersonListItem) {
         log.debug {
             "onPersonItemClicked(): person_item_clicked:" +
                     "\nitem=$item"

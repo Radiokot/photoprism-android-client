@@ -118,7 +118,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".features.gallery.search.people.view.PeopleOverviewActivity"
+            android:name=".features.gallery.search.people.view.GallerySearchPeopleSelectionActivity"
             android:exported="false"
             android:label="@string/people"
             android:resizeableActivity="true"

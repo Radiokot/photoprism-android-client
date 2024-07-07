@@ -33,7 +33,7 @@ class GallerySearchAlbumsView(
     private val log = kLogger("GallerySearchAlbumsView")
 
     private val adapter = ItemAdapter<GallerySearchAlbumListItem>()
-    private val albumsOverviewLauncher = activity.registerForActivityResult(
+    private val albumSelectionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onAlbumSelectionResult
     )
@@ -119,7 +119,7 @@ class GallerySearchAlbumsView(
 
         when (event) {
             is GallerySearchAlbumsViewModel.Event.OpenAlbumSelectionForResult ->
-                openAlbumSelectionOverview(event.selectedAlbumUid)
+                openAlbumSelection(event.selectedAlbumUid)
 
             is GallerySearchAlbumsViewModel.Event.EnsureListItemVisible ->
                 view.albumsRecyclerView.post {
@@ -135,13 +135,13 @@ class GallerySearchAlbumsView(
         }
     }.autoDispose(this)
 
-    private fun openAlbumSelectionOverview(selectedAlbumUid: String?) {
+    private fun openAlbumSelection(selectedAlbumUid: String?) {
         log.debug {
-            "openAlbumsOverview(): opening_overview:" +
+            "openAlbumSelection(): opening_selection:" +
                     "\nselectedAlbumUid=$selectedAlbumUid"
         }
 
-        albumsOverviewLauncher.launch(
+        albumSelectionLauncher.launch(
             Intent(view.root.context, GallerySearchAlbumSelectionActivity::class.java)
                 .putExtras(
                     GallerySearchAlbumSelectionActivity.getBundle(

@@ -32,7 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PeopleOverviewViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
 
 val gallerySearchFeatureModules: List<Module> = listOf(
@@ -109,7 +109,7 @@ val gallerySearchFeatureModules: List<Module> = listOf(
             viewModelOf(::GallerySearchPeopleViewModel)
 
             viewModel {
-                PeopleOverviewViewModel(
+                GallerySearchPeopleSelectionViewModel(
                     peopleRepository = get(),
                     searchPredicate = { person: Person, query: String ->
                         SearchPredicates.generalCondition(query, person.name)

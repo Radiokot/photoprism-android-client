@@ -86,7 +86,7 @@ class GallerySearchPeopleViewModel(
         stateSubject.onNext(
             State.Ready(
                 people = repositoryPeople.map { person ->
-                    PersonListItem(
+                    GallerySearchPersonListItem(
                         source = person,
                         isPersonSelected = person.id in selectedPersonIds,
                         isNameShown = hasAnyNames,
@@ -105,7 +105,7 @@ class GallerySearchPeopleViewModel(
         }
     }
 
-    fun onPersonItemClicked(item: PersonListItem) {
+    fun onPersonItemClicked(item: GallerySearchPersonListItem) {
         val currentState = stateSubject.value
         check(currentState is State.Ready) {
             "People are clickable only in the ready state"
@@ -151,15 +151,15 @@ class GallerySearchPeopleViewModel(
         }
 
         eventsSubject.onNext(
-            Event.OpenPeopleOverviewForResult(
+            Event.OpenPeopleSelectionForResult(
                 selectedPersonIds = selectedPersonIds.value!!,
             )
         )
     }
 
-    fun onPeopleOverviewReturnedNewSelection(newSelectedPersonIds: Set<String>) {
+    fun onPeopleSelectionResult(newSelectedPersonIds: Set<String>) {
         log.debug {
-            "onPeopleOverviewReturnedNewSelection(): setting_selected_person_ids:" +
+            "onPeopleSelectionResult(): setting_selected_person_ids:" +
                     "\nnewSelectedCount=${newSelectedPersonIds.size}"
         }
 
@@ -176,7 +176,7 @@ class GallerySearchPeopleViewModel(
 
             if (lastSelectedPersonIndex != -1) {
                 log.debug {
-                    "onPeopleOverviewReturnedNewSelection(): ensure_last_selected_item_visible:" +
+                    "onPeopleSelectionResult(): ensure_last_selected_item_visible:" +
                             "\nlastSelectedPersonIndex=$lastSelectedPersonIndex"
                 }
 
@@ -191,7 +191,7 @@ class GallerySearchPeopleViewModel(
     sealed interface State {
         object Loading : State
         class Ready(
-            val people: List<PersonListItem>,
+            val people: List<GallerySearchPersonListItem>,
         ) : State
 
         object LoadingFailed : State
@@ -199,11 +199,11 @@ class GallerySearchPeopleViewModel(
 
     sealed interface Event {
         /**
-         * Open people overview to get the result.
+         * Open people selection to get the result.
          *
-         * [onPeopleOverviewReturnedNewSelection] must be called when the result is obtained.
+         * [onPeopleSelectionResult] must be called when the result is obtained.
          */
-        class OpenPeopleOverviewForResult(
+        class OpenPeopleSelectionForResult(
             val selectedPersonIds: Set<String>,
         ) : Event
 

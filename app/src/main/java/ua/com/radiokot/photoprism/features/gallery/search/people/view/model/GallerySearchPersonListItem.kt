@@ -12,23 +12,23 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ListItemPersonBinding
+import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
 
-class PersonListItem(
+class GallerySearchPersonListItem(
     val name: String?,
     val thumbnailUrl: String,
     val isPersonSelected: Boolean,
     val isNameShown: Boolean,
     val source: Person?,
-) : AbstractItem<PersonListItem.ViewHolder>() {
+) : AbstractItem<GallerySearchPersonListItem.ViewHolder>() {
     override val type: Int =
-        R.id.list_item_person
+        R.layout.list_item_gallery_search_person
 
     override val layoutRes: Int =
-        R.layout.list_item_person
+        R.layout.list_item_gallery_search_person
 
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
@@ -48,12 +48,12 @@ class PersonListItem(
         source = source,
     )
 
-    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<PersonListItem>(itemView),
+    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<GallerySearchPersonListItem>(itemView),
         KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view = ListItemPersonBinding.bind(itemView)
+        private val view = ListItemGallerySearchPersonBinding.bind(itemView)
         private val selectedCardBackgroundColor = MaterialColors.getColor(
             itemView,
             com.google.android.material.R.attr.colorSecondaryContainer,
@@ -61,7 +61,7 @@ class PersonListItem(
         private val unselectedCardBackgroundColor = Color.TRANSPARENT
         private val picasso: Picasso by inject()
 
-        override fun bindView(item: PersonListItem, payloads: List<Any>) {
+        override fun bindView(item: GallerySearchPersonListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.name
 
             picasso
@@ -77,7 +77,7 @@ class PersonListItem(
                 isVisible = item.isNameShown
             }
 
-            with(view.listItemPerson) {
+            with(view.root) {
                 setCardBackgroundColor(
                     if (item.isPersonSelected)
                         selectedCardBackgroundColor
@@ -89,7 +89,7 @@ class PersonListItem(
             }
         }
 
-        override fun unbindView(item: PersonListItem) {
+        override fun unbindView(item: GallerySearchPersonListItem) {
             picasso.cancelRequest(view.imageView)
         }
     }

@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.PersonListItem
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 
 class GallerySearchPeopleView(
     private val view: ViewGallerySearchPeopleBinding,
@@ -32,10 +32,10 @@ class GallerySearchPeopleView(
 
     private val log = kLogger("GallerySearchPeopleView")
 
-    private val adapter = ItemAdapter<PersonListItem>()
-    private val peopleOverviewLauncher = activity.registerForActivityResult(
+    private val adapter = ItemAdapter<GallerySearchPersonListItem>()
+    private val peopleSelectionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
-        this::onPeopleOverviewResult
+        this::onPeopleSelectionResult
     )
 
     init {
@@ -52,7 +52,7 @@ class GallerySearchPeopleView(
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: PersonListItem, _ ->
+            onClickListener = { _, _, item: GallerySearchPersonListItem, _ ->
                 viewModel.onPersonItemClicked(item)
                 true
             }
@@ -118,8 +118,8 @@ class GallerySearchPeopleView(
         }
 
         when (event) {
-            is GallerySearchPeopleViewModel.Event.OpenPeopleOverviewForResult ->
-                openPeopleOverview(event.selectedPersonIds)
+            is GallerySearchPeopleViewModel.Event.OpenPeopleSelectionForResult ->
+                openPeopleSelection(event.selectedPersonIds)
 
             is GallerySearchPeopleViewModel.Event.EnsureListItemVisible ->
                 view.peopleRecyclerView.post {
@@ -135,27 +135,27 @@ class GallerySearchPeopleView(
         }
     }.autoDispose(this)
 
-    private fun openPeopleOverview(selectedPersonIds: Set<String>) {
+    private fun openPeopleSelection(selectedPersonIds: Set<String>) {
         log.debug {
-            "openPeopleOverview(): opening_overview:" +
+            "openPeopleSelection(): opening_selection:" +
                     "\nselectedPeopleCount=${selectedPersonIds.size}"
         }
 
-        peopleOverviewLauncher.launch(
-            Intent(view.root.context, PeopleOverviewActivity::class.java)
+        peopleSelectionLauncher.launch(
+            Intent(view.root.context, GallerySearchPeopleSelectionActivity::class.java)
                 .putExtras(
-                    PeopleOverviewActivity.getBundle(
+                    GallerySearchPeopleSelectionActivity.getBundle(
                         selectedPersonIds = selectedPersonIds,
                     )
                 )
         )
     }
 
-    private fun onPeopleOverviewResult(result: ActivityResult) {
+    private fun onPeopleSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
         if (result.resultCode == Activity.RESULT_OK && bundle != null) {
-            viewModel.onPeopleOverviewReturnedNewSelection(
-                newSelectedPersonIds = PeopleOverviewActivity.getSelectedPersonIds(bundle)
+            viewModel.onPeopleSelectionResult(
+                newSelectedPersonIds = GallerySearchPeopleSelectionActivity.getSelectedPersonIds(bundle)
             )
         }
     }

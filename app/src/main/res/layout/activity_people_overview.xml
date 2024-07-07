@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.gallery.search.people.view.PeopleOverviewActivity">
+    tools:context=".features.gallery.search.people.view.GallerySearchPeopleSelectionActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -35,7 +35,7 @@
             android:paddingBottom="72dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:listitem="@layout/list_item_person"
+            tools:listitem="@layout/list_item_gallery_search_person"
             tools:spanCount="3" />
     </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 
