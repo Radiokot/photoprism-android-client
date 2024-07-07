@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import kotlinx.parcelize.Parcelize
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import java.io.Serializable
 
 @JsonTypeInfo(

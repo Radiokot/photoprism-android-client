@@ -17,8 +17,11 @@ import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
+import ua.com.radiokot.photoprism.features.shared.albums.sharedAlbumsModule
 
 val importFeatureModule = module {
+    includes(sharedAlbumsModule)
+
     scope<EnvSession> {
         scoped {
             val session = get<EnvSession>()

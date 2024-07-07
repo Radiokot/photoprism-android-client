@@ -9,7 +9,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 
 /**
  * A viewmodel that controls list of selectable albums for the gallery search.

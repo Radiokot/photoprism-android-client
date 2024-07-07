@@ -8,11 +8,11 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModel
-import ua.com.radiokot.photoprism.view.model.search.SearchInputViewModelImpl
+import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModel
+import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModelImpl
 
 class ImportAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,

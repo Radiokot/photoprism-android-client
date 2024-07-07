@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.search.di
+package ua.com.radiokot.photoprism.features.gallery.search
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -15,13 +15,10 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
@@ -31,9 +28,11 @@ import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksB
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
+import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.shared.albums.sharedAlbumsModule
 
 val gallerySearchFeatureModules: List<Module> = listOf(
     // Bookmarks.
@@ -72,22 +71,9 @@ val gallerySearchFeatureModules: List<Module> = listOf(
 
     // Albums.
     module {
+        includes(sharedAlbumsModule)
+
         scope<EnvSession> {
-            scoped {
-                AlbumsRepository(
-                    photoPrismAlbumsService = get(),
-                    previewUrlFactory = get(),
-                ).also { repository ->
-                    val searchPreferences = get<SearchPreferences>()
-
-                    // Subscribe the repo to the folders preference.
-                    searchPreferences
-                        .showAlbumFolders
-                        .subscribe(repository::includeFolders::set)
-                        .autoDispose(this@scoped)
-                }
-            } bind AlbumsRepository::class
-
             viewModelOf(::GallerySearchAlbumsViewModel)
 
             viewModel {

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.view.model.search
+package ua.com.radiokot.photoprism.features.shared.search.view.model
 
 import androidx.lifecycle.MutableLiveData
 import ua.com.radiokot.photoprism.extension.kLogger

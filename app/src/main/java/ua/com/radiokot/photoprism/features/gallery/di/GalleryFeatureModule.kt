@@ -29,7 +29,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.search.di.gallerySearchFeatureModules
+import ua.com.radiokot.photoprism.features.gallery.search.gallerySearchFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
