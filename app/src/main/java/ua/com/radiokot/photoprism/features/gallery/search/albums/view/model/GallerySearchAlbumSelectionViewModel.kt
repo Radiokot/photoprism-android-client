@@ -13,19 +13,19 @@ import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.Al
 import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModel
 import ua.com.radiokot.photoprism.view.model.search.SearchViewViewModelImpl
 
-class AlbumsOverviewViewModel(
+class GallerySearchAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
-    private val log = kLogger("AlbumsOverviewVM")
+    private val log = kLogger("GallerySearchAlbumSelectionVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
     val selectedAlbumUid = MutableLiveData<String?>()
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<AlbumListItem>>()
+    val itemsList = MutableLiveData<List<GallerySearchAlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
@@ -118,7 +118,7 @@ class AlbumsOverviewViewModel(
 
         itemsList.value =
             filteredRepositoryAlbums.map { album ->
-                AlbumListItem(
+                GallerySearchAlbumListItem(
                     source = album,
                     isAlbumSelected = album.uid == selectedAlbumUid,
                 )
@@ -135,7 +135,7 @@ class AlbumsOverviewViewModel(
             }
     }
 
-    fun onAlbumItemClicked(item: AlbumListItem) {
+    fun onAlbumItemClicked(item: GallerySearchAlbumListItem) {
         log.debug {
             "onAlbumItemClicked(): album_item_clicked:" +
                     "\nitem=$item"

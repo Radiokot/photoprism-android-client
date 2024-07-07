@@ -11,22 +11,22 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
+import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 
-data class AlbumListItem(
+data class GallerySearchAlbumListItem(
     val title: String,
     val thumbnailUrl: String,
     val isAlbumSelected: Boolean,
     val source: Album?,
-) : AbstractItem<AlbumListItem.ViewHolder>() {
+) : AbstractItem<GallerySearchAlbumListItem.ViewHolder>() {
     override val layoutRes: Int =
-        R.layout.list_item_album
+        R.layout.list_item_gallery_search_album
 
     override val type: Int =
-        R.id.list_item_album
+        R.layout.list_item_gallery_search_album
 
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
@@ -45,20 +45,20 @@ data class AlbumListItem(
         ViewHolder(v)
 
     class ViewHolder(itemView: View) :
-        FastAdapter.ViewHolder<AlbumListItem>(itemView), KoinScopeComponent {
+        FastAdapter.ViewHolder<GallerySearchAlbumListItem>(itemView), KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view = ListItemAlbumBinding.bind(itemView)
+        private val view = ListItemGallerySearchAlbumBinding.bind(itemView)
         private val selectedCardBackgroundColor = MaterialColors.getColor(
             itemView,
             com.google.android.material.R.attr.colorSecondaryContainer,
         )
         private val unselectedCardBackgroundColor = Color.TRANSPARENT
-        private val unselectedCardStrokeWidth = view.listItemAlbum.strokeWidth
+        private val unselectedCardStrokeWidth = view.root.strokeWidth
         private val picasso: Picasso by inject()
 
-        override fun bindView(item: AlbumListItem, payloads: List<Any>) {
+        override fun bindView(item: GallerySearchAlbumListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.title
 
             picasso
@@ -72,7 +72,7 @@ data class AlbumListItem(
             view.titleTextView.text = item.title
             view.titleTextView.isSelected = true
 
-            with(view.listItemAlbum) {
+            with(view.root) {
                 setCardBackgroundColor(
                     if (item.isAlbumSelected)
                         selectedCardBackgroundColor
@@ -90,7 +90,7 @@ data class AlbumListItem(
             }
         }
 
-        override fun unbindView(item: AlbumListItem) {
+        override fun unbindView(item: GallerySearchAlbumListItem) {
             picasso.cancelRequest(view.imageView)
         }
     }

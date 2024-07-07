@@ -111,7 +111,7 @@
             android:resizeableActivity="true" />
 
         <activity
-            android:name=".features.gallery.search.albums.view.AlbumsOverviewActivity"
+            android:name=".features.gallery.search.albums.view.GallerySearchAlbumSelectionActivity"
             android:exported="false"
             android:label="@string/albums"
             android:resizeableActivity="true"

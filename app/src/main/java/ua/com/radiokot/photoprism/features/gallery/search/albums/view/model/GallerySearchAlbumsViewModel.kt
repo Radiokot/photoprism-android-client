@@ -86,7 +86,7 @@ class GallerySearchAlbumsViewModel(
         stateSubject.onNext(
             State.Ready(
                 albums = repositoryAlbums.map { album ->
-                    AlbumListItem(
+                    GallerySearchAlbumListItem(
                         source = album,
                         isAlbumSelected = album.uid == selectedAlbumUid
                     )
@@ -103,7 +103,7 @@ class GallerySearchAlbumsViewModel(
         }
     }
 
-    fun onAlbumItemClicked(item: AlbumListItem) {
+    fun onAlbumItemClicked(item: GallerySearchAlbumListItem) {
         val currentState = stateSubject.value
         check(currentState is State.Ready) {
             "Albums are clickable only in the ready state"
@@ -146,13 +146,13 @@ class GallerySearchAlbumsViewModel(
         }
 
         eventsSubject.onNext(
-            Event.OpenAlbumsOverviewForResult(
+            Event.OpenAlbumSelectionForResult(
                 selectedAlbumUid = selectedAlbumUid.value,
             )
         )
     }
 
-    fun onAlbumsOverviewReturnedNewSelection(newSelectedAlbumUid: String?) {
+    fun onAlbumSelectionResult(newSelectedAlbumUid: String?) {
         log.debug {
             "onAlbumsOverviewReturnedNewSelection(): setting_selected_album_uid:" +
                     "\nnewUid=$newSelectedAlbumUid"
@@ -184,7 +184,7 @@ class GallerySearchAlbumsViewModel(
     sealed interface State {
         object Loading : State
         class Ready(
-            val albums: List<AlbumListItem>,
+            val albums: List<GallerySearchAlbumListItem>,
         ) : State
 
         object LoadingFailed : State
@@ -192,11 +192,11 @@ class GallerySearchAlbumsViewModel(
 
     sealed interface Event {
         /**
-         * Open albums overview to get the result.
+         * Open album selection to get the result.
          *
-         * [onAlbumsOverviewReturnedNewSelection] must be called when the result is obtained.
+         * [onAlbumSelectionResult] must be called when the result is obtained.
          */
-        class OpenAlbumsOverviewForResult(
+        class OpenAlbumSelectionForResult(
             val selectedAlbumUid: String?,
         ) : Event
 

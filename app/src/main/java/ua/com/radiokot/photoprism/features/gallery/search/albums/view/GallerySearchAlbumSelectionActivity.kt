@@ -18,26 +18,26 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityAlbumsOverviewBinding
+import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchAlbumSelectionBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumsOverviewViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumListItem
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class AlbumsOverviewActivity : BaseActivity() {
-    private val log = kLogger("AlbumsOverviewActivity")
+class GallerySearchAlbumSelectionActivity : BaseActivity() {
+    private val log = kLogger("GallerySearchAlbumSelectionActivity")
 
-    private lateinit var view: ActivityAlbumsOverviewBinding
-    private val viewModel: AlbumsOverviewViewModel by viewModel()
-    private val adapter = ItemAdapter<AlbumListItem>()
+    private lateinit var view: ActivityGallerySearchAlbumSelectionBinding
+    private val viewModel: GallerySearchAlbumSelectionViewModel by viewModel()
+    private val adapter = ItemAdapter<GallerySearchAlbumListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view = ActivityAlbumsOverviewBinding.inflate(layoutInflater)
+        view = ActivityGallerySearchAlbumSelectionBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -63,7 +63,7 @@ class AlbumsOverviewActivity : BaseActivity() {
         val albumsAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: AlbumListItem, _ ->
+            onClickListener = { _, _, item: GallerySearchAlbumListItem, _ ->
                 viewModel.onAlbumItemClicked(item)
                 true
             }
@@ -143,7 +143,7 @@ class AlbumsOverviewActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                AlbumsOverviewViewModel.Error.LoadingFailed ->
+                GallerySearchAlbumSelectionViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
@@ -153,7 +153,7 @@ class AlbumsOverviewActivity : BaseActivity() {
                         )
                     )
 
-                AlbumsOverviewViewModel.Error.NothingFound ->
+                GallerySearchAlbumSelectionViewModel.Error.NothingFound ->
                     view.errorView.showError(
                         ErrorView.Error.EmptyView(
                             context = view.errorView.context,
@@ -174,13 +174,13 @@ class AlbumsOverviewActivity : BaseActivity() {
         }
 
         when (event) {
-            AlbumsOverviewViewModel.Event.ShowFloatingLoadingFailedError ->
+            GallerySearchAlbumSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is AlbumsOverviewViewModel.Event.FinishWithResult ->
+            is GallerySearchAlbumSelectionViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedAlbumUid)
 
-            is AlbumsOverviewViewModel.Event.Finish ->
+            is GallerySearchAlbumSelectionViewModel.Event.Finish ->
                 finish()
         }
 
@@ -223,7 +223,7 @@ class AlbumsOverviewActivity : BaseActivity() {
             queryHint = getString(R.string.enter_the_query)
             fixCloseButtonColor()
             hideUnderline()
-            bindToViewModel(viewModel, this@AlbumsOverviewActivity)
+            bindToViewModel(viewModel, this@GallerySearchAlbumSelectionActivity)
         }
 
         return super.onCreateOptionsMenu(menu)

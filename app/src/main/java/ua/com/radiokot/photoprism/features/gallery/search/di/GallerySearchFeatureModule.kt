@@ -22,7 +22,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreference
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.search.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumsOverviewViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
@@ -91,7 +91,7 @@ val gallerySearchFeatureModules: List<Module> = listOf(
             viewModelOf(::GallerySearchAlbumsViewModel)
 
             viewModel {
-                AlbumsOverviewViewModel(
+                GallerySearchAlbumSelectionViewModel(
                     albumsRepository = get(),
                     searchPredicate = { album: Album, query: String ->
                         SearchPredicates.generalCondition(query, album.title)

@@ -18,7 +18,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.AlbumListItem
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumListItem
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 
 class GallerySearchAlbumsView(
@@ -32,10 +32,10 @@ class GallerySearchAlbumsView(
 
     private val log = kLogger("GallerySearchAlbumsView")
 
-    private val adapter = ItemAdapter<AlbumListItem>()
+    private val adapter = ItemAdapter<GallerySearchAlbumListItem>()
     private val albumsOverviewLauncher = activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
-        this::onAlbumsOverviewResult
+        this::onAlbumSelectionResult
     )
 
     init {
@@ -52,7 +52,7 @@ class GallerySearchAlbumsView(
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: AlbumListItem, _ ->
+            onClickListener = { _, _, item: GallerySearchAlbumListItem, _ ->
                 viewModel.onAlbumItemClicked(item)
                 true
             }
@@ -118,8 +118,8 @@ class GallerySearchAlbumsView(
         }
 
         when (event) {
-            is GallerySearchAlbumsViewModel.Event.OpenAlbumsOverviewForResult ->
-                openAlbumsOverview(event.selectedAlbumUid)
+            is GallerySearchAlbumsViewModel.Event.OpenAlbumSelectionForResult ->
+                openAlbumSelectionOverview(event.selectedAlbumUid)
 
             is GallerySearchAlbumsViewModel.Event.EnsureListItemVisible ->
                 view.albumsRecyclerView.post {
@@ -135,27 +135,27 @@ class GallerySearchAlbumsView(
         }
     }.autoDispose(this)
 
-    private fun openAlbumsOverview(selectedAlbumUid: String?) {
+    private fun openAlbumSelectionOverview(selectedAlbumUid: String?) {
         log.debug {
             "openAlbumsOverview(): opening_overview:" +
                     "\nselectedAlbumUid=$selectedAlbumUid"
         }
 
         albumsOverviewLauncher.launch(
-            Intent(view.root.context, AlbumsOverviewActivity::class.java)
+            Intent(view.root.context, GallerySearchAlbumSelectionActivity::class.java)
                 .putExtras(
-                    AlbumsOverviewActivity.getBundle(
+                    GallerySearchAlbumSelectionActivity.getBundle(
                         selectedAlbumUid = selectedAlbumUid,
                     )
                 )
         )
     }
 
-    private fun onAlbumsOverviewResult(result: ActivityResult) {
+    private fun onAlbumSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
         if (result.resultCode == Activity.RESULT_OK && bundle != null) {
-            viewModel.onAlbumsOverviewReturnedNewSelection(
-                newSelectedAlbumUid = AlbumsOverviewActivity.getSelectedAlbumUid(bundle)
+            viewModel.onAlbumSelectionResult(
+                newSelectedAlbumUid = GallerySearchAlbumSelectionActivity.getSelectedAlbumUid(bundle)
             )
         }
     }

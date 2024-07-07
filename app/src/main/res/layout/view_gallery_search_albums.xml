@@ -44,7 +44,7 @@
         android:paddingStart="16dp"
         android:paddingEnd="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/list_item_album" />
+        tools:listitem="@layout/list_item_gallery_search_album" />
 
     <TextView
         android:id="@+id/loading_albums_text_view"
