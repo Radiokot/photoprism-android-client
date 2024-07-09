@@ -150,7 +150,6 @@
     <string name="slideshow_guide_speed">Rychlost lze změnit v nastavení</string>
     <string name="viewing_preferences">Zobrazení</string>
     <string name="slideshow_speed_preference">Rychlost prezentace</string>
-    <string name="slideshow_speed_preference_explanation">Jak rychle přepínat fotky</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Pomalu</item>
@@ -160,7 +159,6 @@
         <item>Rychle</item>
     </string-array>
     <string name="gallery_item_scale_preference">Velikost fotek v galerii</string>
-    <string name="gallery_item_scale_preference_explanation">Jak velké budou fotky v mřížce</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Drobné</item>

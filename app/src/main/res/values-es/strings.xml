@@ -150,7 +150,6 @@
     <string name="slideshow_guide_speed">La velocidad puede modificarse en Preferencias</string>
     <string name="viewing_preferences">Visualización</string>
     <string name="slideshow_speed_preference">Velocidad de diapositivas</string>
-    <string name="slideshow_speed_preference_explanation">¿Qué tan rápido cambiar de diapositivas?</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Lento</item>
@@ -160,7 +159,6 @@
         <item>Rápido</item>
     </string-array>
     <string name="gallery_item_scale_preference">Tamaño del elemento de la galería</string>
-    <string name="gallery_item_scale_preference_explanation">¿Qué tamaño tienen los elementos en la cuadrícula?</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum-->
         <item>Muy pequeña</item>

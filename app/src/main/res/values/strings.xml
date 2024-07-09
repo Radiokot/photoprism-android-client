@@ -154,7 +154,6 @@
     <string name="slideshow_guide_speed">The speed can be changed in Preferences</string>
     <string name="viewing_preferences">Viewing</string>
     <string name="slideshow_speed_preference">Slideshow speed</string>
-    <string name="slideshow_speed_preference_explanation">How fast to switch slides</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Slow</item>
@@ -164,7 +163,6 @@
         <item>Fast</item>
     </string-array>
     <string name="gallery_item_scale_preference">Gallery item size</string>
-    <string name="gallery_item_scale_preference_explanation">How big are the items in the grid</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Tiny</item>

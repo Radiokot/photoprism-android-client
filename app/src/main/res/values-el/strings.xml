@@ -149,7 +149,6 @@
     <string name="slideshow_guide_speed">Η ταχύτητα μπορεί να αλλάξει στις Προτιμήσεις</string>
     <string name="viewing_preferences">θέαση</string>
     <string name="slideshow_speed_preference">Ταχύτητα παρουσίασης</string>
-    <string name="slideshow_speed_preference_explanation">Πόσο γρήγορα αλλάζουν οι διαφάνειες</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Αργό</item>
@@ -159,7 +158,6 @@
         <item>Γρήγορα</item>
     </string-array>
     <string name="gallery_item_scale_preference">Μέγεθος στοιχείων γκαλερί</string>
-    <string name="gallery_item_scale_preference_explanation">Πόσο μεγάλα είναι τα στοιχεία στο πλέγμα</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Πολύ μικρό</item>

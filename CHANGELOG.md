@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - "Done" button on the search people selection screen covering the last person
 
+### Changed
+- Current values of slideshow speed and gallery item size are now shown in the preferences
+
 ## [1.27.0] - 2024-06-09
 
 ### Added

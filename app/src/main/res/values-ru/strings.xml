@@ -149,7 +149,6 @@
     <string name="slideshow_guide_speed">Скорость можно изменить в Настройках</string>
     <string name="viewing_preferences">Просмотр</string>
     <string name="slideshow_speed_preference">Скорость слайд-шоу</string>
-    <string name="slideshow_speed_preference_explanation">Как быстро переключать слайды</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Медленно</item>
@@ -159,7 +158,6 @@
         <item>Быстро</item>
     </string-array>
     <string name="gallery_item_scale_preference">Размер элементов в галерее</string>
-    <string name="gallery_item_scale_preference_explanation">Какого размера элементы в сетке</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Крохотный</item>

@@ -147,7 +147,6 @@
     <string name="slideshow_guide_speed">Die Geschwindigkeit kann in den Einstellungen angepasst werden</string>
     <string name="viewing_preferences">Ansicht</string>
     <string name="slideshow_speed_preference">Präsentationgeschwindigkeit</string>
-    <string name="slideshow_speed_preference_explanation">Zeit zwischen den Wechseln</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Langsam</item>
@@ -157,7 +156,6 @@
         <item>Schnell</item>
     </string-array>
     <string name="gallery_item_scale_preference">Größe des Galerieelements</string>
-    <string name="gallery_item_scale_preference_explanation">Wie groß sind die Elemente im Raster</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Winzig</item>
