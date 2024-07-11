@@ -14,6 +14,7 @@
         app:endIconDrawable="@drawable/ic_lightbulb"
         app:endIconMode="custom"
         app:endIconTint="@color/text_input_layout_end_icon_tint"
+        app:errorIconDrawable="@null"
         app:startIconDrawable="@drawable/ic_server">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -38,6 +39,7 @@
         app:endIconDrawable="@drawable/ic_close"
         app:endIconMode="clear_text"
         app:endIconTint="@color/text_input_layout_end_icon_tint"
+        app:errorIconDrawable="@null"
         app:startIconDrawable="@drawable/ic_account">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -58,6 +60,7 @@
         android:layout_marginTop="24dp"
         android:autofillHints="password"
         android:hint="@string/password_optional"
+        app:errorIconDrawable="@null"
         app:passwordToggleEnabled="true"
         app:startIconDrawable="@drawable/ic_lock">
 
@@ -85,6 +88,7 @@
         app:endIconDrawable="@drawable/ic_close"
         app:endIconMode="custom"
         app:endIconTint="@color/text_input_layout_end_icon_tint"
+        app:errorIconDrawable="@null"
         app:startIconDrawable="@drawable/ic_certificate">
 
         <com.google.android.material.textfield.TextInputEditText

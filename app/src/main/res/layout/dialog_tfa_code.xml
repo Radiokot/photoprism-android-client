@@ -56,6 +56,7 @@
         app:endIconDrawable="@drawable/ic_content_paste_go"
         app:endIconMode="custom"
         app:endIconTint="@color/text_input_layout_end_icon_tint"
+        app:errorIconDrawable="@null"
         app:layout_constraintTop_toBottomOf="@id/message_text_view">
 
         <com.google.android.material.textfield.TextInputEditText

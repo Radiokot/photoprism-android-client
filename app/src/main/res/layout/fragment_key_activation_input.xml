@@ -49,7 +49,8 @@
                 app:endIconContentDescription="@string/paste"
                 app:endIconDrawable="@drawable/ic_content_paste_go"
                 app:endIconMode="custom"
-                app:endIconTint="@color/text_input_layout_end_icon_tint">
+                app:endIconTint="@color/text_input_layout_end_icon_tint"
+                app:errorIconDrawable="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

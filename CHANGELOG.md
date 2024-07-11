@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Current values of slideshow speed and gallery item size are now shown in the preferences
+- Errors in text input fields no longer hide their action buttons
 
 ## [1.27.0] - 2024-06-09
 
