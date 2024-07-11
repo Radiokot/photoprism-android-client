@@ -211,16 +211,13 @@ class EnvConnectionViewModel(
         stateSubject.onNext(State.Connecting)
 
         val connectionParams: EnvConnectionParams = try {
-            val rootUrl = rootUrl.value!!
-                .trim()
-                .trimEnd('/')
-
-            // Explicitly reject PhotoPrism library page URLs
-            // so they are not treated as SSO later on.
-            check(!rootUrl.endsWith("/library/browse"))
-            check(!rootUrl.endsWith("/library/login"))
-
-            val rootHttpUrl = rootUrl.toHttpUrl()
+            val rootHttpUrl = rootUrl.value!!
+                .trim { it == '/' || it.isWhitespace() }
+                // Silently correct PhotoPrism library routes
+                // so they are not treated as SSO later on.
+                .substringBeforeLast("/library/browse")
+                .substringBeforeLast("/library/login")
+                .toHttpUrl()
 
             EnvConnectionParams(
                 rootUrl = rootHttpUrl.withMaskedCredentials(),
