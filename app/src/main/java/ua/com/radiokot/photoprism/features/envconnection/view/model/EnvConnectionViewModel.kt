@@ -211,7 +211,16 @@ class EnvConnectionViewModel(
         stateSubject.onNext(State.Connecting)
 
         val connectionParams: EnvConnectionParams = try {
-            val rootHttpUrl = rootUrl.value!!.trim().toHttpUrl()
+            val rootUrl = rootUrl.value!!
+                .trim()
+                .trimEnd('/')
+
+            // Explicitly reject PhotoPrism library page URLs
+            // so they are not treated as SSO later on.
+            check(!rootUrl.endsWith("/library/browse"))
+            check(!rootUrl.endsWith("/library/login"))
+
+            val rootHttpUrl = rootUrl.toHttpUrl()
 
             EnvConnectionParams(
                 rootUrl = rootHttpUrl.withMaskedCredentials(),
@@ -219,7 +228,7 @@ class EnvConnectionViewModel(
                 httpAuth = rootHttpUrl.basicAuth,
             )
         } catch (e: Exception) {
-            log.warn(e) { "connect(): connection_creation_failed" }
+            log.warn(e) { "connect(): connection_params_creation_failed" }
 
             stateSubject.onNext(State.Idle)
             rootUrlError.value = Error.RootUrlError.InvalidFormat
