@@ -16,23 +16,23 @@ This Android app brings a convenient mobile gallery experience for [PhotoPrism](
 It does not support all the official web app functionality, but nevertheless has plenty of useful features:
 - Sending photos or videos to Gmail, Telegram or any other app
 - Grouping the content by days and months
-- Chronological scroll bar that lets you quickly jump to a specific month
+- Timeline scroll that lets you quickly jump to a specific month
 - [Configurable search](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-search-the-library)
 - [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) that let you save search configurations and apply them later
-- Enhanced live photo viewer, looks best with Samsung and Apple shots
-- Full-screen slideshow with video support
+- Enhanced live photo viewer, which works best with Samsung and Apple shots
+- Full-screen slideshow with configurable speed and video autoplay
 - Deleting items without archiving them first
 - Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F), [HTTP basic auth](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#examples-of-valid-urls) and [SSO](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#sso) like Authelia, Cloudflare Access, etc.
-- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now. [How to install](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
+- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now. [Install through APK](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
 
 The gallery is not intended to sync content with the library. 
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
 The gallery is confirmed to work with PhotoPrism versions from 
-[May 31, 2024](https://github.com/photoprism/photoprism/releases/tag/240531-60b3a4628) 
+[July 11, 2024](https://github.com/photoprism/photoprism/releases/tag/240711-2197af848) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
 The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), 
