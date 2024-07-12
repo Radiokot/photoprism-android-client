@@ -80,11 +80,12 @@ In a world where copyright monopolies are violently enforced, I choose GPLv3 for
 
 ## Tech stack
 - Kotlin
-- RxJava
-- Koin dependency injection
-- OkHTTP networking + Retrofit
+- Classic views & ViewModel
+- RxJava for concurrency
+- Koin for dependency injection
+- OkHTTP & Retrofit for networking
 - Room database
-- kotlin-logging with slf4j-handroid
+- kotlin-logging & slf4j-handroid for logging
 - Picasso for images & ExoPlayer for videos
-- FastAdapter
-- ViewModel
+- FastAdapter for lists
+- Offline License Key for extensions activation
