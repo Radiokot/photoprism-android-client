@@ -1,0 +1,14 @@
+Full changelog:
+https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to import files by sharing them to the gallery
+- Ability to connect to the demo library by long clicking the connection screen title
+- Silent correction of PhotoPrism library page URLs during the connection
+
+Fixed:
+- "Done" button on the search people selection screen covering the last person
+
+Changed:
+- Current values of slideshow speed and gallery item size are now shown in the preferences
+- Errors in text input fields no longer hide their action buttons

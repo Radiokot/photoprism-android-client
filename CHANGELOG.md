@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.28.0] - 2024-07-13
 
 ### Added
 
@@ -595,7 +595,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the
   `PHOTOPRISM_SITE_URL` server config value
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.27.0(41)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.0(42)...HEAD
+
+[1.28.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.27.0(41)...1.28.0(42)
 
 [1.27.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.26.0(40)...1.27.0(41)
 

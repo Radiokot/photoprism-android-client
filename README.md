@@ -14,7 +14,7 @@ This Android app brings a convenient mobile gallery experience for [PhotoPrism](
 </p>
 
 It does not support all the official web app functionality, but nevertheless has plenty of useful features:
-- Sending photos or videos to Gmail, Telegram or any other app
+- Sending photos and videos to Gmail, Telegram or any other app
 - Grouping the content by days and months
 - Timeline scroll that lets you quickly jump to a specific month
 - [Configurable search](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-search-the-library)
@@ -22,6 +22,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Enhanced live photo viewer, which works best with Samsung and Apple shots
 - Full-screen slideshow with configurable speed and video autoplay
 - Deleting items without archiving them first
+- Importing photos and videos trough sharing
 - Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F), [HTTP basic auth](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#examples-of-valid-urls) and [SSO](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#sso) like Authelia, Cloudflare Access, etc.
@@ -31,7 +32,7 @@ The gallery is not intended to sync content with the library.
 I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
-The gallery is confirmed to work with PhotoPrism versions from 
+The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism versions from 
 [July 11, 2024](https://github.com/photoprism/photoprism/releases/tag/240711-2197af848) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
