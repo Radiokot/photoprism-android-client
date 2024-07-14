@@ -10,3 +10,6 @@ val FeatureFlags.hasExtensionPreferences: Boolean
 
 val FeatureFlags.hasExtensionStore: Boolean
     get() = hasFeature(FeatureFlags.Feature.EXTENSION_STORE)
+
+val FeatureFlags.hasPhotoFrameWidget: Boolean
+    get() = hasFeature(FeatureFlags.Feature.PHOTO_FRAME_WIDGET)
