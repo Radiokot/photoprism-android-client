@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.di
+package ua.com.radiokot.photoprism.features.ext
 
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named

@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.ext.di.galleryExtensionsFeatureModule
+import ua.com.radiokot.photoprism.features.ext.galleryExtensionsFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ActivateParsedKeyUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.logic.ParseEnteredKeyUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel

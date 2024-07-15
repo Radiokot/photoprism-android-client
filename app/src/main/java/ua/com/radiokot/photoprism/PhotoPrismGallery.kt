@@ -34,7 +34,7 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivation
 import ua.com.radiokot.photoprism.features.ext.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
-import ua.com.radiokot.photoprism.features.ext.store.extensionStoreModule
+import ua.com.radiokot.photoprism.features.ext.store.galleryExtensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
 import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
@@ -71,7 +71,7 @@ class PhotoPrismGallery : Application() {
                         + slideshowFeatureModule
                         + memoriesFeatureModule
                         + keyActivationFeatureModule
-                        + extensionStoreModule
+                        + galleryExtensionStoreModule
                         + importFeatureModule
             )
             androidFileProperties("app.properties")

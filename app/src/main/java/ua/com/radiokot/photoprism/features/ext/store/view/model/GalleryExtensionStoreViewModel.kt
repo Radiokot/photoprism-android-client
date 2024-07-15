@@ -14,15 +14,13 @@ import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
-import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import ua.com.radiokot.photoprism.features.ext.store.data.model.GalleryExtensionOnSale
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
 
 class GalleryExtensionStoreViewModel(
     private val extensionsOnSaleRepository: GalleryExtensionsOnSaleRepository,
     private val galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
-    private val onlinePurchaseBaseUrl: HttpUrl,
-    private val hardwareIdentifier: HardwareIdentifier,
+    private val onlinePurchaseUrlFactory: (extension: GalleryExtension) -> HttpUrl,
 ) : ViewModel() {
     private val log = kLogger("ExtensionStoreVM")
 
@@ -138,14 +136,7 @@ class GalleryExtensionStoreViewModel(
     }
 
     private fun openOnlinePurchase(item: GalleryExtensionStoreItem) {
-        val purchaseUrl = onlinePurchaseBaseUrl.newBuilder()
-            .addQueryParameter("f", item.extension.ordinal.toString())
-            .addQueryParameter("hw", hardwareIdentifier.getHardwareIdentifier())
-            .addQueryParameter(
-                "email",
-                galleryExtensionsStateRepository.currentState.primarySubject
-            )
-            .build()
+        val purchaseUrl = onlinePurchaseUrlFactory(item.extension)
             .toString()
 
         log.debug {
