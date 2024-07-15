@@ -247,3 +247,14 @@ project.afterEvaluate {
         Files.write(report.toPath(), lines, StandardCharsets.UTF_8)
     }
 }
+
+// Prevent building bundles for build types not meant for Google Play.
+project.afterEvaluate {
+    tasks.each { task ->
+        if (task.name.startsWith("bundle") && !task.name.startsWith("bundleReleasePlay")) {
+            task.doFirst {
+                throw new IllegalStateException("Only 'releasePlay' type builds can be published to Google Play")
+            }
+        }
+    }
+}
