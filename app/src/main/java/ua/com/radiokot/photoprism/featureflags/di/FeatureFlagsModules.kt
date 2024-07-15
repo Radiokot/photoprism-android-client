@@ -20,6 +20,15 @@ val releaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
             FeatureFlags.Feature.EXTENSION_PREFERENCES,
+            FeatureFlags.Feature.EXTENSION_STORE,
+        ) + get<GalleryExtensionsStateRepository>()
+    } bind FeatureFlags::class
+}
+
+val playReleaseFeatureFlagsModule = module {
+    single {
+        FeatureSetFeatureFlags(
+            FeatureFlags.Feature.EXTENSION_PREFERENCES,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }

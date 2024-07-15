@@ -51,28 +51,34 @@ android {
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority + ".debug"
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + ".debug" + "\""
         }
+
         release {
             minifyEnabled false
             shrinkResources false
             debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             signingConfig signingConfigs.debug
 
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
         }
+
         releaseClone {
-            minifyEnabled false
-            shrinkResources false
-            debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            initWith release
 
             applicationIdSuffix ".clone"
-            versionNameSuffix "-clone"
+            versionNameSuffix "+clone"
 
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority + ".clone"
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + ".clone" + "\""
+
+            matchingFallbacks = ["release"]
+        }
+
+        releasePlay {
+            initWith release
+
+            versionNameSuffix "+play"
 
             matchingFallbacks = ["release"]
         }
