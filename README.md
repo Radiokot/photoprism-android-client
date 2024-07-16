@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=15&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=16&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -50,6 +50,7 @@ When a new version of PhotoPrism comes out, the app may break.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/28670365?s=100" alt="Daniel Fuchs" title="Daniel Fuchs" height=70 />](https://github.com/dfoxg)
 [<img src="https://avatars.githubusercontent.com/u/12165268?s=100" alt="Hulmgulm" title="Hulmgulm" height=70 />](https://github.com/hulmgulm)
 [<img src="https://avatars.githubusercontent.com/u/36690764?s=100" alt="Jonas Gustavsson" title="Jonas Gustavsson" height=70 />](https://github.com/jonasgustavsson)
 [<img src="https://avatars.githubusercontent.com/u/5047127?s=100" alt="Florian Voswinkel" title="Florian Voswinkel" height=70 />](https://github.com/FlorentBrianFoxcorner)
