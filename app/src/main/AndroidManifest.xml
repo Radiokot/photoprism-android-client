@@ -195,6 +195,13 @@
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity"
+            android:exported="false"
+            android:label="@string/photo_frame_widget_name"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"
