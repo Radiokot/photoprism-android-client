@@ -133,6 +133,7 @@ class WebViewWVClient(
 
             WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE ->
                 injectionScriptFactory.getGitHubWikiImmersiveScript(
+                    textColor = windowTextColor,
                     backgroundColor = windowBackgroundColor,
                     primaryColor = primaryColor,
                 )

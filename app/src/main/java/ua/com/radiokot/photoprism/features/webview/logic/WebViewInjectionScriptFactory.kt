@@ -80,6 +80,8 @@ class WebViewInjectionScriptFactory {
 
     fun getGitHubWikiImmersiveScript(
         @ColorInt
+        textColor: Int,
+        @ColorInt
         backgroundColor: Int,
         @ColorInt
         primaryColor: Int,
@@ -104,6 +106,7 @@ class WebViewInjectionScriptFactory {
                         /* Make the background match window color */
                         body {
                             background: ${backgroundColor.toCssRgb()} !important;
+                            color: ${textColor.toCssRgb()} !important;
                         }
                         
                         /* Make the links primary */
