@@ -104,9 +104,10 @@ class WebViewInjectionScriptFactory {
                         }
                         
                         /* Make the background match window color */
-                        body {
+                        html, body {
                             background: ${backgroundColor.toCssRgb()} !important;
                             color: ${textColor.toCssRgb()} !important;
+                            margin-bottom: 12px;
                         }
                         
                         /* Make the links primary */
@@ -116,6 +117,11 @@ class WebViewInjectionScriptFactory {
                         
                         /* Remove heading link buttons */
                         .markdown-heading .anchor .octicon {
+                            display: none;
+                        }
+                        
+                        .footer {
+                            margin-top: 24px;
                             display: none;
                         }
                     </style>
