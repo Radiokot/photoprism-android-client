@@ -110,6 +110,11 @@ class WebViewInjectionScriptFactory {
                         a {
                             color: ${primaryColor.toCssRgb()} !important;
                         }
+                        
+                        /* Remove heading link buttons */
+                        .markdown-heading .anchor .octicon {
+                            display: none;
+                        }
                     </style>
                 `
                 document.head.insertAdjacentHTML('beforeend', immersiveCss)
