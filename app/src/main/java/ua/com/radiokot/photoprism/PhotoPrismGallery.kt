@@ -43,6 +43,7 @@ import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule
+import ua.com.radiokot.photoprism.features.widgets.photoframe.photoFrameWidgetFeatureModule
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetProvider
 import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
@@ -62,14 +63,17 @@ class PhotoPrismGallery : Application() {
             modules(
                 retrofitApiModule
                         + appDbModule
-                        + when {
+                        + (
+                        when {
                             BuildConfig.DEBUG ->
                                 devFeatureFlagsModule
+
                             BuildConfig.BUILD_TYPE.equals("releasePlay", true) ->
                                 playReleaseFeatureFlagsModule
+
                             else ->
                                 releaseFeatureFlagsModule
-                        }
+                        })
                         + galleryFeatureModule
                         + mediaViewerFeatureModule
                         + envConnectionFeatureModule
@@ -80,6 +84,7 @@ class PhotoPrismGallery : Application() {
                         + keyActivationFeatureModule
                         + galleryExtensionStoreModule
                         + importFeatureModule
+                        + photoFrameWidgetFeatureModule
             )
             androidFileProperties("app.properties")
         }

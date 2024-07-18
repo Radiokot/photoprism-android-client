@@ -5,12 +5,17 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Size
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ua.com.radiokot.photoprism.extension.kLogger
-import kotlin.math.ceil
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 
 
-class PhotoFrameWidgetProvider : AppWidgetProvider() {
+class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinComponent {
+
     private val log = kLogger("PhotoFrameWidgetProvider")
+    private val widgetsPreferences: PhotoFrameWidgetsPreferences by inject()
 
     override fun onUpdate(
         context: Context,
@@ -21,6 +26,12 @@ class PhotoFrameWidgetProvider : AppWidgetProvider() {
             "onUpdate(): updating:" +
                     "\nwidgetId=$widgetId"
         }
+
+        saveSizeToPreferences(
+            appWidgetId = widgetId,
+            widgetOptions = appWidgetManager.getAppWidgetOptions(widgetId),
+            context = context,
+        )
     }
 
     override fun onAppWidgetOptionsChanged(
@@ -29,36 +40,62 @@ class PhotoFrameWidgetProvider : AppWidgetProvider() {
         appWidgetId: Int,
         newOptions: Bundle
     ) {
-        val portraitWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-        val landsWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH)
-        val landsHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
-        val portraitHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+        log.debug {
+            "onAppWidgetOptionsChanged(): options_changed:" +
+                    "\nwidgetId:${appWidgetId}"
+        }
+
+        saveSizeToPreferences(
+            appWidgetId = appWidgetId,
+            widgetOptions = newOptions,
+            context = context,
+        )
+    }
+
+    override fun onDeleted(context: Context?, appWidgetIds: IntArray) {
+        log.debug {
+            "onDeleted(): deleting_preferences:" +
+                    "\nwidgetIds=${appWidgetIds.joinToString()}"
+        }
+
+        appWidgetIds.forEach(widgetsPreferences::delete)
+    }
+
+    private fun saveSizeToPreferences(
+        appWidgetId: Int,
+        widgetOptions: Bundle,
+        context: Context,
+    ) {
+        // Given context actually corresponds to the launcher
+        // and has its orientation even if doesn't match the physical one.
         val orientation = context.resources.configuration.orientation
 
         val width =
             if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                landsWidth
+                widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH)
             else
-                portraitWidth
+                widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
 
         val height =
             if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                landsHeight
+                widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
             else
-                portraitHeight
+                widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
 
-        val cellWidth = ceil(width.toFloat() / 50)
-        val cellHeight = ceil(height.toFloat() / 30)
-
-        val pxWidth = width * context.resources.displayMetrics.density
-        val pxHeight = height * context.resources.displayMetrics.density
+        val widthPx = (width * context.resources.displayMetrics.density).toInt()
+        val heightPx = (height * context.resources.displayMetrics.density).toInt()
 
         log.debug {
-            "onAppWidgetOptionsChanged(): options_changed:" +
-                    "\ncellWidth=$cellWidth," +
-                    "\ncellHeight=$cellHeight," +
-                    "\npxWidth=$pxWidth," +
-                    "\npxHeight=$pxHeight"
+            "saveSizeToPreferences(): saving:" +
+                    "\nwidgetId=$appWidgetId," +
+                    "\nwidthPx=$widthPx," +
+                    "\nheightPx=$heightPx," +
+                    "\norientation=$orientation"
         }
+
+        widgetsPreferences.setSize(
+            widgetId = appWidgetId,
+            size = Size(widthPx, heightPx),
+        )
     }
 }
