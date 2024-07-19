@@ -6,13 +6,22 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Size
-import org.koin.core.component.KoinComponent
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.createScope
+import org.koin.core.component.get
 import org.koin.core.component.inject
+import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
+import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
 
 
-class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinComponent {
+class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
+    override val scope: Scope by lazy {
+        // Prefer the session scope, but allow running without it.
+        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
+    }
 
     private val log = kLogger("PhotoFrameWidgetProvider")
     private val widgetsPreferences: PhotoFrameWidgetsPreferences by inject()
@@ -50,6 +59,15 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinComponent {
             widgetOptions = newOptions,
             context = context,
         )
+
+        try {
+            get<ReloadPhotoFrameWidgetPhotoUseCase>()
+                .invoke(appWidgetId)
+        } catch (e: Exception) {
+            log.warn {
+                "onAppWidgetOptionsChanged(): failed_photo_reloading_as_missing_scope"
+            }
+        }
     }
 
     override fun onDeleted(context: Context?, appWidgetIds: IntArray) {
