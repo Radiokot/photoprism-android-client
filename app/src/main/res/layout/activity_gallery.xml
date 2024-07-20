@@ -81,7 +81,7 @@
 
         <include
             android:id="@+id/search_content"
-            layout="@layout/view_gallery_search_configuration" />
+            layout="@layout/view_gallery_search_config" />
     </com.google.android.material.search.SearchView>
 
     <com.google.android.material.bottomappbar.BottomAppBar

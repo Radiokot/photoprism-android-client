@@ -11,21 +11,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchAlbumsBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigAlbumsBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumListItem
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 
-class GallerySearchAlbumsView(
-    private val view: ViewGallerySearchAlbumsBinding,
+class GallerySearchConfigAlbumsView(
+    private val view: ViewGallerySearchConfigAlbumsBinding,
     private val viewModel: GallerySearchAlbumsViewModel,
     activity: AppCompatActivity,
     lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner {
 
-    private val log = kLogger("GallerySearchAlbumsView")
+    private val log = kLogger("GallerySearchConfigAlbumsView")
 
     private val adapter = ItemAdapter<GallerySearchAlbumListItem>()
     private val albumSelectionLauncher = activity.registerForActivityResult(

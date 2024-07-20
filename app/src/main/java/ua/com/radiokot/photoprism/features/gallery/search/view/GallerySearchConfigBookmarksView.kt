@@ -12,7 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkItem
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
 
-class GallerySearchBookmarksView(
+class GallerySearchConfigBookmarksView(
     private val view: ViewGallerySearchBookmarksBinding,
     private val viewModel: GallerySearchViewModel,
     lifecycleOwner: LifecycleOwner,
@@ -62,7 +62,7 @@ class GallerySearchBookmarksView(
         }
 
         with(view.bookmarksChipsLayout) {
-            viewModel.bookmarks.observe(this@GallerySearchBookmarksView) { bookmarks ->
+            viewModel.bookmarks.observe(this@GallerySearchConfigBookmarksView) { bookmarks ->
                 removeAllViews()
                 bookmarks.forEach { bookmark ->
                     addView(Chip(chipContext).apply {

@@ -2,41 +2,41 @@ package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchConfigAlbumsView
+import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchConfigPeopleView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 
 /**
  * A view for configuring gallery search.
  */
-class GallerySearchConfigurationView(
-    private val view: ViewGallerySearchConfigurationBinding,
+class GallerySearchConfigView(
+    private val view: ViewGallerySearchConfigBinding,
     private val viewModel: GallerySearchViewModel,
     private val activity: AppCompatActivity,
     lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner {
 
-    private val bookmarksView = GallerySearchBookmarksView(
+    private val bookmarksView = GallerySearchConfigBookmarksView(
         view = view.bookmarksView,
         viewModel = viewModel,
         lifecycleOwner = this,
     )
-    private val peopleView = GallerySearchPeopleView(
+    private val peopleView = GallerySearchConfigPeopleView(
         view = view.peopleView,
         viewModel = viewModel.peopleViewModel,
         activity = activity,
         lifecycleOwner = this,
     )
-    private val albumsView = GallerySearchAlbumsView(
+    private val albumsView = GallerySearchConfigAlbumsView(
         view = view.albumsView,
         viewModel = viewModel.albumsViewModel,
         activity = activity,
         lifecycleOwner = this,
     )
-    private val mediaTypesView = GallerySearchMediaTypesView(
+    private val mediaTypesView = GallerySearchConfigMediaTypesView(
         view = view.mediaTypesView,
         viewModel = viewModel,
         lifecycleOwner = this,

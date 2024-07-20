@@ -9,11 +9,11 @@ import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchMediaTypesBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigMediaTypesBinding
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 
-class GallerySearchMediaTypesView(
-    private val view: ViewGallerySearchMediaTypesBinding,
+class GallerySearchConfigMediaTypesView(
+    private val view: ViewGallerySearchConfigMediaTypesBinding,
     private val viewModel: GallerySearchViewModel,
     lifecycleOwner: LifecycleOwner,
 ) : LifecycleOwner by lifecycleOwner {
@@ -52,7 +52,7 @@ class GallerySearchMediaTypesView(
         val chipIconTint = ColorStateList.valueOf(colorOnSurfaceVariant)
 
         with(view.mediaTypeChipsLayout) {
-            viewModel.availableMediaTypes.observe(this@GallerySearchMediaTypesView) { availableTypes ->
+            viewModel.availableMediaTypes.observe(this@GallerySearchConfigMediaTypesView) { availableTypes ->
                 availableTypes.forEach { mediaTypeName ->
                     addView(
                         Chip(chipContext).apply {
@@ -81,7 +81,7 @@ class GallerySearchMediaTypesView(
                 }
             }
 
-            viewModel.selectedMediaTypes.observe(this@GallerySearchMediaTypesView) { selectedTypes ->
+            viewModel.selectedMediaTypes.observe(this@GallerySearchConfigMediaTypesView) { selectedTypes ->
                 forEach { chip ->
                     with(chip as Chip) {
                         isChecked = selectedTypes?.contains(tag) == true

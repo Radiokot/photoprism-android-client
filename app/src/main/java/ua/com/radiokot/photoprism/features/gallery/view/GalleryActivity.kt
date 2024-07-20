@@ -635,7 +635,7 @@ class GalleryActivity : BaseActivity() {
     private fun initSearch() {
         searchView.init(
             searchView = view.searchView,
-            configurationView = view.searchContent,
+            configView = view.searchContent,
         )
         searchBarView.init(
             searchBar = view.searchBar,

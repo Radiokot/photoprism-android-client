@@ -11,21 +11,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchPeopleBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigPeopleBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 
-class GallerySearchPeopleView(
-    private val view: ViewGallerySearchPeopleBinding,
+class GallerySearchConfigPeopleView(
+    private val view: ViewGallerySearchConfigPeopleBinding,
     private val viewModel: GallerySearchPeopleViewModel,
     activity: AppCompatActivity,
     lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner {
 
-    private val log = kLogger("GallerySearchPeopleView")
+    private val log = kLogger("GallerySearchConfigPeopleView")
 
     private val adapter = ItemAdapter<GallerySearchPersonListItem>()
     private val peopleSelectionLauncher = activity.registerForActivityResult(

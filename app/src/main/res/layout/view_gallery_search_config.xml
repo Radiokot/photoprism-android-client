@@ -28,15 +28,15 @@
 
             <include
                 android:id="@+id/people_view"
-                layout="@layout/view_gallery_search_people" />
+                layout="@layout/view_gallery_search_config_people" />
 
             <include
                 android:id="@+id/albums_view"
-                layout="@layout/view_gallery_search_albums" />
+                layout="@layout/view_gallery_search_config_albums" />
 
             <include
                 android:id="@+id/media_types_view"
-                layout="@layout/view_gallery_search_media_types" />
+                layout="@layout/view_gallery_search_config_media_types" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/private_content_switch"

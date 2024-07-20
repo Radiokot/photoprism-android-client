@@ -15,7 +15,7 @@ import com.google.android.material.search.SearchView
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
+import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
@@ -48,7 +48,7 @@ class GallerySearchView(
 
     private val context: Context = activity
     private lateinit var searchView: SearchView
-    private lateinit var configurationView: GallerySearchConfigurationView
+    private lateinit var configView: GallerySearchConfigView
     private val colorOnSurfaceVariant: Int by lazy {
         MaterialColors.getColor(
             searchView,
@@ -58,12 +58,12 @@ class GallerySearchView(
 
     fun init(
         searchView: SearchView,
-        configurationView: ViewGallerySearchConfigurationBinding,
+        configView: ViewGallerySearchConfigBinding,
     ) {
         this.searchView = searchView
 
-        this.configurationView = GallerySearchConfigurationView(
-            view = configurationView,
+        this.configView = GallerySearchConfigView(
+            view = configView,
             viewModel = viewModel,
             activity = activity,
         )
@@ -95,14 +95,14 @@ class GallerySearchView(
 
                     // Slightly delay initialization to ease the transition animation.
                     searchView.post {
-                        configurationView.initOnce()
+                        configView.initOnce()
                     }
                 }
 
                 SearchView.TransitionState.SHOWN -> {
                     // If the view is initialized while the configuration view is already shown,
                     // the configuration view be initialized as well.
-                    configurationView.initOnce()
+                    configView.initOnce()
                 }
 
                 else -> {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:showIn="@layout/view_gallery_search_configuration">
+    tools:showIn="@layout/view_gallery_search_config">
 
     <TextView
         android:layout_width="wrap_content"
