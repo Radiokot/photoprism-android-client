@@ -29,7 +29,7 @@ import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
 
 /**
- * View for configuring and applying gallery search.
+ * A view for configuring and applying gallery search.
  */
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,

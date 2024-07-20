@@ -9,6 +9,9 @@ import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySea
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 
+/**
+ * A view for configuring gallery search.
+ */
 class GallerySearchConfigurationView(
     private val view: ViewGallerySearchConfigurationBinding,
     private val viewModel: GallerySearchViewModel,

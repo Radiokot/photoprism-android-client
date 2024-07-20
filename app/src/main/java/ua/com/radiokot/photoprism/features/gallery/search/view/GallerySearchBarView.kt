@@ -37,6 +37,9 @@ import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
 import ua.com.radiokot.photoprism.util.images.TextViewWrappedDrawableTarget
 import kotlin.math.roundToInt
 
+/**
+ * A view binding gallery search and [SearchBar].
+ */
 class GallerySearchBarView(
     private val viewModel: GallerySearchViewModel,
     @MenuRes
