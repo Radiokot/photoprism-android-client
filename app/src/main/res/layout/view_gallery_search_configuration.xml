@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -35,33 +34,9 @@
                 android:id="@+id/albums_view"
                 layout="@layout/view_gallery_search_albums" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="@string/media_type"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/media_type_chips_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                app:flexWrap="wrap"
-                tools:background="@android:color/system_neutral1_50"
-                tools:layout_height="30dp">
-                <!--Filled programmatically -->
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <TextView
-                android:id="@+id/types_not_available_notice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="0dp"
-                android:text="@string/some_types_are_not_available_when_selecting"
-                android:textAppearance="@style/NoticeTextAppearance" />
+            <include
+                android:id="@+id/media_types_view"
+                layout="@layout/view_gallery_search_media_types" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/private_content_switch"

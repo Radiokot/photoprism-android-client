@@ -6,11 +6,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchBookmarksBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkItem
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
@@ -19,17 +16,11 @@ class GallerySearchBookmarksView(
     private val view: ViewGallerySearchBookmarksBinding,
     private val viewModel: GallerySearchViewModel,
     lifecycleOwner: LifecycleOwner,
-) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
-    override val scope: Scope
-        get() = getKoin().getScope(DI_SCOPE_SESSION)
+) : LifecycleOwner by lifecycleOwner {
 
-    init {
-        subscribeToData()
-    }
-
-    private var isListInitialized = false
-    fun initListOnce() = view.bookmarksChipsLayout.post {
-        if (isListInitialized) {
+    private var isInitialized = false
+    fun initOnce() = view.bookmarksChipsLayout.post {
+        if (isInitialized) {
             return@post
         }
 
@@ -37,7 +28,9 @@ class GallerySearchBookmarksView(
             SearchBookmarkViewDragListener(viewModel)
         )
 
-        isListInitialized = true
+        subscribeToData()
+
+        isInitialized = true
     }
 
     private fun subscribeToData() {

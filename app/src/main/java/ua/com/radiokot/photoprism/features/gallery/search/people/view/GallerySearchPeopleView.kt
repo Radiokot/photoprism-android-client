@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchPeopleBinding
-import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -26,9 +23,7 @@ class GallerySearchPeopleView(
     private val viewModel: GallerySearchPeopleViewModel,
     activity: AppCompatActivity,
     lifecycleOwner: LifecycleOwner = activity,
-) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
-    override val scope: Scope
-        get() = getKoin().getScope(DI_SCOPE_SESSION)
+) : LifecycleOwner by lifecycleOwner {
 
     private val log = kLogger("GallerySearchPeopleView")
 
@@ -38,14 +33,9 @@ class GallerySearchPeopleView(
         this::onPeopleSelectionResult
     )
 
-    init {
-        subscribeToState()
-        subscribeToEvents()
-    }
-
-    private var isListInitialized = false
-    fun initListOnce() = view.peopleRecyclerView.post {
-        if (isListInitialized) {
+    private var isInitialized = false
+    fun initOnce() = view.peopleRecyclerView.post {
+        if (isInitialized) {
             return@post
         }
 
@@ -71,7 +61,10 @@ class GallerySearchPeopleView(
             viewModel.onSeeAllClicked()
         }
 
-        isListInitialized = true
+        subscribeToState()
+        subscribeToEvents()
+
+        isInitialized = true
     }
 
     private fun subscribeToState() {
