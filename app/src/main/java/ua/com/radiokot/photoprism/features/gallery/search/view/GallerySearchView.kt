@@ -1,32 +1,18 @@
 package ua.com.radiokot.photoprism.features.gallery.search.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.text.Editable
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.TextUtils
-import android.text.style.ForegroundColorSpan
 import android.widget.ImageButton
-import android.widget.TextView
-import androidx.annotation.DrawableRes
-import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.text.toSpannable
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
-import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
@@ -35,22 +21,12 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
-import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
-import ua.com.radiokot.photoprism.util.images.CenterVerticalImageSpan
-import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
-import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
-import ua.com.radiokot.photoprism.util.images.TextViewWrappedDrawableTarget
-import kotlin.math.roundToInt
 
 /**
  * View for configuring and applying gallery search.
@@ -58,8 +34,6 @@ import kotlin.math.roundToInt
 class GallerySearchView(
     private val viewModel: GallerySearchViewModel,
     private val fragmentManager: FragmentManager,
-    @MenuRes
-    private val menuRes: Int?,
     private val activity: AppCompatActivity,
     lifecycleOwner: LifecycleOwner = activity,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
@@ -71,13 +45,9 @@ class GallerySearchView(
     private val searchFiltersGuideUrl = getKoin()
         .getProperty<String>("searchGuideUrl")
         .checkNotNull { "Missing search filters guide URL" }
-    private val picasso: Picasso by inject()
-    private val tvDetector: TvDetector by inject()
 
-    private lateinit var searchBar: SearchBar
+    private val context: Context = activity
     private lateinit var searchView: SearchView
-    private val context: Context
-        get() = searchBar.context
     private lateinit var configurationView: GallerySearchConfigurationView
     private val colorOnSurfaceVariant: Int by lazy {
         MaterialColors.getColor(
@@ -87,11 +57,9 @@ class GallerySearchView(
     }
 
     fun init(
-        searchBar: SearchBar,
         searchView: SearchView,
         configurationView: ViewGallerySearchConfigurationBinding,
     ) {
-        this.searchBar = searchBar
         this.searchView = searchView
 
         this.configurationView = GallerySearchConfigurationView(
@@ -100,19 +68,18 @@ class GallerySearchView(
             activity = activity,
         )
 
-        initSearchBarAndView()
-        initMenus()
+        initSearchView()
         // The configuration view is initialized on showing.
 
         subscribeToState()
         subscribeToEvents()
     }
 
-    private fun initSearchBarAndView() {
+    private fun initSearchView() {
         var searchTextStash: Editable?
         searchView.addTransitionListener { _, previousState, newState ->
             log.debug {
-                "initSearchBarAndView(): search_view_transitioning:" +
+                "initSearchView(): search_view_transitioning:" +
                         "\nprevState=$previousState," +
                         "\nnewState=$newState"
             }
@@ -157,7 +124,7 @@ class GallerySearchView(
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
                     log.debug {
-                        "initSearchBarAndView(): edit_text_search_key_pressed"
+                        "initSearchView(): edit_text_search_key_pressed"
                     }
 
                     searchButtonClickListener.onClick(this)
@@ -178,50 +145,7 @@ class GallerySearchView(
         // Fix the back button color. Only this way works.
         (searchView.toolbar as MaterialToolbar).setNavigationIconTint(colorOnSurfaceVariant)
 
-        with(searchBar) {
-            setHint(
-                if (tvDetector.isRunningOnTv)
-                    R.string.use_mouse_to_search_the_library
-                else
-                    R.string.search_the_library
-            )
-
-            textView.ellipsize = TextUtils.TruncateAt.END
-
-            // Override the default bar click listener
-            // to make the ViewModel in charge of the state.
-            post {
-                setThrottleOnClickListener {
-                    viewModel.onSearchBarClicked()
-                }
-            }
-        }
-    }
-
-    private fun initMenus() {
-        // Search bar menu.
-        @SuppressLint("RestrictedApi")
-        if (menuRes != null) {
-            // Important. The external inflater is used to avoid setting SearchBar.menuResId
-            // Otherwise, this ding dong tries to animate the menu which makes
-            // all the items visible during the animation 🤦🏻‍
-            SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
-            searchBar.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.reset_search ->
-                        viewModel.onResetClicked()
-
-                    R.id.add_search_bookmark ->
-                        viewModel.onAddBookmarkClicked()
-
-                    R.id.edit_search_bookmark ->
-                        viewModel.onEditBookmarkClicked()
-                }
-                true
-            }
-        }
-
-        // Search view (configuration) menu.
+        // Menu.
         with(searchView) {
             inflateMenu(R.menu.search)
             setOnMenuItemClickListener { item ->
@@ -239,46 +163,6 @@ class GallerySearchView(
             log.debug {
                 "subscribeToState(): received_new_state:" +
                         "\nstate=$state"
-            }
-
-            // Override logic of the SearchBar text.
-            searchBar.post {
-                searchBar.text =
-                    when (state) {
-                        is GallerySearchViewModel.State.Applied ->
-                            getSearchBarText(
-                                search = state.search,
-                                textView = searchBar.textView,
-                            )
-
-                        is GallerySearchViewModel.State.Configuring ->
-                            if (state.alreadyAppliedSearch != null)
-                                getSearchBarText(
-                                    search = state.alreadyAppliedSearch,
-                                    textView = searchBar.textView,
-                                )
-                            else
-                                null
-
-                        GallerySearchViewModel.State.NoSearch ->
-                            null
-                    }
-            }
-
-            with(searchBar.menu) {
-                findItem(R.id.reset_search)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.Applied
-                }
-
-                findItem(R.id.add_search_bookmark)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.Applied
-                            && state.search !is AppliedGallerySearch.Bookmarked
-                }
-
-                findItem(R.id.edit_search_bookmark)?.apply {
-                    isVisible = state is GallerySearchViewModel.State.Applied
-                            && state.search is AppliedGallerySearch.Bookmarked
-                }
             }
 
             when (state) {
@@ -333,162 +217,6 @@ class GallerySearchView(
 
     private fun openConfigurationView() {
         searchView.show()
-    }
-
-    private fun getSearchBarText(
-        search: AppliedGallerySearch,
-        textView: TextView
-    ): CharSequence {
-        fun SpannableStringBuilder.appendHighlightedText(content: String) =
-            appendHighlightedText(
-                content = content,
-                view = textView,
-            )
-
-        // For bookmarked search show only bookmark name
-        if (search is AppliedGallerySearch.Bookmarked) {
-            return SpannableStringBuilder().apply {
-                appendHighlightedText(search.bookmark.name)
-            }
-        }
-
-        val iconSize = (textView.lineHeight * 0.8).roundToInt()
-        val imageSize = (textView.lineHeight * 1.3).roundToInt()
-        val textColors = textView.textColors
-
-        fun SpannableStringBuilder.appendIcon(@DrawableRes id: Int) =
-            appendIcon(
-                id = id,
-                context = context,
-                colors = textColors,
-                sizePx = iconSize,
-            )
-
-        fun SpannableStringBuilder.appendCircleImage(url: String) =
-            appendCircleImage(
-                url = url,
-                sizePx = imageSize,
-            )
-
-        val spannableString = SpannableStringBuilder()
-            .apply {
-                search.config.personIds.forEach { personUid ->
-                    // If the URL is missing, the placeholder will be shown.
-                    val thumbnailUrl = viewModel.peopleViewModel.getPersonThumbnail(
-                        uid = personUid,
-                        // Use the thumbnail size from the person list item
-                        // although it is too big for such a tiny view.
-                        // The is most certainly already cached by the people list,
-                        // hence can be displayed instantly.
-                        viewSizePx = GallerySearchPersonListItem.DEFAULT_THUMBNAIL_SIZE,
-                    )
-                        ?: "missing:/"
-                    appendCircleImage(thumbnailUrl)
-                }
-
-                search.config.mediaTypes?.forEach { mediaType ->
-                    appendIcon(GalleryMediaTypeResources.getIcon(mediaType))
-                }
-
-                if (search.config.includePrivate) {
-                    appendIcon(R.drawable.ic_eye_off)
-                }
-
-                if (search.config.onlyFavorite) {
-                    appendIcon(R.drawable.ic_favorite)
-                }
-
-                // If an album is selected, show icon and, if possible, the title.
-                val albumUid = search.config.albumUid
-                if (albumUid != null) {
-                    appendIcon(R.drawable.ic_album)
-
-                    val albumTitle = viewModel.albumsViewModel.getAlbumTitle(albumUid)
-                    if (albumTitle != null) {
-                        appendHighlightedText(albumTitle)
-                        if (search.config.userQuery.isNotEmpty()) {
-                            append(" ")
-                        }
-                    }
-                }
-            }
-            .append(search.config.userQuery)
-            .toSpannable()
-
-        return spannableString
-    }
-
-    private fun SpannableStringBuilder.appendHighlightedText(content: String, view: TextView) {
-        append(content)
-        setSpan(
-            ForegroundColorSpan(
-                MaterialColors.getColor(
-                    view,
-                    com.google.android.material.R.attr.colorPrimary
-                )
-            ),
-            0,
-            length,
-            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-        )
-    }
-
-    private fun SpannableStringBuilder.appendIcon(
-        @DrawableRes id: Int,
-        context: Context,
-        sizePx: Int,
-        colors: ColorStateList,
-        end: String = " "
-    ) {
-        val drawable = ContextCompat.getDrawable(
-            context,
-            id
-        )!!.apply {
-            setBounds(0, 0, sizePx, sizePx)
-            DrawableCompat.setTintList(this, colors)
-        }
-        append("x")
-        setSpan(
-            CenterVerticalImageSpan(drawable),
-            length - 1,
-            length,
-            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-        )
-        append(end)
-    }
-
-    private fun SpannableStringBuilder.appendCircleImage(
-        url: String,
-        sizePx: Int,
-        end: String = " "
-    ) {
-        val wrappedDrawable = SimpleWrappedDrawable(
-            defaultWidthPx = sizePx,
-            defaultHeightPx = sizePx,
-        )
-
-        picasso
-            .load(url)
-            .resize(sizePx, sizePx)
-            .centerInside()
-            .noFade()
-            .transform(CircleImageTransformation.INSTANCE)
-            .placeholder(R.drawable.image_placeholder_circle)
-            .into(
-                TextViewWrappedDrawableTarget(
-                    textView = searchBar.textView,
-                    wrappedDrawable = wrappedDrawable,
-                )
-            )
-
-        append("x")
-        setSpan(
-            CenterVerticalImageSpan(wrappedDrawable),
-            length - 1,
-            length,
-            Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-        )
-        append(end)
     }
 
     private fun openBookmarkDialog(

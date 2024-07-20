@@ -51,6 +51,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
+import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
@@ -102,8 +103,14 @@ class GalleryActivity : BaseActivity() {
         GallerySearchView(
             viewModel = viewModel.searchViewModel,
             fragmentManager = supportFragmentManager,
-            menuRes = R.menu.gallery_search,
             activity = this,
+        )
+    }
+    private val searchBarView: GallerySearchBarView by lazy {
+        GallerySearchBarView(
+            viewModel = viewModel.searchViewModel,
+            menuRes = R.menu.gallery_search,
+            lifecycleOwner = this,
         )
     }
     private val fastScrollView: GalleryFastScrollView by lazy {
@@ -627,9 +634,11 @@ class GalleryActivity : BaseActivity() {
 
     private fun initSearch() {
         searchView.init(
-            searchBar = view.searchBar,
             searchView = view.searchView,
             configurationView = view.searchContent,
+        )
+        searchBarView.init(
+            searchBar = view.searchBar,
         )
 
         view.searchBar.setNavigationOnClickListener {
@@ -660,7 +669,7 @@ class GalleryActivity : BaseActivity() {
                     R.id.archive ->
                         viewModel.onArchiveMultipleSelectionClicked()
 
-                    R.id.delete->
+                    R.id.delete ->
                         viewModel.onDeleteMultipleSelectionClicked()
                 }
 
