@@ -14,18 +14,13 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.toSpannable
-import androidx.core.view.forEach
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
-import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
@@ -36,16 +31,18 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigurationBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.*
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.bindTextTwoWay
+import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchAlbumsView
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchPeopleView
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.*
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.ThrottleOnClickListener
@@ -79,12 +76,9 @@ class GallerySearchView(
 
     private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
-    private lateinit var configurationView: ViewGallerySearchConfigurationBinding
     private val context: Context
         get() = searchBar.context
-    private lateinit var bookmarksView: GallerySearchBookmarksView
-    private lateinit var peopleView: GallerySearchPeopleView
-    private lateinit var albumsView: GallerySearchAlbumsView
+    private lateinit var configurationView: GallerySearchConfigurationView
     private val colorOnSurfaceVariant: Int by lazy {
         MaterialColors.getColor(
             searchView,
@@ -99,31 +93,17 @@ class GallerySearchView(
     ) {
         this.searchBar = searchBar
         this.searchView = searchView
-        this.configurationView = configurationView
 
-        this.bookmarksView = GallerySearchBookmarksView(
-            view = configurationView.bookmarksView,
+        this.configurationView = GallerySearchConfigurationView(
+            view = configurationView,
             viewModel = viewModel,
-            lifecycleOwner = this,
-        )
-        this.peopleView = GallerySearchPeopleView(
-            view = configurationView.peopleView,
-            viewModel = viewModel.peopleViewModel,
             activity = activity,
-            lifecycleOwner = this,
-        )
-        this.albumsView = GallerySearchAlbumsView(
-            view = configurationView.albumsView,
-            viewModel = viewModel.albumsViewModel,
-            activity = activity,
-            lifecycleOwner = this,
         )
 
         initSearchBarAndView()
         initMenus()
-        // Bookmarks, albums and people are initialized on config view showing.
+        // The configuration view is initialized on showing.
 
-        subscribeToData()
         subscribeToState()
         subscribeToEvents()
     }
@@ -148,18 +128,14 @@ class GallerySearchView(
 
                     // Slightly delay initialization to ease the transition animation.
                     searchView.post {
-                        bookmarksView.initListOnce()
-                        albumsView.initOnce()
-                        peopleView.initListOnce()
+                        configurationView.initOnce()
                     }
                 }
 
                 SearchView.TransitionState.SHOWN -> {
                     // If the view is initialized while the configuration view is already shown,
-                    // albums must be initialized as well.
-                    bookmarksView.initListOnce()
-                    albumsView.initOnce()
-                    peopleView.initListOnce()
+                    // the configuration view be initialized as well.
+                    configurationView.initOnce()
                 }
 
                 else -> {
@@ -220,17 +196,6 @@ class GallerySearchView(
                 }
             }
         }
-
-        configurationView.privateContentSwitch.bindCheckedTwoWay(viewModel.includePrivateContent)
-        configurationView.onlyFavoriteSwitch.bindCheckedTwoWay(viewModel.onlyFavorite)
-
-        configurationView.searchButton.setThrottleOnClickListener {
-            viewModel.onSearchClicked()
-        }
-
-        configurationView.resetButton.setThrottleOnClickListener {
-            viewModel.onResetClicked()
-        }
     }
 
     private fun initMenus() {
@@ -267,72 +232,6 @@ class GallerySearchView(
                 false
             }
         }
-    }
-
-    private fun subscribeToData() {
-        val context = configurationView.mediaTypeChipsLayout.context
-        viewModel.isApplyButtonEnabled
-            .observe(this, configurationView.searchButton::setEnabled)
-
-        val chipSpacing =
-            context.resources.getDimensionPixelSize(R.dimen.gallery_search_chip_spacing)
-        val chipContext = ContextThemeWrapper(
-            context,
-            com.google.android.material.R.style.Widget_Material3_Chip_Filter
-        )
-        val chipLayoutParams = FlexboxLayout.LayoutParams(
-            FlexboxLayout.LayoutParams.WRAP_CONTENT,
-            context.resources.getDimensionPixelSize(R.dimen.gallery_search_chip_height),
-        ).apply {
-            setMargins(0, 0, chipSpacing, chipSpacing)
-        }
-        val chipIconTint = ColorStateList.valueOf(colorOnSurfaceVariant)
-
-        with(configurationView.mediaTypeChipsLayout) {
-            viewModel.availableMediaTypes.observe(this@GallerySearchView) { availableTypes ->
-                availableTypes.forEach { mediaTypeName ->
-                    addView(
-                        Chip(chipContext).apply {
-                            tag = mediaTypeName
-                            setText(
-                                GalleryMediaTypeResources.getName(
-                                    mediaTypeName
-                                )
-                            )
-                            setChipIconResource(
-                                GalleryMediaTypeResources.getIcon(
-                                    mediaTypeName
-                                )
-                            )
-                            setChipIconTint(chipIconTint)
-
-                            setEnsureMinTouchTargetSize(false)
-                            isCheckable = true
-
-                            setOnClickListener {
-                                viewModel.onAvailableMediaTypeClicked(mediaTypeName)
-                            }
-                        },
-                        chipLayoutParams,
-                    )
-                }
-            }
-
-            viewModel.selectedMediaTypes.observe(this@GallerySearchView) { selectedTypes ->
-                forEach { chip ->
-                    with(chip as Chip) {
-                        isChecked = selectedTypes?.contains(tag) == true
-                        isCheckedIconVisible = isChecked
-                        isChipIconVisible = !isChecked
-                    }
-                }
-            }
-        }
-
-        viewModel.areSomeTypesUnavailable.observe(
-            this,
-            configurationView.typesNotAvailableNotice::isVisible::set
-        )
     }
 
     private fun subscribeToState() {
