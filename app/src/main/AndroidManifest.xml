@@ -197,10 +197,15 @@
 
         <activity
             android:name=".features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity"
-            android:exported="false"
+            android:enabled="false"
+            android:exported="true"
             android:label="@string/photo_frame_widget_name"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- This screen gets enabled or disabled programmatically
+                 on optional features initialization. -->
+        </activity>
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"

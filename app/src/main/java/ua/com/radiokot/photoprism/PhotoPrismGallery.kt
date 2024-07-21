@@ -44,6 +44,7 @@ import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureM
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule
 import ua.com.radiokot.photoprism.features.widgets.photoframe.photoFrameWidgetFeatureModule
+import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetProvider
 import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
@@ -154,6 +155,10 @@ class PhotoPrismGallery : Application() {
 
         setManifestComponentEnabled(
             componentClass = PhotoFrameWidgetProvider::class.java,
+            isEnabled = hasPhotoFrameWidget
+        )
+        setManifestComponentEnabled(
+            componentClass = PhotoFrameWidgetConfigurationActivity::class.java,
             isEnabled = hasPhotoFrameWidget
         )
     }
