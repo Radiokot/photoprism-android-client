@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Text color mismatch on guide web pages with dark theme
+- Not importing files when the library is password protected
 
 ## [1.28.0] - 2024-07-13
 

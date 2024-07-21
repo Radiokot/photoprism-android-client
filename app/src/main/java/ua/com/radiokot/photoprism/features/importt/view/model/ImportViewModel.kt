@@ -75,7 +75,7 @@ class ImportViewModel(
 
         log.debug {
             "initOnce(): initialized:" +
-                    "\nsummary=$summary," +
+                    "\nsummary=${summary.value}," +
                     "\npermissionsToCheckBeforeStart=$permissionsToCheckBeforeStart"
         }
     }

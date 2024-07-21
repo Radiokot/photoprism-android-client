@@ -115,5 +115,12 @@ val retrofitApiModule = module {
             get<Retrofit>()
                 .create(PhotoPrismUploadService::class.java)
         }
+
+        // Session service instance under the session scope
+        // with current auth.
+        scoped<PhotoPrismSessionService> {
+            get<Retrofit>()
+                .create(PhotoPrismSessionService::class.java)
+        }
     }
 }
