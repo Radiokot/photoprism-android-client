@@ -100,6 +100,8 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
+        languageVersion = kotlin_version
+        apiVersion = kotlin_version
     }
 
     buildFeatures {
@@ -251,7 +253,9 @@ project.afterEvaluate {
 // Prevent building bundles for build types not meant for Google Play.
 project.afterEvaluate {
     tasks.each { task ->
-        if (task.name.startsWith("bundle") && !task.name.startsWith("bundleReleasePlay")) {
+        if (task.name.startsWith("bundle")
+                && !task.name.startsWith("bundleReleasePlay")
+                && !task.name.endsWith("CompileJar")) {
             task.doFirst {
                 throw new IllegalStateException("Only 'releasePlay' type builds can be published to Google Play")
             }
