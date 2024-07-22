@@ -14,9 +14,9 @@ interface PhotoFrameWidgetsPreferences {
     fun setSize(widgetId: Int, size: Size)
 
     /**
-     * @return photo URL of the given widget if set.
+     * @return photo URL of the given widget.
      */
-    fun getPhotoUrl(widgetId: Int): String?
+    fun getPhotoUrl(widgetId: Int): String
 
     /**
      * Saves the photo URL of the given widget.

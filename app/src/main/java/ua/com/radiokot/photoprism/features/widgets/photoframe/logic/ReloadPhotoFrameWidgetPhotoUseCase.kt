@@ -2,12 +2,17 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.graphics.Bitmap
+import android.util.Size
 import android.widget.RemoteViews
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.toCompletable
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.tryOrNull
+import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
@@ -19,61 +24,60 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
     operator fun invoke(
         widgetId: Int,
-    ) {
-        val photoUrl = widgetsPreferences.getPhotoUrl(widgetId)
-        if (photoUrl == null) {
-            log.warn {
-                "invoke(): photo_url_not_set:" +
-                        "\nwidgetId=$widgetId"
+    ): Completable =
+        getSizeAndPhotoUrl(widgetId)
+            .flatMap { (widgetSize, photoUrl) ->
+                getPhoto(widgetSize, photoUrl)
             }
-            return
-        }
-
-        val widgetSize = tryOrNull { widgetsPreferences.getSize(widgetId) }
-        if (widgetSize == null) {
-            log.error {
-                "invoke(): size_not_set:" +
-                        "\nwidgetId=$widgetId"
+            .flatMapCompletable { photoBitmap ->
+                showPhotoInWidget(widgetId, photoBitmap)
             }
-            return
-        }
 
-        val remoteViews = RemoteViews(context.packageName, R.layout.widget_photo_frame)
+    private fun getSizeAndPhotoUrl(widgetId: Int): Single<Pair<Size, String>> = {
+        Pair(
+            first = widgetsPreferences.getSize(widgetId),
+            second = widgetsPreferences.getPhotoUrl(widgetId)
+        )
+    }.toSingle()
 
-        log.debug {
-            "invoke(): loading:" +
-                    "\nwidgetId=$widgetId," +
-                    "\nphotoUrl=$photoUrl"
-        }
-
+    private fun getPhoto(
+        widgetSize: Size,
+        photoUrl: String,
+    ): Single<Bitmap> =
         picasso
             .load(photoUrl)
             .resize(widgetSize.width, widgetSize.height)
             .centerCrop()
-            .into(remoteViews, R.id.photo_image_view, intArrayOf(widgetId), object : Callback {
-                override fun onSuccess() {
-                    remoteViews.setInt(
-                        R.id.photo_image_view,
-                        "setBackgroundResource",
-                        android.R.color.transparent
-                    )
-
-                    AppWidgetManager
-                        .getInstance(context)
-                        .updateAppWidget(widgetId, remoteViews)
-
-                    log.debug {
-                        "invoke(): photo_reloaded_successfully:" +
-                                "\nwidgetId=$widgetId"
-                    }
+            .intoSingle()
+            .doOnSuccess {
+                log.debug {
+                    "getPhoto(): photo_loaded_successfully:" +
+                            "\nwidgetSize=$widgetSize" +
+                            "\nphotoUrl=$photoUrl"
                 }
+            }
 
-                override fun onError(e: Exception) {
-                    log.error(e) {
-                        "invoke(): failed_loading_photo:" +
-                                "\nphotoUrl=$photoUrl"
-                    }
-                }
-            })
-    }
+    private fun showPhotoInWidget(
+        widgetId: Int,
+        photoBitmap: Bitmap,
+    ): Completable = {
+        val remoteViews =
+            RemoteViews(context.packageName, R.layout.widget_photo_frame).apply {
+                setInt(
+                    R.id.photo_image_view,
+                    "setBackgroundResource",
+                    android.R.color.transparent
+                )
+                setImageViewBitmap(R.id.photo_image_view, photoBitmap)
+            }
+
+        AppWidgetManager
+            .getInstance(context)
+            .updateAppWidget(widgetId, remoteViews)
+
+        log.debug {
+            "showPhotoInWidget(): photo_shown_successfully:" +
+                    "\nwidgetId=$widgetId"
+        }
+    }.toCompletable()
 }

@@ -26,8 +26,9 @@ class PhotoFrameWidgetPreferencesOnPrefs(
             putString(getSizeKey(widgetId), size.toString())
         }
 
-    override fun getPhotoUrl(widgetId: Int): String? =
+    override fun getPhotoUrl(widgetId: Int): String =
         preferences.getString(getPhotoUrlKey(widgetId), null)
+            .checkNotNull { "No photo URL set for $widgetId" }
 
     override fun setPhotoUrl(widgetId: Int, photoUrl: String) =
         preferences.edit {

@@ -1,14 +1,15 @@
 package ua.com.radiokot.photoprism.features.widgets.photoframe.view
 
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Size
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
-import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -43,6 +44,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         )
     }
 
+    @SuppressLint("CheckResult")
     override fun onAppWidgetOptionsChanged(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -60,14 +62,24 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             context = context,
         )
 
-        try {
-            get<ReloadPhotoFrameWidgetPhotoUseCase>()
-                .invoke(appWidgetId)
-        } catch (e: Exception) {
+        val reloadPhotoUseCase = scope.getOrNull<ReloadPhotoFrameWidgetPhotoUseCase>()
+        if (reloadPhotoUseCase == null) {
             log.warn {
                 "onAppWidgetOptionsChanged(): failed_photo_reloading_as_missing_scope"
             }
+
+            return
         }
+
+        reloadPhotoUseCase
+            .invoke(appWidgetId)
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "failed_photo_reloading"
+                    }
+                }
+            )
     }
 
     override fun onDeleted(context: Context?, appWidgetIds: IntArray) {
