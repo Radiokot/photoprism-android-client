@@ -38,7 +38,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         }
 
         saveSizeToPreferences(
-            appWidgetId = widgetId,
+            widgetId = widgetId,
             widgetOptions = appWidgetManager.getAppWidgetOptions(widgetId),
             context = context,
         )
@@ -57,7 +57,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         }
 
         saveSizeToPreferences(
-            appWidgetId = appWidgetId,
+            widgetId = appWidgetId,
             widgetOptions = newOptions,
             context = context,
         )
@@ -71,6 +71,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             return
         }
 
+        // This shouldn't take long.
         reloadPhotoUseCase
             .invoke(appWidgetId)
             .subscribeBy(
@@ -92,7 +93,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
     }
 
     private fun saveSizeToPreferences(
-        appWidgetId: Int,
+        widgetId: Int,
         widgetOptions: Bundle,
         context: Context,
     ) {
@@ -117,14 +118,14 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
 
         log.debug {
             "saveSizeToPreferences(): saving:" +
-                    "\nwidgetId=$appWidgetId," +
+                    "\nwidgetId=$widgetId," +
                     "\nwidthPx=$widthPx," +
                     "\nheightPx=$heightPx," +
                     "\norientation=$orientation"
         }
 
         widgetsPreferences.setSize(
-            widgetId = appWidgetId,
+            widgetId = widgetId,
             size = Size(widthPx, heightPx),
         )
     }

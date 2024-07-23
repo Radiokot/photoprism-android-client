@@ -36,7 +36,8 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
 
         log.debug {
             "pickAndSaveRandomPhoto(): picked:" +
-                    "\nrandomPhoto=$randomPhoto"
+                    "\nrandomPhoto=$randomPhoto," +
+                    "\nwidgetId=$widgetId"
         }
 
         val previewUrl = (randomPhoto.media as? ViewableAsImage)
