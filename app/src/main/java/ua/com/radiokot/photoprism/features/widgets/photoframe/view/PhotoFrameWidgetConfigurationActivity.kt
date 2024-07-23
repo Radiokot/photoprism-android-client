@@ -9,8 +9,6 @@ import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPhotoFrameWidgetConfigurationBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetPhotoUseCase
@@ -44,21 +42,9 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         setContentView(view.root)
 
         view.okButton.setOnClickListener {
-            val repository = galleryMediaRepositoryFactory
-                .get(
-                    SearchConfig.DEFAULT.copy(
-                        mediaTypes = setOf(
-                            GalleryMedia.TypeName.IMAGE,
-                            GalleryMedia.TypeName.RAW,
-                        ),
-                        albumUid = "arp9ftzkv0jtxhh0",
-                    )
-                )
-
             updatePhotoFrameWidgetPhotoUseCase
                 .invoke(
                     widgetId = appWidgetId,
-                    galleryMediaRepository = repository,
                 )
                 .andThen(
                     reloadPhotoFrameWidgetPhotoUseCase(

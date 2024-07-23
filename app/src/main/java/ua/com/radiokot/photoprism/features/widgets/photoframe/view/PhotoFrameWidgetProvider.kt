@@ -88,7 +88,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
                     "\nwidgetIds=${appWidgetIds.joinToString()}"
         }
 
-        appWidgetIds.forEach(widgetsPreferences::delete)
+        appWidgetIds.forEach(widgetsPreferences::clear)
     }
 
     private fun saveSizeToPreferences(

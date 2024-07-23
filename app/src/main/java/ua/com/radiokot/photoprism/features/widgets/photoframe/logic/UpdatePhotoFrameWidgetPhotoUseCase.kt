@@ -11,17 +11,21 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.Photo
 
 class UpdatePhotoFrameWidgetPhotoUseCase(
     private val widgetsPreferences: PhotoFrameWidgetsPreferences,
+    private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
 ) {
     private val log = kLogger("UpdatePhotoFrameWidgetPhotoUseCase")
 
     operator fun invoke(
         widgetId: Int,
-        // TODO: Use factory and widget's search config.
-        galleryMediaRepository: SimpleGalleryMediaRepository,
-    ): Completable =
-        galleryMediaRepository
+    ): Completable {
+        val galleryMediaRepository = galleryMediaRepositoryFactory.get(
+            searchConfig = widgetsPreferences.getSearchConfig(widgetId)
+        )
+
+        return galleryMediaRepository
             .updateIfNotFreshDeferred()
             .andThen(pickAndSaveRandomPhoto(widgetId, galleryMediaRepository))
+    }
 
     private fun pickAndSaveRandomPhoto(
         widgetId: Int,

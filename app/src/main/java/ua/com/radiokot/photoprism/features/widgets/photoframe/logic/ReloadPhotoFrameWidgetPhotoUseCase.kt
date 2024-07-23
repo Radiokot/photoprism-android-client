@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toCompletable
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
@@ -37,6 +38,9 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
         Pair(
             first = widgetsPreferences.getSize(widgetId),
             second = widgetsPreferences.getPhotoUrl(widgetId)
+                .checkNotNull {
+                    "No photo URL for $widgetId yet"
+                }
         )
     }.toSingle()
 
