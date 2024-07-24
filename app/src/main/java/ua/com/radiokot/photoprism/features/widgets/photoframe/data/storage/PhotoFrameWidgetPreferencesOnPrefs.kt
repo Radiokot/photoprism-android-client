@@ -29,6 +29,9 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     private fun getSearchConfigKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_search_config"
 
+    private fun getUpdatesScheduledKey(widgetId: Int) =
+        getWidgetKeyPrefix(widgetId) + "_updates_scheduled"
+
     private val searchConfigPersistenceCache =
         LruCache<Int, ObjectPersistence<SearchConfig>>(10)
 
@@ -68,6 +71,14 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     override fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig) =
         getSearchConfigPersistence(widgetId)
             .saveItem(searchConfig)
+
+    override fun areUpdatesScheduled(widgetId: Int): Boolean =
+        preferences.getBoolean(getUpdatesScheduledKey(widgetId), false)
+
+    override fun setUpdatesScheduled(widgetId: Int, areScheduled: Boolean) =
+        preferences.edit {
+            putBoolean(getUpdatesScheduledKey(widgetId), areScheduled)
+        }
 
     override fun clear(widgetId: Int) {
         getSearchConfigPersistence(widgetId).clear()

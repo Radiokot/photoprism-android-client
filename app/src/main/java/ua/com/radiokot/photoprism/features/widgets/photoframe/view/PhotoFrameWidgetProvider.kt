@@ -7,6 +7,11 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Size
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
@@ -16,6 +21,8 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
+import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetWorker
+import java.util.concurrent.TimeUnit
 
 
 class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
@@ -42,6 +49,14 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             widgetOptions = appWidgetManager.getAppWidgetOptions(widgetId),
             context = context,
         )
+
+        if (!widgetsPreferences.areUpdatesScheduled(widgetId)) {
+            // Should be called before WorkManager to avoid infinite loop.
+            // See https://stackoverflow.com/questions/70654474/starting-workmanager-task-from-appwidgetprovider-results-in-endless-onupdate-cal
+            widgetsPreferences.setUpdatesScheduled(widgetId)
+
+            scheduleWidgetUpdates(widgetId, context)
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -83,13 +98,18 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             )
     }
 
-    override fun onDeleted(context: Context?, appWidgetIds: IntArray) {
-        log.debug {
-            "onDeleted(): deleting_preferences:" +
-                    "\nwidgetIds=${appWidgetIds.joinToString()}"
-        }
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
 
-        appWidgetIds.forEach(widgetsPreferences::clear)
+        appWidgetIds.forEach { widgetId ->
+            widgetsPreferences.clear(widgetId)
+
+            log.debug {
+                "onDeleted(): cleared_preferences:" +
+                        "\nwidgetId=$widgetId"
+            }
+
+            cancelWidgetUpdates(widgetId, context)
+        }
     }
 
     private fun saveSizeToPreferences(
@@ -128,5 +148,58 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             widgetId = widgetId,
             size = Size(widthPx, heightPx),
         )
+    }
+
+    private fun scheduleWidgetUpdates(
+        widgetId: Int,
+        context: Context,
+    ) {
+        val workRequest = PeriodicWorkRequestBuilder<UpdatePhotoFrameWidgetWorker>(
+            UPDATE_INTERVAL_MINUTES,
+            TimeUnit.MINUTES
+        )
+            .setInputData(
+                UpdatePhotoFrameWidgetWorker.getInputData(
+                    widgetId = widgetId,
+                )
+            )
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .addTag(UpdatePhotoFrameWidgetWorker.TAG)
+            .build()
+
+        WorkManager.getInstance(context)
+            .enqueueUniquePeriodicWork(
+                UpdatePhotoFrameWidgetWorker.getWorkName(widgetId),
+                ExistingPeriodicWorkPolicy.UPDATE,
+                workRequest,
+            )
+
+        log.debug {
+            "scheduleWidgetUpdates: scheduled:" +
+                    "\nwidgetId=$widgetId," +
+                    "\nintervalMinutes=$UPDATE_INTERVAL_MINUTES"
+        }
+    }
+
+    private fun cancelWidgetUpdates(
+        widgetId: Int,
+        context: Context,
+    ) {
+        WorkManager.getInstance(context)
+            .cancelUniqueWork(UpdatePhotoFrameWidgetWorker.getWorkName(widgetId))
+
+        log.debug {
+            "cancelWidgetUpdates(): canceled:" +
+                    "\nwidgetId=$widgetId"
+        }
+    }
+
+    private companion object {
+        private const val UPDATE_INTERVAL_MINUTES = 30L
     }
 }

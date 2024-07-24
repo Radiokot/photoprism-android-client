@@ -36,6 +36,10 @@ interface PhotoFrameWidgetsPreferences {
      */
     fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig)
 
+    fun areUpdatesScheduled(widgetId: Int): Boolean
+
+    fun setUpdatesScheduled(widgetId: Int, areScheduled: Boolean = true)
+
     /**
      * Wipes all the preferences of the given widget.
      */
