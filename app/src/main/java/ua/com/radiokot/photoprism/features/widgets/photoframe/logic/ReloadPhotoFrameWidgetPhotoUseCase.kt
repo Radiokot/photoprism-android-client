@@ -77,7 +77,7 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
         AppWidgetManager
             .getInstance(context)
-            .updateAppWidget(widgetId, remoteViews)
+            .partiallyUpdateAppWidget(widgetId, remoteViews)
 
         log.debug {
             "showPhotoInWidget(): photo_shown_successfully:" +

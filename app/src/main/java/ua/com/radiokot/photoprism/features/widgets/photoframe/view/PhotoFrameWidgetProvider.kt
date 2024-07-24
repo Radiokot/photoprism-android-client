@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Size
+import android.widget.RemoteViews
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -17,6 +18,7 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
+import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
@@ -54,6 +56,12 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             // Should be called before WorkManager to avoid infinite loop.
             // See https://stackoverflow.com/questions/70654474/starting-workmanager-task-from-appwidgetprovider-results-in-endless-onupdate-cal
             widgetsPreferences.setUpdatesScheduled(widgetId)
+
+            // Make the first full update to allow further partial updates.
+            appWidgetManager.updateAppWidget(
+                widgetId,
+                RemoteViews(context.packageName, R.layout.widget_photo_frame)
+            )
 
             scheduleWidgetUpdates(widgetId, context)
         }
