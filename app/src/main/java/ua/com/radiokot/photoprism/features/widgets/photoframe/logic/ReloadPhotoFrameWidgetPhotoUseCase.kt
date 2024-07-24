@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Size
+import android.view.View
 import android.widget.RemoteViews
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.core.Completable
@@ -73,6 +74,7 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                     android.R.color.transparent
                 )
                 setImageViewBitmap(R.id.photo_image_view, photoBitmap)
+                setViewVisibility(R.id.loading_text_view, View.GONE)
             }
 
         AppWidgetManager
