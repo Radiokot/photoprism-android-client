@@ -9,7 +9,6 @@ import org.koin.android.ext.android.inject
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPhotoFrameWidgetConfigurationBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetPhotoUseCase
 
@@ -18,7 +17,6 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
     private lateinit var view: ActivityPhotoFrameWidgetConfigurationBinding
     private val updatePhotoFrameWidgetPhotoUseCase: UpdatePhotoFrameWidgetPhotoUseCase by inject()
     private val reloadPhotoFrameWidgetPhotoUseCase: ReloadPhotoFrameWidgetPhotoUseCase by inject()
-    private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory by inject()
     private val appWidgetId: Int by lazy {
         intent.getIntExtra(
             AppWidgetManager.EXTRA_APPWIDGET_ID,

@@ -3,9 +3,13 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.util.Size
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -16,6 +20,7 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
+import ua.com.radiokot.photoprism.util.images.ShapeMaskImageTransformation
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
     private val picasso: Picasso,
@@ -53,6 +58,20 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
             .load(photoUrl)
             .resize(widgetSize.width, widgetSize.height)
             .centerCrop()
+            .transform(ShapeMaskImageTransformation(
+                object : ShapeMaskImageTransformation.ShapeMask {
+                    val drawable = ContextCompat.getDrawable(context, R.drawable.image_shape_sasha)!!
+
+                    override val name: String
+                        get() = "sasha"
+
+                    override fun draw(canvas: Canvas, width: Int, height: Int, paint: Paint) {
+                        val bitmap = drawable.toBitmap(width, height, Bitmap.Config.ALPHA_8)
+                        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+                        bitmap.recycle()
+                    }
+                }
+            ))
             .intoSingle()
             .doOnSuccess {
                 log.debug {
