@@ -3,14 +3,9 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.util.Size
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -21,7 +16,7 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
-import ua.com.radiokot.photoprism.util.images.ShapeMaskImageTransformation
+import ua.com.radiokot.photoprism.util.images.ImageTransformations
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
     private val picasso: Picasso,
@@ -59,31 +54,17 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
             .load(photoUrl)
             .resize(widgetSize.width, widgetSize.height)
             .centerCrop()
-            .transform(ShapeMaskImageTransformation(
-                object : ShapeMaskImageTransformation.ShapeMask {
-                    val drawable =
-                        ContextCompat.getDrawable(context, R.drawable.image_shape_sasha)!!
-
-                    override val name: String
-                        get() = "sasha"
-
-                    override fun getRect(sourceWidth: Int, sourceHeight: Int): Rect =
-                        ShapeMaskImageTransformation.ShapeMask.getCenterSquareRect(
-                            sourceWidth,
-                            sourceHeight
-                        )
-
-                    override fun draw(canvas: Canvas, paint: Paint) {
-                        val alphaBitmap = drawable.toBitmap(
-                            canvas.width,
-                            canvas.height,
-                            Bitmap.Config.ALPHA_8
-                        )
-                        canvas.drawBitmap(alphaBitmap, 0f, 0f, paint)
-                        alphaBitmap.recycle()
-                    }
+            .transform(
+                when (photoUrl.hashCode() % 7) {
+                    1 -> ImageTransformations.fufa(context)
+                    2 -> ImageTransformations.gear(context)
+                    3 -> ImageTransformations.leaf(context)
+                    4 -> ImageTransformations.nona(context)
+                    5 -> ImageTransformations.heart(context)
+                    6 -> ImageTransformations.sasha(context)
+                    else -> ImageTransformations.buba(context)
                 }
-            ))
+            )
             .intoSingle()
             .doOnSuccess {
                 log.debug {

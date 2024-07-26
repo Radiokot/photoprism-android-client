@@ -52,8 +52,20 @@ class ShapeMaskImageTransformation(
         "ShapeMask-${shapeMask.name}"
 
     interface ShapeMask {
+        /**
+         * A unique name of the shape.
+         */
         val name: String
+
+        /**
+         * @return a [Rect] within the source bitmap to crop the result to.
+         */
         fun getRect(sourceWidth: Int, sourceHeight: Int): Rect
+
+        /**
+         * Draws the mask on the prepared [canvas] with given [paint] with a shader.
+         * The canvas matches the [Rect] returned from [getRect].
+         */
         fun draw(canvas: Canvas, paint: Paint)
 
         companion object {
