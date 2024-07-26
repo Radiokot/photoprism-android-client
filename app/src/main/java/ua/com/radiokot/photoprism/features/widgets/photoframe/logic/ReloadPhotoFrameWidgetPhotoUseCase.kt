@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.Size
 import android.view.View
 import android.widget.RemoteViews
@@ -60,15 +61,26 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
             .centerCrop()
             .transform(ShapeMaskImageTransformation(
                 object : ShapeMaskImageTransformation.ShapeMask {
-                    val drawable = ContextCompat.getDrawable(context, R.drawable.image_shape_sasha)!!
+                    val drawable =
+                        ContextCompat.getDrawable(context, R.drawable.image_shape_sasha)!!
 
                     override val name: String
                         get() = "sasha"
 
-                    override fun draw(canvas: Canvas, width: Int, height: Int, paint: Paint) {
-                        val bitmap = drawable.toBitmap(width, height, Bitmap.Config.ALPHA_8)
-                        canvas.drawBitmap(bitmap, 0f, 0f, paint)
-                        bitmap.recycle()
+                    override fun getRect(sourceWidth: Int, sourceHeight: Int): Rect =
+                        ShapeMaskImageTransformation.ShapeMask.getCenterSquareRect(
+                            sourceWidth,
+                            sourceHeight
+                        )
+
+                    override fun draw(canvas: Canvas, paint: Paint) {
+                        val alphaBitmap = drawable.toBitmap(
+                            canvas.width,
+                            canvas.height,
+                            Bitmap.Config.ALPHA_8
+                        )
+                        canvas.drawBitmap(alphaBitmap, 0f, 0f, paint)
+                        alphaBitmap.recycle()
                     }
                 }
             ))
