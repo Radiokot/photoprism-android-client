@@ -15,7 +15,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
-import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
+import ua.com.radiokot.photoprism.util.images.ImageTransformations
 
 class GallerySearchPersonListItem(
     val name: String?,
@@ -69,7 +69,7 @@ class GallerySearchPersonListItem(
                 .placeholder(R.drawable.image_placeholder_circle)
                 .fit()
                 .centerCrop()
-                .transform(CircleImageTransformation.INSTANCE)
+                .transform(ImageTransformations.circle)
                 .into(view.imageView)
 
             with(view.nameTextView) {

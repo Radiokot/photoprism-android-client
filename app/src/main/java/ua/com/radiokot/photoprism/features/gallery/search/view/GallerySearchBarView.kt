@@ -32,7 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGall
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.util.images.CenterVerticalImageSpan
-import ua.com.radiokot.photoprism.util.images.CircleImageTransformation
+import ua.com.radiokot.photoprism.util.images.ImageTransformations
 import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
 import ua.com.radiokot.photoprism.util.images.TextViewWrappedDrawableTarget
 import kotlin.math.roundToInt
@@ -297,7 +297,7 @@ class GallerySearchBarView(
             .resize(sizePx, sizePx)
             .centerInside()
             .noFade()
-            .transform(CircleImageTransformation.INSTANCE)
+            .transform(ImageTransformations.circle)
             .placeholder(R.drawable.image_placeholder_circle)
             .into(
                 TextViewWrappedDrawableTarget(
