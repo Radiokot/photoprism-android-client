@@ -7,6 +7,7 @@ import android.graphics.Rect
 import androidx.annotation.DrawableRes
 import com.squareup.picasso.Transformation
 import ua.com.radiokot.photoprism.R
+import kotlin.math.min
 
 object ImageTransformations {
     val circle: Transformation by lazy {
@@ -29,6 +30,50 @@ object ImageTransformations {
                     paint
                 )
             }
+        })
+    }
+
+    val vSauce: Transformation by lazy {
+        ShapeMaskImageTransformation(object : ShapeMaskImageTransformation.ShapeMask {
+            override val name: String =
+                "vSauce"
+
+            override fun getRect(sourceWidth: Int, sourceHeight: Int): Rect {
+                val circleDiameter = min(sourceWidth, sourceHeight)
+                val height = sourceHeight.coerceAtLeast(circleDiameter)
+                val horizontalMargin = (sourceWidth - circleDiameter) / 2
+                return Rect(
+                    horizontalMargin,
+                    0,
+                    horizontalMargin + circleDiameter,
+                    height
+                )
+            }
+
+            override fun draw(canvas: Canvas, paint: Paint) =
+                drawSauce(canvas, paint)
+        })
+    }
+
+    val hSauce: Transformation by lazy {
+        ShapeMaskImageTransformation(object : ShapeMaskImageTransformation.ShapeMask {
+            override val name: String =
+                "hSauce"
+
+            override fun getRect(sourceWidth: Int, sourceHeight: Int): Rect {
+                val circleDiameter = min(sourceWidth, sourceHeight)
+                val width = sourceWidth.coerceAtLeast(circleDiameter)
+                val verticalMargin = (sourceHeight - circleDiameter) / 2
+                return Rect(
+                    0,
+                    verticalMargin,
+                    width,
+                    verticalMargin + circleDiameter
+                )
+            }
+
+            override fun draw(canvas: Canvas, paint: Paint) =
+                drawSauce(canvas, paint)
         })
     }
 
@@ -93,4 +138,17 @@ object ImageTransformations {
             context = context,
         )
     )
+
+    private fun drawSauce(canvas: Canvas, paint: Paint) {
+        val radius = min(canvas.width, canvas.height) / 2f
+        canvas.drawRoundRect(
+            0f,
+            0f,
+            canvas.width.toFloat(),
+            canvas.height.toFloat(),
+            radius,
+            radius,
+            paint
+        )
+    }
 }
