@@ -15,11 +15,193 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/photo_frame_widget_name" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/ok_button"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="OK"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintWidth_max="340dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/shapes_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/center_guideline"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <ImageView
+                    android:id="@+id/rounded_corners_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    android:padding="2dp"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:scaleType="fitXY"
+                    tools:srcCompat="@drawable/sample_image" />
+
+                <ImageView
+                    android:id="@+id/fufa_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:srcCompat="@drawable/image_shape_fufa" />
+
+                <ImageView
+                    android:id="@+id/sasha_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rounded_corners_image_view"
+                    tools:srcCompat="@drawable/image_shape_sasha" />
+
+                <ImageView
+                    android:id="@+id/leaf_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/fufa_image_view"
+                    tools:srcCompat="@drawable/image_shape_leaf" />
+
+                <ImageView
+                    android:id="@+id/buba_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sasha_image_view"
+                    tools:srcCompat="@drawable/image_shape_buba" />
+
+                <ImageView
+                    android:id="@+id/heart_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/leaf_image_view"
+                    tools:srcCompat="@drawable/image_shape_heart" />
+
+                <ImageView
+                    android:id="@+id/vsauce_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginTop="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintBottom_toBottomOf="@id/gear_image_view"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/buba_image_view"
+                    tools:scaleType="fitXY"
+                    tools:srcCompat="@drawable/sample_image" />
+
+                <ImageView
+                    android:id="@+id/nona_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/heart_image_view"
+                    tools:srcCompat="@drawable/image_shape_nona" />
+
+                <ImageView
+                    android:id="@+id/gear_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/nona_image_view"
+                    tools:srcCompat="@drawable/image_shape_gear" />
+
+                <ImageView
+                    android:id="@+id/hsauce_image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                    android:layout_marginVertical="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+                    android:alpha="@dimen/photo_frame_widget_configuration_shape_alpha"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintDimensionRatio="H,7:3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/vsauce_image_view"
+                    tools:scaleType="fitXY"
+                    tools:srcCompat="@drawable/sample_image" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/done_button"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                android:layout_marginVertical="32dp"
+                android:text="Done"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/shapes_layout"
+                app:layout_constraintVertical_bias="1" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
