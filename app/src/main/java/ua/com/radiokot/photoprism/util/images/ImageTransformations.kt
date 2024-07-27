@@ -126,6 +126,32 @@ object ImageTransformations {
             context = context,
         )
 
+    fun roundedCorners(
+        cornerRadiusDp: Int,
+        context: Context,
+    ) = ShapeMaskImageTransformation(object : ShapeMaskImageTransformation.ShapeMask {
+        private val cornerRadiusPx =
+            cornerRadiusDp * context.resources.displayMetrics.density
+
+        override val name: String =
+            "roundedCorners-$cornerRadiusDp"
+
+        override fun getRect(sourceWidth: Int, sourceHeight: Int): Rect =
+            Rect(0, 0, sourceWidth, sourceHeight)
+
+        override fun draw(canvas: Canvas, paint: Paint) {
+            canvas.drawRoundRect(
+                0f,
+                0f,
+                canvas.width.toFloat(),
+                canvas.height.toFloat(),
+                cornerRadiusPx,
+                cornerRadiusPx,
+                paint
+            )
+        }
+    })
+
     private fun getSquareShapeMaskDrawableTransformation(
         name: String,
         @DrawableRes
