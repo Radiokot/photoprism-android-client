@@ -201,6 +201,7 @@
             android:exported="true"
             android:label="@string/photo_frame_widget_name"
             android:resizeableActivity="true"
+            android:theme="@style/UtilDialogTheme"
             android:windowSoftInputMode="adjustResize">
 
             <!-- This screen gets enabled or disabled programmatically

@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.view
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.view.forEach
@@ -14,10 +15,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPhotoFrameWidgetConfigurationBinding
+import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurationCardContentBinding
 import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
@@ -27,6 +30,7 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.view.model.PhotoFr
 class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
 
     private lateinit var view: ActivityPhotoFrameWidgetConfigurationBinding
+    private lateinit var cardContentView: IncludePhotoFrameWidgetConfigurationCardContentBinding
     private val viewModel: PhotoFrameWidgetConfigurationViewModel by viewModel()
     private val widgetsPreferences: PhotoFrameWidgetsPreferences by inject()
     private val updatePhotoFrameWidgetPhotoUseCase: UpdatePhotoFrameWidgetPhotoUseCase by inject()
@@ -42,6 +46,15 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             AppWidgetManager.INVALID_APPWIDGET_ID
         )
     }
+    private val searchView: GallerySearchView by lazy {
+        GallerySearchView(
+            viewModel = viewModel.searchViewModel,
+            fragmentManager = supportFragmentManager,
+            activity = this,
+        )
+    }
+    override val windowBackgroundColor: Int
+        get() = Color.TRANSPARENT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +69,13 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         }
 
         view = ActivityPhotoFrameWidgetConfigurationBinding.inflate(layoutInflater)
+        cardContentView = IncludePhotoFrameWidgetConfigurationCardContentBinding.bind(view.mainCardView)
         setContentView(view.root)
 
-        view.doneButton.setOnClickListener {
+        view.cancelButton.setOnClickListener {
+            finish()
+        }
+        view.primaryButton.setOnClickListener {
             widgetsPreferences.setShape(
                 widgetId = appWidgetId,
                 shape = viewModel.selectedShape.value!!,
@@ -86,10 +103,14 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                 .autoDispose(this)
         }
 
-        setSupportActionBar(view.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         initShapes()
+        searchView.init(
+            searchView = view.searchView,
+            configView = view.searchContent,
+        )
+        cardContentView.searchConfigLayout.setThrottleOnClickListener {
+            viewModel.searchViewModel.onSearchBarClicked()
+        }
 
         subscribeToData()
     }
@@ -97,7 +118,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
     private fun initShapes() {
         val sampleImage = R.drawable.sample_image
 
-        view.contentLayout.forEach { view ->
+        cardContentView.contentLayout.forEach { view ->
             val shape = view.tag
                 ?.takeIf { it is String }
                 ?.runCatching { PhotoFrameWidgetShape.valueOf(toString()) }
@@ -120,7 +141,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
 
     private fun subscribeToData() {
         viewModel.selectedShape.observe(this) { selectedShape ->
-            view.contentLayout.forEach { view ->
+            cardContentView.contentLayout.forEach { view ->
                 if (view.tag == null) {
                     return@forEach
                 }

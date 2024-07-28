@@ -51,6 +51,7 @@ val photoFrameWidgetFeatureModule = module {
 
         viewModel {
             PhotoFrameWidgetConfigurationViewModel(
+                searchViewModel = get(),
                 defaultSearchConfig = get(named(DEFAULT_SEARCH_CONFIG)),
                 defaultShape = get(named(DEFAULT_SHAPE)),
             )

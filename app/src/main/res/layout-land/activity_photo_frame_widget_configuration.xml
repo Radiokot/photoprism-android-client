@@ -1,30 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    tools:context=".features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity">
+    android:fitsSystemWindows="true">
 
-    <!-- There is a landscape version too -->
+    <!-- There is a portrait version too -->
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/main_card_view"
         style="?materialCardViewFilledStyle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_margin="8dp"
         app:cardBackgroundColor="?colorSurface"
         app:cardCornerRadius="24dp"
-        app:layout_constraintBottom_toTopOf="@id/cancel_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttons_barrier"
         app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <include layout="@layout/include_photo_frame_widget_configuration_card_content" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttons_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="primary_button, cancel_button" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/primary_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/done_selecting"
+        app:backgroundTint="?attr/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@id/cancel_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/main_card_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel_button"
@@ -32,25 +51,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/primary_button"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="@id/main_card_view"
-        app:layout_constraintTop_toBottomOf="@id/main_card_view" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/primary_button"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/done_selecting"
-        app:backgroundTint="?attr/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="@id/main_card_view"
-        app:layout_constraintStart_toEndOf="@id/cancel_button"
-        app:layout_constraintTop_toBottomOf="@id/main_card_view" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/main_card_view"
+        app:layout_constraintTop_toBottomOf="@id/primary_button" />
 
     <com.google.android.material.search.SearchView
         android:id="@+id/search_view"

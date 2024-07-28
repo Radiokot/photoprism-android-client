@@ -4,9 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 
 class PhotoFrameWidgetConfigurationViewModel(
+    val searchViewModel: GallerySearchViewModel,
     private val defaultSearchConfig: SearchConfig,
     defaultShape: PhotoFrameWidgetShape,
 ): ViewModel() {
