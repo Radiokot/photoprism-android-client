@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="NoticeTextAppearance">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
@@ -9,5 +10,29 @@
         <item name="android:activityOpenExitAnimation">@anim/stay_visible</item>
         <item name="android:activityCloseEnterAnimation">@anim/stay_visible</item>
         <item name="android:activityCloseExitAnimation">@anim/activity_fade_out</item>
+    </style>
+
+    <style name="PhotoFrameWidgetConfigurationShapeImageButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginHorizontal" tools:ignore="NewApi">
+            @dimen/photo_frame_widget_configuration_shape_margin_horizontal
+        </item>
+        <item name="android:layout_marginVertical" tools:ignore="NewApi">
+            @dimen/photo_frame_widget_configuration_shape_margin_vertical
+        </item>
+        <item name="android:alpha">0.8</item>
+        <item name="layout_constraintDimensionRatio">H,1:1</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="PhotoFrameWidgetConfigurationShapeCheckView">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/image_placeholder_circle</item>
+        <item name="android:backgroundTint">?colorSurface</item>
+        <item name="android:visibility">gone</item>
+        <item name="srcCompat">@drawable/ic_checkbox_circle_checked</item>
+        <item name="tint">?colorPrimary</item>
     </style>
 </resources>

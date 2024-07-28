@@ -15,8 +15,8 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
-import ua.com.radiokot.photoprism.util.images.ImageTransformations
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
     private val picasso: Picasso,
@@ -28,43 +28,36 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
     operator fun invoke(
         widgetId: Int,
     ): Completable =
-        getSizeAndPhotoUrl(widgetId)
-            .flatMap { (widgetSize, photoUrl) ->
-                getPhoto(widgetSize, photoUrl)
+        getPreferences(widgetId)
+            .flatMap { (widgetSize, shape, photoUrl) ->
+                getPhoto(widgetSize, shape, photoUrl)
             }
             .flatMapCompletable { photoBitmap ->
                 showPhotoInWidget(widgetId, photoBitmap)
             }
 
-    private fun getSizeAndPhotoUrl(widgetId: Int): Single<Pair<Size, String>> = {
-        Pair(
-            first = widgetsPreferences.getSize(widgetId),
-            second = widgetsPreferences.getPhotoUrl(widgetId)
-                .checkNotNull {
-                    "No photo URL for $widgetId yet"
-                }
-        )
-    }.toSingle()
+    private fun getPreferences(widgetId: Int): Single<Triple<Size, PhotoFrameWidgetShape, String>> =
+        {
+            Triple(
+                first = widgetsPreferences.getSize(widgetId),
+                second = widgetsPreferences.getShape(widgetId),
+                third = widgetsPreferences.getPhotoUrl(widgetId)
+                    .checkNotNull {
+                        "No photo URL for $widgetId yet"
+                    }
+            )
+        }.toSingle()
 
     private fun getPhoto(
         widgetSize: Size,
+        shape: PhotoFrameWidgetShape,
         photoUrl: String,
     ): Single<Bitmap> =
         picasso
             .load(photoUrl)
             .resize(widgetSize.width, widgetSize.height)
             .centerCrop()
-            .transform(
-                when (photoUrl.hashCode() % 7) {
-                    1 -> ImageTransformations.fufa(context)
-                    2 -> ImageTransformations.gear(context)
-                    3 -> ImageTransformations.leaf(context)
-                    4 -> ImageTransformations.nona(context)
-                    5 -> ImageTransformations.heart(context)
-                    6 -> ImageTransformations.sasha(context)
-                    else -> ImageTransformations.buba(context)
-                }
-            )
+            .transform(shape.getTransformation(context))
             .intoSingle()
             .doOnSuccess {
                 log.debug {

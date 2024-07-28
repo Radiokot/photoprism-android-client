@@ -7,6 +7,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.view.isVisible
 
 private val fadeInterpolator = AccelerateDecelerateInterpolator()
+private val scaleInterpolator = AccelerateDecelerateInterpolator()
 
 fun View.fadeIn(duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime)) {
     val targetAlpha =
@@ -48,4 +49,17 @@ fun View.fadeVisibility(
     } else {
         fadeOut(duration)
     }
+}
+
+fun View.animateScale(
+    target: Float,
+    duration: Int = context.resources.getInteger(android.R.integer.config_shortAnimTime),
+) {
+    clearAnimation()
+    animate()
+        .scaleX(target)
+        .scaleY(target)
+        .setDuration(duration.toLong())
+        .setInterpolator(scaleInterpolator)
+        .setListener(null)
 }

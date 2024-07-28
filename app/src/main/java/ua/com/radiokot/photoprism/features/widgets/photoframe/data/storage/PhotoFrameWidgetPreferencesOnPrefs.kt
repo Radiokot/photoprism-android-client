@@ -9,12 +9,14 @@ import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchConfigPersistenceOnPrefs
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 
 class PhotoFrameWidgetPreferencesOnPrefs(
     private val keyPrefix: String,
     private val preferences: SharedPreferences,
     private val jsonObjectMapper: JsonObjectMapper,
     private val defaultSearchConfig: SearchConfig,
+    private val defaultShape: PhotoFrameWidgetShape,
 ) : PhotoFrameWidgetsPreferences {
 
     private fun getWidgetKeyPrefix(widgetId: Int) =
@@ -31,6 +33,9 @@ class PhotoFrameWidgetPreferencesOnPrefs(
 
     private fun getUpdatesScheduledKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_updates_scheduled"
+
+    private fun getShapeKey(widgetId: Int) =
+        getWidgetKeyPrefix(widgetId) + "_shape"
 
     private val searchConfigPersistenceCache =
         LruCache<Int, ObjectPersistence<SearchConfig>>(10)
@@ -78,6 +83,16 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     override fun setUpdatesScheduled(widgetId: Int, areScheduled: Boolean) =
         preferences.edit {
             putBoolean(getUpdatesScheduledKey(widgetId), areScheduled)
+        }
+
+    override fun getShape(widgetId: Int): PhotoFrameWidgetShape =
+        preferences.getString(getShapeKey(widgetId), null)
+            ?.let(PhotoFrameWidgetShape::valueOf)
+            ?: defaultShape
+
+    override fun setShape(widgetId: Int, shape: PhotoFrameWidgetShape) =
+        preferences.edit{
+            putString(getShapeKey(widgetId), shape.name)
         }
 
     override fun clear(widgetId: Int) {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -30,6 +29,7 @@ import ua.com.radiokot.photoprism.di.UTC_DAY_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
@@ -137,10 +137,8 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                             .toFloat()
                     )
                     .build()
-            private val imageViewScaleAnimationDuration: Long =
-                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2L
-            private val imageViewScaleAnimationInterpolator =
-                AccelerateDecelerateInterpolator()
+            private val imageViewScaleAnimationDuration: Int =
+                itemView.context.resources.getInteger(android.R.integer.config_shortAnimTime) / 2
             private val selectedImageViewScale = 0.95f
 
             private val picasso: Picasso by inject()
@@ -239,13 +237,10 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             }
 
             private fun animateImageScale(target: Float) {
-                view.imageView.clearAnimation()
-                view.imageView.animate()
-                    .scaleX(target)
-                    .scaleY(target)
-                    .setDuration(imageViewScaleAnimationDuration)
-                    .setInterpolator(imageViewScaleAnimationInterpolator)
-                    .setListener(null)
+                view.imageView.animateScale(
+                    target = target,
+                    duration = imageViewScaleAnimationDuration,
+                )
             }
 
             private fun setImageScale(target: Float) {

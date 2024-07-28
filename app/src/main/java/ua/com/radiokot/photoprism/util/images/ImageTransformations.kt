@@ -98,10 +98,10 @@ object ImageTransformations {
             context = context,
         )
 
-    fun nona(context: Context) =
+    fun nina(context: Context) =
         getSquareShapeMaskDrawableTransformation(
-            name = "nona",
-            shapeMaskDrawableId = R.drawable.image_shape_nona,
+            name = "nina",
+            shapeMaskDrawableId = R.drawable.image_shape_nina,
             context = context,
         )
 

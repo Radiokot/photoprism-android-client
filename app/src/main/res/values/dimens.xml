@@ -43,5 +43,4 @@
     <dimen name="list_item_memory_margin_end">8dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_vertical">24dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_horizontal">12dp</dimen>
-    <dimen name="photo_frame_widget_configuration_shape_alpha">0.8</dimen>
 </resources>
