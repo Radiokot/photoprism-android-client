@@ -9,15 +9,17 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fadingEdge="vertical"
+        android:fillViewport="true"
+        android:requiresFadingEdge="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
             android:clipToPadding="false"
             android:paddingTop="16dp"
-            android:layout_marginHorizontal="12dp"
             android:paddingBottom="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
             tools:ignore="ContentDescription">
 

@@ -52,16 +52,39 @@
         app:layout_constraintStart_toEndOf="@id/cancel_button"
         app:layout_constraintTop_toBottomOf="@id/main_card_view" />
 
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_card_view"
+        style="?materialCardViewFilledStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/enter_the_query"
-        app:autoShowKeyboard="false">
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0"
+        android:visibility="gone"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="24dp"
+        app:cardBackgroundColor="?colorSurface"
+        app:layout_constraintBottom_toBottomOf="@id/cancel_button"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <include
-            android:id="@+id/search_content"
-            layout="@layout/view_gallery_search_config" />
-    </com.google.android.material.search.SearchView>
+        <com.google.android.material.search.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/enter_the_query"
+            app:autoShowKeyboard="false">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp">
+
+                <include
+                    android:id="@+id/search_content"
+                    layout="@layout/view_gallery_search_config" />
+            </FrameLayout>
+        </com.google.android.material.search.SearchView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -57,16 +57,41 @@
         app:layout_constraintStart_toEndOf="@id/main_card_view"
         app:layout_constraintTop_toBottomOf="@id/primary_button" />
 
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/enter_the_query"
-        app:autoShowKeyboard="false">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_card_view"
+        style="?materialCardViewFilledStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:alpha="0"
+        android:visibility="gone"
+        app:cardBackgroundColor="?colorSurface"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <include
-            android:id="@+id/search_content"
-            layout="@layout/view_gallery_search_config" />
-    </com.google.android.material.search.SearchView>
+        <com.google.android.material.search.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/enter_the_query"
+            app:autoShowKeyboard="false">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp">
+
+                <include
+                    android:id="@+id/search_content"
+                    layout="@layout/view_gallery_search_config" />
+            </FrameLayout>
+        </com.google.android.material.search.SearchView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

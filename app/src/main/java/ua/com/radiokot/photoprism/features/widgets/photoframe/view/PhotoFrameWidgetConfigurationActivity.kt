@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
+import com.google.android.material.search.SearchView
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.inject
@@ -19,6 +20,7 @@ import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurati
 import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.fadeIn
+import ua.com.radiokot.photoprism.extension.fadeOut
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
@@ -69,7 +71,8 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         }
 
         view = ActivityPhotoFrameWidgetConfigurationBinding.inflate(layoutInflater)
-        cardContentView = IncludePhotoFrameWidgetConfigurationCardContentBinding.bind(view.mainCardView)
+        cardContentView =
+            IncludePhotoFrameWidgetConfigurationCardContentBinding.bind(view.mainCardView)
         setContentView(view.root)
 
         view.cancelButton.setOnClickListener {
@@ -109,7 +112,25 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             configView = view.searchContent,
         )
         cardContentView.searchConfigLayout.setThrottleOnClickListener {
+            view.searchCardView.isVisible = true
             viewModel.searchViewModel.onSearchBarClicked()
+        }
+        view.searchView.addTransitionListener { _, _, newState ->
+            when (newState) {
+                SearchView.TransitionState.HIDING ->
+                    view.searchCardView.fadeOut()
+
+                SearchView.TransitionState.HIDDEN ->
+                    view.searchCardView.isVisible = false
+
+                SearchView.TransitionState.SHOWING ->
+                    view.searchCardView.fadeIn()
+
+                SearchView.TransitionState.SHOWN -> {
+                    view.searchCardView.isVisible = true
+                    view.searchCardView.alpha = 1f
+                }
+            }
         }
 
         subscribeToData()
