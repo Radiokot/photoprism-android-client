@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPhotoFrameWidgetConfigurationBinding
 import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurationCardContentBinding
+import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurationShapesBinding
 import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.fadeIn
@@ -106,37 +107,20 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                 .autoDispose(this)
         }
 
-        initShapes()
-        searchView.init(
-            searchView = view.searchView,
-            configView = view.searchContent,
-        )
-        cardContentView.searchConfigLayout.setThrottleOnClickListener {
-            view.searchCardView.isVisible = true
-            viewModel.searchViewModel.onSearchBarClicked()
+        cardContentView.contentLayout.post {
+            initShapes()
         }
-        view.searchView.addTransitionListener { _, _, newState ->
-            when (newState) {
-                SearchView.TransitionState.HIDING ->
-                    view.searchCardView.fadeOut()
-
-                SearchView.TransitionState.HIDDEN ->
-                    view.searchCardView.isVisible = false
-
-                SearchView.TransitionState.SHOWING ->
-                    view.searchCardView.fadeIn()
-
-                SearchView.TransitionState.SHOWN -> {
-                    view.searchCardView.isVisible = true
-                    view.searchCardView.alpha = 1f
-                }
-            }
-        }
+        initSearch()
 
         subscribeToData()
     }
 
     private fun initShapes() {
+        IncludePhotoFrameWidgetConfigurationShapesBinding.inflate(
+            layoutInflater,
+            cardContentView.contentLayout
+        )
+
         val sampleImage = R.drawable.sample_image
 
         cardContentView.contentLayout.forEach { view ->
@@ -158,9 +142,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                     .into(view)
             }
         }
-    }
 
-    private fun subscribeToData() {
         viewModel.selectedShape.observe(this) { selectedShape ->
             cardContentView.contentLayout.forEach { view ->
                 if (view.tag == null) {
@@ -192,5 +174,41 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun initSearch() {
+        searchView.init(
+            searchView = view.searchView,
+            configView = view.searchContent,
+        )
+
+        // Animate the search view parent card
+        // for pleasant transition.
+        view.searchView.addTransitionListener { _, _, newState ->
+            when (newState) {
+                SearchView.TransitionState.HIDING ->
+                    view.searchCardView.fadeOut()
+
+                SearchView.TransitionState.HIDDEN ->
+                    view.searchCardView.isVisible = false
+
+                SearchView.TransitionState.SHOWING ->
+                    view.searchCardView.fadeIn()
+
+                SearchView.TransitionState.SHOWN -> {
+                    view.searchCardView.isVisible = true
+                    view.searchCardView.alpha = 1f
+                }
+            }
+        }
+
+        cardContentView.searchConfigLayout.setThrottleOnClickListener {
+            view.searchCardView.isVisible = true
+            viewModel.searchViewModel.onSearchBarClicked()
+        }
+    }
+
+    private fun subscribeToData() {
+
     }
 }
