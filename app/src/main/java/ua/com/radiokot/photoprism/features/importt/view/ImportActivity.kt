@@ -171,8 +171,8 @@ class ImportActivity : BaseActivity() {
             false
         ).apply {
             findViewById<ViewGroup>(androidx.preference.R.id.icon_frame).isVisible = false
-            findViewById<TextView>(android.R.id.title).text = content
-            findViewById<TextView>(android.R.id.summary).setText(summary)
+            findViewById<TextView>(android.R.id.title).setText(summary)
+            findViewById<TextView>(android.R.id.summary).text = content
 
             if (onClick != null) {
                 setThrottleOnClickListener {
