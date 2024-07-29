@@ -24,32 +24,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/rounded_corners_image_view"
-        style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
-        android:layout_marginVertical="8dp"
-        android:padding="2dp"
-        android:tag="ROUNDED_CORNERS"
-        app:layout_constraintEnd_toStartOf="@id/center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shape_text_view"
-        tools:srcCompat="@drawable/sample_image" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
-        android:tag="ROUNDED_CORNERS"
-        app:layout_constraintBottom_toBottomOf="@id/rounded_corners_image_view"
-        app:layout_constraintEnd_toEndOf="@id/rounded_corners_image_view"
-        app:layout_constraintStart_toStartOf="@id/rounded_corners_image_view"
-        app:layout_constraintTop_toTopOf="@id/rounded_corners_image_view"
-        tools:visibility="visible" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/fufa_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:layout_marginVertical="8dp"
+        android:padding="2dp"
         android:tag="FUFA"
-        app:layout_constraintEnd_toEndOf="@id/end"
-        app:layout_constraintStart_toEndOf="@id/center"
+        app:layout_constraintEnd_toStartOf="@id/center"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/shape_text_view"
         tools:srcCompat="@drawable/image_shape_fufa" />
 
@@ -63,12 +44,31 @@
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/rounded_corners_image_view"
+        style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
+        android:layout_marginVertical="8dp"
+        android:tag="ROUNDED_CORNERS"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintStart_toEndOf="@id/center"
+        app:layout_constraintTop_toBottomOf="@id/shape_text_view"
+        tools:srcCompat="@drawable/sample_image" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
+        android:tag="ROUNDED_CORNERS"
+        app:layout_constraintBottom_toBottomOf="@id/rounded_corners_image_view"
+        app:layout_constraintEnd_toEndOf="@id/rounded_corners_image_view"
+        app:layout_constraintStart_toStartOf="@id/rounded_corners_image_view"
+        app:layout_constraintTop_toTopOf="@id/rounded_corners_image_view"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/sasha_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="SASHA"
         app:layout_constraintEnd_toStartOf="@id/center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rounded_corners_image_view"
+        app:layout_constraintTop_toBottomOf="@id/fufa_image_view"
         tools:srcCompat="@drawable/image_shape_sasha" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -82,21 +82,22 @@
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/leaf_image_view"
+        android:id="@+id/heart_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
-        android:tag="LEAF"
+        android:tag="HEART"
         app:layout_constraintEnd_toEndOf="@id/end"
         app:layout_constraintStart_toEndOf="@id/center"
-        app:layout_constraintTop_toBottomOf="@id/fufa_image_view"
-        tools:srcCompat="@drawable/image_shape_leaf" />
+        app:layout_constraintTop_toBottomOf="@id/rounded_corners_image_view"
+        tools:srcCompat="@drawable/image_shape_heart" />
 
     <androidx.appcompat.widget.AppCompatImageView
         style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
-        android:tag="LEAF"
-        app:layout_constraintBottom_toBottomOf="@id/leaf_image_view"
-        app:layout_constraintEnd_toEndOf="@id/leaf_image_view"
-        app:layout_constraintStart_toStartOf="@id/leaf_image_view"
-        app:layout_constraintTop_toTopOf="@id/leaf_image_view"
+        android:tag="HEART"
+        app:layout_constraintBottom_toBottomOf="@id/heart_image_view"
+        app:layout_constraintEnd_toEndOf="@id/heart_image_view"
+        app:layout_constraintStart_toStartOf="@id/heart_image_view"
+        app:layout_constraintTop_toTopOf="@id/heart_image_view"
+        app:layout_constraintVertical_bias="0.45"
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -118,22 +119,21 @@
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/heart_image_view"
+        android:id="@+id/leaf_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
-        android:tag="HEART"
+        android:tag="LEAF"
         app:layout_constraintEnd_toEndOf="@id/end"
         app:layout_constraintStart_toEndOf="@id/center"
-        app:layout_constraintTop_toBottomOf="@id/leaf_image_view"
-        tools:srcCompat="@drawable/image_shape_heart" />
+        app:layout_constraintTop_toBottomOf="@id/heart_image_view"
+        tools:srcCompat="@drawable/image_shape_leaf" />
 
     <androidx.appcompat.widget.AppCompatImageView
         style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
-        android:tag="HEART"
-        app:layout_constraintBottom_toBottomOf="@id/heart_image_view"
-        app:layout_constraintEnd_toEndOf="@id/heart_image_view"
-        app:layout_constraintStart_toStartOf="@id/heart_image_view"
-        app:layout_constraintTop_toTopOf="@id/heart_image_view"
-        app:layout_constraintVertical_bias="0.45"
+        android:tag="LEAF"
+        app:layout_constraintBottom_toBottomOf="@id/leaf_image_view"
+        app:layout_constraintEnd_toEndOf="@id/leaf_image_view"
+        app:layout_constraintStart_toStartOf="@id/leaf_image_view"
+        app:layout_constraintTop_toTopOf="@id/leaf_image_view"
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -164,7 +164,7 @@
         android:tag="NINA"
         app:layout_constraintEnd_toEndOf="@id/end"
         app:layout_constraintStart_toEndOf="@id/center"
-        app:layout_constraintTop_toBottomOf="@id/heart_image_view"
+        app:layout_constraintTop_toBottomOf="@id/leaf_image_view"
         tools:srcCompat="@drawable/image_shape_nina" />
 
     <androidx.appcompat.widget.AppCompatImageView

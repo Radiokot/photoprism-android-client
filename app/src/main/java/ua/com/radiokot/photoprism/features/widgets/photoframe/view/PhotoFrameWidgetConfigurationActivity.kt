@@ -42,7 +42,8 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
     private val shapeScaleAnimationDuration: Int by lazy {
         resources.getInteger(android.R.integer.config_shortAnimTime) / 2
     }
-    private val selectedShapeScale = 1.05f
+    private val defaultShapeScale = 0.95f
+    private val selectedShapeScale = 1.03f
     private val appWidgetId: Int by lazy {
         intent.getIntExtra(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -138,6 +139,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                 picasso
                     .load(sampleImage)
                     .fit()
+                    .centerCrop()
                     .transform(shape.getTransformation(this))
                     .into(view)
             }
@@ -158,9 +160,9 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                             target = selectedShapeScale,
                             duration = shapeScaleAnimationDuration
                         )
-                    } else if (!isViewOfSelectedShape && view.scaleX != 1f) {
+                    } else if (!isViewOfSelectedShape && view.scaleX != defaultShapeScale) {
                         view.animateScale(
-                            target = 1f,
+                            target = defaultShapeScale,
                             duration = shapeScaleAnimationDuration
                         )
                     }
