@@ -42,7 +42,9 @@
                 android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
                 android:layout_marginTop="28dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/title_text_view">
+                android:paddingEnd="32dp"
+                app:layout_constraintTop_toBottomOf="@id/title_text_view"
+                tools:ignore="RtlSymmetry">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -64,6 +66,15 @@
                     tools:ignore="PrivateResource" />
 
             </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/search_config_layout"
+                app:layout_constraintEnd_toEndOf="@id/search_config_layout"
+                app:layout_constraintTop_toTopOf="@id/search_config_layout"
+                app:srcCompat="@drawable/ic_keyboard_arrow_right"
+                app:tint="?colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/shape_text_view"

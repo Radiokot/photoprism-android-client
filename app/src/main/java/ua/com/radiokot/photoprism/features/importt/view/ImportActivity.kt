@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.importt.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
@@ -12,8 +13,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import com.google.android.material.color.MaterialColors
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -175,6 +178,18 @@ class ImportActivity : BaseActivity() {
                 setThrottleOnClickListener {
                     onClick()
                 }
+
+                findViewById<ViewGroup>(android.R.id.widget_frame).addView(
+                    AppCompatImageView(context).apply {
+                        setImageResource(R.drawable.ic_keyboard_arrow_right)
+                        imageTintList = ColorStateList.valueOf(
+                            MaterialColors.getColor(
+                                this,
+                                com.google.android.material.R.attr.colorOnSurfaceVariant
+                            )
+                        )
+                    }
+                )
             }
         }.also(cardContentView.summaryItemsLayout::addView)
     }
