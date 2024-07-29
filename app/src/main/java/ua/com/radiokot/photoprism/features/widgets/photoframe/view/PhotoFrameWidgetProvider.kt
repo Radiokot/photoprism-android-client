@@ -182,7 +182,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(
-                UpdatePhotoFrameWidgetWorker.getWorkName(widgetId),
+                getWidgetUpdateWorkName(widgetId),
                 ExistingPeriodicWorkPolicy.UPDATE,
                 workRequest,
             )
@@ -199,7 +199,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         context: Context,
     ) {
         WorkManager.getInstance(context)
-            .cancelUniqueWork(UpdatePhotoFrameWidgetWorker.getWorkName(widgetId))
+            .cancelUniqueWork(getWidgetUpdateWorkName(widgetId))
 
         log.debug {
             "cancelWidgetUpdates(): canceled:" +
@@ -207,7 +207,10 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         }
     }
 
+    private fun getWidgetUpdateWorkName(widgetId: Int) =
+        "${UpdatePhotoFrameWidgetWorker.TAG}:$widgetId"
+
     private companion object {
-        private const val UPDATE_INTERVAL_MINUTES = 30L
+        private const val UPDATE_INTERVAL_MINUTES = 150L
     }
 }
