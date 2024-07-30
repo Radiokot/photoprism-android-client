@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - An arrow icon on the import albums field suggesting it is clickable
 
+### Fixed
+
+- Missing new memories notification sometimes
+
 ## [1.28.1] - 2024-07-21
 
 ### Fixed
