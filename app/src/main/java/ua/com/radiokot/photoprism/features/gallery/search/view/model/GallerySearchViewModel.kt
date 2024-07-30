@@ -161,7 +161,7 @@ class GallerySearchViewModel(
         }
     }
 
-    fun onSearchBarClicked() {
+    fun onSearchSummaryClicked() {
         switchToConfiguring()
     }
 
@@ -259,6 +259,11 @@ class GallerySearchViewModel(
             includePrivate = includePrivateContent.value == true,
             onlyFavorite = onlyFavorite.value == true,
         )
+
+        applySearchConfig(config)
+    }
+
+    fun applySearchConfig(config: SearchConfig) {
         val bookmark = bookmarksRepository.findByConfig(config)
         val appliedSearch =
             if (bookmark != null)
@@ -267,7 +272,7 @@ class GallerySearchViewModel(
                 AppliedGallerySearch.Custom(config)
 
         log.debug {
-            "applySearch(): applying_search:" +
+            "applySearchConfig(): applying_search:" +
                     "\nsearch=$appliedSearch"
         }
 

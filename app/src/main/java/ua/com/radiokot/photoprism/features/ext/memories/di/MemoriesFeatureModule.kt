@@ -1,7 +1,5 @@
 package ua.com.radiokot.photoprism.features.ext.memories.di
 
-import androidx.work.WorkManager
-import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
@@ -34,10 +32,6 @@ val memoriesFeatureModule = module {
     single {
         get<AppDatabase>().memories()
     } bind MemoriesDbDao::class
-
-    single {
-        WorkManager.getInstance(androidApplication())
-    } bind WorkManager::class
 
     single {
         ScheduleDailyMemoriesUpdatesUseCase(

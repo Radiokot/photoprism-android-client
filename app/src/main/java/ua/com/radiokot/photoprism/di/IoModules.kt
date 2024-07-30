@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.di
 import android.content.Context
 import android.os.Environment
 import android.webkit.CookieManager
+import androidx.work.WorkManager
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -131,5 +132,12 @@ val ioModules: List<Module> = listOf(
                 Context.MODE_PRIVATE,
             )
         }
-    }
+    },
+
+    // Work.
+    module {
+        single {
+            WorkManager.getInstance(androidApplication())
+        } bind WorkManager::class
+    },
 )

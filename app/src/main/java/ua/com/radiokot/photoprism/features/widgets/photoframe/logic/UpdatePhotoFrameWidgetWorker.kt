@@ -73,10 +73,6 @@ class UpdatePhotoFrameWidgetWorker(
         const val TAG = "UpdatePhotoFrameWidget"
         private const val WIDGET_ID_KEY = "widget_id"
 
-        fun getWorkName(
-            widgetId: Int,
-        ) = "$TAG:$widgetId"
-
         fun getInputData(
             widgetId: Int,
         ) = Data.Builder()

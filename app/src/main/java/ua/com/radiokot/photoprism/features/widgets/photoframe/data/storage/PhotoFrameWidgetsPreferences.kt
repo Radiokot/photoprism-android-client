@@ -28,14 +28,14 @@ interface PhotoFrameWidgetsPreferences {
 
     /**
      * @return [SearchConfig] defining the set of photos to pick from for this widget
-     * or a default value if it is not yet set.
+     * if it is set.
      */
-    fun getSearchConfig(widgetId: Int): SearchConfig
+    fun getSearchConfig(widgetId: Int): SearchConfig?
 
     /**
      * Saves [SearchConfig] defining the set of photos to pick from for this widget.
      */
-    fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig)
+    fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig?)
 
     /**
      * @return whether the update work is scheduled for this widget.

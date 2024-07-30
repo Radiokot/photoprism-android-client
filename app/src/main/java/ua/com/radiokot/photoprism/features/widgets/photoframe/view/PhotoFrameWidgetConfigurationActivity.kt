@@ -22,22 +22,20 @@ import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.fadeOut
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.features.gallery.search.view.AppliedGallerySearchSummaryFactory
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
+import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
-import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
-import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
-import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetPhotoUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.model.PhotoFrameWidgetConfigurationViewModel
 
 class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
+    private val log = kLogger("PhotoFrameWidgetConfigurationActivity")
 
     private lateinit var view: ActivityPhotoFrameWidgetConfigurationBinding
     private lateinit var cardContentView: IncludePhotoFrameWidgetConfigurationCardContentBinding
     private val viewModel: PhotoFrameWidgetConfigurationViewModel by viewModel()
-    private val widgetsPreferences: PhotoFrameWidgetsPreferences by inject()
-    private val updatePhotoFrameWidgetPhotoUseCase: UpdatePhotoFrameWidgetPhotoUseCase by inject()
-    private val reloadPhotoFrameWidgetPhotoUseCase: ReloadPhotoFrameWidgetPhotoUseCase by inject()
     private val picasso: Picasso by inject()
     private val shapeScaleAnimationDuration: Int by lazy {
         resources.getInteger(android.R.integer.config_shortAnimTime) / 2
@@ -55,6 +53,12 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             viewModel = viewModel.searchViewModel,
             fragmentManager = supportFragmentManager,
             activity = this,
+        )
+    }
+    private val searchSummaryFactory: AppliedGallerySearchSummaryFactory by lazy {
+        AppliedGallerySearchSummaryFactory(
+            picasso = picasso,
+            viewModel = viewModel.searchViewModel,
         )
     }
     override val windowBackgroundColor: Int
@@ -77,43 +81,20 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             IncludePhotoFrameWidgetConfigurationCardContentBinding.bind(view.mainCardView)
         setContentView(view.root)
 
-        view.cancelButton.setOnClickListener {
-            finish()
-        }
-        view.primaryButton.setOnClickListener {
-            widgetsPreferences.setShape(
-                widgetId = appWidgetId,
-                shape = viewModel.selectedShape.value!!,
-            )
-
-            updatePhotoFrameWidgetPhotoUseCase
-                .invoke(
-                    widgetId = appWidgetId,
-                )
-                .andThen(
-                    reloadPhotoFrameWidgetPhotoUseCase(
-                        widgetId = appWidgetId,
-                    )
-                )
-                .subscribeBy(
-                    onError = Throwable::printStackTrace,
-                    onComplete = {
-                        setResult(
-                            Activity.RESULT_OK,
-                            Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                        )
-                        finish()
-                    }
-                )
-                .autoDispose(this)
-        }
+        viewModel.initOnce(
+            widgetId = appWidgetId,
+        )
 
         cardContentView.contentLayout.post {
             initShapes()
         }
         initSearch()
+        initButtons()
 
         subscribeToData()
+        subscribeToEvents()
+
+        onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
     private fun initShapes() {
@@ -206,11 +187,66 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
 
         cardContentView.searchConfigLayout.setThrottleOnClickListener {
             view.searchCardView.isVisible = true
-            viewModel.searchViewModel.onSearchBarClicked()
+            viewModel.searchViewModel.onSearchSummaryClicked()
+        }
+
+        viewModel.searchViewModel.state.subscribe { state ->
+            cardContentView.searchConfigTextView.text = when (state) {
+                is GallerySearchViewModel.State.Applied ->
+                    searchSummaryFactory.getSummary(
+                        search = state.search,
+                        textView = cardContentView.searchConfigTextView,
+                    )
+
+                is GallerySearchViewModel.State.Configuring ->
+                    if (state.alreadyAppliedSearch != null)
+                        searchSummaryFactory.getSummary(
+                            search = state.alreadyAppliedSearch,
+                            textView = cardContentView.searchConfigTextView,
+                        )
+                    else
+                        getString(R.string.photo_frame_widget_configuration_search_all_photos)
+
+                GallerySearchViewModel.State.NoSearch ->
+                    getString(R.string.photo_frame_widget_configuration_search_all_photos)
+            }
+        }.autoDispose(this)
+    }
+
+    private fun initButtons() {
+        view.cancelButton.setThrottleOnClickListener {
+            viewModel.onCancelClicked()
+        }
+        view.primaryButton.setThrottleOnClickListener {
+            viewModel.onDoneClicked()
         }
     }
 
     private fun subscribeToData() {
 
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            is PhotoFrameWidgetConfigurationViewModel.Event.Finish -> {
+                if (event.isConfigurationSuccessful) {
+                    setResult(
+                        Activity.RESULT_OK,
+                        Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                    )
+                }
+                finish()
+            }
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 }

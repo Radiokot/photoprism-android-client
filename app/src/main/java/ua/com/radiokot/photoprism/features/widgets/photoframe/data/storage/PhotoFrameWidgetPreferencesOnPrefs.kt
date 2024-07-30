@@ -15,7 +15,6 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     private val keyPrefix: String,
     private val preferences: SharedPreferences,
     private val jsonObjectMapper: JsonObjectMapper,
-    private val defaultSearchConfig: SearchConfig,
     private val defaultShape: PhotoFrameWidgetShape,
 ) : PhotoFrameWidgetsPreferences {
 
@@ -68,14 +67,19 @@ class PhotoFrameWidgetPreferencesOnPrefs(
             putString(getPhotoUrlKey(widgetId), photoUrl)
         }
 
-    override fun getSearchConfig(widgetId: Int): SearchConfig =
+    override fun getSearchConfig(widgetId: Int): SearchConfig? =
         getSearchConfigPersistence(widgetId)
-            .loadItem()
-            ?: defaultSearchConfig
+            .takeIf(ObjectPersistence<*>::hasItem)
+            ?.loadItem()
 
-    override fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig) =
-        getSearchConfigPersistence(widgetId)
-            .saveItem(searchConfig)
+    override fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig?) {
+        val persistence = getSearchConfigPersistence(widgetId)
+        if (searchConfig != null) {
+            persistence.saveItem(searchConfig)
+        } else {
+            persistence.clear()
+        }
+    }
 
     override fun areUpdatesScheduled(widgetId: Int): Boolean =
         preferences.getBoolean(getUpdatesScheduledKey(widgetId), false)
@@ -91,7 +95,7 @@ class PhotoFrameWidgetPreferencesOnPrefs(
             ?: defaultShape
 
     override fun setShape(widgetId: Int, shape: PhotoFrameWidgetShape) =
-        preferences.edit{
+        preferences.edit {
             putString(getShapeKey(widgetId), shape.name)
         }
 

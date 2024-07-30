@@ -1,7 +1,5 @@
 package ua.com.radiokot.photoprism.features.prefs.view
 
-import android.appwidget.AppWidgetManager
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentTransaction
 import androidx.preference.Preference
@@ -10,7 +8,6 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPreferencesBinding
 import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity
 
 class PreferencesActivity :
     BaseActivity(),
@@ -37,11 +34,6 @@ class PreferencesActivity :
                 .replace(R.id.fragment_container, PreferencesFragment())
                 .disallowAddToBackStack()
                 .commit()
-
-            startActivity(
-                Intent(this, PhotoFrameWidgetConfigurationActivity::class.java)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 2)
-            )
         }
     }
 
