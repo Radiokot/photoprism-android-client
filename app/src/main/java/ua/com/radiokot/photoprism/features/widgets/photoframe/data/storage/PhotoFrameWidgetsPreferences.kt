@@ -2,29 +2,30 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage
 
 import android.util.Size
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 
 interface PhotoFrameWidgetsPreferences {
     /**
-     * @return size in pixels of the given widget regarding the orientation.
+     * @return size in pixels of this widget regarding the orientation.
      * @throws IllegalStateException if no size set
      */
     fun getSize(widgetId: Int): Size
 
     /**
-     * Saves the size in pixels of the given widget.
+     * Saves the size in pixels of this widget widget.
      */
     fun setSize(widgetId: Int, size: Size)
 
     /**
-     * @return URL of a photo currently shown in the given widget if it is set.
+     * @return the photo currently shown in this widget if it is set.
      */
-    fun getPhotoUrl(widgetId: Int): String?
+    fun getPhoto(widgetId: Int): PhotoFrameWidgetPhoto?
 
     /**
-     * Saves URL of the photo currently shown in the given widget.
+     * Saves the photo to be shown in this widget.
      */
-    fun setPhotoUrl(widgetId: Int, photoUrl: String)
+    fun setPhoto(widgetId: Int, photo: PhotoFrameWidgetPhoto)
 
     /**
      * @return [SearchConfig] defining the set of photos to pick from for this widget
@@ -59,7 +60,7 @@ interface PhotoFrameWidgetsPreferences {
     fun setShape(widgetId: Int, shape: PhotoFrameWidgetShape)
 
     /**
-     * Wipes all the preferences of the given widget.
+     * Wipes all the preferences of this widget.
      */
     fun clear(widgetId: Int)
 }

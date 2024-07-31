@@ -3,12 +3,11 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsImage
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 
 class UpdatePhotoFrameWidgetPhotoUseCase(
@@ -36,7 +35,9 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
         repository: SimpleGalleryMediaRepository,
     ): Completable = {
         // TODO: Implement good picking algorithm.
-        val randomPhoto = repository.itemsList.random()
+        val randomPhoto = PhotoFrameWidgetPhoto(
+            photo = repository.itemsList.random()
+        )
 
         log.debug {
             "pickAndSaveRandomPhoto(): picked:" +
@@ -44,19 +45,9 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
                     "\nwidgetId=$widgetId"
         }
 
-        val previewUrl = (randomPhoto.media as? ViewableAsImage)
-            .checkNotNull {
-                "The repository must only contain ViewableAsImage"
-            }
-            .getImagePreviewUrl(PREVIEW_SIZE_PX)
-
-        widgetsPreferences.setPhotoUrl(
+        widgetsPreferences.setPhoto(
             widgetId = widgetId,
-            photoUrl = previewUrl,
+            photo = randomPhoto,
         )
     }.toCompletable().subscribeOn(Schedulers.io())
-
-    private companion object {
-        private const val PREVIEW_SIZE_PX = 800
-    }
 }

@@ -5,10 +5,12 @@ import android.util.Size
 import androidx.collection.LruCache
 import androidx.core.content.edit
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchConfigPersistenceOnPrefs
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 
 class PhotoFrameWidgetPreferencesOnPrefs(
@@ -24,8 +26,21 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     private fun getSizeKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_size"
 
-    private fun getPhotoUrlKey(widgetId: Int) =
-        getWidgetKeyPrefix(widgetId) + "_photo_url"
+    private fun getPhotoKey(widgetId: Int) =
+        getWidgetKeyPrefix(widgetId) + "_photo"
+
+    private val photoPersistenceCache =
+        LruCache<Int, ObjectPersistence<PhotoFrameWidgetPhoto>>(10)
+
+    private fun getPhotoPersistence(widgetId: Int) =
+        photoPersistenceCache.get(widgetId)
+            ?: ObjectPersistenceOnPrefs.forType<PhotoFrameWidgetPhoto>(
+                key = getPhotoKey(widgetId),
+                preferences = preferences,
+                jsonObjectMapper = jsonObjectMapper,
+            ).also {
+                photoPersistenceCache.put(widgetId, it)
+            }
 
     private fun getSearchConfigKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_search_config"
@@ -59,13 +74,14 @@ class PhotoFrameWidgetPreferencesOnPrefs(
             putString(getSizeKey(widgetId), size.toString())
         }
 
-    override fun getPhotoUrl(widgetId: Int): String? =
-        preferences.getString(getPhotoUrlKey(widgetId), null)
+    override fun getPhoto(widgetId: Int): PhotoFrameWidgetPhoto? =
+        getPhotoPersistence(widgetId)
+            .takeIf(ObjectPersistence<*>::hasItem)
+            ?.loadItem()
 
-    override fun setPhotoUrl(widgetId: Int, photoUrl: String) =
-        preferences.edit {
-            putString(getPhotoUrlKey(widgetId), photoUrl)
-        }
+    override fun setPhoto(widgetId: Int, photo: PhotoFrameWidgetPhoto) =
+        getPhotoPersistence(widgetId)
+            .saveItem(photo)
 
     override fun getSearchConfig(widgetId: Int): SearchConfig? =
         getSearchConfigPersistence(widgetId)
@@ -100,8 +116,12 @@ class PhotoFrameWidgetPreferencesOnPrefs(
         }
 
     override fun clear(widgetId: Int) {
+        getPhotoPersistence(widgetId).clear()
+        photoPersistenceCache.remove(widgetId)
+
         getSearchConfigPersistence(widgetId).clear()
         searchConfigPersistenceCache.remove(widgetId)
+
         preferences.edit {
             val widgetKeyPrefix = getWidgetKeyPrefix(widgetId)
             preferences.all.keys.forEach { key ->

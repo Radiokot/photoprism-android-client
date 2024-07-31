@@ -1,7 +1,9 @@
 package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Size
 import android.view.View
@@ -15,6 +17,10 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 
@@ -27,48 +33,53 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
     operator fun invoke(
         widgetId: Int,
-    ): Completable =
-        getPreferences(widgetId)
-            .flatMap { (widgetSize, shape, photoUrl) ->
-                getPhoto(widgetSize, shape, photoUrl)
+    ): Completable {
+        lateinit var photo: PhotoFrameWidgetPhoto
+
+        return getPreferences(widgetId)
+            .flatMap { (size, shape, widgetPhoto) ->
+                photo = widgetPhoto
+                getPhotoBitmap(size, shape, photo)
             }
             .flatMapCompletable { photoBitmap ->
-                showPhotoInWidget(widgetId, photoBitmap)
+                showPhotoInWidget(widgetId, photo, photoBitmap)
             }
+    }
 
-    private fun getPreferences(widgetId: Int): Single<Triple<Size, PhotoFrameWidgetShape, String>> =
+    private fun getPreferences(widgetId: Int): Single<Triple<Size, PhotoFrameWidgetShape, PhotoFrameWidgetPhoto>> =
         {
             Triple(
                 first = widgetsPreferences.getSize(widgetId),
                 second = widgetsPreferences.getShape(widgetId),
-                third = widgetsPreferences.getPhotoUrl(widgetId)
+                third = widgetsPreferences.getPhoto(widgetId)
                     .checkNotNull {
-                        "No photo URL for $widgetId yet"
+                        "No photo for $widgetId yet"
                     }
             )
         }.toSingle()
 
-    private fun getPhoto(
+    private fun getPhotoBitmap(
         widgetSize: Size,
         shape: PhotoFrameWidgetShape,
-        photoUrl: String,
+        photo: PhotoFrameWidgetPhoto,
     ): Single<Bitmap> =
         picasso
-            .load(photoUrl)
+            .load(photo.previewUrl)
             .resize(widgetSize.width, widgetSize.height)
             .centerCrop()
             .transform(shape.getTransformation(context))
             .intoSingle()
             .doOnSuccess {
                 log.debug {
-                    "getPhoto(): photo_loaded_successfully:" +
+                    "getPhotoBitmap(): photo_bitmap_loaded_successfully:" +
                             "\nwidgetSize=$widgetSize" +
-                            "\nphotoUrl=$photoUrl"
+                            "\nphotoPreviewUrl=${photo.previewUrl}"
                 }
             }
 
     private fun showPhotoInWidget(
         widgetId: Int,
+        photo: PhotoFrameWidgetPhoto,
         photoBitmap: Bitmap,
     ): Completable = {
         val remoteViews =
@@ -80,6 +91,11 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                 )
                 setImageViewBitmap(R.id.photo_image_view, photoBitmap)
                 setViewVisibility(R.id.loading_text_view, View.GONE)
+
+                setOnClickPendingIntent(
+                    R.id.photo_image_view,
+                    getOpenPhotoPendingIntent(photo)
+                )
             }
 
         AppWidgetManager
@@ -91,4 +107,24 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                     "\nwidgetId=$widgetId"
         }
     }.toCompletable()
+
+    private fun getOpenPhotoPendingIntent(photo: PhotoFrameWidgetPhoto) =
+        PendingIntent.getActivity(
+            context,
+            0,
+            Intent(context, MediaViewerActivity::class.java)
+                .putExtras(
+                    MediaViewerActivity.getBundle(
+                        mediaIndex = 0,
+                        repositoryParams = SimpleGalleryMediaRepository.Params(
+                            SearchConfig.DEFAULT.copy(
+                                userQuery = "uid:${photo.uid}",
+                                includePrivate = true,
+                            )
+                        ),
+                    )
+                )
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
 }
