@@ -232,7 +232,6 @@
     <string name="import_albums_not_selected">Not selected</string>
     <string name="photo_frame_widget_name">Photo frame</string>
     <string name="photo_frame_widget_description">Shows a random photo changed once every few hours</string>
-    <string name="photo_frame_widget_loading">Loading photo…</string>
     <string name="photo_frame_widget_configuration_search_query">Search query</string>
     <string name="photo_frame_widget_configuration_search_all_photos">All photos</string>
     <string name="photo_frame_widget_configuration_shape">Shape</string>

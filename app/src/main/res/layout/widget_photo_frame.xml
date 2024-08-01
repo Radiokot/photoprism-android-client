@@ -10,14 +10,12 @@
         android:background="@drawable/splash_background"
         android:contentDescription="@string/photo_frame_widget_name" />
 
-    <TextView
-        android:id="@+id/loading_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center_horizontal"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
-        android:text="@string/photo_frame_widget_loading"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:indeterminateTint="?android:colorBackground"
+        style="?indeterminateProgressStyle"
+        android:layout_width="31dp"
+        android:layout_height="31dp"
+        android:layout_gravity="center" />
+
 </FrameLayout>

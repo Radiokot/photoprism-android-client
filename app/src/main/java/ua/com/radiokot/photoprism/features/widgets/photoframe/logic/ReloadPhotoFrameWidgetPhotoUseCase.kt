@@ -82,25 +82,25 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
         photo: PhotoFrameWidgetPhoto,
         photoBitmap: Bitmap,
     ): Completable = {
-        val remoteViews =
-            RemoteViews(context.packageName, R.layout.widget_photo_frame).apply {
-                setInt(
-                    R.id.photo_image_view,
-                    "setBackgroundResource",
-                    android.R.color.transparent
-                )
-                setImageViewBitmap(R.id.photo_image_view, photoBitmap)
-                setViewVisibility(R.id.loading_text_view, View.GONE)
-
-                setOnClickPendingIntent(
-                    R.id.photo_image_view,
-                    getOpenPhotoPendingIntent(photo)
-                )
-            }
-
         AppWidgetManager
             .getInstance(context)
-            .partiallyUpdateAppWidget(widgetId, remoteViews)
+            .partiallyUpdateAppWidget(
+                widgetId,
+                RemoteViews(context.packageName, R.layout.widget_photo_frame).apply {
+                    setInt(
+                        R.id.photo_image_view,
+                        "setBackgroundResource",
+                        android.R.color.transparent
+                    )
+                    setImageViewBitmap(R.id.photo_image_view, photoBitmap)
+                    setViewVisibility(R.id.progress_bar, View.GONE)
+
+                    setOnClickPendingIntent(
+                        R.id.photo_image_view,
+                        getOpenPhotoPendingIntent(photo)
+                    )
+                }
+            )
 
         log.debug {
             "showPhotoInWidget(): photo_shown_successfully:" +
