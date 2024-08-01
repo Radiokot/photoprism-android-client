@@ -85,15 +85,13 @@ class GetMemoriesUseCase(
             .toSingle {
                 repository
                     .itemsList
-                    .filter {
-                        // Filter out garbage.
-                        !it.title.lowercase().contains("screenshot")
-                    }
+                    // Filter out garbage.
+                    .filterNot(GARBAGE_ITEM_PREDICATE)
                     .let { filteredItems ->
-                        // Group items by time taken with 15 second range.
+                        // Group items by time taken.
                         DbscanClustering(filteredItems) { it.takenAtLocal.time }
                             .cluster(
-                                maxDistance = 15000,
+                                maxDistance = TIME_CLUSTERING_DISTANCE_MS,
                                 minClusterSize = 1,
                             )
                     }
@@ -123,6 +121,10 @@ class GetMemoriesUseCase(
         )
         private const val MAX_MEMORY_SIZE = 6
         private const val MAX_ITEMS_TO_LOAD = 150
+        private const val TIME_CLUSTERING_DISTANCE_MS = 15_000L
+        private val GARBAGE_ITEM_PREDICATE = { item: GalleryMedia ->
+            item.title.lowercase().contains("screenshot")
+        }
         private val PREFERABLE_ITEM_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
             .thenByDescending { it.media.typeName == GalleryMedia.TypeName.VIDEO }
     }
