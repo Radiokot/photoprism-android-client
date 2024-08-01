@@ -12,8 +12,9 @@ import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toCompletable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.checkNotNull
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
@@ -23,10 +24,12 @@ import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
+import java.text.DateFormat
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
     private val picasso: Picasso,
     private val widgetsPreferences: PhotoFrameWidgetsPreferences,
+    private val dayYearShortDateFormat: DateFormat,
     private val context: Context,
 ) {
     private val log = kLogger("ReloadPhotoFrameWidgetPhotoUseCase")
@@ -34,29 +37,39 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
     operator fun invoke(
         widgetId: Int,
     ): Completable {
-        lateinit var photo: PhotoFrameWidgetPhoto
+        lateinit var preferences: WidgetPreferences
 
         return getPreferences(widgetId)
-            .flatMap { (size, shape, widgetPhoto) ->
-                photo = widgetPhoto
-                getPhotoBitmap(size, shape, photo)
+            .flatMap {
+                preferences = it
+                getPhotoBitmap(
+                    widgetSize = preferences.size,
+                    shape = preferences.shape,
+                    photo = preferences.photo,
+                )
             }
             .flatMapCompletable { photoBitmap ->
-                showPhotoInWidget(widgetId, photo, photoBitmap)
+                showPhotoInWidget(
+                    widgetId = widgetId,
+                    shape = preferences.shape,
+                    photo = preferences.photo,
+                    photoBitmap = photoBitmap,
+                    showDate = preferences.isDateShown,
+                )
             }
     }
 
-    private fun getPreferences(widgetId: Int): Single<Triple<Size, PhotoFrameWidgetShape, PhotoFrameWidgetPhoto>> =
-        {
-            Triple(
-                first = widgetsPreferences.getSize(widgetId),
-                second = widgetsPreferences.getShape(widgetId),
-                third = widgetsPreferences.getPhoto(widgetId)
-                    .checkNotNull {
-                        "No photo for $widgetId yet"
-                    }
-            )
-        }.toSingle()
+    private fun getPreferences(
+        widgetId: Int,
+    ): Single<WidgetPreferences> = {
+        WidgetPreferences(
+            size = widgetsPreferences.getSize(widgetId),
+            shape = widgetsPreferences.getShape(widgetId),
+            photo = widgetsPreferences.getPhoto(widgetId)
+                ?: error("No photo for $widgetId yet"),
+            isDateShown = widgetsPreferences.isDateShown(widgetId),
+        )
+    }.toSingle().subscribeOn(Schedulers.io())
 
     private fun getPhotoBitmap(
         widgetSize: Size,
@@ -79,21 +92,39 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
     private fun showPhotoInWidget(
         widgetId: Int,
+        shape: PhotoFrameWidgetShape,
         photo: PhotoFrameWidgetPhoto,
         photoBitmap: Bitmap,
+        showDate: Boolean,
     ): Completable = {
         AppWidgetManager
             .getInstance(context)
             .partiallyUpdateAppWidget(
                 widgetId,
                 RemoteViews(context.packageName, R.layout.widget_photo_frame).apply {
+                    setViewVisibility(R.id.progress_bar, View.GONE)
+
                     setInt(
                         R.id.photo_image_view,
                         "setBackgroundResource",
                         android.R.color.transparent
                     )
                     setImageViewBitmap(R.id.photo_image_view, photoBitmap)
-                    setViewVisibility(R.id.progress_bar, View.GONE)
+
+                    if (showDate) {
+                        setViewVisibility(R.id.date_text_view, View.VISIBLE)
+                        setTextViewText(
+                            R.id.date_text_view,
+                            dayYearShortDateFormat.format(photo.takenAtLocal).capitalized()
+                        )
+                        setInt(
+                            R.id.date_text_view,
+                            "setGravity",
+                            shape.innerTextGravity
+                        )
+                    } else {
+                        setViewVisibility(R.id.date_text_view, View.GONE)
+                    }
 
                     setOnClickPendingIntent(
                         R.id.photo_image_view,
@@ -127,4 +158,11 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
+
+    private data class WidgetPreferences(
+        val size: Size,
+        val shape: PhotoFrameWidgetShape,
+        val photo: PhotoFrameWidgetPhoto,
+        val isDateShown: Boolean,
+    )
 }

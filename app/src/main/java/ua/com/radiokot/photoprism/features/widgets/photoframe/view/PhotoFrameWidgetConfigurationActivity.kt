@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurati
 import ua.com.radiokot.photoprism.databinding.IncludePhotoFrameWidgetConfigurationShapesBinding
 import ua.com.radiokot.photoprism.extension.animateScale
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
 import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.fadeOut
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -89,9 +90,9 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             initShapes()
         }
         initSearch()
+        initDate()
         initButtons()
 
-        subscribeToData()
         subscribeToEvents()
 
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
@@ -213,6 +214,13 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         }.autoDispose(this)
     }
 
+    private fun initDate() {
+        cardContentView.showDateLayout.setThrottleOnClickListener {
+            cardContentView.showDateSwitch.callOnClick()
+        }
+        cardContentView.showDateSwitch.bindCheckedTwoWay(viewModel.isDateShown, this)
+    }
+
     private fun initButtons() {
         view.cancelButton.setThrottleOnClickListener {
             viewModel.onCancelClicked()
@@ -220,10 +228,6 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         view.primaryButton.setThrottleOnClickListener {
             viewModel.onDoneClicked()
         }
-    }
-
-    private fun subscribeToData() {
-
     }
 
     private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->

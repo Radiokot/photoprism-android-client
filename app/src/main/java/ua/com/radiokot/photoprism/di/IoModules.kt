@@ -4,8 +4,15 @@ import android.content.Context
 import android.os.Environment
 import android.webkit.CookieManager
 import androidx.work.WorkManager
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
 import okhttp3.CookieJar
@@ -20,6 +27,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
 import ua.com.radiokot.photoprism.api.util.HeaderInterceptor
+import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.util.WebViewCookieJar
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -39,6 +47,21 @@ val ioModules: List<Module> = listOf(
     module {
         single<ObjectMapper> {
             jacksonObjectMapper()
+                .registerModule(SimpleModule("LocalDateModule").apply {
+                    addSerializer(LocalDate::class.java, object : JsonSerializer<LocalDate>() {
+                        override fun serialize(
+                            value: LocalDate,
+                            gen: JsonGenerator,
+                            serializers: SerializerProvider?
+                        ) = gen.writeNumber(value.time)
+                    })
+                    addDeserializer(LocalDate::class.java, object : JsonDeserializer<LocalDate>() {
+                        override fun deserialize(
+                            p: JsonParser,
+                            ctxt: DeserializationContext?
+                        ) = LocalDate(p.longValue)
+                    })
+                })
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         } bind JsonObjectMapper::class
     },

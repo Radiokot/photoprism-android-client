@@ -39,6 +39,16 @@ interface PhotoFrameWidgetsPreferences {
     fun setSearchConfig(widgetId: Int, searchConfig: SearchConfig?)
 
     /**
+     * @return whether the shot date is shown in this widget.
+     */
+    fun isDateShown(widgetId: Int): Boolean
+
+    /**
+     * @Saves whether the shot date is shown in this widget.
+     */
+    fun setDateShown(widgetId: Int, isShown: Boolean)
+
+    /**
      * @return whether the update work is scheduled for this widget.
      */
     fun areUpdatesScheduled(widgetId: Int): Boolean

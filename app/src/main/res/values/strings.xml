@@ -235,4 +235,6 @@
     <string name="photo_frame_widget_configuration_search_query">Search query</string>
     <string name="photo_frame_widget_configuration_search_all_photos">All photos</string>
     <string name="photo_frame_widget_configuration_shape">Shape</string>
+    <string name="photo_frame_widget_configuration_show_date">Date</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Show the date of the shot</string>
 </resources>

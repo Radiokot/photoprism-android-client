@@ -76,6 +76,48 @@
                 app:srcCompat="@drawable/ic_keyboard_arrow_right"
                 app:tint="?colorOnSurfaceVariant" />
 
+            <LinearLayout
+                android:id="@+id/show_date_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                android:layout_marginTop="32dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@id/show_date_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_config_layout"
+                tools:ignore="RtlSymmetry">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/photo_frame_widget_configuration_show_date"
+                    android:textAppearance="?android:attr/textAppearanceListItem" />
+
+                <TextView
+                    style="@style/PreferenceSummaryTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:ellipsize="end"
+                    android:maxLines="10"
+                    android:text="@string/photo_frame_widget_configuration_show_date_summary"
+                    android:textColor="?colorSecondary"
+                    tools:ignore="PrivateResource" />
+
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/show_date_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/photo_frame_widget_configuration_shape_margin_horizontal"
+                android:background="@null"
+                app:layout_constraintBottom_toBottomOf="@id/show_date_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/show_date_layout" />
+
             <TextView
                 android:id="@+id/shape_text_view"
                 android:layout_width="match_parent"
@@ -85,7 +127,7 @@
                 android:maxLines="1"
                 android:text="@string/photo_frame_widget_configuration_shape"
                 android:textAppearance="?android:attr/textAppearanceListItem"
-                app:layout_constraintTop_toBottomOf="@id/search_config_layout" />
+                app:layout_constraintTop_toBottomOf="@id/show_date_layout" />
 
             <!-- Shapes are inflated programmatically to reduce
                  initial render time. -->

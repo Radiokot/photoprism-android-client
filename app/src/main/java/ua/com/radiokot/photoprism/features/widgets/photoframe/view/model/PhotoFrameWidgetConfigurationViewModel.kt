@@ -29,6 +29,7 @@ class PhotoFrameWidgetConfigurationViewModel(
     private val log = kLogger("PhotoFrameWidgetConfigurationVM")
 
     val selectedShape: MutableLiveData<PhotoFrameWidgetShape> = MutableLiveData()
+    val isDateShown: MutableLiveData<Boolean> = MutableLiveData()
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
     private val backPressActionsStack = BackPressActionsStack()
@@ -52,6 +53,7 @@ class PhotoFrameWidgetConfigurationViewModel(
 
         this.widgetId = widgetId
         selectedShape.value = widgetsPreferences.getShape(widgetId)
+        isDateShown.value = widgetsPreferences.isDateShown(widgetId)
 
         widgetsPreferences.getSearchConfig(widgetId)
             ?.also(searchViewModel::applySearchConfig)
@@ -133,16 +135,19 @@ class PhotoFrameWidgetConfigurationViewModel(
         val shape = checkNotNull(selectedShape.value) {
             "The shape must be selected at this moment"
         }
+        val isDateShown = isDateShown.value == true
         val searchConfig = appliedSearchConfig
 
         widgetsPreferences.setShape(widgetId, shape)
         widgetsPreferences.setSearchConfig(widgetId, searchConfig)
+        widgetsPreferences.setDateShown(widgetId, isDateShown)
 
         log.debug {
             "savePreferences(): preferences_saved:" +
                     "\nwidgetId=$widgetId," +
                     "\nshape=$shape," +
-                    "\nsearchConfig=$searchConfig"
+                    "\nsearchConfig=$searchConfig," +
+                    "\nisDateShown=$isDateShown"
         }
     }
 

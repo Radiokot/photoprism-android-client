@@ -48,6 +48,9 @@ class PhotoFrameWidgetPreferencesOnPrefs(
     private fun getUpdatesScheduledKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_updates_scheduled"
 
+    private fun getDateShownKey(widgetId: Int) =
+        getWidgetKeyPrefix(widgetId) + "_date_shown"
+
     private fun getShapeKey(widgetId: Int) =
         getWidgetKeyPrefix(widgetId) + "_shape"
 
@@ -96,6 +99,14 @@ class PhotoFrameWidgetPreferencesOnPrefs(
             persistence.clear()
         }
     }
+
+    override fun isDateShown(widgetId: Int): Boolean =
+        preferences.getBoolean(getDateShownKey(widgetId), false)
+
+    override fun setDateShown(widgetId: Int, isShown: Boolean) =
+        preferences.edit {
+            putBoolean(getDateShownKey(widgetId), isShown)
+        }
 
     override fun areUpdatesScheduled(widgetId: Int): Boolean =
         preferences.getBoolean(getUpdatesScheduledKey(widgetId), false)

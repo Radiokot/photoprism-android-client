@@ -1,11 +1,12 @@
 package ua.com.radiokot.photoprism.features.widgets.photoframe
 
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
+import ua.com.radiokot.photoprism.di.UTC_DAY_YEAR_SHORT_DATE_FORMAT
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
@@ -16,7 +17,6 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoF
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.model.PhotoFrameWidgetConfigurationViewModel
 
 private const val ALLOWED_MEDIA_TYPES = "allowed-media-types"
-private const val DEFAULT_SHAPE = "default-shape"
 
 val photoFrameWidgetFeatureModule = module {
     single(named(ALLOWED_MEDIA_TYPES)) {
@@ -27,21 +27,24 @@ val photoFrameWidgetFeatureModule = module {
         )
     }
 
-    single(named(DEFAULT_SHAPE)) {
-        PhotoFrameWidgetShape.ROUNDED_CORNERS
-    } bind PhotoFrameWidgetShape::class
-
     single {
         PhotoFrameWidgetPreferencesOnPrefs(
             keyPrefix = "photo_frame_widget",
             preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
             jsonObjectMapper = get(),
-            defaultShape = get(named(DEFAULT_SHAPE)),
+            defaultShape = PhotoFrameWidgetShape.ROUNDED_CORNERS,
         )
     } bind PhotoFrameWidgetsPreferences::class
 
     scope<EnvSession> {
-        scopedOf(::ReloadPhotoFrameWidgetPhotoUseCase)
+        scoped {
+            ReloadPhotoFrameWidgetPhotoUseCase(
+                picasso = get(),
+                widgetsPreferences = get(),
+                dayYearShortDateFormat = get(named(UTC_DAY_YEAR_SHORT_DATE_FORMAT)),
+                context = androidApplication(),
+            )
+        } bind ReloadPhotoFrameWidgetPhotoUseCase::class
 
         scoped {
             UpdatePhotoFrameWidgetPhotoUseCase(
@@ -49,7 +52,7 @@ val photoFrameWidgetFeatureModule = module {
                 widgetsPreferences = get(),
                 galleryMediaRepositoryFactory = get(),
             )
-        }
+        } bind UpdatePhotoFrameWidgetPhotoUseCase::class
 
         viewModel {
             PhotoFrameWidgetConfigurationViewModel(
