@@ -216,7 +216,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
 
     private fun initDate() {
         cardContentView.showDateLayout.setThrottleOnClickListener {
-            cardContentView.showDateSwitch.callOnClick()
+            cardContentView.showDateSwitch.toggle()
         }
         cardContentView.showDateSwitch.bindCheckedTwoWay(viewModel.isDateShown, this)
     }
