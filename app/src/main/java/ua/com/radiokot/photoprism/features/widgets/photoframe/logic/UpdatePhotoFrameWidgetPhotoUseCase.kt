@@ -34,8 +34,11 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
             // hence there is no date range.
             .getNewestAndOldestLocalDates()
             // Pick a random date within this range.
+            // Add 1 ms to it so when used as "before" date later
+            // it doesn't filter out the only item.
             .map { (newestDate, oldestDate) ->
-                LocalDate((oldestDate.time..newestDate.time).random())
+                val randomTime = (oldestDate.time..newestDate.time).random()
+                LocalDate(randomTime + 1)
                     .also { pickedDate ->
                         log.debug {
                             "invoke(): picked_date:" +
@@ -67,7 +70,7 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
             .observeOn(Schedulers.io())
             .map { repositoryItems ->
                 check(repositoryItems.isNotEmpty()) {
-                    "The repository to pick from not be empty"
+                    "The repository to pick from must not be empty"
                 }
 
                 repositoryItems
