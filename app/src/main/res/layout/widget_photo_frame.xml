@@ -19,18 +19,30 @@
         android:layout_gravity="center"
         android:indeterminateTint="?android:colorBackground" />
 
-    <TextView
-        android:id="@+id/date_text_view"
+    <LinearLayout
+        android:id="@+id/date_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="8dp"
         android:gravity="center"
-        android:paddingVertical="12dp"
-        android:shadowColor="@color/md_theme_light_outline"
-        android:shadowRadius="6"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textColor="@color/md_theme_light_surface"
+        android:orientation="vertical"
         android:visibility="gone"
-        tools:text="Aug 31, 2015"
-        tools:visibility="visible" />
+        tools:visibility="visible">
+
+        <!-- A wrapper layout is required to set the gravity
+             on it instead of on the TextView, as the second
+             doesn't work on SDK 21. -->
+
+        <TextView
+            android:id="@+id/date_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:shadowColor="@color/md_theme_light_outline"
+            android:shadowRadius="6"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="@color/md_theme_light_surface"
+            tools:text="Aug 31, 2015" />
+    </LinearLayout>
 </FrameLayout>

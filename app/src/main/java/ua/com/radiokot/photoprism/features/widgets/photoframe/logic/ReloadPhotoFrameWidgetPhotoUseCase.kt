@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Size
+import android.view.Gravity
 import android.view.View
 import android.widget.RemoteViews
 import com.squareup.picasso.Picasso
@@ -112,18 +113,19 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                     setImageViewBitmap(R.id.photo_image_view, photoBitmap)
 
                     if (showDate) {
-                        setViewVisibility(R.id.date_text_view, View.VISIBLE)
+                        setViewVisibility(R.id.date_layout, View.VISIBLE)
+                        setInt(
+                            R.id.date_layout,
+                            "setGravity",
+                            shape.innerTextGravity
+                        )
+
                         setTextViewText(
                             R.id.date_text_view,
                             dayYearShortDateFormat.format(photo.takenAtLocal).capitalized()
                         )
-                        setInt(
-                            R.id.date_text_view,
-                            "setGravity",
-                            shape.innerTextGravity
-                        )
                     } else {
-                        setViewVisibility(R.id.date_text_view, View.GONE)
+                        setViewVisibility(R.id.date_layout, View.GONE)
                     }
 
                     setOnClickPendingIntent(
