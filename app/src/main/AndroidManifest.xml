@@ -197,7 +197,6 @@
 
         <activity
             android:name=".features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity"
-            android:enabled="false"
             android:exported="true"
             android:label="@string/photo_frame_widget_name"
             android:resizeableActivity="true"
@@ -205,7 +204,9 @@
             android:windowSoftInputMode="adjustResize">
 
             <!-- This screen gets enabled or disabled programmatically
-                 on optional features initialization. -->
+                 on optional features initialization.
+                 However, it must be initially enabled in order to appear
+                 in old launchers widget list. -->
         </activity>
 
         <provider
@@ -220,12 +221,13 @@
 
         <receiver
             android:name=".features.widgets.photoframe.view.PhotoFrameWidgetProvider"
-            android:enabled="false"
             android:exported="false"
             android:label="@string/photo_frame_widget_name">
 
             <!-- This widget gets enabled or disabled programmatically
-                 on optional features initialization. -->
+                 on optional features initialization.
+                 However, it must be initially enabled in order to appear
+                 in old launchers widget list. -->
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
