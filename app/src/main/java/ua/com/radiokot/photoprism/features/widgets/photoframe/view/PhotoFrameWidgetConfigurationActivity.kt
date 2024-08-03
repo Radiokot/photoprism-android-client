@@ -206,10 +206,10 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                             textView = cardContentView.searchConfigTextView,
                         )
                     else
-                        getString(R.string.photo_frame_widget_configuration_search_all_photos)
+                        getString(R.string.photo_frame_widget_configuration_all_photos_to_show)
 
                 GallerySearchViewModel.State.NoSearch ->
-                    getString(R.string.photo_frame_widget_configuration_search_all_photos)
+                    getString(R.string.photo_frame_widget_configuration_all_photos_to_show)
             }
         }.autoDispose(this)
     }

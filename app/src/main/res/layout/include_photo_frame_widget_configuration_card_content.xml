@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@string/photo_frame_widget_configuration_search_query"
+                    android:text="@string/photo_frame_widget_configuration_photos_to_show"
                     android:textAppearance="?android:attr/textAppearanceListItem" />
 
                 <TextView
@@ -61,7 +61,7 @@
                     android:layout_gravity="start"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="@string/photo_frame_widget_configuration_search_all_photos"
+                    android:text="@string/photo_frame_widget_configuration_all_photos_to_show"
                     android:textColor="?colorSecondary"
                     tools:ignore="PrivateResource" />
 

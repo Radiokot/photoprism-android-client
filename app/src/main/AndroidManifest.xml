@@ -233,7 +233,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/photo_frame_widget_info" />
+                android:resource="@xml/widget_photo_frame_info" />
         </receiver>
 
         <service
