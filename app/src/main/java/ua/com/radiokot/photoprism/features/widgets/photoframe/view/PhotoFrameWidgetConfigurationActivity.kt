@@ -10,6 +10,8 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import com.google.android.material.search.SearchView
 import com.squareup.picasso.Picasso
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.model.PhotoFrameWidgetConfigurationViewModel
+import kotlin.concurrent.thread
 
 class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
     private val log = kLogger("PhotoFrameWidgetConfigurationActivity")
@@ -86,9 +89,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             widgetId = appWidgetId,
         )
 
-        cardContentView.contentLayout.post {
-            initShapes()
-        }
+        initShapesAsync()
         initSearch()
         initDate()
         initButtons()
@@ -98,42 +99,39 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
-    private fun initShapes() {
-        IncludePhotoFrameWidgetConfigurationShapesBinding.inflate(
+    private fun initShapesAsync() = thread(name = "InitShapesThread") {
+        val compositeDisposable = CompositeDisposable()
+
+        val shapesLayout = IncludePhotoFrameWidgetConfigurationShapesBinding.inflate(
             layoutInflater,
-            cardContentView.contentLayout
-        )
+            cardContentView.contentLayout,
+            false
+        ).root
 
-        val sampleImage = R.drawable.sample_image
-
-        cardContentView.contentLayout.forEach { view ->
-            val shape = view.tag
+        shapesLayout.forEach { view ->
+            val viewShape = view.tag
                 ?.takeIf { it is String }
                 ?.runCatching { PhotoFrameWidgetShape.valueOf(toString()) }
                 ?.getOrNull()
                 ?: return@forEach
 
-            view.setThrottleOnClickListener {
-                viewModel.onShapeClicked(shape)
+            view.setOnClickListener {
+                viewModel.onShapeClicked(viewShape)
             }
 
             if (view is AppCompatImageButton) {
                 picasso
-                    .load(sampleImage)
+                    .load(R.drawable.sample_image)
                     .fit()
                     .centerCrop()
-                    .transform(shape.getTransformation(this))
-                    .into(view)
+                    .transform(viewShape.getTransformation(this))
+                    .apply {
+                        view.post { into(view) }
+                    }
             }
-        }
 
-        viewModel.selectedShape.observe(this) { selectedShape ->
-            cardContentView.contentLayout.forEach { view ->
-                if (view.tag == null) {
-                    return@forEach
-                }
-
-                val isViewOfSelectedShape = view.tag == selectedShape.name
+            viewModel.selectedShape.subscribeBy { selectedShape ->
+                val isViewOfSelectedShape = viewShape == selectedShape
 
                 if (view is AppCompatImageButton) {
                     // Animate scale of the shape view.
@@ -156,7 +154,12 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                         view.isVisible = false
                     }
                 }
-            }
+            }.addTo(compositeDisposable)
+        }
+
+        cardContentView.contentLayout.post {
+            cardContentView.contentLayout.addView(shapesLayout)
+            compositeDisposable.autoDispose(this)
         }
     }
 
@@ -215,7 +218,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
     }
 
     private fun initDate() {
-        cardContentView.showDateLayout.setThrottleOnClickListener {
+        cardContentView.showDateLayout.setOnClickListener {
             cardContentView.showDateSwitch.toggle()
         }
         cardContentView.showDateSwitch.bindCheckedTwoWay(viewModel.isDateShown, this)

@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@id/shape_text_view"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <Space
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/center"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@id/end"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Space
-        android:id="@+id/end"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/fufa_image_view"
@@ -31,7 +22,7 @@
         android:tag="FUFA"
         app:layout_constraintEnd_toStartOf="@id/center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shape_text_view"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/image_shape_fufa" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -48,9 +39,9 @@
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:layout_marginVertical="8dp"
         android:tag="ROUNDED_CORNERS"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/center"
-        app:layout_constraintTop_toBottomOf="@id/shape_text_view"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/sample_image" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -85,7 +76,7 @@
         android:id="@+id/heart_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="HEART"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/center"
         app:layout_constraintTop_toBottomOf="@id/rounded_corners_image_view"
         tools:srcCompat="@drawable/image_shape_heart" />
@@ -122,7 +113,7 @@
         android:id="@+id/leaf_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="LEAF"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/center"
         app:layout_constraintTop_toBottomOf="@id/heart_image_view"
         tools:srcCompat="@drawable/image_shape_leaf" />
@@ -162,7 +153,7 @@
         android:id="@+id/nina_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="NINA"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/center"
         app:layout_constraintTop_toBottomOf="@id/leaf_image_view"
         tools:srcCompat="@drawable/image_shape_nina" />
@@ -181,7 +172,7 @@
         android:id="@+id/gear_image_view"
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="GEAR"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/center"
         app:layout_constraintTop_toBottomOf="@id/nina_image_view"
         tools:srcCompat="@drawable/image_shape_gear" />
@@ -200,7 +191,7 @@
         style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
         android:tag="HSAUCE"
         app:layout_constraintDimensionRatio="H,7:3"
-        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vsauce_image_view"
         tools:scaleType="fitXY"
@@ -214,4 +205,4 @@
         app:layout_constraintStart_toStartOf="@id/hsauce_image_view"
         app:layout_constraintTop_toTopOf="@id/hsauce_image_view"
         tools:visibility="visible" />
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

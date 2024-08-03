@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -28,7 +29,8 @@ class PhotoFrameWidgetConfigurationViewModel(
 ) : ViewModel() {
     private val log = kLogger("PhotoFrameWidgetConfigurationVM")
 
-    val selectedShape: MutableLiveData<PhotoFrameWidgetShape> = MutableLiveData()
+    private val selectedShapeSubject: BehaviorSubject<PhotoFrameWidgetShape> = BehaviorSubject.create()
+    val selectedShape = selectedShapeSubject.toMainThreadObservable().distinctUntilChanged()
     val isDateShown: MutableLiveData<Boolean> = MutableLiveData()
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
@@ -52,7 +54,7 @@ class PhotoFrameWidgetConfigurationViewModel(
         }
 
         this.widgetId = widgetId
-        selectedShape.value = widgetsPreferences.getShape(widgetId)
+        selectedShapeSubject.onNext(widgetsPreferences.getShape(widgetId))
         isDateShown.value = widgetsPreferences.isDateShown(widgetId)
 
         widgetsPreferences.getSearchConfig(widgetId)
@@ -111,7 +113,7 @@ class PhotoFrameWidgetConfigurationViewModel(
                     "\nshape=$shape"
         }
 
-        selectedShape.postValue(shape)
+        selectedShapeSubject.onNext(shape)
     }
 
     fun onDoneClicked() {
@@ -132,7 +134,7 @@ class PhotoFrameWidgetConfigurationViewModel(
     }
 
     private fun savePreferences() {
-        val shape = checkNotNull(selectedShape.value) {
+        val shape = checkNotNull(selectedShapeSubject.value) {
             "The shape must be selected at this moment"
         }
         val isDateShown = isDateShown.value == true
