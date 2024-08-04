@@ -7,19 +7,16 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Size
-import android.widget.RemoteViews
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.reactivex.rxjava3.kotlin.blockingSubscribeBy
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
@@ -60,14 +57,18 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             widgetsPreferences.setUpdatesScheduled(widgetId)
 
             // Make the first full update to allow further partial updates.
-            appWidgetManager.updateAppWidget(
-                widgetId,
-                RemoteViews(context.packageName, R.layout.widget_photo_frame)
-            )
+            appWidgetManager.updateAppWidget(widgetId, PhotoFrameWidgetRemoteViews(context))
 
-            scheduleWidgetUpdates(widgetId, context)
+            scheduleWidgetUpdates(
+                context = context,
+                widgetId = widgetId,
+            )
         } else {
-            reloadWidgetPhotoIfPossible(widgetId)
+            reloadWidgetPhotoIfPossible(
+                context = context,
+                appWidgetManager = appWidgetManager,
+                widgetId = widgetId,
+            )
         }
     }
 
@@ -88,7 +89,11 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             context = context,
         )
 
-        reloadWidgetPhotoIfPossible(appWidgetId)
+        reloadWidgetPhotoIfPossible(
+            context = context,
+            appWidgetManager = appWidgetManager,
+            widgetId = appWidgetId,
+        )
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
@@ -192,7 +197,11 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
     }
 
     @SuppressLint("CheckResult")
-    private fun reloadWidgetPhotoIfPossible(widgetId: Int) {
+    private fun reloadWidgetPhotoIfPossible(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        widgetId: Int
+    ) {
         val reloadPhotoUseCase = scope.getOrNull<ReloadPhotoFrameWidgetPhotoUseCase>()
         if (reloadPhotoUseCase == null) {
             log.warn {
@@ -206,6 +215,22 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         thread {
             reloadPhotoUseCase
                 .invoke(widgetId)
+                .doOnSubscribe {
+                    appWidgetManager.partiallyUpdateAppWidget(
+                        widgetId,
+                        PhotoFrameWidgetRemoteViews(context) {
+                            setLoadingVisible(true)
+                        }
+                    )
+                }
+                .doOnTerminate {
+                    appWidgetManager.partiallyUpdateAppWidget(
+                        widgetId,
+                        PhotoFrameWidgetRemoteViews(context) {
+                            setLoadingVisible(false)
+                        }
+                    )
+                }
                 .blockingSubscribeBy(
                     onError = { error ->
                         log.error(error) {

@@ -1,29 +1,22 @@
 package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Size
-import android.view.View
-import android.widget.RemoteViews
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
+import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetRemoteViews
 import java.text.DateFormat
 
 class ReloadPhotoFrameWidgetPhotoUseCase(
@@ -33,6 +26,7 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
     private val context: Context,
 ) {
     private val log = kLogger("ReloadPhotoFrameWidgetPhotoUseCase")
+    private val appWidgetManager = AppWidgetManager.getInstance(context)
 
     operator fun invoke(
         widgetId: Int,
@@ -108,63 +102,30 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
         photoBitmap: Bitmap,
         showDate: Boolean,
     ): Completable = {
-        AppWidgetManager
-            .getInstance(context)
-            .partiallyUpdateAppWidget(
-                widgetId,
-                RemoteViews(context.packageName, R.layout.widget_photo_frame).apply {
-                    setViewVisibility(R.id.progress_bar, View.GONE)
+        appWidgetManager.partiallyUpdateAppWidget(
+            widgetId,
+            PhotoFrameWidgetRemoteViews(context) {
+                hideDefaultBackground()
+                setPhotoBitmap(photoBitmap)
 
-                    setInt(
-                        R.id.photo_image_view,
-                        "setBackgroundResource",
-                        android.R.color.transparent
+                if (showDate) {
+                    setDateVisible(true)
+                    setDate(
+                        date = dayYearShortDateFormat.format(photo.takenAtLocal).capitalized(),
+                        gravity = shape.innerTextGravity,
                     )
-                    setImageViewBitmap(R.id.photo_image_view, photoBitmap)
-
-                    if (showDate) {
-                        setViewVisibility(R.id.date_layout, View.VISIBLE)
-                        setInt(
-                            R.id.date_layout,
-                            "setGravity",
-                            shape.innerTextGravity
-                        )
-
-                        setTextViewText(
-                            R.id.date_text_view,
-                            dayYearShortDateFormat.format(photo.takenAtLocal).capitalized()
-                        )
-                    } else {
-                        setViewVisibility(R.id.date_layout, View.GONE)
-                    }
-
-                    setOnClickPendingIntent(
-                        R.id.photo_image_view,
-                        getOpenPhotoPendingIntent(photo)
-                    )
+                } else {
+                    setDateVisible(false)
                 }
-            )
+
+                openPhotoOnClick(
+                    context = context,
+                    photoUid = photo.uid,
+                )
+            }
+        )
     }.toCompletable()
 
-    private fun getOpenPhotoPendingIntent(photo: PhotoFrameWidgetPhoto) =
-        PendingIntent.getActivity(
-            context,
-            0,
-            Intent(context, MediaViewerActivity::class.java)
-                .putExtras(
-                    MediaViewerActivity.getBundle(
-                        mediaIndex = 0,
-                        repositoryParams = SimpleGalleryMediaRepository.Params(
-                            SearchConfig.DEFAULT.copy(
-                                userQuery = "uid:${photo.uid}",
-                                includePrivate = true,
-                            )
-                        ),
-                    )
-                )
-                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
 
     private data class WidgetPreferences(
         val size: Size,

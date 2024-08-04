@@ -2,8 +2,6 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.logic
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.view.View
-import android.widget.RemoteViews
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
@@ -12,9 +10,9 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetRemoteViews
 
 class UpdatePhotoFrameWidgetWorker(
     appContext: Context,
@@ -27,6 +25,7 @@ class UpdatePhotoFrameWidgetWorker(
     }
 
     private val log = kLogger("UpdatePhotoFrameWidgetWorker")
+    private val appWidgetManager = AppWidgetManager.getInstance(appContext)
     private val updatePhotoFrameWidgetPhotoUseCase: UpdatePhotoFrameWidgetPhotoUseCase by inject()
     private val reloadPhotoFrameWidgetPhotoUseCase: ReloadPhotoFrameWidgetPhotoUseCase by inject()
     private val widgetId: Int by lazy {
@@ -53,20 +52,26 @@ class UpdatePhotoFrameWidgetWorker(
             return Single.just(Result.success())
         }
 
-        // Show the loading.
-        AppWidgetManager
-            .getInstance(applicationContext)
-            .partiallyUpdateAppWidget(
-                widgetId,
-                RemoteViews(applicationContext.packageName, R.layout.widget_photo_frame).apply {
-                    setViewVisibility(R.id.progress_bar, View.VISIBLE)
-                }
-            )
-
         return updatePhotoFrameWidgetPhotoUseCase
             .invoke(widgetId)
             .andThen(reloadPhotoFrameWidgetPhotoUseCase(widgetId))
             .toSingleDefault(Result.success())
+            .doOnSubscribe {
+                appWidgetManager.partiallyUpdateAppWidget(
+                    widgetId,
+                    PhotoFrameWidgetRemoteViews(applicationContext) {
+                        setLoadingVisible(true)
+                    }
+                )
+            }
+            .doOnTerminate {
+                appWidgetManager.partiallyUpdateAppWidget(
+                    widgetId,
+                    PhotoFrameWidgetRemoteViews(applicationContext) {
+                        setLoadingVisible(false)
+                    }
+                )
+            }
             .doOnSuccess {
                 log.debug {
                     "createWork(): completed"

@@ -12,7 +12,7 @@
         android:contentDescription="@string/photo_frame_widget_name" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progress_indicator"
         style="?indeterminateProgressStyle"
         android:layout_width="31dp"
         android:layout_height="31dp"
