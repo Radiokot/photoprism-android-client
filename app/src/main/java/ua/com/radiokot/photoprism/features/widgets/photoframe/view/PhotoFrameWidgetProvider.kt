@@ -13,6 +13,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import io.reactivex.rxjava3.kotlin.blockingSubscribeBy
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
@@ -25,6 +26,7 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.Photo
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetWorker
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 
 class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
@@ -64,10 +66,11 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             )
 
             scheduleWidgetUpdates(widgetId, context)
+        } else {
+            reloadWidgetPhotoIfPossible(widgetId)
         }
     }
 
-    @SuppressLint("CheckResult")
     override fun onAppWidgetOptionsChanged(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -85,29 +88,10 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
             context = context,
         )
 
-        val reloadPhotoUseCase = scope.getOrNull<ReloadPhotoFrameWidgetPhotoUseCase>()
-        if (reloadPhotoUseCase == null) {
-            log.warn {
-                "onAppWidgetOptionsChanged(): failed_photo_reloading_as_missing_scope"
-            }
-
-            return
-        }
-
-        // This shouldn't take long.
-        reloadPhotoUseCase
-            .invoke(appWidgetId)
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "failed_photo_reloading"
-                    }
-                }
-            )
+        reloadWidgetPhotoIfPossible(appWidgetId)
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-
         appWidgetIds.forEach { widgetId ->
             widgetsPreferences.clear(widgetId)
 
@@ -204,6 +188,31 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         log.debug {
             "cancelWidgetUpdates(): canceled:" +
                     "\nwidgetId=$widgetId"
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun reloadWidgetPhotoIfPossible(widgetId: Int) {
+        val reloadPhotoUseCase = scope.getOrNull<ReloadPhotoFrameWidgetPhotoUseCase>()
+        if (reloadPhotoUseCase == null) {
+            log.warn {
+                "reloadWidgetPhotoIfPossible(): failed_photo_reloading_as_missing_scope"
+            }
+
+            return
+        }
+
+        // Run it in a thread so it is not garbage collected.
+        thread {
+            reloadPhotoUseCase
+                .invoke(widgetId)
+                .blockingSubscribeBy(
+                    onError = { error ->
+                        log.error(error) {
+                            "reloadWidgetPhotoIfPossible(): failed_photo_reloading"
+                        }
+                    }
+                )
         }
     }
 

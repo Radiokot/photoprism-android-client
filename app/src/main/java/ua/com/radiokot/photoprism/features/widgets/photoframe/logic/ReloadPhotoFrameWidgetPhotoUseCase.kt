@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Size
-import android.view.Gravity
 import android.view.View
 import android.widget.RemoteViews
 import com.squareup.picasso.Picasso
@@ -42,7 +41,13 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
         return getPreferences(widgetId)
             .flatMap {
+                log.debug {
+                    "invoke(): got_preferences:" +
+                            "\npreferences=$widgetsPreferences"
+                }
+
                 preferences = it
+
                 getPhotoBitmap(
                     widgetSize = preferences.size,
                     shape = preferences.shape,
@@ -50,6 +55,12 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                 )
             }
             .flatMapCompletable { photoBitmap ->
+                log.debug {
+                    "getPhotoBitmap(): photo_bitmap_loaded_successfully:" +
+                            "\nwidgetSize=${preferences.size}" +
+                            "\nphotoPreviewUrl=${preferences.photo.previewUrl}"
+                }
+
                 showPhotoInWidget(
                     widgetId = widgetId,
                     shape = preferences.shape,
@@ -57,6 +68,12 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                     photoBitmap = photoBitmap,
                     showDate = preferences.isDateShown,
                 )
+            }
+            .doOnComplete {
+                log.debug {
+                    "showPhotoInWidget(): photo_shown_successfully:" +
+                            "\nwidgetId=$widgetId"
+                }
             }
     }
 
@@ -83,13 +100,6 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
             .centerCrop()
             .transform(shape.getTransformation(context))
             .intoSingle()
-            .doOnSuccess {
-                log.debug {
-                    "getPhotoBitmap(): photo_bitmap_loaded_successfully:" +
-                            "\nwidgetSize=$widgetSize" +
-                            "\nphotoPreviewUrl=${photo.previewUrl}"
-                }
-            }
 
     private fun showPhotoInWidget(
         widgetId: Int,
@@ -134,11 +144,6 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
                     )
                 }
             )
-
-        log.debug {
-            "showPhotoInWidget(): photo_shown_successfully:" +
-                    "\nwidgetId=$widgetId"
-        }
     }.toCompletable()
 
     private fun getOpenPhotoPendingIntent(photo: PhotoFrameWidgetPhoto) =
