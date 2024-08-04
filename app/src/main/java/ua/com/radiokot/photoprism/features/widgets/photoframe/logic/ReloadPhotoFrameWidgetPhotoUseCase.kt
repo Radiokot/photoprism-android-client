@@ -120,6 +120,7 @@ class ReloadPhotoFrameWidgetPhotoUseCase(
 
                 openPhotoOnClick(
                     context = context,
+                    widgetId = widgetId,
                     photoUid = photo.uid,
                 )
             }

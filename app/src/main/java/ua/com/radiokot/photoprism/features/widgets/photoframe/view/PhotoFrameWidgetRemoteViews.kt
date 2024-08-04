@@ -69,13 +69,18 @@ class PhotoFrameWidgetRemoteViews(
 
     fun openPhotoOnClick(
         context: Context,
+        widgetId: Int,
         photoUid: String,
     ) =
         setOnClickPendingIntent(
             R.id.photo_image_view,
             PendingIntent.getActivity(
                 context,
-                0,
+                // Widget ID is set as the intent request code
+                // in order for intents for different widgets to co-exist.
+                // Otherwise, if the intents only differ in extras,
+                // the latest replaces all the existing.
+                widgetId,
                 Intent(context, MediaViewerActivity::class.java)
                     .putExtras(
                         MediaViewerActivity.getBundle(
@@ -92,5 +97,4 @@ class PhotoFrameWidgetRemoteViews(
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
         )
-
 }
