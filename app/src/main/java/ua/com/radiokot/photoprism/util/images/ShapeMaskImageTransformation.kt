@@ -31,6 +31,7 @@ class ShapeMaskImageTransformation(
                     )
                 })
             }
+            isAntiAlias = true
         }
 
         val resultBitmap = Bitmap.createBitmap(

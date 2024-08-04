@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="NoticeTextAppearance">
         <item name="android:textSize">12sp</item>
@@ -15,10 +15,16 @@
     <style name="PhotoFrameWidgetConfigurationShapeImageButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginHorizontal" tools:ignore="NewApi">
+        <item name="android:layout_marginStart">
             @dimen/photo_frame_widget_configuration_shape_margin_horizontal
         </item>
-        <item name="android:layout_marginVertical" tools:ignore="NewApi">
+        <item name="android:layout_marginEnd">
+            @dimen/photo_frame_widget_configuration_shape_margin_horizontal
+        </item>
+        <item name="android:layout_marginTop">
+            @dimen/photo_frame_widget_configuration_shape_margin_vertical
+        </item>
+        <item name="android:layout_marginBottom">
             @dimen/photo_frame_widget_configuration_shape_margin_vertical
         </item>
         <item name="android:alpha">0.8</item>
