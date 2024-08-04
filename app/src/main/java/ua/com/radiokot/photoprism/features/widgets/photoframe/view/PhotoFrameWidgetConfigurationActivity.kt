@@ -126,7 +126,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                     .centerCrop()
                     .transform(viewShape.getTransformation(this))
                     .apply {
-                        view.post { into(view) }
+                        runOnUiThread { into(view) }
                     }
             }
 
@@ -157,7 +157,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             }.addTo(compositeDisposable)
         }
 
-        cardContentView.contentLayout.post {
+        runOnUiThread {
             cardContentView.contentLayout.addView(shapesLayout)
             compositeDisposable.autoDispose(this)
         }
