@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFr
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.util.DbscanClustering
 import ua.com.radiokot.photoprism.util.LocalDate
+import kotlin.random.Random
 
 class UpdatePhotoFrameWidgetPhotoUseCase(
     private val allowedMediaTypes: Set<GalleryMedia.TypeName>,
@@ -33,11 +34,15 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
             // Further operations are not executed if this search finds nothing
             // hence there is no date range.
             .getNewestAndOldestLocalDates()
-            // Pick a random date within this range.
-            // Add 1 ms to it so when used as "before" date later
+            // Pick a random date as a starting point.
+            // To increase probability of picking recent photos,
+            // extend the range to the future.
+            // Add 1 ms to the picked time so when used as "before" date later
             // it doesn't filter out the only item.
             .map { (newestDate, oldestDate) ->
-                val randomTime = (oldestDate.time..newestDate.time).random()
+                val timeRangeLength = newestDate.time - oldestDate.time
+                val extendedTimeRangeLength = timeRangeLength + timeRangeLength / 2
+                val randomTime = oldestDate.time + Random.nextLong(extendedTimeRangeLength + 1)
                 LocalDate(randomTime + 1)
                     .also { pickedDate ->
                         log.debug {
