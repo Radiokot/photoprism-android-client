@@ -147,7 +147,8 @@
     <string name="files_saved_to_downloads">Files have been saved to the Downloads</string>
     <string name="start_slideshow">Slideshow</string>
     <string name="slideshow_previous">Previous</string>
-    <string name="slideshow_guide_got_it">Got it</string>
+    <string name="got_it">Got it</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Next</string>
     <string name="slideshow_guide_show_system_buttons">Show system buttons</string>
     <string name="slideshow_exit">Exit the slideshow</string>
@@ -239,4 +240,14 @@
     <string name="extension_photo_frame_widget_name">Photo frame widget</string>
     <string name="extension_photo_frame_widget_description">See random photos from your library on the home screen</string>
     <string name="extension_store_item_acquire">Acquire</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        Gallery extensions are extra features of the app which can be acquired individually,
+        each at its own small price.
+        They are activated by perpetual offline license keys – no accounts and subscriptions required.
+        <br />
+        Extensions are free for <a href="#sponsors">sponsors</a> and contributors from GitHub.
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 </resources>

@@ -143,7 +143,8 @@
     <string name="files_saved_to_downloads">Les fichiers ont été sauvegardés dans les Téléchargements</string>
     <string name="start_slideshow">Diaporama</string>
     <string name="slideshow_previous">Précédent</string>
-    <string name="slideshow_guide_got_it">OK</string>
+    <string name="got_it">OK</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Suivant</string>
     <string name="slideshow_guide_show_system_buttons">Afficher les boutons système</string>
     <string name="slideshow_exit">Quitter le diaporama</string>

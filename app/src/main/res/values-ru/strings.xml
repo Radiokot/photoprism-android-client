@@ -142,7 +142,8 @@
     <string name="files_saved_to_downloads">Файлы сохранены в Загрузки</string>
     <string name="start_slideshow">Слайд-шоу</string>
     <string name="slideshow_previous">Предыдущий</string>
-    <string name="slideshow_guide_got_it">Понятно</string>
+    <string name="got_it">Понятно</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Следующий</string>
     <string name="slideshow_guide_show_system_buttons">Показать системные кнопки</string>
     <string name="slideshow_exit">Выйти из слайд-шоу</string>

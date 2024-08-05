@@ -142,7 +142,8 @@
     <string name="files_saved_to_downloads">文件已保存到 Downloads</string>
     <string name="start_slideshow">幻灯片</string>
     <string name="slideshow_previous">上一页</string>
-    <string name="slideshow_guide_got_it">明白了</string>
+    <string name="got_it">明白了</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">下一页</string>
     <string name="slideshow_guide_show_system_buttons">显示系统按钮</string>
     <string name="slideshow_exit">退出幻灯片</string>

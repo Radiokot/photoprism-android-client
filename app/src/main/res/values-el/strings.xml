@@ -142,7 +142,8 @@
     <string name="files_saved_to_downloads">τα αρχεία έχουν αποθηκευτεί στις Λήψεις</string>
     <string name="start_slideshow">Παρουσίαση διαφανειών</string>
     <string name="slideshow_previous">Προηγούμενο</string>
-    <string name="slideshow_guide_got_it">Το πιασα</string>
+    <string name="got_it">Το πιασα</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Επόμενο</string>
     <string name="slideshow_guide_show_system_buttons">Εμφάνιση κουμπιών συστήματος</string>
     <string name="slideshow_exit">Έξοδος από την παρουσίαση</string>

@@ -140,7 +140,8 @@
     <string name="files_saved_to_downloads">Dateien wurden in Downloads gespeichert</string>
     <string name="start_slideshow">Präsentation</string>
     <string name="slideshow_previous">Vorherige</string>
-    <string name="slideshow_guide_got_it">Verstanden</string>
+    <string name="got_it">Verstanden</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Nächste</string>
     <string name="slideshow_guide_show_system_buttons">Zeige System Leisten</string>
     <string name="slideshow_exit">Präsentation verlassen</string>

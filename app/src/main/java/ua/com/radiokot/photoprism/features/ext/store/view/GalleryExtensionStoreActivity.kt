@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityExtensionStoreBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
+import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreDisclaimerListItem
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreListItem
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreViewModel
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
@@ -47,16 +48,35 @@ class GalleryExtensionStoreActivity : BaseActivity() {
     }
 
     private fun initList() {
-        val itemsAdapter = FastAdapter.with(adapter).apply {
+        val disclaimerAdapter = ItemAdapter<GalleryExtensionStoreDisclaimerListItem>().apply {
+            setNewList(listOf(GalleryExtensionStoreDisclaimerListItem))
+        }
+
+        val itemsAdapter = FastAdapter.with(listOf(disclaimerAdapter, adapter)).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
-                resolveView = { viewHolder: GalleryExtensionStoreListItem.ViewHolder ->
-                    viewHolder.view.buyButton
+                resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                    when (viewHolder) {
+                        is GalleryExtensionStoreListItem.ViewHolder ->
+                            viewHolder.view.buyButton
+
+                        is GalleryExtensionStoreDisclaimerListItem.ViewHolder ->
+                            viewHolder.view.gotItButton
+
+                        else ->
+                            null
+                    }
                 },
                 resolveViews = { null },
                 onClick = { _, _, _, item ->
-                    viewModel.onBuyNowClicked(item)
+                    when (item) {
+                        is GalleryExtensionStoreListItem ->
+                            viewModel.onBuyNowClicked(item)
+
+                        is GalleryExtensionStoreDisclaimerListItem ->
+                            TODO("Implement hiding the disclaimer")
+                    }
                 }
             )
         }

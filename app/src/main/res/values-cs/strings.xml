@@ -143,7 +143,8 @@
     <string name="files_saved_to_downloads">Soubory byly uloženy so Stažených souborů</string>
     <string name="start_slideshow">Prezentace</string>
     <string name="slideshow_previous">Předchozí</string>
-    <string name="slideshow_guide_got_it">Chápu</string>
+    <string name="got_it">Chápu</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Další</string>
     <string name="slideshow_guide_show_system_buttons">Zobrazit systémová tlačítka</string>
     <string name="slideshow_exit">Ukončit prezentace</string>

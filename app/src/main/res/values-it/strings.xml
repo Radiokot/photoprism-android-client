@@ -142,7 +142,8 @@
     <string name="files_saved_to_downloads">I file sono stati salvati nei Download</string>
     <string name="start_slideshow">Presentazione</string>
     <string name="slideshow_previous">Precedente</string>
-    <string name="slideshow_guide_got_it">Capito</string>
+    <string name="got_it">Capito</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Avanti</string>
     <string name="slideshow_guide_show_system_buttons">Mostra i pulsanti di sistema</string>
     <string name="slideshow_exit">Esci dalla presentazione</string>

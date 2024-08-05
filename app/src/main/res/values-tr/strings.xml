@@ -142,7 +142,8 @@
     <string name="files_saved_to_downloads">Dosyalar İndirilenler\'e kaydedildi</string>
     <string name="start_slideshow">Slayt gösterisi</string>
     <string name="slideshow_previous">Önceki</string>
-    <string name="slideshow_guide_got_it">Anladım</string>
+    <string name="got_it">Anladım</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Sonraki</string>
     <string name="slideshow_guide_show_system_buttons">Sistem düğmelerini göster</string>
     <string name="slideshow_exit">Slayt gösterisinden çık</string>
