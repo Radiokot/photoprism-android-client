@@ -13,6 +13,9 @@ object GalleryExtensionResources {
 
         GalleryExtension.TEST ->
             R.string.media_type_unknown
+
+        GalleryExtension.PHOTO_FRAME_WIDGET ->
+            R.string.extension_photo_frame_widget_name
     }
 
     @StringRes
@@ -22,6 +25,9 @@ object GalleryExtensionResources {
 
         GalleryExtension.TEST ->
             R.string.media_type_unknown
+
+        GalleryExtension.PHOTO_FRAME_WIDGET ->
+            R.string.extension_photo_frame_widget_description
     }
 
     @DrawableRes
@@ -31,5 +37,9 @@ object GalleryExtensionResources {
 
         GalleryExtension.TEST ->
             R.drawable.tv_banner
+
+        // TODO Add a proper image
+        GalleryExtension.PHOTO_FRAME_WIDGET ->
+            R.drawable.sample_image
     }
 }

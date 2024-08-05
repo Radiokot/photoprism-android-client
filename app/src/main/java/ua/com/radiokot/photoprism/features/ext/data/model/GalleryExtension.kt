@@ -7,5 +7,6 @@ enum class GalleryExtension(
 ) {
     MEMORIES(FeatureFlags.Feature.MEMORIES_EXTENSION),
     TEST(FeatureFlags.Feature.TEST_EXTENSION),
+    PHOTO_FRAME_WIDGET(FeatureFlags.Feature.PHOTO_FRAME_WIDGET),
     ;
 }
