@@ -189,7 +189,6 @@
     <string name="extension_store">Extension store</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
-    <string name="extension_store_item_buy">Buy now</string>
     <string name="extension_store_item_activated">Activated</string>
     <string name="extension_store_failed_loading">Failed to load extensions</string>
     <string name="extension_marketplace_activate_key">Activate a key</string>
@@ -239,4 +238,5 @@
     <string name="photo_frame_widget_configuration_show_date_summary">Show the date of the shot</string>
     <string name="extension_photo_frame_widget_name">Photo frame widget</string>
     <string name="extension_photo_frame_widget_description">See random photos from your library on the home screen</string>
+    <string name="extension_store_item_acquire">Acquire</string>
 </resources>

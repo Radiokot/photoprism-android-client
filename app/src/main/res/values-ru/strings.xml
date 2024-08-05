@@ -184,7 +184,6 @@
     <string name="extension_store">Магазин расширений</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
-    <string name="extension_store_item_buy">Купить</string>
     <string name="extension_store_item_activated">Активировано</string>
     <string name="extension_store_failed_loading">Не удалось загрузить расширения</string>
     <string name="extension_marketplace_activate_key">Активировать ключ</string>
