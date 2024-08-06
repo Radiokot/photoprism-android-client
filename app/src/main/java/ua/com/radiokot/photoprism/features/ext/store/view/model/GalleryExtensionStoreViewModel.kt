@@ -63,6 +63,7 @@ class GalleryExtensionStoreViewModel(
                     extension = galleryExtension,
                     price = onSale.price,
                     currency = onSale.currency,
+                    pageUrl = onSale.pageUrl,
                     isAlreadyActivated = galleryExtension in activatedExtensions,
                 )
             }
@@ -130,22 +131,41 @@ class GalleryExtensionStoreViewModel(
                     "\nlistItem=$listItem"
         }
 
-        if (listItem.source != null) {
-            openOnlinePurchase(listItem.source)
+        listItem.source?.also { item ->
+            val purchaseUrl = onlinePurchaseUrlFactory(item.extension).toString()
+
+            log.debug {
+                "onItemCardClicked(): opening_online_purchase:" +
+                        "\nitem=$item," +
+                        "\npurchaseUrl=$purchaseUrl"
+            }
+
+            eventsSubject.onNext(Event.OpenOnlinePurchase(purchaseUrl))
         }
     }
 
-    private fun openOnlinePurchase(item: GalleryExtensionStoreItem) {
-        val purchaseUrl = onlinePurchaseUrlFactory(item.extension)
-            .toString()
-
+    fun onItemCardClicked(listItem: GalleryExtensionStoreListItem) {
         log.debug {
-            "openOnlinePurchase(): opening_online_purchase:" +
-                    "\nitem=$item," +
-                    "\npurchaseUrl=$purchaseUrl"
+            "onItemCardClicked(): item_card_clicked:" +
+                    "\nlistItem=$listItem"
         }
 
-        eventsSubject.onNext(Event.OpenOnlinePurchase(purchaseUrl))
+        listItem.source?.also { item ->
+            val pageUrl = item.pageUrl
+
+            log.debug {
+                "onItemCardClicked(): opening_extension_page:" +
+                        "\nitem=$item," +
+                        "\npageUrl=$pageUrl"
+            }
+
+            eventsSubject.onNext(
+                Event.OpenExtensionPage(
+                    extension = item.extension,
+                    url = pageUrl,
+                )
+            )
+        }
     }
 
     fun onActivateKeyClicked() {
@@ -164,6 +184,11 @@ class GalleryExtensionStoreViewModel(
         object ShowFloatingLoadingFailedError : Event
 
         class OpenOnlinePurchase(val url: String) : Event
+
+        class OpenExtensionPage(
+            val extension: GalleryExtension,
+            val url: String,
+        ) : Event
 
         object OpenKeyActivation : Event
     }

@@ -195,7 +195,7 @@
     <string name="extension_marketplace_activate_key">Activate a key</string>
     <string name="activate_key_preference">Activate another key</string>
     <string name="extension_memories_title">Memories</string>
-    <string name="extension_memories_description">Get daily collection of photos and videos from the same day in past years</string>
+    <string name="extension_memories_description">Get a daily collection of photos and videos from the same day in past years</string>
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Notifications</string>
     <string name="extension_memories_notification_preference_summary">Send a notification whenever new memories are found</string>
@@ -232,8 +232,8 @@
     <string name="import_albums_not_selected">Not selected</string>
     <string name="photo_frame_widget_name">Photo frame</string>
     <string name="photo_frame_widget_description">Shows a random photo changed once every few hours</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Photos to show</string>
-    <string name="photo_frame_widget_configuration_all_photos_to_show">All photos</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">Photos</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Show all photos</string>
     <string name="photo_frame_widget_configuration_shape">Shape</string>
     <string name="photo_frame_widget_configuration_show_date">Date</string>
     <string name="photo_frame_widget_configuration_show_date_summary">Show the date of the shot</string>

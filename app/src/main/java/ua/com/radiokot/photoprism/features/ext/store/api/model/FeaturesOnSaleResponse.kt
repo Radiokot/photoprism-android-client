@@ -22,6 +22,8 @@ constructor(
         constructor(
             @JsonProperty("price")
             val price: String,
+            @JsonProperty("page")
+            val page: String,
         )
     }
 }

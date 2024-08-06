@@ -120,6 +120,12 @@ class WebViewInjectionScriptFactory {
                             display: none;
                         }
                         
+                        /* Remove the header bottom stroke */
+                        .markdown-body h1, .markdown-body h2,
+                        .markdown-body h3, .markdown-body h4 {
+                            border-bottom: none;
+                        }
+                        
                         .footer {
                             margin-top: 24px;
                             display: none;

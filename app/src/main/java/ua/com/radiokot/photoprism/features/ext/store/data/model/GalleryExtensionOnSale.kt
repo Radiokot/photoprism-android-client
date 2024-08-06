@@ -10,6 +10,7 @@ class GalleryExtensionOnSale(
     val extension: GalleryExtension,
     val price: BigDecimal,
     val currency: String,
+    val pageUrl: String,
 ) {
     constructor(featureOnSale: FeaturesOnSaleResponse.FeatureOnSale) : this(
         extension = featureOnSale.id.toInt().let { featureIndex ->
@@ -19,5 +20,6 @@ class GalleryExtensionOnSale(
         },
         price = BigDecimal(featureOnSale.attributes.price, MathContext.DECIMAL32),
         currency = "USD",
+        pageUrl = featureOnSale.attributes.page,
     )
 }

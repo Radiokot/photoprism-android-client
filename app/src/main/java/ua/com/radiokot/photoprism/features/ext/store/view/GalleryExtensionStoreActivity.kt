@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -20,6 +22,9 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivation
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreDisclaimerListItem
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreListItem
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreViewModel
+import ua.com.radiokot.photoprism.features.ext.view.GalleryExtensionResources
+import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
+import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import ua.com.radiokot.photoprism.view.ErrorView
 
@@ -56,23 +61,30 @@ class GalleryExtensionStoreActivity : BaseActivity() {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
-                resolveView = { viewHolder: RecyclerView.ViewHolder ->
+                resolveView = { null },
+                resolveViews = { viewHolder: RecyclerView.ViewHolder ->
                     when (viewHolder) {
                         is GalleryExtensionStoreListItem.ViewHolder ->
-                            viewHolder.view.buyButton
+                            listOf(
+                                viewHolder.view.buyButton,
+                                viewHolder.view.root,
+                            )
 
                         is GalleryExtensionStoreDisclaimerListItem.ViewHolder ->
-                            viewHolder.view.gotItButton
+                            listOf(viewHolder.view.gotItButton)
 
                         else ->
                             null
                     }
                 },
-                resolveViews = { null },
-                onClick = { _, _, _, item ->
+                onClick = { view: View, _, _, item: Any ->
                     when (item) {
                         is GalleryExtensionStoreListItem ->
-                            viewModel.onBuyNowClicked(item)
+                            if (view.id == R.id.buy_button) {
+                                viewModel.onBuyNowClicked(item)
+                            } else {
+                                viewModel.onItemCardClicked(item)
+                            }
 
                         is GalleryExtensionStoreDisclaimerListItem ->
                             TODO("Implement hiding the disclaimer")
@@ -134,6 +146,12 @@ class GalleryExtensionStoreActivity : BaseActivity() {
                     url = event.url,
                 )
 
+            is GalleryExtensionStoreViewModel.Event.OpenExtensionPage ->
+                openExtensionPage(
+                    title = GalleryExtensionResources.getTitle(event.extension),
+                    url = event.url,
+                )
+
             GalleryExtensionStoreViewModel.Event.OpenKeyActivation ->
                 startActivity(Intent(this, KeyActivationActivity::class.java))
         }
@@ -164,6 +182,25 @@ class GalleryExtensionStoreActivity : BaseActivity() {
                 .build(),
             url = url,
             titleRes = R.string.extension_store_title,
+        )
+    }
+
+    private fun openExtensionPage(
+        @StringRes
+        title: Int,
+        url: String,
+    ) {
+        startActivity(
+            Intent(this, WebViewActivity::class.java)
+                .putExtras(
+                    WebViewActivity.getBundle(
+                        url = url,
+                        titleRes = title,
+                        pageFinishedInjectionScripts = setOf(
+                            WebViewInjectionScriptFactory.Script.GITHUB_WIKI_IMMERSIVE,
+                        )
+                    )
+                )
         )
     }
 

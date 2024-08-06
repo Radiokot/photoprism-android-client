@@ -10,5 +10,6 @@ class GalleryExtensionStoreItem(
      * ISO-4217 3-letter code.
      */
     val currency: String,
+    val pageUrl: String,
     val isAlreadyActivated: Boolean,
 )
