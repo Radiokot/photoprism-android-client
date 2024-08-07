@@ -9,6 +9,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EnvRetrofitParams
 import ua.com.radiokot.photoprism.di.localeModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
@@ -18,6 +19,8 @@ import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsSta
 import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import ua.com.radiokot.photoprism.features.ext.store.api.FeatureStoreService
+import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferences
+import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreViewModel
 import java.text.NumberFormat
@@ -48,6 +51,13 @@ val galleryExtensionStoreModule = module {
         NumberFormat.getCurrencyInstance(get())
     } bind java.text.NumberFormat::class
 
+    single {
+        GalleryExtensionStorePreferencesOnPrefs(
+            preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+            keyPrefix = "extension_store",
+        )
+    } bind GalleryExtensionStorePreferences::class
+
     viewModel {
         val galleryExtensionsStateRepository: GalleryExtensionsStateRepository = get()
         val hardwareIdentifier: HardwareIdentifier = get()
@@ -58,6 +68,7 @@ val galleryExtensionStoreModule = module {
         GalleryExtensionStoreViewModel(
             extensionsOnSaleRepository = get(),
             galleryExtensionsStateRepository = galleryExtensionsStateRepository,
+            storePreferences = get(),
             onlinePurchaseUrlFactory = { extension: GalleryExtension ->
                 featureStoreRootUrl
                     .newBuilder()

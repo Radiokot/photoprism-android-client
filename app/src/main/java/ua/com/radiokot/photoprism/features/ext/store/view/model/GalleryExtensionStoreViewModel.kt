@@ -15,11 +15,13 @@ import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtens
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.store.data.model.GalleryExtensionOnSale
+import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferences
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
 
 class GalleryExtensionStoreViewModel(
     private val extensionsOnSaleRepository: GalleryExtensionsOnSaleRepository,
     private val galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
+    private val storePreferences: GalleryExtensionStorePreferences,
     private val onlinePurchaseUrlFactory: (extension: GalleryExtension) -> HttpUrl,
 ) : ViewModel() {
     private val log = kLogger("ExtensionStoreVM")
@@ -29,6 +31,7 @@ class GalleryExtensionStoreViewModel(
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GalleryExtensionStoreListItem>>()
     val mainError = MutableLiveData<Error?>(null)
+    val isDisclaimerVisible = MutableLiveData(!storePreferences.isDisclaimerAccepted)
 
     init {
         update()
@@ -166,6 +169,15 @@ class GalleryExtensionStoreViewModel(
                 )
             )
         }
+    }
+
+    fun onDisclaimerGotItClicked() {
+        log.debug {
+            "onDisclaimerGotItClicked(): got_it_clicked"
+        }
+
+        storePreferences.isDisclaimerAccepted = true
+        isDisclaimerVisible.postValue(false)
     }
 
     fun onActivateKeyClicked() {

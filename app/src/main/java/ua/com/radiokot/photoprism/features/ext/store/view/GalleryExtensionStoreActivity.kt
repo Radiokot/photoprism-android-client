@@ -33,7 +33,6 @@ class GalleryExtensionStoreActivity : BaseActivity() {
 
     private lateinit var view: ActivityExtensionStoreBinding
     private val viewModel: GalleryExtensionStoreViewModel by viewModel()
-    private val adapter = ItemAdapter<GalleryExtensionStoreListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,10 +53,23 @@ class GalleryExtensionStoreActivity : BaseActivity() {
 
     private fun initList() {
         val disclaimerAdapter = ItemAdapter<GalleryExtensionStoreDisclaimerListItem>().apply {
-            setNewList(listOf(GalleryExtensionStoreDisclaimerListItem))
+            viewModel.isDisclaimerVisible.observe(
+                this@GalleryExtensionStoreActivity
+            ) { isDisclaimerVisible ->
+                setNewList(
+                    if (isDisclaimerVisible)
+                        listOf(GalleryExtensionStoreDisclaimerListItem)
+                    else
+                        emptyList()
+                )
+            }
         }
 
-        val itemsAdapter = FastAdapter.with(listOf(disclaimerAdapter, adapter)).apply {
+        val itemsAdapter = ItemAdapter<GalleryExtensionStoreListItem>().apply {
+            viewModel.itemsList.observe(this@GalleryExtensionStoreActivity, ::setNewList)
+        }
+
+        FastAdapter.with(listOf(disclaimerAdapter, itemsAdapter)).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             addClickListener(
@@ -87,13 +99,13 @@ class GalleryExtensionStoreActivity : BaseActivity() {
                             }
 
                         is GalleryExtensionStoreDisclaimerListItem ->
-                            TODO("Implement hiding the disclaimer")
+                            viewModel.onDisclaimerGotItClicked()
                     }
                 }
             )
-        }
 
-        view.itemsRecyclerView.adapter = itemsAdapter
+            view.itemsRecyclerView.adapter = this
+        }
     }
 
     private fun initErrorView() {
@@ -102,6 +114,10 @@ class GalleryExtensionStoreActivity : BaseActivity() {
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+        viewModel.isLoading.observe(
+            this@GalleryExtensionStoreActivity,
+            ::setRefreshing
+        )
     }
 
     private fun initCustomTabs() {
@@ -109,10 +125,6 @@ class GalleryExtensionStoreActivity : BaseActivity() {
     }
 
     private fun subscribeToData() {
-        viewModel.itemsList.observe(this, adapter::setNewList)
-
-        viewModel.isLoading.observe(this, view.swipeRefreshLayout::setRefreshing)
-
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
                 GalleryExtensionStoreViewModel.Error.LoadingFailed ->
