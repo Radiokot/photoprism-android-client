@@ -36,9 +36,6 @@ The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism ver
 [July 11, 2024](https://github.com/photoprism/photoprism/releases/tag/240711-2197af848) 
 down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
 It may work with older ones though, I just haven't tested it.
-The app uses [PhotoPrism Web Service API](https://docs.photoprism.app/developer-guide/api/), 
-which serves only the original frontend needs and doesn't guarantee backward compatibility. 
-When a new version of PhotoPrism comes out, the app may break.
 
 ## Download
 [<img src="repository-assets/icon-github.svg" alt="APK" style="height: 1em;"/> APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases/latest)
