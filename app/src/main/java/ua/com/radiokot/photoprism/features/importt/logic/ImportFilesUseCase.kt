@@ -15,37 +15,49 @@ import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBody
 
-/**
- * Uploads given [files] to the library import and triggers their index.
- *
- * @param uploadToken a random string used to identify the upload.
- */
 class ImportFilesUseCase(
-    private val files: List<ImportableFile>,
-    private val albums: Set<ImportAlbum>,
-    private val uploadToken: String,
     private val contentResolver: ContentResolver,
     private val photoPrismSessionService: PhotoPrismSessionService,
     private val photoPrismUploadService: PhotoPrismUploadService,
 ) {
-    init {
+    /**
+     * Uploads given [files] to the library import and triggers their index.
+     *
+     * @param uploadToken a random string used to identify the upload.
+     */
+    operator fun invoke(
+        files: List<ImportableFile>,
+        albums: Set<ImportAlbum>,
+        uploadToken: String,
+    ): Observable<Status> {
         require(files.isNotEmpty()) {
             "Files can't be empty"
         }
-    }
 
-    private lateinit var userId: String
+        lateinit var userId: String
 
-    operator fun invoke(): Observable<Status> =
-        Observable.just<Status>(Status.Uploading.INDETERMINATE)
+        return Observable.just<Status>(Status.Uploading.INDETERMINATE)
             .concatWith(
                 getUserId()
                     .doOnSuccess { userId = it }
                     .map { Status.Uploading.INDETERMINATE }
             )
-            .concatWith(uploadFiles())
+            .concatWith(Observable.defer {
+                uploadFiles(
+                    files = files,
+                    userId = userId,
+                    uploadToken = uploadToken
+                )
+            })
             .concatWith(Observable.just(Status.ProcessingUpload))
-            .concatWith(processUploadedFiles())
+            .concatWith(Completable.defer {
+                processUploadedFiles(
+                    albums = albums,
+                    userId = userId,
+                    uploadToken = uploadToken,
+                )
+            })
+    }
 
     private fun getUserId(): Single<String> = {
         photoPrismSessionService.getCurrentSession()
@@ -53,7 +65,11 @@ class ImportFilesUseCase(
             .uid
     }.toSingle().subscribeOn(Schedulers.io())
 
-    private fun uploadFiles(): Observable<Status.Uploading> = Observable.create { emitter ->
+    private fun uploadFiles(
+        files: List<ImportableFile>,
+        userId: String,
+        uploadToken: String,
+    ): Observable<Status.Uploading> = Observable.create { emitter ->
         val progressPerFile = DoubleArray(files.size)
         val fileParts = files.mapIndexed { fileIndex, file ->
             MultipartBody.Part.createFormData(
@@ -90,12 +106,16 @@ class ImportFilesUseCase(
         emitter.onComplete()
     }.subscribeOn(Schedulers.io())
 
-    private fun processUploadedFiles(): Completable = {
+    private fun processUploadedFiles(
+        albums: Set<ImportAlbum>,
+        userId: String,
+        uploadToken: String,
+    ): Completable = {
         photoPrismUploadService.processUserUpload(
             userId = userId,
             uploadToken = uploadToken,
             uploadOptions = PhotoPrismUploadOptions(
-                albums = albums.map { album->
+                albums = albums.map { album ->
                     when (album) {
                         is ImportAlbum.Existing ->
                             album.uid
@@ -126,24 +146,5 @@ class ImportFilesUseCase(
          * Processing uploaded files.
          */
         object ProcessingUpload : Status
-    }
-
-    class Factory(
-        private val contentResolver: ContentResolver,
-        private val photoPrismSessionService: PhotoPrismSessionService,
-        private val photoPrismUploadService: PhotoPrismUploadService,
-    ) {
-        fun get(
-            files: List<ImportableFile>,
-            albums: Set<ImportAlbum>,
-            uploadToken: String,
-        ) = ImportFilesUseCase(
-            files = files,
-            albums=albums,
-            uploadToken = uploadToken,
-            contentResolver = contentResolver,
-            photoPrismSessionService = photoPrismSessionService,
-            photoPrismUploadService = photoPrismUploadService,
-        )
     }
 }

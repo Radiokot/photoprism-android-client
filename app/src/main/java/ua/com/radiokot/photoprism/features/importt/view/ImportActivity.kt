@@ -97,6 +97,8 @@ class ImportActivity : BaseActivity() {
             this,
             permissionRationaleObserver(cardContentView.mediaPermissionRationaleTextView)
         )
+
+        viewModel.isStartButtonEnabled.observe(this, view.primaryButton::setEnabled)
     }
 
     private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->

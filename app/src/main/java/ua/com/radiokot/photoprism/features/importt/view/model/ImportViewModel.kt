@@ -11,9 +11,12 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
+import io.reactivex.rxjava3.kotlin.toCompletable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
@@ -22,7 +25,7 @@ import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
-import java.util.Date
+import java.io.File
 
 class ImportViewModel(
     private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory,
@@ -37,12 +40,14 @@ class ImportViewModel(
     private lateinit var files: List<ImportableFile>
     private val permissionsToCheckBeforeStart = mutableListOf<String>()
     private var albums: Set<ImportAlbum> = emptySet()
+    private val uploadUniqueName = "${ImportFilesWorker.TAG}:${System.currentTimeMillis()}"
 
     val summary: MutableLiveData<Summary> = MutableLiveData()
     val isNotificationPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isMediaPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.toMainThreadObservable()
+    val isStartButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     fun initOnce(importIntent: Intent) {
         if (isInitialized) {
@@ -94,7 +99,9 @@ class ImportViewModel(
                 "onStartClicked(): starting_import_in_background"
             }
 
-            startImportInBackgroundAndFinish()
+            startImportInBackgroundAndFinishAsync()
+                .subscribe()
+                .autoDispose(this)
         }
     }
 
@@ -141,10 +148,15 @@ class ImportViewModel(
             "onPermissionsResult(): starting_import_in_background"
         }
 
-        startImportInBackgroundAndFinish()
+        startImportInBackgroundAndFinishAsync()
+            .subscribe()
+            .autoDispose(this)
     }
 
-    private fun startImportInBackgroundAndFinish() {
+    private fun startImportInBackgroundAndFinishAsync() = {
+        eventsSubject.onNext(Event.ShowStartedInBackgroundMessage)
+        isStartButtonEnabled.postValue(false)
+
         // Allow reading the URIs after the activity is finished.
         files.forEach { file ->
             context.grantUriPermission(
@@ -154,14 +166,22 @@ class ImportViewModel(
             )
         }
 
+        // Write list of files to a file to overcome
+        // the WorkManager data size limit.
+        val fileListJsonFile = File(
+            getApplication<Application>().noBackupFilesDir,
+            "${uploadUniqueName}.json"
+        )
+        jsonObjectMapper.writeValue(fileListJsonFile, files)
+
         WorkManager.getInstance(context)
             .enqueueUniqueWork(
-                "${ImportFilesWorker.TAG}:${Date()}",
+                uploadUniqueName,
                 ExistingWorkPolicy.REPLACE,
                 OneTimeWorkRequestBuilder<ImportFilesWorker>()
                     .setInputData(
                         ImportFilesWorker.getInputData(
-                            files = files,
+                            fileListJsonFile = fileListJsonFile,
                             albums = albums,
                             jsonObjectMapper = jsonObjectMapper,
                         )
@@ -171,14 +191,12 @@ class ImportViewModel(
                     .build()
             )
 
-        eventsSubject.onNext(Event.ShowStartedInBackgroundMessage)
-
         log.debug {
             "startImportInBackgroundAndFinish(): finishing_after_start"
         }
 
         eventsSubject.onNext(Event.Finish)
-    }
+    }.toCompletable().subscribeOn(Schedulers.io())
 
     data class Summary(
         val libraryRootUrl: String,

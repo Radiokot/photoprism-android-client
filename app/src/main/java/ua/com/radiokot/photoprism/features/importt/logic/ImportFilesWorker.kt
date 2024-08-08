@@ -11,15 +11,18 @@ import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class ImportFilesWorker(
@@ -36,10 +39,10 @@ class ImportFilesWorker(
     }
     private val jsonObjectMapper: JsonObjectMapper by inject()
     private val importNotificationsManager: ImportNotificationsManager by inject()
-    private val files: List<ImportableFile> by lazy {
-        jsonObjectMapper
-            .readerForListOf(ImportableFile::class.java)
-            .readValue(workerParams.inputData.getString(FILES_JSON_KEY))
+    private val fileListJsonFile: File by lazy {
+        workerParams.inputData.getString(FILE_LIST_JSON_PATH)
+            ?.let(::File)
+            ?: error("Missing $FILE_LIST_JSON_PATH")
     }
     private val albums: Set<ImportAlbum> by lazy {
         jsonObjectMapper
@@ -52,9 +55,9 @@ class ImportFilesWorker(
         ImportFilesUseCase.Status.Uploading.INDETERMINATE
 
     override fun createWork(): Single<Result> {
-        val importFilesUseCaseFactory = sessionScope?.get<ImportFilesUseCase.Factory>()
+        val importFilesUseCase = sessionScope?.get<ImportFilesUseCase>()
 
-        if (importFilesUseCaseFactory == null) {
+        if (importFilesUseCase == null) {
             log.debug {
                 "createWork(): skip_as_missing_session_scope"
             }
@@ -62,13 +65,14 @@ class ImportFilesWorker(
             return Single.just(Result.success())
         }
 
-        val useCase = importFilesUseCaseFactory.get(
-            files = files,
-            albums = albums,
-            uploadToken = uploadToken,
-        )
-
-        return useCase.invoke()
+        return readFilesFromFile()
+            .flatMapObservable { files ->
+                importFilesUseCase(
+                    files = files,
+                    albums = albums,
+                    uploadToken = uploadToken,
+                )
+            }
             .throttleLast(500, TimeUnit.MILLISECONDS)
             .switchMapCompletable { status ->
                 importStatus = status
@@ -76,6 +80,23 @@ class ImportFilesWorker(
             }
             .toSingleDefault(Result.success())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "createWork(): starting:" +
+                            "\nfileListJson=$fileListJsonFile," +
+                            "\nalbums=$albums," +
+                            "\nuploadToken=$uploadToken"
+                }
+            }
+            .doOnTerminate {
+                try {
+                    fileListJsonFile.delete()
+                } catch (e: Exception) {
+                    log.warn(e) {
+                        "createWork(): failed_deleting_file_list_file"
+                    }
+                }
+            }
             .doOnError { error ->
                 log.error(error) {
                     "createWork(): error_occurred"
@@ -100,6 +121,16 @@ class ImportFilesWorker(
             }
             .onErrorReturnItem(Result.failure())
     }
+
+    private fun readFilesFromFile(): Single<List<ImportableFile>> = {
+        check(fileListJsonFile.canRead()) {
+            "File list JSON file is not readable: $fileListJsonFile"
+        }
+
+        jsonObjectMapper
+            .readerForListOf(ImportableFile::class.java)
+            .readValue<List<ImportableFile>>(fileListJsonFile)
+    }.toSingle().subscribeOn(Schedulers.io())
 
     override fun getForegroundInfo(): Single<ForegroundInfo> {
         val notification = importNotificationsManager.getImportProgressNotification(
@@ -133,15 +164,19 @@ class ImportFilesWorker(
 
     companion object {
         const val TAG = "ImportFiles"
-        private const val FILES_JSON_KEY = "files"
         private const val ALBUMS_JSON_KEY = "albums"
+        private const val FILE_LIST_JSON_PATH = "files_file"
 
+        /**
+         * @param fileListJsonFile a JSON file containing a list of [ImportableFile],
+         * which will be deleted on task end.
+         */
         fun getInputData(
-            files: List<ImportableFile>,
+            fileListJsonFile: File,
             albums: Set<ImportAlbum>,
             jsonObjectMapper: JsonObjectMapper,
         ) = Data.Builder()
-            .putString(FILES_JSON_KEY, jsonObjectMapper.writeValueAsString(files))
+            .putString(FILE_LIST_JSON_PATH, fileListJsonFile.path)
             // Albums must be converted to a typed array to overcome Java type erasure,
             // which makes @JsonTypeInfo useless when serializing a collection.
             .putString(ALBUMS_JSON_KEY, jsonObjectMapper.writeValueAsString(albums.toTypedArray()))

@@ -21,12 +21,12 @@ val importFeatureModule = module {
 
     scope<EnvSession> {
         scoped {
-            ImportFilesUseCase.Factory(
+            ImportFilesUseCase(
                 contentResolver = androidApplication().contentResolver,
                 photoPrismSessionService = get(),
                 photoPrismUploadService = get(),
             )
-        } bind ImportFilesUseCase.Factory::class
+        } bind ImportFilesUseCase::class
 
         viewModelOf(::ImportViewModel)
 
