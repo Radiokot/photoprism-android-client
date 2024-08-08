@@ -5,8 +5,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.core.Single
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier._q
 import org.koin.core.scope.Scope
@@ -27,22 +26,21 @@ import java.util.Calendar
 class UpdateMemoriesWorker(
     appContext: Context,
     workerParams: WorkerParameters
-) : RxWorker(appContext, workerParams), KoinScopeComponent {
-    override val scope: Scope by lazy {
-        // Prefer the session scope, but allow running without it.
-        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
-    }
+) : RxWorker(appContext, workerParams), KoinComponent {
 
+    private val sessionScope: Scope?
+        get() = getKoin().getScopeOrNull(DI_SCOPE_SESSION)
     private val log = kLogger("UpdateMemoriesWorker")
-
     private val startingFromHour =
         workerParams.inputData.getInt(STARTING_FROM_HOUR_KEY, 0)
     private val statusPersistence: ObjectPersistence<Status> by inject(_q<Status>())
-    private val updateMemoriesUseCase: UpdateMemoriesUseCase by inject()
-    private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
 
     override fun createWork(): Single<Result> {
-        if (scope.id != DI_SCOPE_SESSION) {
+        val updateMemoriesUseCase = sessionScope?.get<UpdateMemoriesUseCase>()
+        val memoriesNotificationsManager = sessionScope?.get<MemoriesNotificationsManager>()
+
+        if (updateMemoriesUseCase == null
+            || memoriesNotificationsManager == null) {
             log.debug {
                 "createWork(): skip_as_missing_session_scope"
             }

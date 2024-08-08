@@ -51,15 +51,6 @@ val memoriesFeatureModule = module {
     }
 
     single {
-        // Instance to be used out of the session scope.
-        MemoriesNotificationsManager(
-            context = get(),
-            picasso = null,
-            memoriesPreferences = get(),
-        )
-    } bind MemoriesNotificationsManager::class
-
-    single {
         MemoriesPreferencesOnPrefs(
             preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
             keyPrefix = "ext_memories",

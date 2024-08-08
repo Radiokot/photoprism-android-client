@@ -13,8 +13,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.reactivex.rxjava3.kotlin.blockingSubscribeBy
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -26,12 +25,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 
-class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
-    override val scope: Scope by lazy {
-        // Prefer the session scope, but allow running without it.
-        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
-    }
+class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinComponent {
 
+    private val sessionScope: Scope?
+        get() = getKoin().getScopeOrNull(DI_SCOPE_SESSION)
     private val log = kLogger("PhotoFrameWidgetProvider")
     private val widgetsPreferences: PhotoFrameWidgetsPreferences by inject()
 
@@ -202,7 +199,7 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinScopeComponent {
         appWidgetManager: AppWidgetManager,
         widgetId: Int
     ) {
-        val reloadPhotoUseCase = scope.getOrNull<ReloadPhotoFrameWidgetPhotoUseCase>()
+        val reloadPhotoUseCase = sessionScope?.get<ReloadPhotoFrameWidgetPhotoUseCase>()
         if (reloadPhotoUseCase == null) {
             log.warn {
                 "reloadWidgetPhotoIfPossible(): failed_photo_reloading_as_missing_scope"

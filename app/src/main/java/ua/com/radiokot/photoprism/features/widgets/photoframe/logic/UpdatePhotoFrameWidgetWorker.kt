@@ -6,9 +6,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.core.Single
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
-import org.koin.core.component.inject
+import org.koin.core.component.KoinComponent
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -18,16 +16,12 @@ class UpdatePhotoFrameWidgetWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : RxWorker(appContext, workerParams),
-    KoinScopeComponent {
-    override val scope: Scope by lazy {
-        // Prefer the session scope, but allow running without it.
-        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
-    }
+    KoinComponent {
 
+    private val sessionScope: Scope?
+        get() = getKoin().getScopeOrNull(DI_SCOPE_SESSION)
     private val log = kLogger("UpdatePhotoFrameWidgetWorker")
     private val appWidgetManager = AppWidgetManager.getInstance(appContext)
-    private val updatePhotoFrameWidgetPhotoUseCase: UpdatePhotoFrameWidgetPhotoUseCase by inject()
-    private val reloadPhotoFrameWidgetPhotoUseCase: ReloadPhotoFrameWidgetPhotoUseCase by inject()
     private val widgetId: Int by lazy {
         workerParams.inputData.getInt(
             WIDGET_ID_KEY,
@@ -44,7 +38,14 @@ class UpdatePhotoFrameWidgetWorker(
             return Single.just(Result.success())
         }
 
-        if (scope.id != DI_SCOPE_SESSION) {
+        val updatePhotoFrameWidgetPhotoUseCase =
+            sessionScope?.get<UpdatePhotoFrameWidgetPhotoUseCase>()
+        val reloadPhotoFrameWidgetPhotoUseCase =
+            sessionScope?.get<ReloadPhotoFrameWidgetPhotoUseCase>()
+
+        if (updatePhotoFrameWidgetPhotoUseCase == null
+            || reloadPhotoFrameWidgetPhotoUseCase == null
+        ) {
             log.debug {
                 "createWork(): skip_as_missing_session_scope"
             }

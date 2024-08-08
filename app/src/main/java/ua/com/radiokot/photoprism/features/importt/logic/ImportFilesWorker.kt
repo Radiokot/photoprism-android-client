@@ -11,8 +11,7 @@ import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
@@ -27,18 +26,15 @@ class ImportFilesWorker(
     appContext: Context,
     workerParams: WorkerParameters,
 ) : RxWorker(appContext, workerParams),
-    KoinScopeComponent {
-    override val scope: Scope by lazy {
-        // Prefer the session scope, but allow running without it.
-        getKoin().getScopeOrNull(DI_SCOPE_SESSION) ?: createScope()
-    }
+    KoinComponent {
 
+    private val sessionScope: Scope?
+        get() = getKoin().getScopeOrNull(DI_SCOPE_SESSION)
     private val log = kLogger("ImportFilesWorker")
     private val cancelIntent: PendingIntent by lazy {
         WorkManager.getInstance(appContext).createCancelPendingIntent(id)
     }
     private val jsonObjectMapper: JsonObjectMapper by inject()
-    private val importFilesUseCaseFactory: ImportFilesUseCase.Factory by inject()
     private val importNotificationsManager: ImportNotificationsManager by inject()
     private val files: List<ImportableFile> by lazy {
         jsonObjectMapper
@@ -56,7 +52,9 @@ class ImportFilesWorker(
         ImportFilesUseCase.Status.Uploading.INDETERMINATE
 
     override fun createWork(): Single<Result> {
-        if (scope.id != DI_SCOPE_SESSION) {
+        val importFilesUseCaseFactory = sessionScope?.get<ImportFilesUseCase.Factory>()
+
+        if (importFilesUseCaseFactory == null) {
             log.debug {
                 "createWork(): skip_as_missing_session_scope"
             }
