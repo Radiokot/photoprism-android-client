@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Missing new memories notification sometimes
+- Inability to retry the import after a failure
 
 ## [1.28.1] - 2024-07-21
 

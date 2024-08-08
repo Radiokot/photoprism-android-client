@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
@@ -16,11 +17,12 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
+import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
+import java.util.Date
 
 class ImportViewModel(
     private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory,
@@ -109,9 +111,11 @@ class ImportViewModel(
             "onAlbumsClicked(): opening_selection"
         }
 
-        eventsSubject.onNext(Event.OpenAlbumSelectionForResult(
-            currentlySelectedAlbums = albums,
-        ))
+        eventsSubject.onNext(
+            Event.OpenAlbumSelectionForResult(
+                currentlySelectedAlbums = albums,
+            )
+        )
     }
 
     fun onAlbumSelectionResult(selectedAlbums: Set<ImportAlbum>) {
@@ -151,7 +155,9 @@ class ImportViewModel(
         }
 
         WorkManager.getInstance(context)
-            .enqueue(
+            .enqueueUniqueWork(
+                "${ImportFilesWorker.TAG}:${Date()}",
+                ExistingWorkPolicy.REPLACE,
                 OneTimeWorkRequestBuilder<ImportFilesWorker>()
                     .setInputData(
                         ImportFilesWorker.getInputData(
@@ -200,6 +206,6 @@ class ImportViewModel(
          */
         class OpenAlbumSelectionForResult(
             val currentlySelectedAlbums: Set<ImportAlbum>,
-        ): Event
+        ) : Event
     }
 }
