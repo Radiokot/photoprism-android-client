@@ -226,7 +226,7 @@ class GalleryViewModel(
                     val searchConfigToApply: SearchConfig =
                         if (currentState is State.Selecting.ForOtherApp) {
                             // If we are selecting the content,
-                            // make sure we do not apply search that overcomes the allowed media types.
+                            // make sure we do not apply search that goes beyond the allowed media types.
                             state.search.config.withOnlyAllowedMediaTypes(
                                 allowedMediaTypes = currentState.allowedMediaTypes,
                             )

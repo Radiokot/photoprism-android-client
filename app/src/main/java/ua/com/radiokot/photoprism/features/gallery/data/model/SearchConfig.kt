@@ -39,7 +39,7 @@ data class SearchConfig(
     val onlyFavorite: Boolean,
 ) : Parcelable {
     /**
-     * @return copy of the config which doesn't overcome the allowed media types,
+     * @return copy of the config which doesn't go beyond the set of [allowedMediaTypes],
      * or the current instance if there is no specific allowance.
      *
      * @param allowedMediaTypes a non-empty set of the allowed media types,
