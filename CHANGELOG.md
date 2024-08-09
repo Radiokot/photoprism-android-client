@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - An arrow icon on the import albums field suggesting it is clickable
+- Display of the upload summary in the successful import notification
 
 ### Fixed
 

@@ -21,6 +21,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
+import ua.com.radiokot.photoprism.features.importt.model.sizeMb
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -65,10 +66,14 @@ class ImportFilesWorker(
             return Single.just(Result.success())
         }
 
+        lateinit var files: Collection<ImportableFile>
+
         return readFilesFromFile()
-            .flatMapObservable { files ->
+            .flatMapObservable { readFiles ->
+                files = readFiles
+
                 importFilesUseCase(
-                    files = files,
+                    files = readFiles,
                     albums = albums,
                     uploadToken = uploadToken,
                 )
@@ -91,6 +96,11 @@ class ImportFilesWorker(
             .doOnTerminate {
                 try {
                     fileListJsonFile.delete()
+
+                    log.debug {
+                        "createWork(): file_list_json_deleted:" +
+                                "\nfileListJson=$fileListJsonFile"
+                    }
                 } catch (e: Exception) {
                     log.warn(e) {
                         "createWork(): failed_deleting_file_list_file"
@@ -116,6 +126,8 @@ class ImportFilesWorker(
                 if (!isStopped) {
                     importNotificationsManager.notifySuccessfulImport(
                         uploadToken = uploadToken,
+                        fileCount = files.size,
+                        sizeMb = files.sizeMb,
                     )
                 }
             }

@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
+import ua.com.radiokot.photoprism.features.importt.model.sizeMb
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import java.io.File
 
@@ -59,7 +60,7 @@ class ImportViewModel(
         summary.value = Summary(
             libraryRootUrl = session.envConnectionParams.rootUrl.toString(),
             fileCount = files.size,
-            sizeMb = files.sumOf(ImportableFile::size).toDouble() / (1024 * 1024),
+            sizeMb = files.sizeMb,
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q

@@ -22,3 +22,6 @@ constructor(
             .checkNotNull { "Can't open input stream for $contentUri" }
             .source()
 }
+
+val Iterable<ImportableFile>.sizeMb: Double
+    get() = sumOf(ImportableFile::size).toDouble() / (1024 * 1024)

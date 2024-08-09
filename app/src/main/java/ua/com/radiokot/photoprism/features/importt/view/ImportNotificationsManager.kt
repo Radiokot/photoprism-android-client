@@ -47,7 +47,11 @@ class ImportNotificationsManager(
             .build()
             .also { ensureChannel() }
 
-    fun notifySuccessfulImport(uploadToken: String): Notification {
+    fun notifySuccessfulImport(
+        uploadToken: String,
+        fileCount: Int,
+        sizeMb: Double,
+    ): Notification {
         ensureChannel()
 
         val notification = NotificationCompat.Builder(
@@ -55,6 +59,17 @@ class ImportNotificationsManager(
             CHANNEL_ID
         )
             .setContentTitle(context.getString(R.string.import_notification_success_title))
+            .setContentText(
+                context.getString(
+                    R.string.template_import_files_size,
+                    context.resources.getQuantityString(
+                        R.plurals.files,
+                        fileCount,
+                        fileCount
+                    ),
+                    sizeMb,
+                )
+            )
             .setColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
             // White icon is used for Android 5 compatibility.
             .setSmallIcon(R.drawable.ic_awesome_white)
