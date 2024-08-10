@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=18&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=19&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -56,6 +56,7 @@ It may work with older ones though, I just haven't tested it.
 [<img src="https://avatars.githubusercontent.com/u/9214215?s=100" alt="Koen Koppens" title="Koen Koppens" height=70 />](https://github.com/koen81)
 [<img src="https://avatars.githubusercontent.com/u/6559064?s=100" alt="Radon Rosborough" title="Radon Rosborough" height=70 />](https://github.com/raxod502)
 [<img src="https://avatars.githubusercontent.com/u/301686?s=100" alt="Michael Mayer" title="Michael Mayer" height=70 />](https://github.com/lastzero)
+[<img src="https://avatars.githubusercontent.com/u/3181318?s=100" alt="Juha Lehtiranta" title="Juha Lehtiranta" height=70 />](https://github.com/yatzy)
 [<img src="https://avatars.githubusercontent.com/u/2885748?s=100" alt="Neil Castelino" title="Neil Castelino" height=70 />](https://github.com/TwistTheNeil)
 [<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" title="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/40500387?s=100" alt="Seth For Privacy" title="Seth For Privacy" height=70 />](https://github.com/sethforprivacy)
