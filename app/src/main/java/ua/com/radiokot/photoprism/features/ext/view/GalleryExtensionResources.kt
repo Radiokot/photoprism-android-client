@@ -36,10 +36,9 @@ object GalleryExtensionResources {
             R.drawable.banner_memories
 
         GalleryExtension.TEST ->
-            R.drawable.tv_banner
-
-        // TODO Add a proper image
-        GalleryExtension.PHOTO_FRAME_WIDGET ->
             R.drawable.sample_image
+
+        GalleryExtension.PHOTO_FRAME_WIDGET ->
+            R.drawable.banner_widgets
     }
 }
