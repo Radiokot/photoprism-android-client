@@ -226,5 +226,24 @@
     <string name="template_import_album_create_new">Crear \"%1$s\"</string>
     <string name="import_albums_enter_album_title">Introduce el título del álbum</string>
     <string name="import_albums_not_selected">No seleccionados</string>
+    <string name="photo_frame_widget_name">Marco de fotos</string>
+    <string name="photo_frame_widget_description">Muestra una foto aleatoria que cambia cada pocas horas</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">Fotos</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Mostrar todas las fotos</string>
+    <string name="photo_frame_widget_configuration_shape">Forma</string>
+    <string name="photo_frame_widget_configuration_show_date">Fecha</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Mostrar la fecha de la toma</string>
+    <string name="extension_photo_frame_widget_name">Widget de Marco de fotos</string>
+    <string name="extension_photo_frame_widget_description">Ver fotos aleatorias de tu biblioteca en la pantalla de inicio</string>
+    <string name="extension_store_item_acquire">Obtener</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        Las extensiones de la galería son funciones adicionales de la aplicación que se pueden adquirir individualmente, cada una a su propio pequeño precio.
+        Se activan mediante claves de licencia perpetuas sin conexión – no se requieren cuentas ni suscripciones.
+        <br/>
+        Las extensiones son gratuitas para <a href="#sponsors">patrocinadores</a> y colaboradores de GitHub.
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>

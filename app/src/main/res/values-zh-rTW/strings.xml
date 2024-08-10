@@ -225,5 +225,24 @@
     <string name="template_import_album_create_new">建立 \"%1$s\"</string>
     <string name="import_albums_enter_album_title">輸入相簿標題</string>
     <string name="import_albums_not_selected">未選取</string>
+    <string name="photo_frame_widget_name">相框</string>
+    <string name="photo_frame_widget_description">顯示每隔幾小時更換一次的隨機照片</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">照片</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">顯示所有照片</string>
+    <string name="photo_frame_widget_configuration_shape">形狀</string>
+    <string name="photo_frame_widget_configuration_show_date">日期</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">顯示拍攝日期</string>
+    <string name="extension_photo_frame_widget_name">相框小工具</string>
+    <string name="extension_photo_frame_widget_description">在首頁畫面檢視圖庫中的隨機相片</string>
+    <string name="extension_store_item_acquire">獲取</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        圖庫擴充功能是應用程式的附加功能，可單獨使用，每項功能的價格都不高。
+        它們使用永久離線金鑰啟動 - 不需要帳號或訂閱。
+        <br/>
+        這些擴充套件對於<a href="#sponsors">贊助者</a>和來自 GitHub 的貢獻者是免費的。
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>

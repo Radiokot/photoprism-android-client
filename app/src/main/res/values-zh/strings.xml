@@ -225,5 +225,24 @@
     <string name="template_import_album_create_new">创建 \"%1$s\"</string>
     <string name="import_albums_enter_album_title">输入相册标题</string>
     <string name="import_albums_not_selected">未选择</string>
+    <string name="photo_frame_widget_name">相框</string>
+    <string name="photo_frame_widget_description">显示每隔几小时更换一次的随机照片</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">照片</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">显示所有照片</string>
+    <string name="photo_frame_widget_configuration_shape">形状</string>
+    <string name="photo_frame_widget_configuration_show_date">日期</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">显示拍摄日期</string>
+    <string name="extension_photo_frame_widget_name">相框小部件</string>
+    <string name="extension_photo_frame_widget_description">在主屏幕上查看资料库中的随机照片</string>
+    <string name="extension_store_item_acquire">获取</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        图库扩展是应用程序的附加功能，可单独使用，每种功能的价格都不高。
+        它们使用永久离线密钥激活，无需账户或订阅。
+        <br/>
+        这些扩展对<a href="#sponsors">赞助商</a>和 GitHub 的贡献者免费。
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>

@@ -226,5 +226,24 @@
     <string name="template_import_album_create_new">Vytvořit \"%1$s\"</string>
     <string name="import_albums_enter_album_title">Zadejte název alba</string>
     <string name="import_albums_not_selected">Nevybráno</string>
+    <string name="photo_frame_widget_name">Fotorámeček</string>
+    <string name="photo_frame_widget_description">Zobrazuje náhodnou fotografii, která se mění každých několik hodin</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">Fotografie</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Zobrazit všechny fotografie</string>
+    <string name="photo_frame_widget_configuration_shape">Tvar</string>
+    <string name="photo_frame_widget_configuration_show_date">Datum</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Zobrazit datum fotografie</string>
+    <string name="extension_photo_frame_widget_name">Widget Fotorámeček</string>
+    <string name="extension_photo_frame_widget_description">Zobrazení náhodných fotografií z knihovny na domovské obrazovce</string>
+    <string name="extension_store_item_acquire">Získat</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        Rozšíření galerie jsou další funkce aplikace, které lze získat jednotlivě, každé za svou malou cenu.
+        Aktivují se pomocí trvalých offline licenčních klíčů – nejsou vyžadovány žádné účty a předplatné.
+        <br/>
+        Rozšíření jsou zdarma pro <a href="#sponsors">sponzory</a> a přispěvatele z GitHubu.
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>

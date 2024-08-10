@@ -225,5 +225,24 @@
     <string name="template_import_album_create_new">Создать \"%1$s\"</string>
     <string name="import_albums_enter_album_title">Введите название альбома</string>
     <string name="import_albums_not_selected">Не выбраны</string>
+    <string name="photo_frame_widget_name">Фоторамка</string>
+    <string name="photo_frame_widget_description">Показывает случайное фото, которое меняется каждые несколько часов</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">Фотографии</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Показывать все фотографии</string>
+    <string name="photo_frame_widget_configuration_shape">Форма</string>
+    <string name="photo_frame_widget_configuration_show_date">Дата</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Показывать дату снимка</string>
+    <string name="extension_photo_frame_widget_name">Виджет Фоторамка</string>
+    <string name="extension_photo_frame_widget_description">Просматривайте случайные фото из вашей библиотеки на главном экране</string>
+    <string name="extension_store_item_acquire">Получить</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        Расширения галереи – это дополнительные функции приложения, доступные по отдельности, каждое за свою небольшую цену.
+        Они активируются с помощью бессрочных офлайн ключей – аккаунты и подписки не нужны.
+        <br/>
+        Расширения бесплатны для <a href="#sponsors">спонсоров</a> и участников с GitHub.
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>

@@ -225,5 +225,24 @@
     <string name="template_import_album_create_new">Δημιουργία \"%1$s\"</string>
     <string name="import_albums_enter_album_title">Εισαγάγετε τον τίτλο του άλμπουμ</string>
     <string name="import_albums_not_selected">Δεν επιλέχθηκαν</string>
+    <string name="photo_frame_widget_name">Κορνίζα φωτογραφίας</string>
+    <string name="photo_frame_widget_description">Εμφανίζει μια τυχαία φωτογραφία που αλλάζει κάθε λίγες ώρες</string>
+    <string name="photo_frame_widget_configuration_photos_to_show">Φωτογραφίες</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Εμφάνιση όλων των φωτογραφιών</string>
+    <string name="photo_frame_widget_configuration_shape">Σχήμα</string>
+    <string name="photo_frame_widget_configuration_show_date">Ημερομηνία</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Εμφάνιση της ημερομηνίας λήψης</string>
+    <string name="extension_photo_frame_widget_name">Widget Κορνίζα φωτογραφίας</string>
+    <string name="extension_photo_frame_widget_description">Δείτε τυχαίες φωτογραφίες από τη βιβλιοθήκη σας στην αρχική οθόνη</string>
+    <string name="extension_store_item_acquire">Λάβετε</string>
+    <string name="extension_store_disclaimer">
+        <![CDATA[
+        Οι επεκτάσεις γκαλερί είναι επιπλέον λειτουργίες της εφαρμογής που μπορούν να αποκτηθούν μεμονωμένα, η καθεμία με τη δική της μικρή τιμή.
+        Ενεργοποιούνται με μόνιμα offline κλειδιά άδειας – δεν απαιτούνται λογαριασμοί και συνδρομές.
+        <br/>
+        Οι επεκτάσεις είναι δωρεάν για <a href="#sponsors">χορηγούς</a> και συνεισφέροντες από το GitHub.
+        ]]>
+    </string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
 
 </resources>
