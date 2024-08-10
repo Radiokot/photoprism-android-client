@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe
 
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -13,6 +14,7 @@ import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFr
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.ReloadPhotoFrameWidgetPhotoUseCase
+import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetManifestComponentsUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetPhotoUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.view.model.PhotoFrameWidgetConfigurationViewModel
 
@@ -35,6 +37,8 @@ val photoFrameWidgetFeatureModule = module {
             defaultShape = PhotoFrameWidgetShape.ROUNDED_CORNERS,
         )
     } bind PhotoFrameWidgetsPreferences::class
+
+    singleOf(::UpdatePhotoFrameWidgetManifestComponentsUseCase)
 
     scope<EnvSession> {
         scoped {

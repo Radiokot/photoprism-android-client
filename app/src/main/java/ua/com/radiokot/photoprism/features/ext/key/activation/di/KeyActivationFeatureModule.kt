@@ -20,8 +20,8 @@ val keyActivationFeatureModule = module {
         AndroidHardwareIdentifier
     } bind HardwareIdentifier::class
 
-    singleOf(ParseEnteredKeyUseCase::Factory)
-    singleOf(ActivateParsedKeyUseCase::Factory)
+    singleOf(::ParseEnteredKeyUseCase)
+    singleOf(::ActivateParsedKeyUseCase)
 
     single {
         CreateExtensionsHelpEmailUseCase(

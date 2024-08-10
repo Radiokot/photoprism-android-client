@@ -27,7 +27,6 @@ import ua.com.radiokot.photoprism.featureflags.di.playReleaseFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.di.releaseFeatureFlagsModule
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
-import ua.com.radiokot.photoprism.featureflags.extension.hasPhotoFrameWidget
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
@@ -43,9 +42,8 @@ import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule
+import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetManifestComponentsUseCase
 import ua.com.radiokot.photoprism.features.widgets.photoframe.photoFrameWidgetFeatureModule
-import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetConfigurationActivity
-import ua.com.radiokot.photoprism.features.widgets.photoframe.view.PhotoFrameWidgetProvider
 import ua.com.radiokot.photoprism.util.LocalizedContextFactory
 import java.io.File
 import java.io.IOException
@@ -153,14 +151,7 @@ class PhotoPrismGallery : Application() {
             isEnabled = get<EnvSessionHolder>().isSet
         )
 
-        setManifestComponentEnabled(
-            componentClass = PhotoFrameWidgetProvider::class.java,
-            isEnabled = hasPhotoFrameWidget
-        )
-        setManifestComponentEnabled(
-            componentClass = PhotoFrameWidgetConfigurationActivity::class.java,
-            isEnabled = hasPhotoFrameWidget
-        )
+        get<UpdatePhotoFrameWidgetManifestComponentsUseCase>().invoke()
     }
 
     override fun attachBaseContext(base: Context) =

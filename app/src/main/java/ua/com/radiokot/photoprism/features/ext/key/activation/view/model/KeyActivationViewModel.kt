@@ -26,11 +26,11 @@ import java.util.Date
 
 class KeyActivationViewModel(
     private val application: Application,
-    private val parseEnteredKeyUseCaseFactory: ParseEnteredKeyUseCase.Factory,
-    private val activateParsedKeyUseCaseFactory: ActivateParsedKeyUseCase.Factory,
+    private val parseEnteredKeyUseCase: ParseEnteredKeyUseCase,
+    private val activateParsedKeyUseCase: ActivateParsedKeyUseCase,
     private val createExtensionsHelpEmailUseCase: CreateExtensionsHelpEmailUseCase,
 ) : ViewModel() {
-    private val log = kLogger("KeyInputVM")
+    private val log = kLogger("KeyActivationVM")
 
     val key = MutableLiveData<String>()
     val canSubmitKeyInput = MutableLiveData<Boolean>()
@@ -97,12 +97,7 @@ class KeyActivationViewModel(
             "The key must be entered at this point"
         }
 
-        val useCase = parseEnteredKeyUseCaseFactory.get(
-            keyInput = keyInput,
-        )
-
-        useCase
-            .invoke()
+        parseEnteredKeyUseCase(keyInput)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -175,12 +170,7 @@ class KeyActivationViewModel(
     }
 
     private fun activateParsedKey(parsedKey: ParsedKey) {
-        val useCase = activateParsedKeyUseCaseFactory.get(
-            parsedKey = parsedKey,
-        )
-
-        useCase
-            .invoke()
+        activateParsedKeyUseCase(parsedKey)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(

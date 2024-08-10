@@ -16,15 +16,26 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 
 class ParseEnteredKeyUseCase(
-    private val keyInput: String,
-    private val primarySubject: String?,
-    private val hardware: String?,
+    private val extensionsStateRepository: GalleryExtensionsStateRepository,
+    private val hardwareIdentifier: HardwareIdentifier?,
 ) {
     private val log = kLogger("ParseEnteredKeyUseCase")
 
-    operator fun invoke(): Single<Result> {
+    operator fun invoke(
+        keyInput: String,
+    ): Single<Result> {
+        val primarySubject = extensionsStateRepository.currentState.primarySubject
+        val hardware = hardwareIdentifier?.getHardwareIdentifier()
+
         return getIssuerPublicKey()
-            .flatMap(::readAndVerifyKey)
+            .flatMap { issuerPublicKey ->
+                readAndVerifyKey(
+                    issuerPublicKey = issuerPublicKey,
+                    keyInput = keyInput,
+                    primarySubject = primarySubject,
+                    hardware = hardware,
+                )
+            }
             .map { verifiedKey ->
                 val parsedKey = ParsedKey(verifiedKey)
                 if (parsedKey.extensions.isEmpty()) {
@@ -89,7 +100,12 @@ class ParseEnteredKeyUseCase(
             ) as RSAPublicKey
     }.toSingle().subscribeOn(Schedulers.io())
 
-    private fun readAndVerifyKey(issuerPublicKey: RSAPublicKey): Single<OfflineLicenseKey> = {
+    private fun readAndVerifyKey(
+        issuerPublicKey: RSAPublicKey,
+        keyInput: String,
+        primarySubject: String?,
+        hardware: String?,
+    ): Single<OfflineLicenseKey> = {
         log.debug {
             "readAndVerifyKey(): reading_the_key:" +
                     "\nkeyInput=$keyInput," +
@@ -118,19 +134,6 @@ class ParseEnteredKeyUseCase(
             EXPIRED,
             ;
         }
-    }
-
-    class Factory(
-        private val extensionsStateRepository: GalleryExtensionsStateRepository,
-        private val hardwareIdentifier: HardwareIdentifier?,
-    ) {
-        fun get(
-            keyInput: String,
-        ) = ParseEnteredKeyUseCase(
-            keyInput = keyInput,
-            primarySubject = extensionsStateRepository.currentState.primarySubject,
-            hardware = hardwareIdentifier?.getHardwareIdentifier(),
-        )
     }
 
     private companion object {
