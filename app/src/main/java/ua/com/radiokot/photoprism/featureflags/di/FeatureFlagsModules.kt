@@ -11,7 +11,6 @@ val devFeatureFlagsModule = module {
         FeatureSetFeatureFlags(
             FeatureFlags.Feature.EXTENSION_PREFERENCES,
             FeatureFlags.Feature.EXTENSION_STORE,
-            FeatureFlags.Feature.PHOTO_FRAME_WIDGET,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
@@ -20,6 +19,7 @@ val releaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
             FeatureFlags.Feature.EXTENSION_PREFERENCES,
+            FeatureFlags.Feature.EXTENSION_STORE,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
