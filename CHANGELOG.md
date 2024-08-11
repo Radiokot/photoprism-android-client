@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.29.0] - 2024-08-11
 
 ### Added
 
-- An arrow icon on the import albums field suggesting it is clickable
+- Extension store, when installed not from Google Play
+- Photo frame widget extension
+- An arrow icon on the import albums field, suggesting it is clickable
 - Display of the upload summary in the successful import notification
 
 ### Fixed
@@ -615,7 +617,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the
   `PHOTOPRISM_SITE_URL` server config value
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.1(43)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.29.0(44)...HEAD
+
+[1.29.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.1(43)...1.29.0(44)
 
 [1.28.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.0(42)...1.28.1(43)
 

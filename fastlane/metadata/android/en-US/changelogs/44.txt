@@ -1,0 +1,13 @@
+Full changelog:
+https://radiokot.com.ua/pp-changes
+
+Added:
+- Extension store
+- Photo frame widget extension
+- An arrow icon on the import albums field, suggesting it is clickable
+- Display of the upload summary in the successful import notification
+
+Fixed:
+- Missing new memories notification sometimes
+- Inability to retry the import after a failure
+- Import crashing when there are hundreds of files to upload

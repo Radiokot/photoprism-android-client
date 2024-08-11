@@ -27,9 +27,10 @@ It does not support all the official web app functionality, but nevertheless has
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F), [HTTP basic auth](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#examples-of-valid-urls) and [SSO](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#sso) like Authelia, Cloudflare Access, etc.
 - TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now. [Install through APK](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
+- [Extensions](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions) that bring extra features to the app
 
 The gallery is not intended to sync content with the library. 
-I recommend using [Autosync app](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
+For this, I recommend [Autosync](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
 The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism versions from 
@@ -44,7 +45,7 @@ It may work with older ones though, I just haven't tested it.
 [<img src="repository-assets/icon-fdroid.png" alt="F-Droid" style="height: 1em;"/> F-Droid](https://f-droid.org/packages/ua.com.radiokot.photoprism)
 
 
-[<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism)
+[<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension store](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
 [<img src="https://avatars.githubusercontent.com/u/35728385?s=100" alt="Sayantan Santra" title="Sayantan Santra" height=70 />](https://github.com/SinTan1729)
@@ -56,9 +57,9 @@ It may work with older ones though, I just haven't tested it.
 [<img src="https://avatars.githubusercontent.com/u/9214215?s=100" alt="Koen Koppens" title="Koen Koppens" height=70 />](https://github.com/koen81)
 [<img src="https://avatars.githubusercontent.com/u/6559064?s=100" alt="Radon Rosborough" title="Radon Rosborough" height=70 />](https://github.com/raxod502)
 [<img src="https://avatars.githubusercontent.com/u/301686?s=100" alt="Michael Mayer" title="Michael Mayer" height=70 />](https://github.com/lastzero)
+[<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" title="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/3181318?s=100" alt="Juha Lehtiranta" title="Juha Lehtiranta" height=70 />](https://github.com/yatzy)
 [<img src="https://avatars.githubusercontent.com/u/2885748?s=100" alt="Neil Castelino" title="Neil Castelino" height=70 />](https://github.com/TwistTheNeil)
-[<img src="https://avatars.githubusercontent.com/u/15210372?s=100" alt="Theresa Gresch" title="Theresa Gresch" height=70 />](https://github.com/graciousgrey)
 [<img src="https://avatars.githubusercontent.com/u/40500387?s=100" alt="Seth For Privacy" title="Seth For Privacy" height=70 />](https://github.com/sethforprivacy)
 [<img src="https://avatars.githubusercontent.com/u/111684368?s=100" alt="C-Iaens" title="C-Iaens" height=70 />](https://github.com/C-Iaens)
 [<img src="https://avatars.githubusercontent.com/u/6351543?s=100" alt="Tobias Fiechter" title="Tobias Fiechter" height=70 />](https://github.com/tobiasfiechter)
@@ -66,7 +67,7 @@ It may work with older ones though, I just haven't tested it.
 <br>
 …and 3 anonymous sponsors.
 
-*I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ❤️ To join this public list, email me the transaction reference once it is complete. &emsp;*
+*I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ❤️ To join this public list, email me the transaction reference once it is complete. By the way, sponsors get [extensions](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions) for free.*
 
 ## License
 I reject the concept of intellectual property. Claiming ownership over information that can be replicated perfectly and endlessly is inherently flawed. Consequently, any efforts to uphold such form of ownership inevitably result in some people gaining unjustifiable control over other's tangible resources, such as computers, printing equipment, construction materials, etc. <sup>[1](repository-assets/kinsella_against_intellectual_property.pdf)</sup>

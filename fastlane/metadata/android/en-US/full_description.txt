@@ -13,6 +13,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Connection to both private and public libraries
 - Support of mTLS (mutual TLS), HTTP basic auth and SSO like Authelia, Cloudflare Access, etc.
 - TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now)
+- Extensions that bring extra features to the app
 
 The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism versions from July 11, 2024 down to October 9, 2021.
 
