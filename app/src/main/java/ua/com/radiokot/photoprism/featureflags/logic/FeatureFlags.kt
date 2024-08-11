@@ -12,7 +12,6 @@ interface FeatureFlags {
     }
 
     enum class Feature {
-        EXTENSION_PREFERENCES,
         EXTENSION_STORE,
         PHOTO_FRAME_WIDGET,
 

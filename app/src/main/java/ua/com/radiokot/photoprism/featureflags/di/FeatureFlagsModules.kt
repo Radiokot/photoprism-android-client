@@ -9,7 +9,6 @@ import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsSta
 val devFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
-            FeatureFlags.Feature.EXTENSION_PREFERENCES,
             FeatureFlags.Feature.EXTENSION_STORE,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
@@ -18,7 +17,6 @@ val devFeatureFlagsModule = module {
 val releaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
-            FeatureFlags.Feature.EXTENSION_PREFERENCES,
             FeatureFlags.Feature.EXTENSION_STORE,
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
@@ -27,7 +25,7 @@ val releaseFeatureFlagsModule = module {
 val playReleaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags(
-            FeatureFlags.Feature.EXTENSION_PREFERENCES,
+
         ) + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }

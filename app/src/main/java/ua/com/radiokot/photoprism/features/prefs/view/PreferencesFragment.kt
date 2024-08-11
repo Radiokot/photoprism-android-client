@@ -42,7 +42,6 @@ import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
-import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionPreferences
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
@@ -176,10 +175,6 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_language)) {
             isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                     && getAppLanguagePreferencesIntent().resolveActivity(requireContext().packageManager) != null
-        }
-
-        with(requirePreference(R.string.pk_extensions)) {
-            isVisible = featureFlags.hasExtensionPreferences
         }
     }
 
