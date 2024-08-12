@@ -38,10 +38,12 @@
 
         <com.google.android.material.search.SearchBar
             android:id="@+id/search_bar"
+            style="@style/Widget.Material3.SearchBar"
             android:layout_width="@dimen/search_bar_width"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:focusable="true"
             android:hint="@string/search_the_library"
+            android:minHeight="0dp"
             app:layout_scrollFlags="enterAlways"
             app:navigationContentDescription="@string/preferences"
             app:navigationIcon="@drawable/ic_dots_vertical"
