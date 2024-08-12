@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The search bar has been made thinner
+- Memories are no longer shown on top when the gallery is started
+  from another app to select pictures
 
 ## [1.29.0] - 2024-08-11
 

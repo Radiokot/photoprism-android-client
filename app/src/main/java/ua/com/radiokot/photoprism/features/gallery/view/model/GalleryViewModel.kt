@@ -351,9 +351,7 @@ class GalleryViewModel(
                     galleryMediaRepositoryFactory.get(searchConfigForMonth)
 
                 mediaRepositoryChanges.onNext(
-                    MediaRepositoryChange.FastScroll(
-                        repositoryForMonth
-                    )
+                    MediaRepositoryChange.FastScroll(repositoryForMonth)
                 )
             } else {
                 resetRepositoryToInitial()
@@ -376,6 +374,7 @@ class GalleryViewModel(
 
                 memoriesListViewModel.isViewRequired =
                     change is MediaRepositoryChange.ResetToInitial
+                            && currentState !is State.Selecting.ForOtherApp
             }
             .autoDispose(this)
     }
