@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Not showing newly created albums on subsequent imports
+
 ### Changed
 
 - The search bar has been made thinner

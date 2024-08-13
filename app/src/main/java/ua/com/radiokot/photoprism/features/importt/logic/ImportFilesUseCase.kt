@@ -14,14 +14,20 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBody
+import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 
+/**
+ * @param albumsRepository to be updated on success if creating albums
+ */
 class ImportFilesUseCase(
     private val contentResolver: ContentResolver,
     private val photoPrismSessionService: PhotoPrismSessionService,
     private val photoPrismUploadService: PhotoPrismUploadService,
+    private val albumsRepository: AlbumsRepository?,
 ) {
     /**
      * Uploads given [files] to the library import and triggers their index.
+     * Updates [AlbumsRepository] on success if there are albums to create.
      *
      * @param uploadToken a random string used to identify the upload.
      */
@@ -57,6 +63,14 @@ class ImportFilesUseCase(
                     uploadToken = uploadToken,
                 )
             })
+            .doOnComplete {
+                // Update albums repository if there are albums to create,
+                // so they are available in subsequent imports.
+                if (albums.any { it is ImportAlbum.ToCreate }) {
+                    albumsRepository?.invalidate()
+                    albumsRepository?.updateIfEverUpdated()
+                }
+            }
     }
 
     private fun getUserId(): Single<String> = {

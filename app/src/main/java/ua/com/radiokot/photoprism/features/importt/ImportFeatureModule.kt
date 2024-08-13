@@ -25,6 +25,7 @@ val importFeatureModule = module {
                 contentResolver = androidApplication().contentResolver,
                 photoPrismSessionService = get(),
                 photoPrismUploadService = get(),
+                albumsRepository = getOrNull(),
             )
         } bind ImportFilesUseCase::class
 
