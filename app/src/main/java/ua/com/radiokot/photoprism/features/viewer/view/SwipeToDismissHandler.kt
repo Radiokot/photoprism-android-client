@@ -48,11 +48,12 @@ class SwipeToDismissHandler(
      * @return **true** if the event should be handled by [onTouch].
      */
     fun shouldHandleTouch(event: MotionEvent): Boolean =
-        event.action in SUPPORTED_EVENTS
+        !isTracking && event.actionMasked == MotionEvent.ACTION_DOWN
+                || isTracking && event.actionMasked in TRACKING_ACTIONS
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-        when (event.action) {
+        when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 if (swipeView.hitRect.contains(event.x.toInt(), event.y.toInt())) {
                     isTracking = true
@@ -66,6 +67,16 @@ class SwipeToDismissHandler(
                 if (isTracking) {
                     isTracking = false
                     onTrackingEnd(v.height)
+                }
+                return true
+            }
+
+            // Placing a second finger resets the handler to allow zoom.
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                if (isTracking) {
+                    isTracking = false
+                    swipeView.translationY = 0f
+                    onSwipeViewMove(0f, distanceThreshold)
                 }
                 return true
             }
@@ -114,11 +125,11 @@ class SwipeToDismissHandler(
     }
 
     private companion object {
-        private val SUPPORTED_EVENTS = setOf(
-            MotionEvent.ACTION_DOWN,
+        private val TRACKING_ACTIONS = setOf(
+            MotionEvent.ACTION_MOVE,
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL,
-            MotionEvent.ACTION_MOVE,
+            MotionEvent.ACTION_POINTER_DOWN,
         )
     }
 }
