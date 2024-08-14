@@ -45,10 +45,10 @@ val importFeatureModule = module {
     }
 
     single {
-        ParseImportIntentUseCase.Factory(
+        ParseImportIntentUseCase(
             contentResolver = androidApplication().contentResolver,
         )
-    } bind ParseImportIntentUseCase.Factory::class
+    } bind ParseImportIntentUseCase::class
 
     singleOf(::ImportNotificationsManager)
 }

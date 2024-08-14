@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferenc
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaCodecVideoFormatSupport
@@ -36,7 +37,6 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
-import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 
@@ -126,8 +126,8 @@ val galleryFeatureModule = module {
                 downloadMediaFileViewModel = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
                 galleryPreferences = get(),
-                archiveGalleryMediaUseCaseFactory = get(),
-                deleteGalleryMediaUseCaseFactory = get(),
+                archiveGalleryMediaUseCase = get(),
+                deleteGalleryMediaUseCase = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
@@ -136,7 +136,7 @@ val galleryFeatureModule = module {
             )
         }
 
-        scopedOf(ArchiveGalleryMediaUseCase::Factory)
-        scopedOf(DeleteGalleryMediaUseCase::Factory)
+        scopedOf(::ArchiveGalleryMediaUseCase)
+        scopedOf(::DeleteGalleryMediaUseCase)
     }
 }

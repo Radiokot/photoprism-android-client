@@ -25,7 +25,7 @@ import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
 class EnvConnectionViewModel(
-    private val connectToEnvUseCaseFactory: ConnectToEnvUseCase.Factory,
+    private val connectToEnvUseCase: ConnectToEnvUseCase,
     private val demoRootUrl: String,
 ) : ViewModel() {
     private val log = kLogger("EnvConnectionVM")
@@ -255,13 +255,12 @@ class EnvConnectionViewModel(
                     "\ntfaCode=$tfaCode"
         }
 
-        connectToEnvUseCaseFactory
-            .get(
+        connectToEnvUseCase
+            .invoke(
                 connectionParams = connectionParams,
                 auth = auth,
                 tfaCode = tfaCode,
             )
-            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {

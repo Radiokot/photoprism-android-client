@@ -62,9 +62,9 @@ val mediaViewerFeatureModule = module {
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 downloadMediaFileViewModel = get(),
                 backgroundMediaFileDownloadManager = get(),
-                setGalleryMediaFavoriteUseCaseFactory = get(),
-                archiveGalleryMediaUseCaseFactory = get(),
-                deleteGalleryMediaUseCaseFactory = get(),
+                setGalleryMediaFavoriteUseCase = get(),
+                archiveGalleryMediaUseCase = get(),
+                deleteGalleryMediaUseCase = get(),
             )
         }
 
@@ -91,6 +91,6 @@ val mediaViewerFeatureModule = module {
 
         viewModelOf(::VideoPlayerCacheViewModel)
 
-        scopedOf(SetGalleryMediaFavoriteUseCase::Factory)
+        scopedOf(::SetGalleryMediaFavoriteUseCase)
     }
 }

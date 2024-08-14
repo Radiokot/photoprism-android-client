@@ -32,10 +32,11 @@ class MediaViewerViewModel(
     private val externalDownloadsDir: File,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
-    private val setGalleryMediaFavoriteUseCaseFactory: SetGalleryMediaFavoriteUseCase.Factory,
-    private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
-    private val deleteGalleryMediaUseCaseFactory: DeleteGalleryMediaUseCase.Factory,
+    private val setGalleryMediaFavoriteUseCase: SetGalleryMediaFavoriteUseCase,
+    private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
+    private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
 ) : ViewModel() {
+
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
@@ -303,12 +304,11 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        archiveGalleryMediaUseCaseFactory
-            .get(
+        archiveGalleryMediaUseCase
+            .invoke(
                 mediaUid = item.uid,
                 currentGalleryMediaRepository = galleryMediaRepository,
             )
-            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -359,12 +359,11 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        deleteGalleryMediaUseCaseFactory
-            .get(
+        deleteGalleryMediaUseCase
+            .invoke(
                 mediaUid = item.uid,
                 currentGalleryMediaRepository = galleryMediaRepository,
             )
-            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -446,12 +445,12 @@ class MediaViewerViewModel(
                     "\ntoSetFavorite=$toSetFavorite"
         }
 
-        setGalleryMediaFavoriteUseCaseFactory.get(
-            mediaUid = item.uid,
-            isFavorite = toSetFavorite,
-            currentGalleryMediaRepository = galleryMediaRepository,
-        )
-            .invoke()
+        setGalleryMediaFavoriteUseCase
+            .invoke(
+                mediaUid = item.uid,
+                isFavorite = toSetFavorite,
+                currentGalleryMediaRepository = galleryMediaRepository,
+            )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {

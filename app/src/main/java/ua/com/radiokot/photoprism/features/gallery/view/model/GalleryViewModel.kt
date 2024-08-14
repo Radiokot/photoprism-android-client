@@ -50,8 +50,8 @@ class GalleryViewModel(
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,
     private val galleryPreferences: GalleryPreferences,
-    private val archiveGalleryMediaUseCaseFactory: ArchiveGalleryMediaUseCase.Factory,
-    private val deleteGalleryMediaUseCaseFactory: DeleteGalleryMediaUseCase.Factory,
+    private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
+    private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
@@ -1074,12 +1074,11 @@ class GalleryViewModel(
 
         val mediaUids = multipleSelectionFilesByMediaUid.keys
 
-        archiveGalleryMediaUseCaseFactory
-            .get(
+        archiveGalleryMediaUseCase
+            .invoke(
                 mediaUids = mediaUids,
                 currentGalleryMediaRepository = repository,
             )
-            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -1124,12 +1123,11 @@ class GalleryViewModel(
 
         val mediaUids = multipleSelectionFilesByMediaUid.keys
 
-        deleteGalleryMediaUseCaseFactory
-            .get(
+        deleteGalleryMediaUseCase
+            .invoke(
                 mediaUids = mediaUids,
                 currentGalleryMediaRepository = repository,
             )
-            .invoke()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {

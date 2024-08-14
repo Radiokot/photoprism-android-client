@@ -29,7 +29,7 @@ import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepo
 import java.io.File
 
 class ImportViewModel(
-    private val parseImportIntentUseCaseFactory: ParseImportIntentUseCase.Factory,
+    private val parseImportIntentUseCase: ParseImportIntentUseCase,
     private val albumsRepository: AlbumsRepository,
     private val session: EnvSession,
     private val jsonObjectMapper: JsonObjectMapper,
@@ -55,7 +55,7 @@ class ImportViewModel(
             return
         }
 
-        files = parseImportIntentUseCaseFactory.get(importIntent).invoke()
+        files = parseImportIntentUseCase(importIntent)
 
         summary.value = Summary(
             libraryRootUrl = session.envConnectionParams.rootUrl.toString(),

@@ -24,16 +24,13 @@ typealias PhotoPrismConfigServiceFactory =
 /**
  * Creates [EnvSession] for the given [EnvConnectionParams] and [EnvAuth].
  * On success, sets the session to the [envSessionHolder] and [envSessionPersistence]
- * and the [auth] to the [envAuthPersistence], if present.
+ * and the auth to the [envAuthPersistence], if present.
  *
  * @see InvalidCredentialsException
  * @see EnvIsNotPublicException
  * @see WebPageInteractionRequiredException
  */
 class ConnectToEnvUseCase(
-    private val connectionParams: EnvConnectionParams,
-    private val auth: EnvAuth,
-    private val tfaCode: String?,
     private val configServiceFactory: PhotoPrismConfigServiceFactory,
     private val sessionCreatorFactory: SessionCreator.Factory,
     private val envSessionHolder: EnvSessionHolder?,
@@ -43,10 +40,18 @@ class ConnectToEnvUseCase(
 ) {
     private val log = kLogger("ConnectToEnvUseCase")
 
-    private lateinit var session: EnvSession
+    operator fun invoke(
+        connectionParams: EnvConnectionParams,
+        auth: EnvAuth,
+        tfaCode: String?,
+    ): Single<EnvSession> {
+        lateinit var session: EnvSession
 
-    operator fun invoke(): Single<EnvSession> {
-        return getSession()
+        return getSession(
+            connectionParams = connectionParams,
+            auth = auth,
+            tfaCode = tfaCode,
+        )
             .doOnSuccess {
                 session = it
 
@@ -55,7 +60,13 @@ class ConnectToEnvUseCase(
                             "\nid=${it.id}"
                 }
             }
-            .flatMap { checkEnv() }
+            .flatMap {
+                checkEnv(
+                    connectionParams = connectionParams,
+                    auth = auth,
+                    sessionId = session.id,
+                )
+            }
             .onErrorResumeNext { error ->
                 Single.error(
                     if (WebPageInteractionRequiredException.THROWABLE_PREDICATE.test(error))
@@ -74,12 +85,19 @@ class ConnectToEnvUseCase(
                             "\nsession=$session"
                 }
 
-                updateHoldersAndPersistence()
+                updateHoldersAndPersistence(
+                    auth = auth,
+                    session = session,
+                )
                 updateManifestComponents()
             }
     }
 
-    private fun getSession(): Single<EnvSession> = {
+    private fun getSession(
+        connectionParams: EnvConnectionParams,
+        auth: EnvAuth,
+        tfaCode: String?,
+    ): Single<EnvSession> = {
         sessionCreatorFactory.get(connectionParams).createSession(
             auth = auth,
             tfaCode = tfaCode,
@@ -87,10 +105,17 @@ class ConnectToEnvUseCase(
     }
         .toSingle()
 
-    private fun checkEnv(): Single<Boolean> =
+    private fun checkEnv(
+        connectionParams: EnvConnectionParams,
+        auth: EnvAuth,
+        sessionId: String,
+    ): Single<Boolean> =
         if (auth is EnvAuth.Public)
         // If the auth is public, check that the env is actually public.
-            getEnvClientConfig()
+            getEnvClientConfig(
+                connectionParams = connectionParams,
+                sessionId = sessionId,
+            )
                 .map { photoPrismConfig ->
                     if (!photoPrismConfig.public) {
                         throw EnvIsNotPublicException()
@@ -102,12 +127,17 @@ class ConnectToEnvUseCase(
         // Otherwise, there is currently nothing to check.
             Single.just(true)
 
-    private fun getEnvClientConfig(): Single<PhotoPrismClientConfig> = {
-        configServiceFactory(connectionParams, session.id)
-            .getClientConfig()
+    private fun getEnvClientConfig(
+        connectionParams: EnvConnectionParams,
+        sessionId: String,
+    ): Single<PhotoPrismClientConfig> = {
+        configServiceFactory(connectionParams, sessionId).getClientConfig()
     }.toSingle()
 
-    private fun updateHoldersAndPersistence() {
+    private fun updateHoldersAndPersistence(
+        auth: EnvAuth,
+        session: EnvSession,
+    ) {
         envSessionHolder?.apply {
             set(session)
 
@@ -145,30 +175,5 @@ class ConnectToEnvUseCase(
         log.debug {
             "updateManifestComponents(): enabled_import"
         }
-    }
-
-    class Factory(
-        private val configServiceFactory: PhotoPrismConfigServiceFactory,
-        private val sessionCreatorFactory: SessionCreator.Factory,
-        private val envSessionHolder: EnvSessionHolder?,
-        private val envSessionPersistence: ObjectPersistence<EnvSession>?,
-        private val envAuthPersistence: ObjectPersistence<EnvAuth>?,
-        private val application: Application,
-    ) {
-        fun get(
-            connectionParams: EnvConnectionParams,
-            auth: EnvAuth,
-            tfaCode: String?,
-        ) = ConnectToEnvUseCase(
-            connectionParams = connectionParams,
-            auth = auth,
-            tfaCode = tfaCode,
-            configServiceFactory = configServiceFactory,
-            sessionCreatorFactory = sessionCreatorFactory,
-            envSessionHolder = envSessionHolder,
-            envSessionPersistence = envSessionPersistence,
-            envAuthPersistence = envAuthPersistence,
-            application = application,
-        )
     }
 }

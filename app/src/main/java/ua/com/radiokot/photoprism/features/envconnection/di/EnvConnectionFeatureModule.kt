@@ -65,8 +65,8 @@ val envConnectionFeatureModule = module {
         )
     }.bind(EnvSessionHolder::class)
 
-    single {
-        ConnectToEnvUseCase.Factory(
+    factory {
+        ConnectToEnvUseCase(
             sessionCreatorFactory = get(),
             configServiceFactory = { envConnectionParams, sessionId ->
                 get(_q<EnvPhotoPrismClientConfigServiceParams>()) {
@@ -81,7 +81,7 @@ val envConnectionFeatureModule = module {
             envAuthPersistence = get(_q<EnvAuth>()),
             application = androidApplication(),
         )
-    } bind ConnectToEnvUseCase.Factory::class
+    } bind ConnectToEnvUseCase::class
 
     scope<EnvSession> {
         factory {
@@ -102,7 +102,7 @@ val envConnectionFeatureModule = module {
 
     viewModel {
         EnvConnectionViewModel(
-            connectToEnvUseCaseFactory = get(),
+            connectToEnvUseCase = get(),
             demoRootUrl = getProperty("demoLibraryRootUrl"),
         )
     }

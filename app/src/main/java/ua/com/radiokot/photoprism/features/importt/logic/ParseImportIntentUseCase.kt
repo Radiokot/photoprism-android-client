@@ -8,12 +8,13 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 
 class ParseImportIntentUseCase(
-    private val intent: Intent,
     private val contentResolver: ContentResolver,
 ) {
     private val log = kLogger("ParseImportIntentUseCase")
 
-    operator fun invoke(): List<ImportableFile> {
+    operator fun invoke(
+        intent: Intent,
+    ): List<ImportableFile> {
         check(intent.action in setOf(Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE)) {
             "The intent has unsupported action ${intent.action}"
         }
@@ -84,16 +85,5 @@ class ParseImportIntentUseCase(
                 displayName = displayName,
             )
         }
-    }
-
-    class Factory(
-        private val contentResolver: ContentResolver,
-    ) {
-        fun get(
-            intent: Intent,
-        ) = ParseImportIntentUseCase(
-            contentResolver = contentResolver,
-            intent = intent,
-        )
     }
 }
