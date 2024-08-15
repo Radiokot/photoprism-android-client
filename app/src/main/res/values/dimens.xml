@@ -16,8 +16,8 @@
     <dimen name="media_viewer_buttons_horizontal_spacing">0dp</dimen>
     <dimen name="media_viewer_buttons_layout_horizontal_spacing">0dp</dimen>
     <dimen name="media_viewer_page_margin">20dp</dimen>
-    <dimen name="list_item_album_width">96dp</dimen>
-    <dimen name="list_item_album_margin_end">8dp</dimen>
+    <dimen name="list_item_gallery_search_album_width">96dp</dimen>
+    <dimen name="list_item_gallery_search_album_margin_end">8dp</dimen>
     <dimen name="list_item_person_width">80dp</dimen>
     <dimen name="list_item_person_overview_min_width">100dp</dimen>
     <dimen name="list_item_person_margin_end">8dp</dimen>
@@ -43,4 +43,6 @@
     <dimen name="list_item_memory_margin_end">8dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_vertical">24dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_horizontal">12dp</dimen>
+    <dimen name="list_item_gallery_folder_width">128dp</dimen>
+    <dimen name="list_item_gallery_folder_margin_end">12dp</dimen>
 </resources>
