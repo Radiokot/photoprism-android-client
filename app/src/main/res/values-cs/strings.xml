@@ -135,10 +135,10 @@
     <string name="show_albums_explanation">Zobrazit alba na obrazovce vyhledávání</string>
     <string name="see_all_albums">Zobrazit všechny</string>
     <string name="see_all_people">Zobrazit všechny</string>
-    <string name="search_albums">Vyhledat</string>
+    <string name="search">Vyhledat</string>
     <string name="failed_to_load_albums">Nepodařilo se načíst alba</string>
     <string name="failed_to_load_people">Nepodařilo se načíst osoby</string>
-    <string name="show_album_folders">Složky</string>
+    <string name="folders">Složky</string>
     <string name="show_album_folders_explanation">Zobrazit složky v seznamu alb</string>
     <string name="files_saved_to_downloads">Soubory byly uloženy so Stažených souborů</string>
     <string name="start_slideshow">Prezentace</string>

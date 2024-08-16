@@ -139,10 +139,10 @@
     <string name="show_albums_explanation">Show albums on the search screen</string>
     <string name="see_all_albums">See all</string>
     <string name="see_all_people">See all</string>
-    <string name="search_albums">Search</string>
+    <string name="search">Search</string>
     <string name="failed_to_load_albums">Failed to load albums</string>
     <string name="failed_to_load_people">Failed to load people</string>
-    <string name="show_album_folders">Folders</string>
+    <string name="folders">Folders</string>
     <string name="show_album_folders_explanation">Show folders in the album list</string>
     <string name="files_saved_to_downloads">Files have been saved to the Downloads</string>
     <string name="start_slideshow">Slideshow</string>

@@ -132,10 +132,10 @@
     <string name="show_albums_explanation">Alben in der Suche anzeigen</string>
     <string name="see_all_albums">Alle</string>
     <string name="see_all_people">Alle</string>
-    <string name="search_albums">Durchsuchen</string>
+    <string name="search">Durchsuchen</string>
     <string name="failed_to_load_albums">Konnte Alben nicht laden</string>
     <string name="failed_to_load_people">Konnte Personen nicht laden</string>
-    <string name="show_album_folders">Ordner</string>
+    <string name="folders">Ordner</string>
     <string name="show_album_folders_explanation">Verzeichnisse in der Liste der Alben anzeigen</string>
     <string name="files_saved_to_downloads">Dateien wurden in Downloads gespeichert</string>
     <string name="start_slideshow">Präsentation</string>

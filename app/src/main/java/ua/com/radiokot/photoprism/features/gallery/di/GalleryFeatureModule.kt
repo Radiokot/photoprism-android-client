@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.folders.galleryFoldersFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
@@ -48,6 +49,7 @@ val galleryFeatureModule = module {
     includes(envConnectionFeatureModule)
     includes(dateFormatModule)
     includes(gallerySearchFeatureModules)
+    includes(galleryFoldersFeatureModule)
 
     single {
         FileReturnIntentCreator(

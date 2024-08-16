@@ -134,10 +134,10 @@
     <string name="show_albums_explanation">Mostra gli album nella schermata di cerca</string>
     <string name="see_all_albums">Vedi tutti</string>
     <string name="see_all_people">Vedi tutte</string>
-    <string name="search_albums">Cerca</string>
+    <string name="search">Cerca</string>
     <string name="failed_to_load_albums">Mancato caricamento degli album</string>
     <string name="failed_to_load_people">Mancato caricamento di persone</string>
-    <string name="show_album_folders">Cartelle</string>
+    <string name="folders">Cartelle</string>
     <string name="show_album_folders_explanation">Mostra le cartelle nell\'elenco degli album</string>
     <string name="files_saved_to_downloads">I file sono stati salvati nei Download</string>
     <string name="start_slideshow">Presentazione</string>

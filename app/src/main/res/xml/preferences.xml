@@ -71,7 +71,7 @@
             app:widgetLayout="@layout/preference_material_switch" />
 
         <SwitchPreferenceCompat
-            android:title="@string/show_album_folders"
+            android:title="@string/folders"
             app:dependency="@string/pk_show_albums"
             app:iconSpaceReserved="false"
             app:key="@string/pk_show_album_folders"

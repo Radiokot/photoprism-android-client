@@ -134,10 +134,10 @@
     <string name="show_albums_explanation">Показывать альбомы на экране поиска</string>
     <string name="see_all_albums">Показать все</string>
     <string name="see_all_people">Показать всех</string>
-    <string name="search_albums">Поиск</string>
+    <string name="search">Поиск</string>
     <string name="failed_to_load_albums">Не удалось загрузить альбомы</string>
     <string name="failed_to_load_people">Не удалось загрузить людей</string>
-    <string name="show_album_folders">Папки</string>
+    <string name="folders">Папки</string>
     <string name="show_album_folders_explanation">Показывать папки в списке альбомов</string>
     <string name="files_saved_to_downloads">Файлы сохранены в Загрузки</string>
     <string name="start_slideshow">Слайд-шоу</string>

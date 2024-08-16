@@ -135,10 +135,10 @@
     <string name="show_albums_explanation">Mostrar álbumes en la vista de búsqueda</string>
     <string name="see_all_albums">Ver todo</string>
     <string name="see_all_people">Ver todo</string>
-    <string name="search_albums">Buscar</string>
+    <string name="search">Buscar</string>
     <string name="failed_to_load_albums">Fallo al cargar los álbumes</string>
     <string name="failed_to_load_people">Fallo al cargar la gente</string>
-    <string name="show_album_folders">Carpetas</string>
+    <string name="folders">Carpetas</string>
     <string name="show_album_folders_explanation">Mostrar carpetas en la lista de álbumes</string>
     <string name="files_saved_to_downloads">Los ficheros fueron guardados en la carpeta de Descargas</string>
     <string name="start_slideshow">Diapositivas</string>

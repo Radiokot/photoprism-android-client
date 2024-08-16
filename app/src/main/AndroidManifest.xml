@@ -205,6 +205,13 @@
                  in old launchers widget list. -->
         </activity>
 
+        <activity
+            android:name=".features.gallery.folders.view.GalleryFoldersActivity"
+            android:exported="false"
+            android:label="@string/folders"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

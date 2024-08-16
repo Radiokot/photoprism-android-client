@@ -134,10 +134,10 @@
     <string name="show_albums_explanation">εμφάνιση άλμπουμ στην οθόνη αναζήτησης</string>
     <string name="see_all_albums">Δείτε όλα</string>
     <string name="see_all_people">Δείτε όλα</string>
-    <string name="search_albums">Αναζήτηση</string>
+    <string name="search">Αναζήτηση</string>
     <string name="failed_to_load_albums">Απέτυχε να φορτώσει άλμπουμ</string>
     <string name="failed_to_load_people">Απέτυχε να φορτώσει άτομα</string>
-    <string name="show_album_folders">φάκελοι</string>
+    <string name="folders">φάκελοι</string>
     <string name="show_album_folders_explanation">εμφάνιση φακέλων στη λίστα άλμπουμ</string>
     <string name="files_saved_to_downloads">τα αρχεία έχουν αποθηκευτεί στις Λήψεις</string>
     <string name="start_slideshow">Παρουσίαση διαφανειών</string>
