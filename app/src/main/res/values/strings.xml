@@ -250,4 +250,6 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="no_folders_found">No folders found</string>
+    <string name="failed_to_load_folders">Failed to load folders</string>
 </resources>

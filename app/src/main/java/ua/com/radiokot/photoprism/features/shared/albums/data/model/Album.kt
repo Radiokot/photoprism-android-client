@@ -14,7 +14,9 @@ class Album(
     - Requesting "folder" type to album photoprism order it by "name", etc etc
      */
     val type: TypeName,
-    val title: String, //same as photos name
+    val title: String, //same as photos name,
+    val description: String?,
+    val path: String?,
     val uid: String,
     val isFavorite: Boolean,
     previewHash: String,
@@ -27,6 +29,8 @@ class Album(
     ) : this(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
+        description = source.description.takeIf(String::isNotEmpty),
+        path = source.path.takeIf(String::isNotEmpty),
         uid = source.uid,
         isFavorite = source.favorite,
         previewHash = source.thumb,

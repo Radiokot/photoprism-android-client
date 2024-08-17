@@ -18,4 +18,8 @@ constructor(
     val updatedAt: String,
     @JsonProperty("Favorite")
     val favorite: Boolean,
+    @JsonProperty("Description")
+    val description: String,
+    @JsonProperty("Path")
+    val path: String,
 )

@@ -8,6 +8,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Error
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Event
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
@@ -24,6 +26,7 @@ class GalleryFoldersViewModel(
     val events = eventsSubject.toMainThreadObservable()
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GalleryFolderListItem>>()
+    val mainError = MutableLiveData<Error?>(null)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
@@ -42,7 +45,24 @@ class GalleryFoldersViewModel(
             .subscribe { postFolderItems() }
             .autoDispose(this)
 
-        // TODO loading and error
+        albumsRepository.errors
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { error ->
+                log.error(error) {
+                    "subscribeToRepository(): albums_loading_failed"
+                }
+
+                if (itemsList.value == null) {
+                    mainError.value = Error.LoadingFailed
+                } else {
+                    eventsSubject.onNext(Event.ShowFloatingLoadingFailedError)
+                }
+            }
+            .autoDispose(this)
+
+        albumsRepository.loading
+            .subscribe(isLoading::postValue)
+            .autoDispose(this)
     }
 
     private fun update(force: Boolean = false) {
@@ -94,7 +114,31 @@ class GalleryFoldersViewModel(
 
         itemsList.value = filteredRepositoryAlbums.map(::GalleryFolderListItem)
 
-        // TODO main error
+        mainError.value =
+            when {
+                filteredRepositoryAlbums.isEmpty() ->
+                    Error.NothingFound
+
+                else ->
+                    // Dismiss the main error when there are items.
+                    null
+            }
+    }
+
+    fun onRetryClicked() {
+        log.debug {
+            "onRetryClicked(): updating"
+        }
+
+        update(force = true)
+    }
+
+    fun onSwipeRefreshPulled() {
+        log.debug {
+            "onSwipeRefreshPulled(): force_updating"
+        }
+
+        update(force = true)
     }
 
     private fun onBackPressed() {
@@ -118,6 +162,25 @@ class GalleryFoldersViewModel(
     }
 
     sealed interface Event {
+        /**
+         * Show a dismissible floating error saying that the loading is failed.
+         * Retry is possible: the [onRetryClicked] method should be called.
+         */
+        object ShowFloatingLoadingFailedError : Event
+
         object Finish : Event
+    }
+
+    sealed interface Error {
+        /**
+         * The loading is failed and could be retried.
+         * The [onRetryClicked] method should be called.
+         */
+        object LoadingFailed : Error
+
+        /**
+         * No folders found for the filter or there are simply no folders.
+         */
+        object NothingFound : Error
     }
 }

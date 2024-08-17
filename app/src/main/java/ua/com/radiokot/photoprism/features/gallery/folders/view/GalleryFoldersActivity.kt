@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
@@ -20,9 +21,11 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
+import ua.com.radiokot.photoprism.view.ErrorView
 
 class GalleryFoldersActivity : BaseActivity() {
 
@@ -43,6 +46,8 @@ class GalleryFoldersActivity : BaseActivity() {
         view.foldersRecyclerView.doOnPreDraw {
             initList()
         }
+        initErrorView()
+        initSwipeRefresh()
 
         subscribeToEvents()
 
@@ -67,7 +72,7 @@ class GalleryFoldersActivity : BaseActivity() {
                     }
 
             val minItemWidthPx =
-                resources.getDimensionPixelSize(R.dimen.list_item_gallery_search_album_width)
+                resources.getDimensionPixelSize(R.dimen.list_item_gallery_folder_width)
             val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
 
             log.debug {
@@ -122,6 +127,40 @@ class GalleryFoldersActivity : BaseActivity() {
         }
     }
 
+    private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
+        setOnRefreshListener(viewModel::onSwipeRefreshPulled)
+        viewModel.isLoading.observe(this@GalleryFoldersActivity, ::setRefreshing)
+    }
+
+    private fun initErrorView() {
+        view.errorView.replaces(view.foldersRecyclerView)
+        viewModel.mainError.observe(this) { mainError ->
+            when (mainError) {
+                GalleryFoldersViewModel.Error.LoadingFailed ->
+                    view.errorView.showError(
+                        ErrorView.Error.General(
+                            context = view.errorView.context,
+                            // TODO change message to folders
+                            messageRes = R.string.failed_to_load_folders,
+                            retryButtonTextRes = R.string.try_again,
+                            retryButtonClickListener = viewModel::onRetryClicked
+                        )
+                    )
+
+                GalleryFoldersViewModel.Error.NothingFound ->
+                    view.errorView.showError(
+                        ErrorView.Error.EmptyView(
+                            context = view.errorView.context,
+                            messageRes = R.string.no_folders_found,
+                        )
+                    )
+
+                null ->
+                    view.errorView.hide()
+            }
+        }
+    }
+
     private fun subscribeToEvents() = viewModel.events.subscribe { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
@@ -129,6 +168,9 @@ class GalleryFoldersActivity : BaseActivity() {
         }
 
         when (event) {
+            GalleryFoldersViewModel.Event.ShowFloatingLoadingFailedError ->
+                showFloatingLoadingFailedError()
+
             is GalleryFoldersViewModel.Event.Finish ->
                 finish()
         }
@@ -138,6 +180,17 @@ class GalleryFoldersActivity : BaseActivity() {
                     "\nevent=$event"
         }
     }.autoDispose(this)
+
+    private fun showFloatingLoadingFailedError() {
+        Snackbar.make(
+            view.swipeRefreshLayout,
+            // TODO change message to folders
+            getString(R.string.failed_to_load_folders),
+            Snackbar.LENGTH_SHORT
+        )
+            .setAction(R.string.try_again) { viewModel.onRetryClicked() }
+            .show()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_overview, menu)
