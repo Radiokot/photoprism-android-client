@@ -1,12 +1,16 @@
 package ua.com.radiokot.photoprism.features.gallery.folders.view
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
@@ -16,6 +20,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryFolderBinding
+import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -23,6 +29,7 @@ import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFol
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
 import kotlin.math.ceil
@@ -34,6 +41,10 @@ class GalleryFolderActivity : BaseActivity() {
     private lateinit var view: ActivityGalleryFolderBinding
     private val viewModel: GalleryFolderViewModel by viewModel()
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
+    private val viewerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onViewerResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +66,8 @@ class GalleryFolderActivity : BaseActivity() {
         initToolbar()
         initSwipeRefresh()
         initErrorView()
+
+        subscribeToEvents()
     }
 
     private fun initToolbar() {
@@ -138,12 +151,10 @@ class GalleryFolderActivity : BaseActivity() {
                             listOf(viewHolder.itemView)
                     }
                 },
-                onClick = { view, _, _, item ->
+                onClick = { _, _, _, item ->
                     when (item) {
                         is GalleryListItem ->
-                            when (view.id) {
-                                // TODO item click
-                            }
+                            viewModel.onItemClicked(item)
 
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
@@ -280,7 +291,69 @@ class GalleryFolderActivity : BaseActivity() {
         }
     }
 
-     private val GalleryFolderViewModel.Error.localizedMessage: String
+    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            is GalleryFolderViewModel.Event.OpenViewer ->
+                openViewer(
+                    mediaIndex = event.mediaIndex,
+                    repositoryParams = event.repositoryParams,
+                    areActionsEnabled = event.areActionsEnabled,
+                )
+
+            is GalleryFolderViewModel.Event.EnsureListItemVisible -> {
+                view.galleryRecyclerView.post {
+                    view.galleryRecyclerView.ensureItemIsVisible(
+                        itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
+                    )
+                }
+            }
+
+            is GalleryFolderViewModel.Event.ShowFloatingError ->
+                showFloatingError(event.error)
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
+    }.autoDispose(this)
+
+    private fun showFloatingError(error: GalleryFolderViewModel.Error) {
+        Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
+            .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
+            .show()
+    }
+
+    private fun openViewer(
+        mediaIndex: Int,
+        repositoryParams: SimpleGalleryMediaRepository.Params,
+        areActionsEnabled: Boolean,
+    ) {
+        viewerLauncher.launch(
+            Intent(this, MediaViewerActivity::class.java)
+                .putExtras(
+                    MediaViewerActivity.getBundle(
+                        mediaIndex = mediaIndex,
+                        repositoryParams = repositoryParams,
+                        areActionsEnabled = areActionsEnabled,
+                    )
+                )
+        )
+    }
+
+    private fun onViewerResult(result: ActivityResult) {
+        val lastViewedMediaIndex = MediaViewerActivity.getResult(result)
+            ?: return
+
+        viewModel.onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex)
+    }
+
+    private val GalleryFolderViewModel.Error.localizedMessage: String
         get() = when (this) {
             is GalleryFolderViewModel.Error.LoadingFailed ->
                 getString(

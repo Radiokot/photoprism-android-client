@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
@@ -91,7 +92,11 @@ class GalleryFolderViewModel(
                 if (itemsList.value.isNullOrEmpty()) {
                     mainError.value = Error.LoadingFailed(error.shortSummary)
                 } else {
-                    eventsSubject.onNext(Event.ShowFloatingLoadingFailedError)
+                    eventsSubject.onNext(
+                        Event.ShowFloatingError(
+                            Error.LoadingFailed(error.shortSummary)
+                        )
+                    )
                 }
             }
             .autoDispose(this)
@@ -198,12 +203,101 @@ class GalleryFolderViewModel(
         update(force = true)
     }
 
+    fun onItemClicked(item: GalleryListItem) {
+        log.debug {
+            "onItemClicked(): gallery_item_clicked:" +
+                    "\nitem=$item"
+        }
+
+        val media = (item as? GalleryListItem.Media)?.source
+            ?: return
+
+        openViewer(
+            media = media,
+            areActionsEnabled = true,
+        )
+    }
+
+    private fun openViewer(
+        media: GalleryMedia,
+        areActionsEnabled: Boolean,
+    ) {
+        val index = currentMediaRepository.itemsList.indexOf(media)
+        val repositoryParams = currentMediaRepository.params
+
+        log.debug {
+            "openViewer(): opening_viewer:" +
+                    "\nmedia=$media," +
+                    "\nindex=$index," +
+                    "\nrepositoryParams=$repositoryParams," +
+                    "\nareActionsEnabled=$areActionsEnabled"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenViewer(
+                mediaIndex = index,
+                repositoryParams = repositoryParams,
+                areActionsEnabled = areActionsEnabled,
+            )
+        )
+    }
+
+    fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int) {
+        // Find the media list item index considering there are other item types.
+        var mediaListItemIndex = -1
+        var listItemIndex = 0
+        var mediaItemsCounter = 0
+        for (item in itemsList.value ?: emptyList()) {
+            if (item is GalleryListItem.Media) {
+                mediaItemsCounter++
+            }
+            if (mediaItemsCounter == lastViewedMediaIndex + 1) {
+                mediaListItemIndex = listItemIndex
+                break
+            }
+            listItemIndex++
+        }
+
+        // Ensure that the last viewed media is visible in the gallery list.
+        if (mediaListItemIndex >= 0) {
+            log.debug {
+                "onViewerReturnedLastViewedMediaIndex(): ensuring_media_list_item_visibility:" +
+                        "\nmediaIndex=$lastViewedMediaIndex" +
+                        "\nmediaListItemIndex=$mediaListItemIndex"
+            }
+
+            eventsSubject.onNext(
+                Event.EnsureListItemVisible(
+                    listItemIndex = mediaListItemIndex,
+                )
+            )
+        } else {
+            log.error {
+                "onViewerReturnedLastViewedMediaIndex(): cant_find_media_list_item_index:" +
+                        "\nmediaIndex=$lastViewedMediaIndex"
+            }
+        }
+    }
+
     sealed interface Event {
         /**
-         * Show a dismissible floating error saying that the loading is failed.
-         * Retry is possible: the [onFloatingErrorRetryClicked] method should be called.
+         * Show a dismissible floating error.
+         *
+         * The [onFloatingErrorRetryClicked] method should be called
+         * if the error assumes retrying.
          */
-        object ShowFloatingLoadingFailedError : Event
+        class ShowFloatingError(val error: Error) : Event
+
+        class OpenViewer(
+            val mediaIndex: Int,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+            val areActionsEnabled: Boolean,
+        ) : Event
+
+        /**
+         * Ensure that the given item of the [itemsList] is visible on the screen.
+         */
+        class EnsureListItemVisible(val listItemIndex: Int) : Event
     }
 
     sealed interface Error {
