@@ -8,6 +8,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Error
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Event
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
@@ -85,10 +87,6 @@ class GalleryFoldersViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { postFolderItems() }
             .autoDispose(this)
-
-        albumsRepository.loading
-            .subscribe(isLoading::postValue)
-            .autoDispose(this)
     }
 
     private fun postFolderItems() {
@@ -141,6 +139,35 @@ class GalleryFoldersViewModel(
         update(force = true)
     }
 
+
+    fun onFolderItemClicked(item: GalleryFolderListItem) {
+        log.debug {
+            "onFolderItemClicked(): folder_item_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item.source != null) {
+            val uid = item.source.uid
+
+            log.debug {
+                "onFolderItemClicked(): opening_folder:" +
+                        "\nuid=$uid"
+            }
+
+            eventsSubject.onNext(
+                Event.OpenFolder(
+                    folderTitle = item.source.title,
+                    repositoryParams = SimpleGalleryMediaRepository.Params(
+                        searchConfig = SearchConfig.DEFAULT.copy(
+                            includePrivate = true,
+                            albumUid = uid,
+                        )
+                    )
+                )
+            )
+        }
+    }
+
     private fun onBackPressed() {
         log.debug {
             "onBackPressed(): handling_back_press"
@@ -169,6 +196,11 @@ class GalleryFoldersViewModel(
         object ShowFloatingLoadingFailedError : Event
 
         object Finish : Event
+
+        class OpenFolder(
+            val folderTitle: String,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
     }
 
     sealed interface Error {

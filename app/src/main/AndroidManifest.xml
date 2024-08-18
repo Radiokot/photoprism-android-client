@@ -212,6 +212,12 @@
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".features.gallery.folders.view.GalleryFolderActivity"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

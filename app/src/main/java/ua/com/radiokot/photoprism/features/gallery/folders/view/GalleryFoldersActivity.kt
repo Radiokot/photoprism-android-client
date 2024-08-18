@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.folders.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.Menu
@@ -19,9 +20,9 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryFoldersBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
@@ -87,7 +88,7 @@ class GalleryFoldersActivity : BaseActivity() {
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
                 onClickListener = { _, _, item: GalleryFolderListItem, _ ->
-                    // TODO handle click
+                    viewModel.onFolderItemClicked(item)
                     true
                 }
             }
@@ -140,7 +141,6 @@ class GalleryFoldersActivity : BaseActivity() {
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
-                            // TODO change message to folders
                             messageRes = R.string.failed_to_load_folders,
                             retryButtonTextRes = R.string.try_again,
                             retryButtonClickListener = viewModel::onRetryClicked
@@ -173,6 +173,12 @@ class GalleryFoldersActivity : BaseActivity() {
 
             is GalleryFoldersViewModel.Event.Finish ->
                 finish()
+
+            is GalleryFoldersViewModel.Event.OpenFolder ->
+                openFolder(
+                    folderTitle = event.folderTitle,
+                    repositoryParams = event.repositoryParams,
+                )
         }
 
         log.debug {
@@ -184,12 +190,26 @@ class GalleryFoldersActivity : BaseActivity() {
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(
             view.swipeRefreshLayout,
-            // TODO change message to folders
             getString(R.string.failed_to_load_folders),
             Snackbar.LENGTH_SHORT
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
             .show()
+    }
+
+    private fun openFolder(
+        folderTitle: String,
+        repositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
+        startActivity(
+            Intent(this, GalleryFolderActivity::class.java)
+                .putExtras(
+                    GalleryFolderActivity.getBundle(
+                        title = folderTitle,
+                        repositoryParams = repositoryParams,
+                    )
+                )
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -208,6 +228,5 @@ class GalleryFoldersActivity : BaseActivity() {
 
     companion object {
         private const val FALLBACK_LIST_SIZE = 100
-
     }
 }

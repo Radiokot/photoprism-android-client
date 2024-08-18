@@ -19,7 +19,7 @@ class GalleryFolderListItem(
     private val title: String,
     private val description: String,
     private val thumbnailUrl: String,
-    private val source: Any?,
+    val source: Album?,
 ) : AbstractItem<GalleryFolderListItem.ViewHolder>() {
 
     constructor(source: Album) : this(
