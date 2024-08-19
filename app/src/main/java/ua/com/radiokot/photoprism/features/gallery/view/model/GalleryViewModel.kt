@@ -1448,11 +1448,4 @@ class GalleryViewModel(
         class ResetToInitial(repository: SimpleGalleryMediaRepository) :
             MediaRepositoryChange(repository)
     }
-
-    private enum class DownloadSelectedFilesIntent {
-        RETURN,
-        SHARE,
-        DOWNLOAD_TO_EXTERNAL_STORAGE,
-        ;
-    }
 }

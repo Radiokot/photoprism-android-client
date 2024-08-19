@@ -1,21 +1,31 @@
 package ua.com.radiokot.photoprism.features.gallery.folders.view
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.forEach
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.addClickListener
+import com.mikepenz.fastadapter.listeners.addLongClickListener
 import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -24,11 +34,19 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
+import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderViewModel
+import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
+import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
+import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
+import ua.com.radiokot.photoprism.features.gallery.view.ShareSheetShareEventReceiver
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
@@ -45,6 +63,27 @@ class GalleryFolderActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onViewerResult,
     )
+    private val storagePermissionRequestLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            this::onStoragePermissionResult
+        )
+    private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
+    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
+        MediaFileSelectionView(
+            fragmentManager = supportFragmentManager,
+            lifecycleOwner = this
+        )
+    }
+    private val downloadProgressView: DownloadProgressView by lazy {
+        DownloadProgressView(
+            viewModel = viewModel.downloadMediaFileViewModel,
+            fragmentManager = supportFragmentManager,
+            errorSnackbarView = view.galleryRecyclerView,
+            lifecycleOwner = this
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,8 +105,14 @@ class GalleryFolderActivity : BaseActivity() {
         initToolbar()
         initSwipeRefresh()
         initErrorView()
+        initMediaFileSelection()
+        initMultipleSelection()
+        downloadProgressView.init()
 
         subscribeToEvents()
+
+        // Allow the view model to intercept back press.
+        onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
     private fun initToolbar() {
@@ -92,27 +137,131 @@ class GalleryFolderActivity : BaseActivity() {
 
     private fun initErrorView() {
         view.errorView.replaces(view.galleryRecyclerView)
-        viewModel.mainError.observe(this) { mainError ->
-            when (mainError) {
-                is GalleryFolderViewModel.Error.LoadingFailed ->
-                    view.errorView.showError(
-                        ErrorView.Error.General(
-                            message = mainError.localizedMessage,
-                            retryButtonText = getString(R.string.try_again),
-                            retryButtonClickListener = viewModel::onMainErrorRetryClicked
-                        )
-                    )
+        viewModel.mainError.observe(this) { error ->
+            if (error == null) {
+                view.errorView.hide()
+                return@observe
+            }
 
+            val errorToShow: ErrorView.Error = when (error) {
                 GalleryFolderViewModel.Error.NoMediaFound ->
-                    view.errorView.showError(
-                        ErrorView.Error.EmptyView(
-                            context = view.errorView.context,
-                            messageRes = R.string.no_media_found,
-                        )
+                    ErrorView.Error.EmptyView(
+                        messageRes = R.string.no_media_found,
+                        context = this,
                     )
 
-                null ->
-                    view.errorView.hide()
+                else ->
+                    ErrorView.Error.General(
+                        message = error.localizedMessage,
+                        retryButtonText = getString(R.string.try_again),
+                        retryButtonClickListener = viewModel::onMainErrorRetryClicked
+                    )
+            }
+
+            view.errorView.showError(errorToShow)
+        }
+    }
+
+    private fun initMediaFileSelection() {
+        mediaFileSelectionView.init { fileItem ->
+            if (fileItem.source != null) {
+                viewModel.onFileSelected(fileItem.source)
+            }
+        }
+    }
+
+    private fun initMultipleSelection() {
+        with(view.selectionBottomAppBar) {
+            setNavigationOnClickListener {
+                viewModel.onClearMultipleSelectionClicked()
+            }
+
+            menu.showOverflowItemIcons(isBottomBar = true)
+
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.share ->
+                        viewModel.onShareMultipleSelectionClicked()
+
+                    R.id.download ->
+                        viewModel.onDownloadMultipleSelectionClicked()
+
+                    R.id.archive ->
+                        viewModel.onArchiveMultipleSelectionClicked()
+
+                    R.id.delete ->
+                        viewModel.onDeleteMultipleSelectionClicked()
+                }
+
+                true
+            }
+
+            viewModel.state.subscribeBy { state ->
+                // The bottom bar visibility must be switched between Visible and Invisible,
+                // because Gone for an unknown reason causes FAB misplacement
+                // when switching from Viewing to Selecting 🤷🏻
+                isInvisible =
+                    state is GalleryFolderViewModel.State.Viewing
+
+                navigationIcon =
+                    if (state is GalleryFolderViewModel.State.Selecting && state.allowMultiple)
+                        ContextCompat.getDrawable(
+                            this@GalleryFolderActivity,
+                            R.drawable.ic_close
+                        )
+                    else
+                        null
+
+                updateMultipleSelectionMenuVisibility()
+            }
+        }
+
+        view.doneSelectingFab.setOnClickListener {
+            viewModel.onDoneMultipleSelectionClicked()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            ShareSheetShareEventReceiver.shareEvents.subscribeBy {
+                viewModel.onDownloadedFilesShared()
+            }.autoDispose(this)
+        }
+
+        viewModel.multipleSelectionItemsCount.observe(this) { count ->
+            view.selectionBottomAppBarTitleTextView.text =
+                if (count == 0)
+                    getString(R.string.select_content)
+                else
+                    count.toString()
+
+            updateMultipleSelectionMenuVisibility()
+        }
+
+        viewModel.state.subscribeBy { state ->
+            // The FAB is only used when selecting for other app,
+            // as selecting for user allows more than 1 action.
+            if (state is GalleryFolderViewModel.State.Selecting.ForOtherApp) {
+                viewModel.multipleSelectionItemsCount.observe(this@GalleryFolderActivity) { count ->
+                    if (count > 0) {
+                        view.doneSelectingFab.show()
+                    } else {
+                        view.doneSelectingFab.hide()
+                    }
+                }
+            } else {
+                view.doneSelectingFab.hide()
+            }
+        }.autoDispose(this)
+    }
+
+    private fun updateMultipleSelectionMenuVisibility() {
+        val multipleSelectionItemsCount = viewModel.multipleSelectionItemsCount.value ?: 0
+        val state = viewModel.currentState
+        val areUserSelectionItemsVisible =
+            multipleSelectionItemsCount > 0 && state is GalleryFolderViewModel.State.Selecting.ForUser
+
+        with(view.selectionBottomAppBar.menu) {
+            forEach { menuItem ->
+                menuItem.isVisible = areUserSelectionItemsVisible
             }
         }
     }
@@ -151,19 +300,40 @@ class GalleryFolderActivity : BaseActivity() {
                             listOf(viewHolder.itemView)
                     }
                 },
-                onClick = { _, _, _, item ->
+                onClick = { view, _, _, item ->
                     when (item) {
                         is GalleryListItem ->
-                            viewModel.onItemClicked(item)
+                            when (view.id) {
+                                R.id.view_button ->
+                                    viewModel.onItemViewButtonClicked(item)
+
+                                else ->
+                                    viewModel.onItemClicked(item)
+                            }
 
                         is GalleryLoadingFooterListItem ->
                             viewModel.onLoadingFooterLoadMoreClicked()
                     }
                 }
             )
+
+            addLongClickListener(
+                resolveView = { viewHolder: ViewHolder ->
+                    (viewHolder as? GalleryListItem.Media.ViewHolder)
+                        ?.itemView
+                },
+                onLongClick = { _, _, _, item ->
+                    if (item !is GalleryListItem.Media) {
+                        return@addLongClickListener false
+                    }
+
+                    viewModel.onItemLongClicked(item)
+                    true
+                }
+            )
         }
 
-        val itemScale = viewModel.itemScale
+        val itemScale = viewModel.itemScale.value!!
         val minItemWidthPx =
             resources.getDimensionPixelSize(R.dimen.list_item_gallery_media_min_size)
         val scaledMinItemWidthPx = ceil(minItemWidthPx * itemScale.factor)
@@ -315,6 +485,31 @@ class GalleryFolderActivity : BaseActivity() {
 
             is GalleryFolderViewModel.Event.ShowFloatingError ->
                 showFloatingError(event.error)
+
+            GalleryFolderViewModel.Event.OpenDeletingConfirmationDialog ->
+                openDeletingConfirmationDialog()
+
+            is GalleryFolderViewModel.Event.OpenFileSelectionDialog ->
+                openMediaFilesDialog(event.files)
+
+            GalleryFolderViewModel.Event.RequestStoragePermission ->
+                requestStoragePermission()
+
+            is GalleryFolderViewModel.Event.ReturnDownloadedFiles ->
+                returnDownloadedFiles(event.files)
+
+            is GalleryFolderViewModel.Event.ShareDownloadedFiles ->
+                shareDownloadedFiles(event.files)
+
+            GalleryFolderViewModel.Event.ShowFilesDownloadedMessage ->
+                showFloatingMessage(
+                    message = getString(R.string.files_saved_to_downloads),
+                )
+
+            GalleryFolderViewModel.Event.ShowMissingStoragePermissionMessage ->
+                showFloatingMessage(
+                    message = getString(R.string.error_storage_permission_is_required),
+                )
         }
 
         log.debug {
@@ -326,6 +521,11 @@ class GalleryFolderActivity : BaseActivity() {
     private fun showFloatingError(error: GalleryFolderViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
+            .show()
+    }
+
+    private fun showFloatingMessage(message: String) {
+        Snackbar.make(view.galleryRecyclerView, message, Snackbar.LENGTH_SHORT)
             .show()
     }
 
@@ -353,6 +553,95 @@ class GalleryFolderActivity : BaseActivity() {
         viewModel.onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex)
     }
 
+    private fun openDeletingConfirmationDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.gallery_deleting_confirmation)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                viewModel.onDeletingMultipleSelectionConfirmed()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+        mediaFileSelectionView.openMediaFileSelectionDialog(
+            fileItems = files.map {
+                MediaFileListItem(
+                    source = it,
+                    context = this
+                )
+            }
+        )
+    }
+
+    private fun returnDownloadedFiles(
+        filesToReturn: List<SendableFile>,
+    ) {
+        val resultIntent = fileReturnIntentCreator.createIntent(filesToReturn)
+        setResult(RESULT_OK, resultIntent)
+
+        log.debug {
+            "returnDownloadedFiles(): result_set_finishing:" +
+                    "\nintent=$resultIntent," +
+                    "\nfilesToReturnCount=${filesToReturn.size}"
+        }
+
+        finish()
+    }
+
+    private fun shareDownloadedFiles(
+        files: List<SendableFile>,
+    ) {
+        val resultIntent = fileReturnIntentCreator.createIntent(files)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // From Android 5.1 it is possible to get a callback on successful sharing,
+            // which is used to exit Selection once the files are shared.
+            val callbackPendingIntent = ShareSheetShareEventReceiver.getPendingIntent(this)
+
+            log.debug {
+                "shareDownloadedFiles(): starting_intent_with_callback:" +
+                        "\nintent=$resultIntent," +
+                        "\ncallbackPendingIntent=$callbackPendingIntent," +
+                        "\nfilesCount=${files.size}"
+            }
+
+            startActivity(
+                Intent.createChooser(
+                    resultIntent,
+                    getString(R.string.share),
+                    callbackPendingIntent.intentSender
+                )
+            )
+        } else {
+            // If there is no way to determine whether the files are shared,
+            // just assume they are once the dialog is opened.
+
+            log.debug {
+                "shareDownloadedFiles(): starting_intent:" +
+                        "\nintent=$resultIntent," +
+                        "\nfilesCount=${files.size}"
+            }
+
+            startActivity(
+                Intent.createChooser(
+                    resultIntent,
+                    getString(R.string.share),
+                )
+            )
+
+            viewModel.onDownloadedFilesShared()
+        }
+    }
+
+    private fun requestStoragePermission() {
+        storagePermissionRequestLauncher.launch(Unit)
+    }
+
+    private fun onStoragePermissionResult(isGranted: Boolean) {
+        viewModel.onStoragePermissionResult(isGranted)
+    }
+
     private val GalleryFolderViewModel.Error.localizedMessage: String
         get() = when (this) {
             is GalleryFolderViewModel.Error.LoadingFailed ->
@@ -363,8 +652,10 @@ class GalleryFolderActivity : BaseActivity() {
 
             GalleryFolderViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
-        }
 
+            GalleryFolderViewModel.Error.LibraryNotAccessible ->
+                getString(R.string.error_library_not_accessible_try_again)
+        }
 
     companion object {
         private const val FALLBACK_LIST_SIZE = 100

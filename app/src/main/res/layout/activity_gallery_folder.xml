@@ -40,4 +40,54 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        <!-- Invisible visibility is important for this FAB.
+        Without it there is no initial show animation -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/done_selecting_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/done_selecting"
+            android:tooltipText="@string/done_selecting"
+            android:visibility="invisible"
+            app:elevation="0dp"
+            app:layout_anchor="@id/selection_bottom_app_bar"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+            app:srcCompat="@drawable/ic_done"
+            tools:targetApi="o"
+            tools:visibility="visible" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/selection_bottom_app_bar"
+            style="@style/Widget.Material3.BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/selection_bottom_app_bar_height"
+            android:layout_gravity="bottom"
+            app:elevation="0dp"
+            app:fabAlignmentModeEndMargin="18dp"
+            app:fabAnchorMode="cradle"
+            app:menu="@menu/gallery_selecting"
+            app:menuAlignmentMode="auto"
+            app:navigationContentDescription="@string/clear_selection"
+            app:navigationIcon="@drawable/ic_close">
+
+            <TextView
+                android:id="@+id/selection_bottom_app_bar_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="72dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/select_content"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?colorOnSecondaryContainer" />
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

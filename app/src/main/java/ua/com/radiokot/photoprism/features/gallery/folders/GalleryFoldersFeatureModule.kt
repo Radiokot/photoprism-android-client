@@ -1,7 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery.folders
 
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
+import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderViewModel
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
@@ -22,7 +25,12 @@ val galleryFoldersFeatureModule = module {
         viewModel {
             GalleryFolderViewModel(
                 galleryMediaRepositoryFactory = get(),
+                internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
+                externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
+                downloadMediaFileViewModel = get(),
                 galleryPreferences = get(),
+                archiveGalleryMediaUseCase = get(),
+                deleteGalleryMediaUseCase = get(),
             )
         }
     }
