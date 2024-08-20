@@ -26,7 +26,7 @@
     <string name="open_with">Ouvrir avec</string>
     <string name="add_to_favorites">Ajouter aux favoris</string>
     <string name="remove_from_favorites">Supprimer des favoris</string>
-    <string name="failed_to_load_the_preview">Impossible de charger l'apperçu</string>
+    <string name="failed_to_load_the_preview">Impossible de charger l\'apperçu</string>
     <string name="failed_to_load_the_thumbnail">Impossible de charger la miniature</string>
     <string name="today">Aujourd\'hui</string>
     <string name="search_the_library">Rechercher dans la bibliothèque</string>
