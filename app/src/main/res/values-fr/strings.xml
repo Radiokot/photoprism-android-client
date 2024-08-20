@@ -20,13 +20,13 @@
     <string name="failed_to_download_file">Impossible de télécharger le fichier</string>
     <string name="select_content">Sélectionner du contenu</string>
     <string name="library">Bibliothèque</string>
-    <string name="preview_is_not_available">Preview non disponible</string>
+    <string name="preview_is_not_available">Apperçu non disponible</string>
     <string name="share">Partager</string>
     <string name="download">Télécharger</string>
     <string name="open_with">Ouvrir avec</string>
     <string name="add_to_favorites">Ajouter aux favoris</string>
     <string name="remove_from_favorites">Supprimer des favoris</string>
-    <string name="failed_to_load_the_preview">Impossible de charger la preview</string>
+    <string name="failed_to_load_the_preview">Impossible de charger l'apperçu</string>
     <string name="failed_to_load_the_thumbnail">Impossible de charger la miniature</string>
     <string name="today">Aujourd\'hui</string>
     <string name="search_the_library">Rechercher dans la bibliothèque</string>
@@ -46,7 +46,7 @@
     <string name="error_library_requires_credentials">La bibliothèque nécessite une authentification</string>
     <string name="error_invalid_password">Mot de passe invalide</string>
     <string name="template_error_failed_to_load_content">Impossible de charger le contenu: %1$s</string>
-    <string name="error_library_not_accessible_try_again">La bibliothèque n\\\'est pas accessible. Vérifiez la connexion et réessayez.</string>
+    <string name="error_library_not_accessible_try_again">La bibliothèque n\'est pas accessible. Vérifiez la connexion et réessayez.</string>
     <string name="try_again">Réessayez</string>
     <string name="load_more">Charger plus</string>
     <string name="template_started_download_file">Le fichier sera sauvegardé dans les Téléchargements: %1$s</string>
@@ -65,11 +65,11 @@
     <string name="include_private_content">Inclure le contenu privé</string>
     <string name="only_favorite_content">Seulement les favoris</string>
     <string name="client_certificate_optional">Certificat client (optionnel)</string>
-    <string name="clear">Nettoyer</string>
+    <string name="clear">Vider</string>
     <string name="how_to_use_client_certificate">Comment utiliser les certificats client</string>
     <string name="p12_certificate_guide">
-        1. Téléchargez votre paquet PKCS12 (.p12) sur le périphérique;\n\n
-        2. Installez le paquet en l\'ouvrant depuis un explorateur de fichiers. Utilisez le type \"VPN et applications\";\n\n
+        1. Téléchargez votre certificat PKCS12 (.p12) sur le périphérique;\n\n
+        2. Installez le certificat en l\'ouvrant depuis un explorateur de fichiers. Utilisez le type \"VPN et applications\";\n\n
         3. Revenez à la galerie et utilisez le certificat que vous venez d\'installer.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Plus</string>
@@ -87,14 +87,14 @@
     <string name="template_successfully_imported_search_bookmarks">Succès: %1$s</string>
     <string name="replace_current_bookmarks_with_saved">Remplacer les marque-pages actuels avec les marque-pages sauvegardés</string>
     <string name="save_current_bookmarks_to_file">Sauvegarder les marque-pages dans un fichier</string>
-    <string name="your_bookmarks_will_be_replaced">Vos marque-pages actuels seront remplacés. Continuer?</string>
+    <string name="your_bookmarks_will_be_replaced">Vos marque-pages actuels seront remplacés. Continuer ?</string>
     <string name="continuee">Continuer</string>
     <string name="disconnect_from_library">Se déconnecter</string>
-    <string name="disconnect_from_library_confirmation">Déconnexion de la bibliothèque ? Vos marque-pages seront conservés</string>
+    <string name="disconnect_from_library_confirmation">Se déconnecter de la bibliothèque ? Vos marque-pages seront conservés</string>
     <string name="template_error_failed_to_disconnect">Impossible de se déconnecter: %1$s</string>
     <string name="no_media_found">Pas de média trouvé</string>
     <string name="view_media">Voir</string>
-    <string name="open_in_web_viewer">Ouvrir dans une visionneuse web</string>
+    <string name="open_in_web_viewer">Ouvrir dans la visionneuse web</string>
     <string name="albums">Albums</string>
     <string name="loading_albums_progress">@string/loading_data_progress</string>
     <string name="reload_albums">@string/reload</string>
@@ -120,12 +120,12 @@
         ]]>
     </string>
     <string name="used_open_source_software">Logiciels open-source utilisés</string>
-    <string name="user_guides">Guide de l\'utilisateur</string>
+    <string name="user_guides">Guide utilisateur</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky et les contributeurs de GitHub</string>
     <string name="people">Personnes</string>
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
-    <string name="no_people_found">Pas de personnes trouvé</string>
+    <string name="no_people_found">Aucune personne trouvé</string>
     <string name="reload">Recharger</string>
     <string name="loading_data_progress">Chargement des données…</string>
     <string name="search_preferences">Rechercher</string>
@@ -171,7 +171,7 @@
     <string name="language_preference">Langue</string>
     <string name="paste">Coller</string>
     <string name="tfa_code_dialog_title">Code de vérification</string>
-    <string name="tfa_code_dialog_message">Entrez ou collez le code de l\'authentificateur</string>
+    <string name="tfa_code_dialog_message">Entrez ou collez le code d\'authentification</string>
     <string name="tfa_code_dialog_input_hint">Code</string>
     <string name="error_invalid_tfa_code">Code de vérification invalide</string>
     <string name="error_session_expired">La session a expiré. Pensez à utiliser un mot de passe dédié pour la galerie</string>
@@ -182,7 +182,7 @@
     <string name="extensions_preferences">Extensions</string>
     <string name="extensions_preferences_summary">Fonctionnalités supplémentaires pour la galerie</string>
     <string name="archive_action">Archiver</string>
-    <string name="media_viewer_deleting_confirmation">Supprimer cet élément définitivement ?</string>
+    <string name="media_viewer_deleting_confirmation">Supprimer définitivement cet élément ?</string>
     <string name="extension_store">Boutique d\'extensions</string>
     <string name="extension_store_preference">@string/extension_store</string>
     <string name="extension_store_title">@string/extension_store</string>
@@ -199,7 +199,7 @@
     <string name="key_activation_input_subtitle">Collez la clé que vous avez pour activer les extensions</string>
     <string name="key_activation_input_field_title">Clé</string>
     <string name="key_activation_error_device_mismatch">Cette clé n\'est pas attribuée à cet appareil</string>
-    <string name="key_activation_error_email_mismatch">Cette clé n\'est pas attribuée à vous</string>
+    <string name="key_activation_error_email_mismatch">Cette clé ne vous est pas attribuée</string>
     <string name="key_activation_error_invalid">Cette clé n\'est pas valide</string>
     <string name="key_activation_error_expired">Cette clé a expiré</string>
     <string name="key_activation_error_no_new_extensions">Cette clé n\'ajoute pas de nouvelles extensions</string>
@@ -208,18 +208,18 @@
     <string name="key_activation_success_subtitle">De nouvelles extensions ont été ajoutées à la galerie 😎</string>
     <string name="key_activation_success_done">Terminé</string>
     <string name="template_extensions_preferences_activated_extensions_for">%1$s pour %2$s</string>
-    <string name="gallery_deleting_confirmation">Supprimer les éléments sélectionnés définitivement ?</string>
+    <string name="gallery_deleting_confirmation">Supprimer définitivement les éléments sélectionnés ?</string>
     <string name="general_preferences">Général</string>
     <string name="import_notification_channel_name">@string/importt</string>
     <string name="import_notification_channel_description">Progression de l\'importation en arrière-plan</string>
-    <string name="import_notification_progress_title">Chargement des fichiers…</string>
-    <string name="import_notification_failed_title">Échec du téléchargement</string>
+    <string name="import_notification_progress_title">Import des fichiers…</string>
+    <string name="import_notification_failed_title">Échec de l\'import</string>
     <string name="import_notification_failed_text">Veuillez réessayer</string>
-    <string name="import_notification_success_title">Téléchargement réussi</string>
+    <string name="import_notification_success_title">Import réussi</string>
     <string name="import_start">Commencer</string>
     <string name="import_title">@string/importt</string>
     <string name="template_import_files_size">%1$s, %2$.2f Mo</string>
-    <string name="import_to_be_uploaded">À télécharger</string>
+    <string name="import_to_be_uploaded">À charger</string>
     <string name="import_started_in_background">Démarré en arrière-plan</string>
     <string name="import_notifications_permission_rationale">L\'autorisation d\'envoyer des notifications permet à l\'importation de s\'exécuter de manière fiable en arrière-plan</string>
     <string name="import_media_permission_rationale">L\'autorisation d\'accéder aux photos et vidéos empêche l\'effacement des données de géolocalisation des fichiers</string>
@@ -227,12 +227,12 @@
     <string name="import_albums_enter_album_title">Entrez le titre de l\'album</string>
     <string name="import_albums_not_selected">Non sélectionnés</string>
     <string name="photo_frame_widget_name">Cadre photo</string>
-    <string name="photo_frame_widget_description">Affiche une photo aléatoire qui change toutes les quelques heures</string>
+    <string name="photo_frame_widget_description">Affiche une photo qui change aléatoirement toutes les quelques heures</string>
     <string name="photo_frame_widget_configuration_photos_to_show">Photos</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Montrer toutes les photos</string>
     <string name="photo_frame_widget_configuration_shape">Forme</string>
     <string name="photo_frame_widget_configuration_show_date">Date</string>
-    <string name="photo_frame_widget_configuration_show_date_summary">Afficher la date de la prise</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Afficher la date de la prise de vue</string>
     <string name="extension_photo_frame_widget_name">Widget Сadre photo</string>
     <string name="extension_photo_frame_widget_description">Afficher des photos aléatoires de votre bibliothèque sur l\'écran d\'accueil</string>
     <string name="extension_store_item_acquire">Obtenir</string>
