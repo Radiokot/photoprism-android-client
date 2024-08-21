@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.Menu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
@@ -20,6 +21,7 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryFoldersBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
@@ -33,6 +35,10 @@ class GalleryFoldersActivity : BaseActivity() {
     private val log = kLogger("GalleryFoldersActivity")
     private lateinit var view: ActivityGalleryFoldersBinding
     private val viewModel: GalleryFoldersViewModel by viewModel()
+    private val folderLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::proxyOkResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,17 +206,17 @@ class GalleryFoldersActivity : BaseActivity() {
     private fun openFolder(
         folderTitle: String,
         repositoryParams: SimpleGalleryMediaRepository.Params,
-    ) {
-        startActivity(
-            Intent(this, GalleryFolderActivity::class.java)
-                .putExtras(
-                    GalleryFolderActivity.getBundle(
-                        title = folderTitle,
-                        repositoryParams = repositoryParams,
-                    )
+    ) = folderLauncher.launch(
+        Intent(this, GalleryFolderActivity::class.java)
+            .setAction(intent.action)
+            .putExtras(intent.extras ?: Bundle())
+            .putExtras(
+                GalleryFolderActivity.getBundle(
+                    title = folderTitle,
+                    repositoryParams = repositoryParams,
                 )
-        )
-    }
+            )
+    )
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_overview, menu)

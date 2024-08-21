@@ -92,11 +92,20 @@ class GalleryFolderActivity : BaseActivity() {
         setContentView(view.root)
 
         @Suppress("DEPRECATION")
-        viewModel.initViewingOnce(
-            repositoryParams = requireNotNull(intent.getParcelableExtra(REPO_PARAMS_EXTRA)) {
+        val repositoryParams: SimpleGalleryMediaRepository.Params =
+            requireNotNull(intent.getParcelableExtra(REPO_PARAMS_EXTRA)) {
                 "No repository params specified"
-            },
-        )
+            }
+        if (intent.action in setOf(Intent.ACTION_GET_CONTENT, Intent.ACTION_PICK)) {
+            viewModel.initSelectionForAppOnce(
+                repositoryParams = repositoryParams,
+                allowMultiple = intent.extras?.containsKey(Intent.EXTRA_ALLOW_MULTIPLE) == true,
+            )
+        } else {
+            viewModel.initViewingOnce(
+                repositoryParams = repositoryParams,
+            )
+        }
 
         // Init the list once it is laid out.
         view.galleryRecyclerView.doOnPreDraw {

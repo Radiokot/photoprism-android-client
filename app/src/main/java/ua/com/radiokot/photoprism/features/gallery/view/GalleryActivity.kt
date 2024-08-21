@@ -41,6 +41,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
@@ -50,6 +51,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFoldersActivity
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
@@ -139,6 +141,10 @@ class GalleryActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onWebViewerRedirectHandlingResult,
     )
+    private val foldersLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::proxyOkResult,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,6 +206,16 @@ class GalleryActivity : BaseActivity() {
 
         // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
+
+        // TODO for dev purposes
+        view.searchBar.setOnLongClickListener {
+            foldersLauncher.launch(
+                Intent(this, GalleryFoldersActivity::class.java)
+                    .putExtras(intent.extras ?: Bundle())
+                    .setAction(intent.action)
+            )
+            true
+        }
     }
 
     private fun subscribeToData() {

@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.text.TextUtils
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.SupportMenuInflater
@@ -16,7 +15,6 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFoldersActivity
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -55,12 +53,6 @@ class GallerySearchBarView(
     }
 
     private fun initBar() = with(searchBar) {
-        // TODO for dev purposes
-        setOnLongClickListener {
-            context.startActivity(Intent(context, GalleryFoldersActivity::class.java))
-            true
-        }
-
         setHint(
             if (tvDetector.isRunningOnTv)
                 R.string.use_mouse_to_search_the_library
