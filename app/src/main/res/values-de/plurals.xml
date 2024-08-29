@@ -5,7 +5,7 @@
         <item quantity="other">%1$d Lesezeichen importiert</item>
     </plurals>
     <plurals name="years_ago">
-        <item quantity="one">Vor Jahr</item>
+        <item quantity="one">Vor %1$d Jahr</item>
         <item quantity="other">Vor %1$d Jahren</item>
     </plurals>
     <plurals name="activated_extensions">
