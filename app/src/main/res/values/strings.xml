@@ -232,7 +232,7 @@
     <string name="import_albums_not_selected">Not selected</string>
     <string name="photo_frame_widget_name">Photo frame</string>
     <string name="photo_frame_widget_description">Shows a random photo changed once every few hours</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Photos</string>
+    <string name="photos">Photos</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Show all photos</string>
     <string name="photo_frame_widget_configuration_shape">Shape</string>
     <string name="photo_frame_widget_configuration_show_date">Date</string>
@@ -252,4 +252,5 @@
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
     <string name="no_folders_found">No folders found</string>
     <string name="failed_to_load_folders">Failed to load folders</string>
+    <string name="menu">Menu</string>
 </resources>

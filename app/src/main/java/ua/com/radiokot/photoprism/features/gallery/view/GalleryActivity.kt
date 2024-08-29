@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
@@ -658,7 +659,7 @@ class GalleryActivity : BaseActivity() {
         )
 
         view.searchBar.setNavigationOnClickListener {
-            viewModel.onPreferencesButtonClicked()
+            view.root.openDrawer(GravityCompat.START)
         }
     }
 

@@ -225,7 +225,7 @@
     <string name="import_albums_not_selected">Nicht ausgewählt</string>
     <string name="photo_frame_widget_name">Bilderrahmen</string>
     <string name="photo_frame_widget_description">Zeigt ein zufälliges Foto, das alle paar Stunden wechselt</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Fotos</string>
+    <string name="photos">Fotos</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Alle Fotos zeigen</string>
     <string name="photo_frame_widget_configuration_shape">Form</string>
     <string name="photo_frame_widget_configuration_show_date">Datum</string>

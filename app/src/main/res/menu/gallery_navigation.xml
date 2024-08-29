@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/all"
+        android:checkable="true"
+        android:checked="true"
+        android:icon="@drawable/ic_image"
+        android:title="@string/photos" />
+
+    <item
+        android:id="@+id/folders"
+        android:icon="@drawable/ic_folder"
+        android:title="@string/folders" />
+
+    <item
+        android:id="@+id/preferences"
+        android:icon="@drawable/ic_cog"
+        android:title="@string/preferences" />
+</menu>

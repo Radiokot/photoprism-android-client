@@ -1,117 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".features.gallery.view.GalleryActivity">
 
-    <ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/searchbar_scrolling_view_behavior"
-        tools:ignore="PrivateResource">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/gallery_recycler_view"
+        <ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
-            android:paddingTop="?actionBarSize"
-            android:paddingBottom="@dimen/selection_bottom_app_bar_height"
-            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:listitem="@layout/list_item_gallery_media" />
-    </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
+            app:layout_behavior="@string/searchbar_scrolling_view_behavior"
+            tools:ignore="PrivateResource">
 
-    <ua.com.radiokot.photoprism.view.ErrorView
-        android:id="@+id/error_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="?actionBarSize" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gallery_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/list_item_gallery_media_margin"
+                android:paddingTop="?actionBarSize"
+                android:paddingBottom="@dimen/selection_bottom_app_bar_height"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:listitem="@layout/list_item_gallery_media" />
+        </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start|center_vertical">
+        <ua.com.radiokot.photoprism.view.ErrorView
+            android:id="@+id/error_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="?actionBarSize" />
 
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/search_bar"
-            style="@style/Widget.Material3.SearchBar"
-            android:layout_width="@dimen/search_bar_width"
-            android:layout_height="48dp"
-            android:focusable="true"
-            android:hint="@string/search_the_library"
-            android:minHeight="0dp"
-            app:layout_scrollFlags="enterAlways"
-            app:navigationContentDescription="@string/preferences"
-            app:navigationIcon="@drawable/ic_dots_vertical"
-            app:navigationIconTint="?colorOnSurfaceVariant" />
-
-        <!-- enterAlways scroll flag keeps the search bar fixed -->
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Invisible visibility is important for this FAB.
-    Without it there is no initial show animation.
-    It also must be placed before the SearchView -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/done_selecting_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/done_selecting"
-        android:tooltipText="@string/done_selecting"
-        android:visibility="invisible"
-        app:elevation="0dp"
-        app:layout_anchor="@id/selection_bottom_app_bar"
-        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-        app:srcCompat="@drawable/ic_done"
-        tools:targetApi="o"
-        tools:visibility="visible" />
-
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/enter_the_query"
-        app:autoShowKeyboard="false"
-        app:layout_anchor="@id/search_bar">
-
-        <!-- It is important for this view to be in a CoordinatorLayout
-        and have an anchor-->
-
-        <include
-            android:id="@+id/search_content"
-            layout="@layout/view_gallery_search_config" />
-    </com.google.android.material.search.SearchView>
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/selection_bottom_app_bar"
-        style="@style/Widget.Material3.BottomAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/selection_bottom_app_bar_height"
-        android:layout_gravity="bottom"
-        app:elevation="0dp"
-        app:fabAlignmentModeEndMargin="18dp"
-        app:fabAnchorMode="cradle"
-        app:menu="@menu/gallery_selecting"
-        app:menuAlignmentMode="auto"
-        app:navigationContentDescription="@string/clear_selection"
-        app:navigationIcon="@drawable/ic_close">
-
-        <TextView
-            android:id="@+id/selection_bottom_app_bar_title_text_view"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="72dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/select_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:textColor="?colorOnSecondaryContainer" />
+            android:gravity="start|center_vertical">
 
-    </com.google.android.material.bottomappbar.BottomAppBar>
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
+                style="@style/Widget.Material3.SearchBar"
+                android:layout_width="@dimen/search_bar_width"
+                android:layout_height="48dp"
+                android:focusable="true"
+                android:hint="@string/search_the_library"
+                android:minHeight="0dp"
+                app:layout_scrollFlags="enterAlways"
+                app:navigationContentDescription="@string/menu"
+                app:navigationIcon="@drawable/ic_menu"
+                app:navigationIconTint="?colorOnSurfaceVariant" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <!-- enterAlways scroll flag keeps the search bar fixed -->
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Invisible visibility is important for this FAB.
+        Without it there is no initial show animation.
+        It also must be placed before the SearchView -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/done_selecting_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/done_selecting"
+            android:tooltipText="@string/done_selecting"
+            android:visibility="invisible"
+            app:elevation="0dp"
+            app:layout_anchor="@id/selection_bottom_app_bar"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+            app:srcCompat="@drawable/ic_done"
+            tools:targetApi="o"
+            tools:visibility="visible" />
+
+        <com.google.android.material.search.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/enter_the_query"
+            app:autoShowKeyboard="false"
+            app:layout_anchor="@id/search_bar">
+
+            <!-- It is important for this view to be in a CoordinatorLayout
+            and have an anchor-->
+
+            <include
+                android:id="@+id/search_content"
+                layout="@layout/view_gallery_search_config" />
+        </com.google.android.material.search.SearchView>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/selection_bottom_app_bar"
+            style="@style/Widget.Material3.BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/selection_bottom_app_bar_height"
+            android:layout_gravity="bottom"
+            app:elevation="0dp"
+            app:fabAlignmentModeEndMargin="18dp"
+            app:fabAnchorMode="cradle"
+            app:menu="@menu/gallery_selecting"
+            app:menuAlignmentMode="auto"
+            app:navigationContentDescription="@string/clear_selection"
+            app:navigationIcon="@drawable/ic_close">
+
+            <TextView
+                android:id="@+id/selection_bottom_app_bar_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="72dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/select_content"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?colorOnSecondaryContainer" />
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/include_gallery_navigation_header"
+        app:menu="@menu/gallery_navigation" />
+</androidx.drawerlayout.widget.DrawerLayout>

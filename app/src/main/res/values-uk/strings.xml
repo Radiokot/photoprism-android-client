@@ -227,7 +227,7 @@
     <string name="import_albums_not_selected">Не вибрано</string>
     <string name="photo_frame_widget_name">Фоторамка</string>
     <string name="photo_frame_widget_description">Показує випадкове фото, що змінюється кожні кілька годин</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Фотографії</string>
+    <string name="photos">Фотографії</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Показувати всі фотографії</string>
     <string name="photo_frame_widget_configuration_shape">Форма</string>
     <string name="photo_frame_widget_configuration_show_date">Дата</string>

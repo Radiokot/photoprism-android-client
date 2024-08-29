@@ -114,7 +114,7 @@ class MemoriesNotificationsManager(
                     setStyle(
                         NotificationCompat.BigPictureStyle()
                             .bigPicture(bigPicture)
-                            .bigLargeIcon(null)
+                            .bigLargeIcon(null as Bitmap?)
                     )
                 }
             }

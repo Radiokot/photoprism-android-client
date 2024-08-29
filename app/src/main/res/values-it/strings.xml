@@ -227,7 +227,7 @@
     <string name="import_albums_not_selected">Non selezionati</string>
     <string name="photo_frame_widget_name">Cornice fotografica</string>
     <string name="photo_frame_widget_description">Mostra una foto casuale che cambia ogni poche ore</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Foto</string>
+    <string name="photos">Foto</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Mostra tutte le foto</string>
     <string name="photo_frame_widget_configuration_shape">Forma</string>
     <string name="photo_frame_widget_configuration_show_date">Data</string>

@@ -227,7 +227,7 @@
     <string name="import_albums_not_selected">Δεν επιλέχθηκαν</string>
     <string name="photo_frame_widget_name">Κορνίζα φωτογραφίας</string>
     <string name="photo_frame_widget_description">Εμφανίζει μια τυχαία φωτογραφία που αλλάζει κάθε λίγες ώρες</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Φωτογραφίες</string>
+    <string name="photos">Φωτογραφίες</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Εμφάνιση όλων των φωτογραφιών</string>
     <string name="photo_frame_widget_configuration_shape">Σχήμα</string>
     <string name="photo_frame_widget_configuration_show_date">Ημερομηνία</string>

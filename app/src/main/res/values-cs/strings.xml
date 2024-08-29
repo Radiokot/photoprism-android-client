@@ -228,7 +228,7 @@
     <string name="import_albums_not_selected">Nevybráno</string>
     <string name="photo_frame_widget_name">Fotorámeček</string>
     <string name="photo_frame_widget_description">Zobrazuje náhodnou fotografii, která se mění každých několik hodin</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Fotografie</string>
+    <string name="photos">Fotografie</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Zobrazit všechny fotografie</string>
     <string name="photo_frame_widget_configuration_shape">Tvar</string>
     <string name="photo_frame_widget_configuration_show_date">Datum</string>

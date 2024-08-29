@@ -228,7 +228,7 @@
     <string name="import_albums_not_selected">Non sélectionnés</string>
     <string name="photo_frame_widget_name">Cadre photo</string>
     <string name="photo_frame_widget_description">Affiche une photo qui change aléatoirement toutes les quelques heures</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Photos</string>
+    <string name="photos">Photos</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Montrer toutes les photos</string>
     <string name="photo_frame_widget_configuration_shape">Forme</string>
     <string name="photo_frame_widget_configuration_show_date">Date</string>

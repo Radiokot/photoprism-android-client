@@ -227,7 +227,7 @@
     <string name="import_albums_not_selected">未選取</string>
     <string name="photo_frame_widget_name">相框</string>
     <string name="photo_frame_widget_description">顯示每隔幾小時更換一次的隨機照片</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">照片</string>
+    <string name="photos">照片</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">顯示所有照片</string>
     <string name="photo_frame_widget_configuration_shape">形狀</string>
     <string name="photo_frame_widget_configuration_show_date">日期</string>

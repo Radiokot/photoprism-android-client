@@ -227,7 +227,7 @@
     <string name="import_albums_not_selected">Seçilmedi</string>
     <string name="photo_frame_widget_name">Fotoğraf çerçevesi</string>
     <string name="photo_frame_widget_description">Rastgele bir fotoğraf gösterir ve her birkaç saatte bir değişir</string>
-    <string name="photo_frame_widget_configuration_photos_to_show">Fotoğraflar</string>
+    <string name="photos">Fotoğraflar</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Tüm fotoğraflar gösteriliyor</string>
     <string name="photo_frame_widget_configuration_shape">Şekil</string>
     <string name="photo_frame_widget_configuration_show_date">Tarih</string>
