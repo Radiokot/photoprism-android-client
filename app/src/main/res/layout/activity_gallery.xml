@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:elevation="0dp"
     tools:context=".features.gallery.view.GalleryActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -123,6 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:drawerLayoutCornerSize="0dp"
         app:headerLayout="@layout/include_gallery_navigation_header"
         app:menu="@menu/gallery_navigation" />
 </androidx.drawerlayout.widget.DrawerLayout>
