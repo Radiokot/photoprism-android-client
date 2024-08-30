@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to browse folders
+
 ### Fixed
 
 - Not showing newly created albums on subsequent imports
@@ -19,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The search bar has been made thinner
 - Memories are no longer shown on top when the gallery is started
   from another app to select pictures
+- Preferences are now opened from the navigation menu
 
 ## [1.29.0] - 2024-08-11
 
