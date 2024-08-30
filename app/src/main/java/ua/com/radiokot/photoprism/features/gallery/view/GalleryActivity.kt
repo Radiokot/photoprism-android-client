@@ -196,6 +196,7 @@ class GalleryActivity : BaseActivity() {
         initMediaFileSelection()
         downloadProgressView.init()
         initSearch()
+        initNavigation()
         initErrorView()
         initMultipleSelection()
         initSwipeRefresh()
@@ -207,16 +208,6 @@ class GalleryActivity : BaseActivity() {
 
         // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
-
-        // TODO for dev purposes
-        view.searchBar.setOnLongClickListener {
-            foldersLauncher.launch(
-                Intent(this, GalleryFoldersActivity::class.java)
-                    .putExtras(intent.extras ?: Bundle())
-                    .setAction(intent.action)
-            )
-            true
-        }
     }
 
     private fun subscribeToData() {
@@ -350,6 +341,10 @@ class GalleryActivity : BaseActivity() {
 
                 is GalleryViewModel.Event.OpenPreferences -> {
                     openPreferences()
+                }
+
+                is GalleryViewModel.Event.OpenFolders -> {
+                    openFolders()
                 }
 
                 is GalleryViewModel.Event.EnsureListItemVisible -> {
@@ -663,6 +658,15 @@ class GalleryActivity : BaseActivity() {
         }
     }
 
+    private fun initNavigation() {
+        GalleryNavigationView(
+            viewModel = viewModel,
+        ).init(
+            drawerLayout = view.root,
+            navigationView = view.navigationView,
+        )
+    }
+
     private fun initErrorView() {
         view.errorView.replaces(view.galleryRecyclerView)
     }
@@ -826,6 +830,14 @@ class GalleryActivity : BaseActivity() {
 
     private fun openPreferences() {
         startActivity(Intent(this, PreferencesActivity::class.java))
+    }
+
+    private fun openFolders() {
+        foldersLauncher.launch(
+            Intent(this, GalleryFoldersActivity::class.java)
+                .putExtras(intent.extras ?: Bundle())
+                .setAction(intent.action)
+        )
     }
 
     private fun resetScroll() {

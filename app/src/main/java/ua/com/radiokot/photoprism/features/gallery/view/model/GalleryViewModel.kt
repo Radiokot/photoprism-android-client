@@ -976,6 +976,10 @@ class GalleryViewModel(
         eventsSubject.onNext(Event.OpenPreferences)
     }
 
+    fun onFoldersClicked() {
+        eventsSubject.onNext(Event.OpenFolders)
+    }
+
     fun onClearMultipleSelectionClicked() {
         val currentState = this.currentState
 
@@ -1343,6 +1347,8 @@ class GalleryViewModel(
         class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event
+
+        object OpenFolders : Event
 
         /**
          * Ensure that the given item of the [itemsList] is visible on the screen.
