@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Memories are no longer shown on top when the gallery is started
   from another app to select pictures
 - Preferences are now opened from the navigation menu
+- Updated video player library. If you have playback problems,
+  consider checking out this version
 
 ## [1.29.0] - 2024-08-11
 
