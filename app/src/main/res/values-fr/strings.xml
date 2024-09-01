@@ -245,5 +245,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menu</string>
+    <string name="no_folders_found">Aucun dossier trouvé</string>
+    <string name="failed_to_load_folders">Échec du chargement des dossiers</string>
 
 </resources>

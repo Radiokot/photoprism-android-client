@@ -244,5 +244,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menü</string>
+    <string name="no_folders_found">Klasör bulunamadı</string>
+    <string name="failed_to_load_folders">Klasörler yüklenemedi</string>
 
 </resources>

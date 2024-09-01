@@ -244,5 +244,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Меню</string>
+    <string name="no_folders_found">Папки не найдены</string>
+    <string name="failed_to_load_folders">Не удалось загрузить папки</string>
 
 </resources>

@@ -244,5 +244,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">菜單</string>
+    <string name="no_folders_found">未找到資料夾</string>
+    <string name="failed_to_load_folders">加載資料夾失敗</string>
 
 </resources>

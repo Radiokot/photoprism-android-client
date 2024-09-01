@@ -244,5 +244,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Μενού</string>
+    <string name="no_folders_found">Δεν βρέθηκαν φάκελοι</string>
+    <string name="failed_to_load_folders">Αποτυχία φόρτωσης φακέλων</string>
 
 </resources>

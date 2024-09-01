@@ -244,5 +244,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menu</string>
+    <string name="no_folders_found">Nessuna cartella trovata</string>
+    <string name="failed_to_load_folders">Caricamento delle cartelle non riuscito</string>
 
 </resources>

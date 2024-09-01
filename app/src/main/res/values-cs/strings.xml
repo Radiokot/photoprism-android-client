@@ -6,7 +6,7 @@
 
     <string name="media_type_image">Obrázek</string>
     <string name="media_type_animated">Animace</string>
-    <string name="media_type_live">Živá fotka</string>
+    <string name="media_type_live">Živé foto</string>
     <string name="media_type_video">Video</string>
     <string name="media_type_vector">Vektor</string>
     <string name="media_type_sidecar">Postranní soubor</string>
@@ -245,5 +245,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menu</string>
+    <string name="no_folders_found">Žádné složky nebyly nalezeny</string>
+    <string name="failed_to_load_folders">Nepodařilo se načíst složky</string>
 
 </resources>

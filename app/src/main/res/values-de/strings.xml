@@ -242,5 +242,8 @@
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menü</string>
+    <string name="no_folders_found">Keine Ordner gefunden</string>
+    <string name="failed_to_load_folders">Ordner konnten nicht geladen werden</string>
 
 </resources>
