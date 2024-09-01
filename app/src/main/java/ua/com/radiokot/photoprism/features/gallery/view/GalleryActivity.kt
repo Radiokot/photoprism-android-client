@@ -11,10 +11,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -39,6 +39,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
+import ua.com.radiokot.photoprism.databinding.IncludeActivityGalleryContentBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -73,7 +74,8 @@ import kotlin.math.roundToInt
 
 
 class GalleryActivity : BaseActivity() {
-    private lateinit var view: ActivityGalleryBinding
+    private lateinit var rootView: ActivityGalleryBinding
+    private lateinit var view: IncludeActivityGalleryContentBinding
     private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
     private var isBackButtonJustPressed = false
@@ -186,8 +188,9 @@ class GalleryActivity : BaseActivity() {
             viewModel.initViewingOnce()
         }
 
-        view = ActivityGalleryBinding.inflate(layoutInflater)
-        setContentView(view.root)
+        rootView = ActivityGalleryBinding.inflate(layoutInflater)
+        view = IncludeActivityGalleryContentBinding.bind(rootView.contentLayout)
+        setContentView(rootView.root)
 
         subscribeToData()
         subscribeToEvents()
@@ -652,19 +655,33 @@ class GalleryActivity : BaseActivity() {
         searchBarView.init(
             searchBar = view.searchBar,
         )
-
-        view.searchBar.setNavigationOnClickListener {
-            view.root.openDrawer(GravityCompat.START)
-        }
     }
 
     private fun initNavigation() {
         GalleryNavigationView(
             viewModel = viewModel,
-        ).init(
-            drawerLayout = view.root,
-            navigationView = view.navigationView,
-        )
+        ).apply {
+            val drawerLayout = rootView.root as? DrawerLayout
+            val navigationView = rootView.navigationView
+            val navigationRail = rootView.navigationRail
+
+            when {
+                drawerLayout != null && navigationView != null ->
+                    initWithDrawer(
+                        drawerLayout = drawerLayout,
+                        navigationView = navigationView,
+                        searchBarView = searchBarView,
+                    )
+
+                navigationRail != null ->
+                    initWithRail(
+                        navigationRail = navigationRail,
+                    )
+
+                else ->
+                    error("The layout must have a navigation view")
+            }
+        }
     }
 
     private fun initErrorView() {
@@ -943,7 +960,7 @@ class GalleryActivity : BaseActivity() {
             KeyEvent.KEYCODE_TV_INPUT_COMPOSITE_1, // "Context menu" button
             KeyEvent.KEYCODE_CHANNEL_DOWN,
         ) -> {
-            viewModel.onPreferencesButtonClicked()
+            viewModel.onPreferencesClicked()
             true
         }
 

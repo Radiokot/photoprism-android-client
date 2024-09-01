@@ -972,7 +972,7 @@ class GalleryViewModel(
         loadMore()
     }
 
-    fun onPreferencesButtonClicked() {
+    fun onPreferencesClicked() {
         eventsSubject.onNext(Event.OpenPreferences)
     }
 

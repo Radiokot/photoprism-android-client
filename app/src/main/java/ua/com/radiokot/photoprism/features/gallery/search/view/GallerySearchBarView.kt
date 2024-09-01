@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.text.TextUtils
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.SupportMenuInflater
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.search.SearchBar
 import com.squareup.picasso.Picasso
@@ -144,4 +145,12 @@ class GallerySearchBarView(
                     "\nstate=$state"
         }
     }.autoDispose(this)
+
+    fun addNavigationMenuIcon(onClicked: () -> Unit) = with(searchBar){
+        navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_menu)
+        navigationContentDescription = context.getString(R.string.menu)
+        setNavigationOnClickListener {
+            onClicked()
+        }
+    }
 }

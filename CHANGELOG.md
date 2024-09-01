@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Navigation menu
 - Ability to browse folders
 
 ### Fixed
@@ -16,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Not showing newly created albums on subsequent imports
 - Dismiss gesture interfering with zoom in the media viewer on some devices.
   If you often close a photo while trying to zoom it, this will help.
-- Some strings in French
+- Some strings in French and German
 
 ### Changed
 
