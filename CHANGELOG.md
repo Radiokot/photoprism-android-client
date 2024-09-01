@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.30.0] - 2024-09-01
 
 ### Added
 
@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Not showing newly created albums on subsequent imports
 - Dismiss gesture interfering with zoom in the media viewer on some devices.
-  If you often close a photo while trying to zoom it, this will help.
+  If you often close a photo while trying to zoom it, this will help
 - Some strings in French and German
 
 ### Changed
@@ -640,7 +640,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the
   `PHOTOPRISM_SITE_URL` server config value
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.29.0(44)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.30.0(45)...HEAD
+
+[1.30.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.29.0(44)...1.30.0(45)
 
 [1.29.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.1(43)...1.29.0(44)
 
