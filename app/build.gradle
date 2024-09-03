@@ -253,9 +253,9 @@ project.afterEvaluate {
 // Prevent building bundles for build types not meant for Google Play.
 project.afterEvaluate {
     tasks.each { task ->
-        if (task.name.startsWith("bundle")
-                && !task.name.startsWith("bundleReleasePlay")
-                && !task.name.endsWith("CompileJar")) {
+        if (task.name.startsWith("package")
+                && task.name.endsWith("Bundle")
+                && !task.name.endsWith("ReleasePlayBundle")) {
             task.doFirst {
                 throw new IllegalStateException("Only 'releasePlay' type builds can be published to Google Play")
             }
