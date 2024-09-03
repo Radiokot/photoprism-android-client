@@ -5,6 +5,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -14,6 +16,8 @@ import org.koin.core.scope.Scope
 import org.koin.core.scope.ScopeCallback
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.cast
 
 fun <T : Any> Callable<out T>.toSingle(): Single<T> = Single.fromCallable(this)
@@ -84,4 +88,61 @@ private class ScopeDisposable(obj: Disposable) :
  */
 fun <T : Disposable> T.autoDispose(scope: Scope) = apply {
     scope.registerCallback(ScopeDisposable(this))
+}
+
+/**
+ * An [Observable.retry] with [times] which has a delay before resubscribing.
+ *
+ * @see [Observable.retry]
+ */
+fun <T : Any> Observable<T>.retryWithDelay(
+    times: Int,
+    delay: Long,
+    unit: TimeUnit,
+) = retryWhen { errors ->
+    val retries = AtomicInteger(0)
+    errors.flatMap { error ->
+        if (retries.incrementAndGet() > times)
+            Observable.error<Throwable>(error)
+        else
+            Observable.timer(delay, unit)
+    }
+}
+
+/**
+ * A [Single.retry] with [times] which has a delay before resubscribing.
+ *
+ * @see [Single.retry]
+ */
+fun <T : Any> Single<T>.retryWithDelay(
+    times: Int,
+    delay: Long,
+    unit: TimeUnit,
+) = retryWhen { errors ->
+    val retries = AtomicInteger(0)
+    errors.flatMap { error ->
+        if (retries.incrementAndGet() > times)
+            Flowable.error<Throwable>(error)
+        else
+            Flowable.timer(delay, unit)
+    }
+}
+
+/**
+ * A [Completable.retry] with [times] which has a delay before resubscribing.
+ *
+ * @see [Completable.retry]
+ */
+fun Completable.retryWithDelay(
+    times: Int,
+    delay: Long,
+    unit: TimeUnit,
+) = retryWhen { errors ->
+    val retries = AtomicInteger(0)
+    errors.flatMap { error ->
+        if (retries.incrementAndGet() > times)
+            Flowable.error<Throwable>(error)
+        else
+            Flowable.timer(delay, unit)
+    }
 }
