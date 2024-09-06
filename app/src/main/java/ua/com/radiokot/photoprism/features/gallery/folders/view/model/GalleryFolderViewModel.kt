@@ -257,7 +257,7 @@ class GalleryFolderViewModel(
         val areViewButtonsVisible = currentState is State.Selecting
         val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
 
-        val newListItems = galleryMediaList.mapIndexed { i, galleryMedia ->
+        val newListItems = galleryMediaList.mapIndexed { _, galleryMedia ->
             GalleryListItem.Media(
                 source = galleryMedia,
                 isViewButtonVisible = areViewButtonsVisible,
@@ -275,6 +275,8 @@ class GalleryFolderViewModel(
             currentMediaRepository.updateIfNotFresh()
         } else {
             currentMediaRepository.update()
+            eventsSubject.onNext(Event.ResetScroll)
+
         }
     }
 
@@ -861,14 +863,6 @@ class GalleryFolderViewModel(
         update(force = true)
     }
 
-    fun onWebViewerHandledRedirect() {
-        log.debug {
-            "onWebViewerHandledRedirect(): force_updating"
-        }
-
-        update(force = true)
-    }
-
     sealed interface State {
         /**
          * Viewing the gallery content.
@@ -928,6 +922,12 @@ class GalleryFolderViewModel(
         class ShareDownloadedFiles(
             val files: List<SendableFile>,
         ) : Event
+
+
+        /**
+         * Reset the scroll (to the top) and the infinite scrolling.
+         */
+        object ResetScroll : Event
 
         class OpenViewer(
             val mediaIndex: Int,

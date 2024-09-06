@@ -59,6 +59,7 @@ class GalleryFolderActivity : BaseActivity() {
     private lateinit var view: ActivityGalleryFolderBinding
     private val viewModel: GalleryFolderViewModel by viewModel()
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
+    private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private val viewerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onViewerResult,
@@ -402,7 +403,7 @@ class GalleryFolderActivity : BaseActivity() {
             adapter = galleryAdapter
             layoutManager = gridLayoutManager
 
-            val endlessScrollListener = object : EndlessRecyclerOnScrollListener(
+            endlessScrollListener = object : EndlessRecyclerOnScrollListener(
                 footerAdapter = galleryProgressFooterAdapter,
                 layoutManager = gridLayoutManager,
                 visibleThreshold = gridLayoutManager.spanCount * 5
@@ -492,6 +493,10 @@ class GalleryFolderActivity : BaseActivity() {
                 }
             }
 
+            is GalleryFolderViewModel.Event.ResetScroll -> {
+                resetScroll()
+            }
+
             is GalleryFolderViewModel.Event.ShowFloatingError ->
                 showFloatingError(event.error)
 
@@ -526,6 +531,17 @@ class GalleryFolderActivity : BaseActivity() {
                     "\nevent=$event"
         }
     }.autoDispose(this)
+
+    private fun resetScroll() {
+        log.debug {
+            "resetScroll(): resetting_scroll"
+        }
+
+        with(view.galleryRecyclerView) {
+            scrollToPosition(0)
+            endlessScrollListener.resetPageCount(0)
+        }
+    }
 
     private fun showFloatingError(error: GalleryFolderViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
