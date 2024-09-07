@@ -292,10 +292,13 @@ class GalleryActivity : BaseActivity() {
             updateMultipleSelectionMenuVisibility()
         }
 
-        viewModel.itemScale.observeOnMain().subscribe(this) { itemScale ->
+        viewModel.itemScale.observeOnMain()
+            .subscribe(this) { itemScale ->
             if (currentListItemScale != null && itemScale != currentListItemScale) {
                 // Will not do for pinch gesture.
-                recreate()
+                lifecycleScope.launchWhenResumed {
+                    recreate()
+                }
             }
         }
 
