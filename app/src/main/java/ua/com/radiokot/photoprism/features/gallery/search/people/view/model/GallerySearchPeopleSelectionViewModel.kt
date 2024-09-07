@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
@@ -23,7 +23,7 @@ class GallerySearchPeopleSelectionViewModel(
     private var isInitialized: Boolean = false
 
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
 
     /**
      * Non-null set of the selected person IDs, **empty** if nothing is selected.

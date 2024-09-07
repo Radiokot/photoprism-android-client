@@ -43,10 +43,11 @@ import ua.com.radiokot.photoprism.databinding.IncludeActivityGalleryContentBindi
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
@@ -232,7 +233,7 @@ class GalleryActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.toMainThreadObservable().subscribeBy { newItems ->
+        viewModel.itemList.observeOnMain().subscribe(this) { newItems ->
             FastAdapterDiffUtil.setBetter(
                 recyclerView = view.galleryRecyclerView,
                 adapter = galleryItemsAdapter,
@@ -240,7 +241,7 @@ class GalleryActivity : BaseActivity() {
                 callback = diffCallback,
                 detectMoves = false,
             )
-        }.autoDispose(this)
+        }
 
         viewModel.mainError.observe(this) { error ->
             if (error == null) {
@@ -281,7 +282,7 @@ class GalleryActivity : BaseActivity() {
             view.errorView.showError(errorToShow)
         }
 
-        viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
+        viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
             view.selectionBottomAppBarTitleTextView.text =
                 if (count == 0)
                     getString(R.string.select_content)
@@ -289,14 +290,14 @@ class GalleryActivity : BaseActivity() {
                     count.toString()
 
             updateMultipleSelectionMenuVisibility()
-        }.autoDispose(this)
+        }
 
-        viewModel.itemScale.toMainThreadObservable().subscribeBy { itemScale ->
+        viewModel.itemScale.observeOnMain().subscribe(this) { itemScale ->
             if (currentListItemScale != null && itemScale != currentListItemScale) {
                 // Will not do for pinch gesture.
                 recreate()
             }
-        }.autoDispose(this)
+        }
 
         viewModel.extensionsState
             .skip(1)
@@ -310,7 +311,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun subscribeToEvents() {
-        viewModel.itemListEvents.toMainThreadObservable().subscribeBy { event->
+        viewModel.itemListEvents.observeOnMain().subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_list_event:" +
                         "\nevent=$event"
@@ -339,8 +340,9 @@ class GalleryActivity : BaseActivity() {
                 "subscribeToEvents(): handled_list_event:" +
                         "\nevent=$event"
             }
-        }.autoDispose(this)
-        viewModel.events.subscribe { event ->
+        }
+
+        viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
                         "\nevent=$event"
@@ -406,59 +408,57 @@ class GalleryActivity : BaseActivity() {
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.autoDispose(this)
+        }
     }
 
-    private fun subscribeToState() {
-        viewModel.state.subscribeBy { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
+        log.debug {
+            "subscribeToState(): received_new_state:" +
+                    "\nstate=$state"
+        }
+
+        title = when (state) {
+            is GalleryViewModel.State.Selecting ->
+                getString(R.string.select_content)
+
+            GalleryViewModel.State.Viewing ->
+                getString(R.string.library)
+        }
+
+        with(view.selectionBottomAppBar) {
+            // The bottom bar visibility must be switched between Visible and Invisible,
+            // because Gone for an unknown reason causes FAB misplacement
+            // when switching from Viewing to Selecting 🤷🏻
+            isInvisible =
+                state is GalleryViewModel.State.Viewing
+
+            navigationIcon =
+                if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
+                    ContextCompat.getDrawable(this@GalleryActivity, R.drawable.ic_close)
+                else
+                    null
+
+            updateMultipleSelectionMenuVisibility()
+        }
+
+        // The FAB is only used when selecting for other app,
+        // as selecting for user allows more than 1 action.
+        if (state is GalleryViewModel.State.Selecting.ForOtherApp) {
+            viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
+                if (count > 0) {
+                    view.doneSelectingFab.show()
+                } else {
+                    view.doneSelectingFab.hide()
+                }
             }
+        } else {
+            view.doneSelectingFab.hide()
+        }
 
-            title = when (state) {
-                is GalleryViewModel.State.Selecting ->
-                    getString(R.string.select_content)
-
-                GalleryViewModel.State.Viewing ->
-                    getString(R.string.library)
-            }
-
-            with(view.selectionBottomAppBar) {
-                // The bottom bar visibility must be switched between Visible and Invisible,
-                // because Gone for an unknown reason causes FAB misplacement
-                // when switching from Viewing to Selecting 🤷🏻
-                isInvisible =
-                    state is GalleryViewModel.State.Viewing
-
-                navigationIcon =
-                    if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
-                        ContextCompat.getDrawable(this@GalleryActivity, R.drawable.ic_close)
-                    else
-                        null
-
-                updateMultipleSelectionMenuVisibility()
-            }
-
-            // The FAB is only used when selecting for other app,
-            // as selecting for user allows more than 1 action.
-            if (state is GalleryViewModel.State.Selecting.ForOtherApp) {
-                viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
-                    if (count > 0) {
-                        view.doneSelectingFab.show()
-                    } else {
-                        view.doneSelectingFab.hide()
-                    }
-                }.autoDispose(this@GalleryActivity)
-            } else {
-                view.doneSelectingFab.hide()
-            }
-
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToState(): handled_new_state:" +
+                    "\nstate=$state"
+        }
     }
 
     private fun initList(savedInstanceState: Bundle?) {
@@ -730,9 +730,9 @@ class GalleryActivity : BaseActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            ShareSheetShareEventReceiver.shareEvents.subscribeBy {
+            ShareSheetShareEventReceiver.shareEvents.subscribe(this) {
                 viewModel.onDownloadedFilesShared()
-            }.autoDispose(this)
+            }
         }
     }
 

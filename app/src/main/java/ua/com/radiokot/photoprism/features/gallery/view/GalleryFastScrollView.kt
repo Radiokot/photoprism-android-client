@@ -12,7 +12,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.Predicate
@@ -22,9 +21,9 @@ import org.koin.core.qualifier.named
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.UTC_MONTH_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMonthScrollBubble
 import java.text.DateFormat
@@ -152,33 +151,29 @@ class GalleryFastScrollView(
         }
     }
 
-    private fun subscribeToViewEvents() {
-        viewModel.events
-            .subscribeBy { event ->
-                log.debug {
-                    "subscribeToViewEvents(): received_new_event:" +
-                            "\nevent=$event"
-                }
+    private fun subscribeToViewEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToViewEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-                when (event) {
-                    is GalleryFastScrollViewModel.Event.Reset -> {
-                        resetScroll()
-                    }
-
-                    else -> {
-                        "subscribeToFastScroll(): skipped_new_event:" +
-                                "\nevent=$event"
-
-                        return@subscribeBy
-                    }
-                }
-
-                log.debug {
-                    "subscribeToFastScroll(): handled_new_event:" +
-                            "\nevent=$event"
-                }
+        when (event) {
+            is GalleryFastScrollViewModel.Event.Reset -> {
+                resetScroll()
             }
-            .autoDispose(this)
+
+            else -> {
+                "subscribeToFastScroll(): skipped_new_event:" +
+                        "\nevent=$event"
+
+                return@subscribe
+            }
+        }
+
+        log.debug {
+            "subscribeToFastScroll(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     private fun resetScroll() {

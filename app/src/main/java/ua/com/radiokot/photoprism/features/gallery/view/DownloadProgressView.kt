@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadProgressViewModel
 
 class DownloadProgressView(
@@ -30,39 +30,36 @@ class DownloadProgressView(
         }
     }
 
-    private fun subscribeToState() {
-        viewModel.downloadState.subscribe { state ->
-            when (state) {
-                DownloadProgressViewModel.State.Idle ->
-                    dismissDownloadProgress()
+    private fun subscribeToState() = viewModel.downloadState.subscribe(this) { state ->
+        when (state) {
+            DownloadProgressViewModel.State.Idle ->
+                dismissDownloadProgress()
 
-                is DownloadProgressViewModel.State.Running ->
-                    showDownloadProgress(
-                        percent = state.percent,
-                        currentDownloadNumber = state.currentDownloadNumber,
-                        downloadsCount = state.downloadsCount,
-                    )
-            }
-        }.autoDispose(this)
+            is DownloadProgressViewModel.State.Running ->
+                showDownloadProgress(
+                    percent = state.percent,
+                    currentDownloadNumber = state.currentDownloadNumber,
+                    downloadsCount = state.downloadsCount,
+                )
+        }
     }
 
-    private fun subscribeToEvents() {
-        viewModel.downloadEvents.subscribe { event ->
-            log.debug {
-                "subscribeToEvents(): received_new_event:" +
-                        "\nevent=$event"
-            }
+    private fun subscribeToEvents(
+    ) = viewModel.downloadEvents.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-            when (event) {
-                DownloadProgressViewModel.Event.DownloadFailed ->
-                    showDownloadError()
-            }
+        when (event) {
+            DownloadProgressViewModel.Event.DownloadFailed ->
+                showDownloadError()
+        }
 
-            log.debug {
-                "subscribeToEvents(): handled_new_event:" +
-                        "\nevent=$event"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     private fun showDownloadProgress(

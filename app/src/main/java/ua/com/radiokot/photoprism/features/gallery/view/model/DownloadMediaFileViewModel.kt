@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import java.io.File
@@ -26,11 +26,11 @@ class DownloadMediaFileViewModel(
 
     private val downloadStateSubject = BehaviorSubject.create<DownloadProgressViewModel.State>()
     override val downloadState: Observable<DownloadProgressViewModel.State> =
-        downloadStateSubject.toMainThreadObservable()
+        downloadStateSubject.observeOnMain()
 
     private val downloadEventsSubject = PublishSubject.create<DownloadProgressViewModel.Event>()
     override val downloadEvents: Observable<DownloadProgressViewModel.Event> =
-        downloadEventsSubject.toMainThreadObservable()
+        downloadEventsSubject.observeOnMain()
 
     private var lastDownloadedFile: DownloadedFile? = null
 

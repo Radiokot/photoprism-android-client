@@ -20,9 +20,9 @@ class SearchBookmarkDialogViewModel(
     private var isInitialized = false
 
     private val stateSubject = BehaviorSubject.create<State>()
-    val state: Observable<State> = stateSubject.toMainThreadObservable()
+    val state: Observable<State> = stateSubject.observeOnMain()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
 
     val name = MutableLiveData<String>()
     val isSaveButtonEnabled = MutableLiveData(false)

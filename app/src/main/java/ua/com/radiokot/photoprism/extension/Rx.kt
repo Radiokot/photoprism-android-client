@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.annotations.SchedulerSupport
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Maybe
@@ -44,7 +45,7 @@ inline fun <reified R : Any> Observable<*>.filterIsInstance(): Observable<R> =
 /**
  * @return [Observable] that emits this subject's items on the Android main thread.
  */
-fun <T : Any> Subject<T>.toMainThreadObservable(): Observable<T> =
+fun <T : Any> Subject<T>.observeOnMain(): Observable<T> =
     observeOn(AndroidSchedulers.mainThread())
 
 private class LifecycleDisposable(obj: Disposable) :
@@ -145,4 +146,30 @@ fun Completable.retryWithDelay(
         else
             Flowable.timer(delay, unit)
     }
+}
+
+private val onNextStub: (Any) -> Unit = {}
+
+/**
+ * Subscribes to the given [Observable]
+ * and ensures that the subscription is disposed at [Lifecycle.Event.ON_DESTROY] event.
+ */
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T : Any> Observable<T>.subscribe(
+    lifecycleOwner: LifecycleOwner,
+    onNext: (T) -> Unit = onNextStub
+) {
+    subscribe(onNext).autoDispose(lifecycleOwner)
+}
+
+/**
+ * Subscribes to the given [Observable]
+ * and ensures that the subscription is disposed at [ViewModel.onCleared].
+ */
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T : Any> Observable<T>.subscribe(
+    viewModel: ViewModel,
+    onNext: (T) -> Unit = onNextStub
+) {
+    subscribe(onNext).autoDispose(viewModel)
 }

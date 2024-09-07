@@ -10,7 +10,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import okhttp3.HttpUrl
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
@@ -27,7 +27,7 @@ class GalleryExtensionStoreViewModel(
     private val log = kLogger("ExtensionStoreVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GalleryExtensionStoreListItem>>()
     val mainError = MutableLiveData<Error?>(null)

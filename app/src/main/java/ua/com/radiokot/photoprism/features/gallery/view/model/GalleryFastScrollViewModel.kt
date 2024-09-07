@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.GalleryMonthsSequence
@@ -33,7 +33,7 @@ class GalleryFastScrollViewModel: ViewModel() {
 
     val bubbles = MutableLiveData<List<GalleryMonthScrollBubble>>(emptyList())
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
 
     init {
         subscribeToDragging()

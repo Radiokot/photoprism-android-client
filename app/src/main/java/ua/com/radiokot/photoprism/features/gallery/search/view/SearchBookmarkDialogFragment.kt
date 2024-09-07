@@ -7,15 +7,14 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.view.isVisible
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogSearchBookmarkBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
@@ -103,74 +102,73 @@ class SearchBookmarkDialogFragment : BaseMaterialDialogFragment(R.layout.dialog_
         }
     }
 
-    private fun subscribeToState() {
-        viewModel.state.subscribeBy { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
-            }
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
+        log.debug {
+            "subscribeToState(): received_new_state:" +
+                    "\nstate=$state"
+        }
 
-            with(viewBinding.deleteButton) {
-                val wasVisible = isVisible
-                isVisible = state is SearchBookmarkDialogViewModel.State.Editing
+        with(viewBinding.deleteButton) {
+            val wasVisible = isVisible
+            isVisible = state is SearchBookmarkDialogViewModel.State.Editing
 
-                // Do not enable "Delete" immediately to avoid missclick.
-                if (!wasVisible && isVisible) {
-                    isEnabled = false
-                    postDelayed({
-                        isEnabled = true
-                    }, 1000)
-                }
+            // Do not enable "Delete" immediately to avoid missclick.
+            if (!wasVisible && isVisible) {
+                isEnabled = false
+                postDelayed({
+                    isEnabled = true
+                }, 1000)
             }
+        }
 
-            viewBinding.titleTextView.text = when (state) {
-                is SearchBookmarkDialogViewModel.State.Creating ->
-                    getString(R.string.add_search_bookmark)
-                is SearchBookmarkDialogViewModel.State.Editing ->
-                    getString(R.string.edit_search_bookmark)
-            }
+        viewBinding.titleTextView.text = when (state) {
+            is SearchBookmarkDialogViewModel.State.Creating ->
+                getString(R.string.add_search_bookmark)
 
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.autoDispose(viewLifecycleOwner)
+            is SearchBookmarkDialogViewModel.State.Editing ->
+                getString(R.string.edit_search_bookmark)
+        }
+
+        log.debug {
+            "subscribeToState(): handled_new_state:" +
+                    "\nstate=$state"
+        }
     }
 
-    private fun subscribeToEvents() {
-        viewModel.events.subscribe { event ->
-            log.debug {
-                "subscribeToEvents(): received_new_event:" +
-                        "\nevent=$event"
-            }
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-            when (event) {
-                SearchBookmarkDialogViewModel.Event.Dismiss ->
-                    dismiss()
+        when (event) {
+            SearchBookmarkDialogViewModel.Event.Dismiss ->
+                dismiss()
 
-                is SearchBookmarkDialogViewModel.Event.ShowFloatingError ->
-                    Toast.makeText(
-                        requireContext(),
-                        getString(
-                            when (event.error) {
-                                is SearchBookmarkDialogViewModel.Error.FailedToCreate ->
-                                    R.string.template_error_failed_to_add_bookmark
-                                is SearchBookmarkDialogViewModel.Error.FailedToDelete ->
-                                    R.string.template_error_failed_to_delete_bookmark
-                                is SearchBookmarkDialogViewModel.Error.FailedToUpdate ->
-                                    R.string.template_error_failed_to_edit_bookmark
-                            },
-                            event.error.shortSummary,
-                        ),
-                        Toast.LENGTH_LONG
-                    ).show()
-            }
+            is SearchBookmarkDialogViewModel.Event.ShowFloatingError ->
+                Toast.makeText(
+                    requireContext(),
+                    getString(
+                        when (event.error) {
+                            is SearchBookmarkDialogViewModel.Error.FailedToCreate ->
+                                R.string.template_error_failed_to_add_bookmark
 
-            log.debug {
-                "subscribeToEvents(): handled_new_event:" +
-                        "\nevent=$event"
-            }
-        }.autoDispose(viewLifecycleOwner)
+                            is SearchBookmarkDialogViewModel.Error.FailedToDelete ->
+                                R.string.template_error_failed_to_delete_bookmark
+
+                            is SearchBookmarkDialogViewModel.Error.FailedToUpdate ->
+                                R.string.template_error_failed_to_edit_bookmark
+                        },
+                        event.error.shortSummary,
+                    ),
+                    Toast.LENGTH_LONG
+                ).show()
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     companion object {

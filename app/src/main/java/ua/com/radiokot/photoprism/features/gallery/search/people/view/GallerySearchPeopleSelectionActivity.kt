@@ -19,8 +19,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPeopleOverviewBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
@@ -187,7 +187,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
         }
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -208,7 +208,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(

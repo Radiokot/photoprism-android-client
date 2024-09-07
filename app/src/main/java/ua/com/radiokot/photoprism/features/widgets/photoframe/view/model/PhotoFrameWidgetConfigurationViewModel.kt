@@ -11,11 +11,10 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel.Event
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetShape
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.features.widgets.photoframe.logic.UpdatePhotoFrameWidgetWorker
@@ -30,10 +29,10 @@ class PhotoFrameWidgetConfigurationViewModel(
     private val log = kLogger("PhotoFrameWidgetConfigurationVM")
 
     private val selectedShapeSubject: BehaviorSubject<PhotoFrameWidgetShape> = BehaviorSubject.create()
-    val selectedShape = selectedShapeSubject.toMainThreadObservable().distinctUntilChanged()
+    val selectedShape = selectedShapeSubject.observeOnMain().distinctUntilChanged()
     val isDateShown: MutableLiveData<Boolean> = MutableLiveData()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     private val backPressActionsStack = BackPressActionsStack()
     val backPressedCallback: OnBackPressedCallback =
         backPressActionsStack.onBackPressedCallback

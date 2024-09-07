@@ -13,17 +13,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.getKoin
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityEnvConnectionBinding
 import ua.com.radiokot.photoprism.databinding.IncludeEnvConnectionFieldsBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.envconnection.view.model.EnvConnectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryActivity
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
@@ -161,90 +160,86 @@ class EnvConnectionActivity : BaseActivity() {
         }
     }
 
-    private fun subscribeToState() {
-        viewModel.state.subscribeBy { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
+        log.debug {
+            "subscribeToState(): received_new_state:" +
+                    "\nstate=$state"
+        }
+
+        view.progressIndicator.visibility = when (state) {
+            EnvConnectionViewModel.State.Connecting ->
+                View.VISIBLE
+
+            EnvConnectionViewModel.State.Idle ->
+                View.GONE
+        }
+
+        view.connectButton.visibility = when (state) {
+            EnvConnectionViewModel.State.Connecting ->
+                View.GONE
+
+            EnvConnectionViewModel.State.Idle ->
+                View.VISIBLE
+        }
+
+        when (state) {
+            EnvConnectionViewModel.State.Connecting -> {
+                SoftInputVisibility.hide(window)
+                // Ensure the keyboard will not re-appear.
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
             }
 
-            view.progressIndicator.visibility = when (state) {
-                EnvConnectionViewModel.State.Connecting ->
-                    View.VISIBLE
-
-                EnvConnectionViewModel.State.Idle ->
-                    View.GONE
+            EnvConnectionViewModel.State.Idle -> {
+                // No special handling is needed.
             }
+        }
 
-            view.connectButton.visibility = when (state) {
-                EnvConnectionViewModel.State.Connecting ->
-                    View.GONE
-
-                EnvConnectionViewModel.State.Idle ->
-                    View.VISIBLE
-            }
-
-            when (state) {
-                EnvConnectionViewModel.State.Connecting -> {
-                    SoftInputVisibility.hide(window)
-                    // Ensure the keyboard will not re-appear.
-                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-                }
-
-                EnvConnectionViewModel.State.Idle -> {
-                    // No special handling is needed.
-                }
-            }
-
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToState(): handled_new_state:" +
+                    "\nstate=$state"
+        }
     }
 
-    private fun subscribeToEvents() {
-        viewModel.events.subscribe { event ->
-            log.debug {
-                "subscribeToEvents(): received_new_event:" +
-                        "\nevent=$event"
-            }
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-            when (event) {
-                EnvConnectionViewModel.Event.GoToGallery ->
-                    goToGallery()
+        when (event) {
+            EnvConnectionViewModel.Event.GoToGallery ->
+                goToGallery()
 
-                EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
-                    chooseClientCertificateAlias()
+            EnvConnectionViewModel.Event.ChooseClientCertificateAlias ->
+                chooseClientCertificateAlias()
 
-                EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
-                    showMissingClientCertificatesNotice()
+            EnvConnectionViewModel.Event.ShowMissingClientCertificatesNotice ->
+                showMissingClientCertificatesNotice()
 
-                is EnvConnectionViewModel.Event.OpenConnectionGuide ->
-                    openConnectionGuide()
+            is EnvConnectionViewModel.Event.OpenConnectionGuide ->
+                openConnectionGuide()
 
-                is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
-                    openClientCertificateGuide()
+            is EnvConnectionViewModel.Event.OpenClientCertificateGuide ->
+                openClientCertificateGuide()
 
-                is EnvConnectionViewModel.Event.OpenWebViewerForRedirectHandling ->
-                    openWebViewerForRedirectHandling(
-                        url = event.url,
-                    )
+            is EnvConnectionViewModel.Event.OpenWebViewerForRedirectHandling ->
+                openWebViewerForRedirectHandling(
+                    url = event.url,
+                )
 
-                is EnvConnectionViewModel.Event.RequestTfaCodeInput ->
-                    showTfaCodeDialog()
+            is EnvConnectionViewModel.Event.RequestTfaCodeInput ->
+                showTfaCodeDialog()
 
-                is EnvConnectionViewModel.Event.ShowFloatingError ->
-                    showFloatingError(
-                        error = event.error,
-                    )
-            }
+            is EnvConnectionViewModel.Event.ShowFloatingError ->
+                showFloatingError(
+                    error = event.error,
+                )
+        }
 
-            log.debug {
-                "subscribeToEvents(): handled_new_event:" +
-                        "\nevent=$event"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     private fun chooseClientCertificateAlias() {

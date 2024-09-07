@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -45,9 +45,9 @@ class GalleryFolderViewModel(
     private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
     private val stateSubject = BehaviorSubject.create<State>()
-    val state: Observable<State> = stateSubject.toMainThreadObservable()
+    val state: Observable<State> = stateSubject.observeOnMain()
     val currentState: State
         get() = stateSubject.value!!
     val mainError = MutableLiveData<Error?>(null)

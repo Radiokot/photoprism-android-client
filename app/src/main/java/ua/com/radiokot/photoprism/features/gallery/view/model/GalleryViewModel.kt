@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
@@ -65,9 +65,9 @@ class GalleryViewModel(
         get() = mediaRepositoryChanges.value?.repository
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
     private val stateSubject = BehaviorSubject.create<State>()
-    val state: Observable<State> = stateSubject.toMainThreadObservable()
+    val state: Observable<State> = stateSubject.observeOnMain()
     val currentState: State
         get() = stateSubject.value!!
     val mainError = MutableLiveData<Error?>(null)

@@ -7,11 +7,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Error
-import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel.Event
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
@@ -25,7 +23,7 @@ class GalleryFoldersViewModel(
 
     private val log = kLogger("GalleryFoldersVM")
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GalleryFolderListItem>>()
     val mainError = MutableLiveData<Error?>(null)

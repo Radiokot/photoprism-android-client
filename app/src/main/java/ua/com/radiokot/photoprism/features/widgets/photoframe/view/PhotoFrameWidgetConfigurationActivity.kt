@@ -27,6 +27,7 @@ import ua.com.radiokot.photoprism.extension.fadeIn
 import ua.com.radiokot.photoprism.extension.fadeOut
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.view.AppliedGallerySearchSummaryFactory
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -194,7 +195,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             viewModel.searchViewModel.onSearchSummaryClicked()
         }
 
-        viewModel.searchViewModel.state.subscribe { state ->
+        viewModel.searchViewModel.state.subscribe(this) { state ->
             cardContentView.searchConfigTextView.text = when (state) {
                 is GallerySearchViewModel.State.Applied ->
                     searchSummaryFactory.getSummary(
@@ -214,7 +215,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
                 GallerySearchViewModel.State.NoSearch ->
                     getString(R.string.photo_frame_widget_configuration_all_photos_to_show)
             }
-        }.autoDispose(this)
+        }
     }
 
     private fun initDate() {

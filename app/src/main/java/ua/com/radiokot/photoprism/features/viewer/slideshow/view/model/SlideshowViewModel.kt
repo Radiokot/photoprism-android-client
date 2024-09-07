@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
@@ -54,7 +54,7 @@ class SlideshowViewModel(
         }
 
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
 
     fun initOnce(
         startPageIndex: Int,

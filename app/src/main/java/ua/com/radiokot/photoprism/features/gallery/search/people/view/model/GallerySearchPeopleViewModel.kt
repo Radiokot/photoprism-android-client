@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
@@ -18,10 +18,10 @@ class GallerySearchPeopleViewModel(
 ) : ViewModel() {
     private val log = kLogger("GallerySearchPeopleVM")
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
-    val state = stateSubject.toMainThreadObservable()
+    val state = stateSubject.observeOnMain()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
-    val isViewVisible = searchPreferences.showPeople.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
+    val isViewVisible = searchPreferences.showPeople.observeOnMain()
 
     /**
      * Non-null set of the selected person IDs, **empty** if nothing is selected.

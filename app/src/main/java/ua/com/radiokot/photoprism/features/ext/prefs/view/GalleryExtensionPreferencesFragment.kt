@@ -7,7 +7,6 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -15,7 +14,7 @@ import org.koin.androidx.scope.createFragmentScope
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
@@ -78,11 +77,10 @@ class GalleryExtensionPreferencesFragment :
     private fun subscribeToExtensionsState() {
         galleryExtensionsStateRepository.state
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy {
+            .subscribe(this) {
                 initSummary()
                 initExtensionSpecificPreferences()
             }
-            .autoDispose(this)
     }
 
     private fun initSummary() = with(preferenceScreen) {

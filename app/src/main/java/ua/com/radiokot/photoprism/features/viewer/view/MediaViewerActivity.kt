@@ -48,7 +48,6 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMediaViewerBinding
 import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_DATE_FORMAT
 import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_YEAR_DATE_FORMAT
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.fadeVisibility
@@ -56,6 +55,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.recyclerView
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -759,67 +759,65 @@ class MediaViewerActivity : BaseActivity() {
     private fun showSystemUI() =
         windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
 
-    private fun subscribeToEvents() {
-        viewModel.events.subscribe { event ->
-            log.debug {
-                "subscribeToEvents(): received_new_event:" +
-                        "\nevent=$event"
-            }
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-            when (event) {
-                is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(
-                        files = event.files,
-                    )
+        when (event) {
+            is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
+                openMediaFilesDialog(
+                    files = event.files,
+                )
 
-                is MediaViewerViewModel.Event.ShareDownloadedFile ->
-                    shareDownloadedFile(
-                        downloadedFile = event.downloadedFile,
-                        mimeType = event.mimeType,
-                        displayName = event.displayName,
-                    )
+            is MediaViewerViewModel.Event.ShareDownloadedFile ->
+                shareDownloadedFile(
+                    downloadedFile = event.downloadedFile,
+                    mimeType = event.mimeType,
+                    displayName = event.displayName,
+                )
 
-                is MediaViewerViewModel.Event.OpenDownloadedFile ->
-                    openDownloadedFile(
-                        downloadedFile = event.downloadedFile,
-                        mimeType = event.mimeType,
-                        displayName = event.displayName,
-                    )
+            is MediaViewerViewModel.Event.OpenDownloadedFile ->
+                openDownloadedFile(
+                    downloadedFile = event.downloadedFile,
+                    mimeType = event.mimeType,
+                    displayName = event.displayName,
+                )
 
-                is MediaViewerViewModel.Event.RequestStoragePermission ->
-                    requestStoragePermission()
+            is MediaViewerViewModel.Event.RequestStoragePermission ->
+                requestStoragePermission()
 
-                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
-                    showStartedDownloadMessage(
-                        destinationFileName = event.destinationFileName,
-                    )
+            is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                showStartedDownloadMessage(
+                    destinationFileName = event.destinationFileName,
+                )
 
-                is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
-                    showMissingStoragePermissionMessage()
+            is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
+                showMissingStoragePermissionMessage()
 
-                is MediaViewerViewModel.Event.OpenWebViewer ->
-                    openWebViewer(
-                        url = event.url,
-                    )
+            is MediaViewerViewModel.Event.OpenWebViewer ->
+                openWebViewer(
+                    url = event.url,
+                )
 
-                is MediaViewerViewModel.Event.OpenSlideshow ->
-                    openSlideshow(
-                        mediaIndex = event.mediaIndex,
-                        repositoryParams = event.repositoryParams,
-                    )
+            is MediaViewerViewModel.Event.OpenSlideshow ->
+                openSlideshow(
+                    mediaIndex = event.mediaIndex,
+                    repositoryParams = event.repositoryParams,
+                )
 
-                MediaViewerViewModel.Event.Finish ->
-                    finish()
+            MediaViewerViewModel.Event.Finish ->
+                finish()
 
-                MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
-                    openDeletingConfirmationDialog()
-            }
+            MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
+                openDeletingConfirmationDialog()
+        }
 
-            log.debug {
-                "subscribeToEvents(): handled_new_event:" +
-                        "\nevent=$event"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     private fun initMediaFileSelection() {

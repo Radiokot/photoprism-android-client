@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
@@ -25,11 +25,11 @@ class GallerySearchAlbumsViewModel(
     private val log = kLogger("GallerySearchAlbumsVM")
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Loading)
-    val state = stateSubject.toMainThreadObservable()
+    val state = stateSubject.observeOnMain()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     val selectedAlbumUid = MutableLiveData<String?>()
-    val isViewVisible = searchPreferences.showAlbums.toMainThreadObservable()
+    val isViewVisible = searchPreferences.showAlbums.observeOnMain()
 
     init {
         subscribeToRepository()

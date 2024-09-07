@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
@@ -51,7 +51,7 @@ class MediaViewerViewModel(
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isPageIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData(false)

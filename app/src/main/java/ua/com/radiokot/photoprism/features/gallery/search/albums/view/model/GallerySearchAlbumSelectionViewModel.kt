@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
@@ -24,7 +24,7 @@ class GallerySearchAlbumSelectionViewModel(
     private val log = kLogger("GallerySearchAlbumSelectionVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     val selectedAlbumUid = MutableLiveData<String?>()
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<GallerySearchAlbumListItem>>()

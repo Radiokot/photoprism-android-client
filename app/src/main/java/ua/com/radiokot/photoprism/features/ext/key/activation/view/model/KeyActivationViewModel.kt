@@ -15,7 +15,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
@@ -36,11 +36,11 @@ class KeyActivationViewModel(
     val canSubmitKeyInput = MutableLiveData<Boolean>()
 
     private val stateSubject = BehaviorSubject.createDefault<State>(State.Input)
-    val state = stateSubject.toMainThreadObservable()
+    val state = stateSubject.observeOnMain()
     val currentState: State
         get() = stateSubject.value!!
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
 
     init {
         val updateSubmitInput = { _: Any? ->

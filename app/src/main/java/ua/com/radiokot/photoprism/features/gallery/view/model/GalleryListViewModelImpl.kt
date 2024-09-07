@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -120,7 +120,7 @@ class GalleryListViewModelImpl(
 
     private fun initScaleChange() =
         itemScale
-            .toMainThreadObservable()
+            .observeOnMain()
             .skip(1)
             .distinctUntilChanged()
             .subscribe { newItemScale ->

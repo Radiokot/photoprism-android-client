@@ -10,7 +10,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
@@ -44,9 +44,9 @@ class GallerySearchViewModel(
 
     val isApplyButtonEnabled = MutableLiveData(false)
     private val stateSubject = BehaviorSubject.createDefault<State>(State.NoSearch)
-    val state: Observable<State> = stateSubject.toMainThreadObservable()
+    val state: Observable<State> = stateSubject.observeOnMain()
     private val eventsSubject = PublishSubject.create<Event>()
-    val events: Observable<Event> = eventsSubject.toMainThreadObservable()
+    val events: Observable<Event> = eventsSubject.observeOnMain()
     val isBookmarksSectionVisible = MutableLiveData(false)
     val bookmarks = MutableLiveData<List<SearchBookmarkItem>>()
 

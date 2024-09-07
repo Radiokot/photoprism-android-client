@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
@@ -24,7 +24,7 @@ class GalleryMemoriesListViewModel(
     val itemsList = MutableLiveData<List<MemoryListItem>>()
     val isViewVisible = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     private var isInitialized: Boolean = false
 
     /**

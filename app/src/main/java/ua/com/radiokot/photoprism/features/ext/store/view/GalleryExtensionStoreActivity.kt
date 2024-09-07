@@ -16,8 +16,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityExtensionStoreBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreDisclaimerListItem
 import ua.com.radiokot.photoprism.features.ext.store.view.model.GalleryExtensionStoreListItem
@@ -143,7 +143,7 @@ class GalleryExtensionStoreActivity : BaseActivity() {
         }
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -172,7 +172,7 @@ class GalleryExtensionStoreActivity : BaseActivity() {
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(

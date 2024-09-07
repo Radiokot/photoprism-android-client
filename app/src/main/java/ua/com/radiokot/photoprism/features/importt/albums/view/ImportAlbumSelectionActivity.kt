@@ -12,11 +12,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityImportAlbumSelectionBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumListItem
 import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumSelectionViewModel
@@ -129,7 +129,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
         }
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -150,7 +150,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun finishWithResult(selectedAlbums: Set<ImportAlbum>) {
         log.debug {

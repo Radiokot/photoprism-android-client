@@ -17,10 +17,10 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -158,57 +158,53 @@ class GallerySearchView(
         }
     }
 
-    private fun subscribeToState() {
-        viewModel.state.subscribe { state ->
-            log.debug {
-                "subscribeToState(): received_new_state:" +
-                        "\nstate=$state"
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
+        log.debug {
+            "subscribeToState(): received_new_state:" +
+                    "\nstate=$state"
+        }
+
+        when (state) {
+            is GallerySearchViewModel.State.Applied -> {
+                closeConfigurationView()
             }
 
-            when (state) {
-                is GallerySearchViewModel.State.Applied -> {
-                    closeConfigurationView()
-                }
-
-                is GallerySearchViewModel.State.Configuring -> {
-                    openConfigurationView()
-                }
-
-                GallerySearchViewModel.State.NoSearch -> {
-                    closeConfigurationView()
-                }
+            is GallerySearchViewModel.State.Configuring -> {
+                openConfigurationView()
             }
 
-            log.debug {
-                "subscribeToState(): handled_new_state:" +
-                        "\nstate=$state"
+            GallerySearchViewModel.State.NoSearch -> {
+                closeConfigurationView()
             }
-        }.autoDispose(this)
+        }
+
+        log.debug {
+            "subscribeToState(): handled_new_state:" +
+                    "\nstate=$state"
+        }
     }
 
-    private fun subscribeToEvents() {
-        viewModel.events.subscribe { event ->
-            log.debug {
-                "subscribeToEvents(): received_new_event:" +
-                        "\nevent=$event"
-            }
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
 
-            when (event) {
-                is GallerySearchViewModel.Event.OpenBookmarkDialog ->
-                    openBookmarkDialog(
-                        searchConfig = event.searchConfig,
-                        existingBookmark = event.existingBookmark,
-                    )
+        when (event) {
+            is GallerySearchViewModel.Event.OpenBookmarkDialog ->
+                openBookmarkDialog(
+                    searchConfig = event.searchConfig,
+                    existingBookmark = event.existingBookmark,
+                )
 
-                is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
-                    openSearchFiltersGuide()
-            }
+            is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
+                openSearchFiltersGuide()
+        }
 
-            log.debug {
-                "subscribeToEvents(): handled_new_event:" +
-                        "\nevent=$event"
-            }
-        }.autoDispose(this)
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
+        }
     }
 
     private fun closeConfigurationView() {

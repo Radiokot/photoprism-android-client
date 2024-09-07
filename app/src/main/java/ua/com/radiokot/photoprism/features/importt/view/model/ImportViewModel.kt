@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
@@ -47,7 +47,7 @@ class ImportViewModel(
     val isNotificationPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isMediaPermissionRationaleVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
-    val events = eventsSubject.toMainThreadObservable()
+    val events = eventsSubject.observeOnMain()
     val isStartButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     fun initOnce(importIntent: Intent) {

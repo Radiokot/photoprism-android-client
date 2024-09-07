@@ -10,11 +10,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigPeopleBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
 
@@ -68,7 +67,7 @@ class GallerySearchConfigPeopleView(
     }
 
     private fun subscribeToState() {
-        viewModel.state.subscribeBy { state ->
+        viewModel.state.subscribe(this) { state ->
             log.debug {
                 "subscribeToState(): received_new_state:" +
                         "\nstate=$state"
@@ -97,14 +96,12 @@ class GallerySearchConfigPeopleView(
                 "subscribeToState(): handled_new_state:" +
                         "\nstate=$state"
             }
-        }.autoDispose(this)
+        }
 
-        viewModel.isViewVisible
-            .subscribe(view.root::isVisible::set)
-            .autoDispose(this)
+        viewModel.isViewVisible.subscribe(this, view.root::isVisible::set)
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -126,7 +123,7 @@ class GallerySearchConfigPeopleView(
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun openPeopleSelection(selectedPersonIds: Set<String>) {
         log.debug {

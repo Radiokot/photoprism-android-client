@@ -33,9 +33,10 @@ import ua.com.radiokot.photoprism.databinding.ActivityGalleryFolderBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
-import ua.com.radiokot.photoprism.extension.toMainThreadObservable
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -233,12 +234,12 @@ class GalleryFolderActivity : BaseActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            ShareSheetShareEventReceiver.shareEvents.subscribeBy {
+            ShareSheetShareEventReceiver.shareEvents.subscribe(this) {
                 viewModel.onDownloadedFilesShared()
-            }.autoDispose(this)
+            }
         }
 
-        viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
+        viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
             view.selectionBottomAppBarTitleTextView.text =
                 if (count == 0)
                     getString(R.string.select_content)
@@ -246,19 +247,19 @@ class GalleryFolderActivity : BaseActivity() {
                     count.toString()
 
             updateMultipleSelectionMenuVisibility()
-        }.autoDispose(this)
+        }
 
         viewModel.state.subscribeBy { state ->
             // The FAB is only used when selecting for other app,
             // as selecting for user allows more than 1 action.
             if (state is GalleryFolderViewModel.State.Selecting.ForOtherApp) {
-                viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
+                viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                     if (count > 0) {
                         view.doneSelectingFab.show()
                     } else {
                         view.doneSelectingFab.hide()
                     }
-                }.autoDispose(this@GalleryFolderActivity)
+                }
             } else {
                 view.doneSelectingFab.hide()
             }
@@ -460,7 +461,7 @@ class GalleryFolderActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.toMainThreadObservable().subscribeBy { newItems ->
+        viewModel.itemList.observeOnMain().subscribe(this@GalleryFolderActivity) { newItems ->
             FastAdapterDiffUtil.setBetter(
                 recyclerView = view.galleryRecyclerView,
                 adapter = galleryItemsAdapter,
@@ -468,11 +469,11 @@ class GalleryFolderActivity : BaseActivity() {
                 callback = diffCallback,
                 detectMoves = false,
             )
-        }.autoDispose(this@GalleryFolderActivity)
+        }
     }
 
     private fun subscribeToEvents() {
-        viewModel.itemListEvents.toMainThreadObservable().subscribeBy { event ->
+        viewModel.itemListEvents.observeOnMain().subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_item_list_event:" +
                         "\nevent=$event"
@@ -501,9 +502,9 @@ class GalleryFolderActivity : BaseActivity() {
                 "subscribeToEvents(): handled_item_list_event:" +
                         "\nevent=$event"
             }
-        }.autoDispose(this@GalleryFolderActivity)
+        }
 
-        viewModel.events.subscribe { event ->
+        viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
                         "\nevent=$event"
@@ -544,7 +545,7 @@ class GalleryFolderActivity : BaseActivity() {
                 "subscribeToEvents(): handled_new_event:" +
                         "\nevent=$event"
             }
-        }.autoDispose(this)
+        }
     }
 
     private fun resetScroll() {

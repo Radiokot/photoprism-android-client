@@ -9,13 +9,12 @@ import android.view.WindowManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityKeyActivationBinding
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
 import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
@@ -50,7 +49,7 @@ class KeyActivationActivity : BaseActivity() {
         intent?.data?.also(::onIntentData)
     }
 
-    private fun subscribeToState() = viewModel.state.subscribeBy { state ->
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
         log.debug {
             "subscribeToState(): received_new_state:" +
                     "\nstate=$state"
@@ -74,9 +73,9 @@ class KeyActivationActivity : BaseActivity() {
             "subscribeToState(): handled_new_state:" +
                     "\nstate=$state"
         }
-    }.autoDispose(this)
+    }
 
-    private fun subscribeToEvents() = viewModel.events.subscribeBy { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -97,7 +96,7 @@ class KeyActivationActivity : BaseActivity() {
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun showInput() {
         if (supportFragmentManager.findFragmentByTag(INPUT_FRAGMENT_TAG) != null) {

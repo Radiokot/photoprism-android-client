@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.MemoriesListListItem
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.MemoryTitle
@@ -45,7 +45,7 @@ class GalleryMemoriesListView(
         }
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"
@@ -63,7 +63,7 @@ class GalleryMemoriesListView(
             "subscribeToEvents(): handled_new_event:" +
                     "\nevent=$event"
         }
-    }.autoDispose(this)
+    }
 
     private fun openViewer(
         repositoryParams: SimpleGalleryMediaRepository.Params,

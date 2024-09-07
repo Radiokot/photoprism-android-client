@@ -13,9 +13,9 @@ import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -94,7 +94,7 @@ class GallerySearchBarView(
         }
     }
 
-    private fun subscribeToState() = viewModel.state.subscribe { state ->
+    private fun subscribeToState() = viewModel.state.subscribe(this) { state ->
         log.debug {
             "subscribeToState(): received_new_state:" +
                     "\nstate=$state"
@@ -144,7 +144,7 @@ class GallerySearchBarView(
             "subscribeToState(): handled_new_state:" +
                     "\nstate=$state"
         }
-    }.autoDispose(this)
+    }
 
     fun addNavigationMenuIcon(onClicked: () -> Unit) = with(searchBar){
         navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_menu)
