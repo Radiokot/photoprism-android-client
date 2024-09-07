@@ -35,6 +35,7 @@ import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
+import ua.com.radiokot.photoprism.extension.toMainThreadObservable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -45,6 +46,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallb
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.ShareSheetShareEventReceiver
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
@@ -175,7 +177,7 @@ class GalleryFolderActivity : BaseActivity() {
     private fun initMediaFileSelection() {
         mediaFileSelectionView.init { fileItem ->
             if (fileItem.source != null) {
-                viewModel.onFileSelected(fileItem.source)
+                viewModel.onGalleryMediaFileSelected(fileItem.source)
             }
         }
     }
@@ -183,7 +185,7 @@ class GalleryFolderActivity : BaseActivity() {
     private fun initMultipleSelection() {
         with(view.selectionBottomAppBar) {
             setNavigationOnClickListener {
-                viewModel.onClearMultipleSelectionClicked()
+                viewModel.onClearSelectionClicked()
             }
 
             menu.showOverflowItemIcons(isBottomBar = true)
@@ -236,7 +238,7 @@ class GalleryFolderActivity : BaseActivity() {
             }.autoDispose(this)
         }
 
-        viewModel.multipleSelectionItemsCount.observe(this) { count ->
+        viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
             view.selectionBottomAppBarTitleTextView.text =
                 if (count == 0)
                     getString(R.string.select_content)
@@ -244,19 +246,19 @@ class GalleryFolderActivity : BaseActivity() {
                     count.toString()
 
             updateMultipleSelectionMenuVisibility()
-        }
+        }.autoDispose(this)
 
         viewModel.state.subscribeBy { state ->
             // The FAB is only used when selecting for other app,
             // as selecting for user allows more than 1 action.
             if (state is GalleryFolderViewModel.State.Selecting.ForOtherApp) {
-                viewModel.multipleSelectionItemsCount.observe(this@GalleryFolderActivity) { count ->
+                viewModel.selectedItemsCount.toMainThreadObservable().subscribeBy { count ->
                     if (count > 0) {
                         view.doneSelectingFab.show()
                     } else {
                         view.doneSelectingFab.hide()
                     }
-                }
+                }.autoDispose(this@GalleryFolderActivity)
             } else {
                 view.doneSelectingFab.hide()
             }
@@ -264,7 +266,7 @@ class GalleryFolderActivity : BaseActivity() {
     }
 
     private fun updateMultipleSelectionMenuVisibility() {
-        val multipleSelectionItemsCount = viewModel.multipleSelectionItemsCount.value ?: 0
+        val multipleSelectionItemsCount = viewModel.selectedItemsCount.value ?: 0
         val state = viewModel.currentState
         val areUserSelectionItemsVisible =
             multipleSelectionItemsCount > 0 && state is GalleryFolderViewModel.State.Selecting.ForUser
@@ -312,13 +314,13 @@ class GalleryFolderActivity : BaseActivity() {
                 },
                 onClick = { view, _, _, item ->
                     when (item) {
-                        is GalleryListItem ->
+                        is GalleryListItem.Media ->
                             when (view.id) {
                                 R.id.view_button ->
-                                    viewModel.onItemViewButtonClicked(item)
+                                    viewModel.onGalleryMediaItemViewClicked(item)
 
                                 else ->
-                                    viewModel.onItemClicked(item)
+                                    viewModel.onGalleryMediaItemClicked(item)
                             }
 
                         is GalleryLoadingFooterListItem ->
@@ -337,7 +339,7 @@ class GalleryFolderActivity : BaseActivity() {
                         return@addLongClickListener false
                     }
 
-                    viewModel.onItemLongClicked(item)
+                    viewModel.onGalleryMediaItemLongClicked(item)
                     true
                 }
             )
@@ -458,79 +460,92 @@ class GalleryFolderActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemsList.observe(this) { newItems ->
-            if (newItems != null) {
-                FastAdapterDiffUtil.setBetter(
-                    recyclerView = view.galleryRecyclerView,
-                    adapter = galleryItemsAdapter,
-                    items = newItems,
-                    callback = diffCallback,
-                    detectMoves = false,
-                )
-            }
-        }
+        viewModel.itemList.toMainThreadObservable().subscribeBy { newItems ->
+            FastAdapterDiffUtil.setBetter(
+                recyclerView = view.galleryRecyclerView,
+                adapter = galleryItemsAdapter,
+                items = newItems,
+                callback = diffCallback,
+                detectMoves = false,
+            )
+        }.autoDispose(this@GalleryFolderActivity)
     }
 
-    private fun subscribeToEvents() = viewModel.events.subscribe { event ->
-        log.debug {
-            "subscribeToEvents(): received_new_event:" +
-                    "\nevent=$event"
-        }
+    private fun subscribeToEvents() {
+        viewModel.itemListEvents.toMainThreadObservable().subscribeBy { event ->
+            log.debug {
+                "subscribeToEvents(): received_item_list_event:" +
+                        "\nevent=$event"
+            }
 
-        when (event) {
-            is GalleryFolderViewModel.Event.OpenViewer ->
-                openViewer(
-                    mediaIndex = event.mediaIndex,
-                    repositoryParams = event.repositoryParams,
-                    areActionsEnabled = event.areActionsEnabled,
-                )
-
-            is GalleryFolderViewModel.Event.EnsureListItemVisible -> {
-                view.galleryRecyclerView.post {
-                    view.galleryRecyclerView.ensureItemIsVisible(
-                        itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
+            when (event) {
+                is GalleryListViewModel.Event.OpenViewer ->
+                    openViewer(
+                        mediaIndex = event.mediaIndex,
+                        repositoryParams = event.repositoryParams,
+                        areActionsEnabled = event.areActionsEnabled,
                     )
+
+                is GalleryListViewModel.Event.EnsureListItemVisible ->
+                    view.galleryRecyclerView.post {
+                        view.galleryRecyclerView.ensureItemIsVisible(
+                            itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
+                        )
+                    }
+
+                is GalleryListViewModel.Event.OpenFileSelectionDialog ->
+                    openMediaFilesDialog(event.files)
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_item_list_event:" +
+                        "\nevent=$event"
+            }
+        }.autoDispose(this@GalleryFolderActivity)
+
+        viewModel.events.subscribe { event ->
+            log.debug {
+                "subscribeToEvents(): received_new_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is GalleryFolderViewModel.Event.ResetScroll -> {
+                    resetScroll()
                 }
+
+                is GalleryFolderViewModel.Event.ShowFloatingError ->
+                    showFloatingError(event.error)
+
+                GalleryFolderViewModel.Event.OpenDeletingConfirmationDialog ->
+                    openDeletingConfirmationDialog()
+
+                GalleryFolderViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
+
+                is GalleryFolderViewModel.Event.ReturnDownloadedFiles ->
+                    returnDownloadedFiles(event.files)
+
+                is GalleryFolderViewModel.Event.ShareDownloadedFiles ->
+                    shareDownloadedFiles(event.files)
+
+                GalleryFolderViewModel.Event.ShowFilesDownloadedMessage ->
+                    showFloatingMessage(
+                        message = getString(R.string.files_saved_to_downloads),
+                    )
+
+                GalleryFolderViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showFloatingMessage(
+                        message = getString(R.string.error_storage_permission_is_required),
+                    )
             }
 
-            is GalleryFolderViewModel.Event.ResetScroll -> {
-                resetScroll()
+            log.debug {
+                "subscribeToEvents(): handled_new_event:" +
+                        "\nevent=$event"
             }
-
-            is GalleryFolderViewModel.Event.ShowFloatingError ->
-                showFloatingError(event.error)
-
-            GalleryFolderViewModel.Event.OpenDeletingConfirmationDialog ->
-                openDeletingConfirmationDialog()
-
-            is GalleryFolderViewModel.Event.OpenFileSelectionDialog ->
-                openMediaFilesDialog(event.files)
-
-            GalleryFolderViewModel.Event.RequestStoragePermission ->
-                requestStoragePermission()
-
-            is GalleryFolderViewModel.Event.ReturnDownloadedFiles ->
-                returnDownloadedFiles(event.files)
-
-            is GalleryFolderViewModel.Event.ShareDownloadedFiles ->
-                shareDownloadedFiles(event.files)
-
-            GalleryFolderViewModel.Event.ShowFilesDownloadedMessage ->
-                showFloatingMessage(
-                    message = getString(R.string.files_saved_to_downloads),
-                )
-
-            GalleryFolderViewModel.Event.ShowMissingStoragePermissionMessage ->
-                showFloatingMessage(
-                    message = getString(R.string.error_storage_permission_is_required),
-                )
-        }
-
-        log.debug {
-            "subscribeToEvents(): handled_new_event:" +
-                    "\nevent=$event"
-        }
-    }.autoDispose(this)
+        }.autoDispose(this)
+    }
 
     private fun resetScroll() {
         log.debug {

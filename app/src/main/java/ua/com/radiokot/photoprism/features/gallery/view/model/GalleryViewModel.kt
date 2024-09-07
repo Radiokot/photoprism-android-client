@@ -24,24 +24,19 @@ import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnv
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
-import ua.com.radiokot.photoprism.util.LocalDate
 import java.io.File
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -49,19 +44,19 @@ class GalleryViewModel(
     private val externalDownloadsDir: File,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,
-    private val galleryPreferences: GalleryPreferences,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
     val memoriesListViewModel: GalleryMemoriesListViewModel,
+    private val listViewModel: GalleryListViewModelImpl,
     galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
-) : ViewModel() {
+) : ViewModel(),
+    GalleryListViewModel by listViewModel {
+
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
-    private val galleryItemsPostingSubject = PublishSubject.create<SimpleGalleryMediaRepository>()
-    private val currentLocalDate = LocalDate()
 
     // Current search config regardless the fast scroll.
     private var currentSearchConfig: SearchConfig? = null
@@ -69,7 +64,6 @@ class GalleryViewModel(
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value?.repository
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val itemsList: MutableLiveData<List<GalleryListItem>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.toMainThreadObservable()
     private val stateSubject = BehaviorSubject.create<State>()
@@ -79,10 +73,6 @@ class GalleryViewModel(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
-    private val multipleSelectionFilesByMediaUid = linkedMapOf<String, GalleryMedia.File>()
-    val multipleSelectionItemsCount: MutableLiveData<Int> = MutableLiveData(0)
-    val itemScale: MutableLiveData<GalleryItemScale> =
-        MutableLiveData(galleryPreferences.itemScale.value!!)
     val extensionsState: Observable<GalleryExtensionsState> =
         galleryExtensionsStateRepository.state
             .observeOn(AndroidSchedulers.mainThread())
@@ -155,6 +145,20 @@ class GalleryViewModel(
             )
         )
 
+        if (!allowMultiple) {
+            listViewModel.initSelectingSingle(
+                onSingleMediaFileSelected = ::downloadAndReturnFile,
+                shouldPostItemsNow = { repositoryToPostFrom ->
+                    repositoryToPostFrom == currentMediaRepository
+                },
+            )
+        } else {
+            listViewModel.initSelectingMultiple(
+                shouldPostItemsNow = { repositoryToPostFrom ->
+                    repositoryToPostFrom == currentMediaRepository
+                },
+            )
+        }
         initCommon()
 
         isInitialized = true
@@ -175,6 +179,19 @@ class GalleryViewModel(
 
         stateSubject.onNext(State.Viewing)
 
+        listViewModel.initViewing(
+            onSwitchedFromViewingToSelecting = {
+                stateSubject.onNext(State.Selecting.ForUser)
+                backPressActionsStack.pushUniqueAction(switchBackToViewingOnBackPress)
+            },
+            onSwitchedFromSelectingToViewing = {
+                stateSubject.onNext(State.Viewing)
+                backPressActionsStack.removeAction(switchBackToViewingOnBackPress)
+            },
+            shouldPostItemsNow = { repositoryToPostFrom ->
+                repositoryToPostFrom == currentMediaRepository
+            },
+        )
         initCommon()
 
         isInitialized = true
@@ -184,8 +201,6 @@ class GalleryViewModel(
         subscribeToSearch()
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
-        subscribeToPreferences()
-        subscribeGalleryItemsPosting()
         resetRepositoryToInitial()
     }
 
@@ -395,7 +410,21 @@ class GalleryViewModel(
         }
 
         currentMediaRepository.items
-            .subscribe { postGalleryItemsAsync() }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { items ->
+                mainError.value = when {
+                    items.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
+                        Error.SearchDoesNotFitAllowedTypes
+
+                    items.isEmpty() && !currentMediaRepository.isNeverUpdated ->
+                        Error.NoMediaFound
+
+                    else ->
+                        null
+                }
+
+                postGalleryItemsAsync(currentMediaRepository)
+            }
             .addTo(disposable)
 
         currentMediaRepository.loading
@@ -432,7 +461,7 @@ class GalleryViewModel(
                         Error.LoadingFailed(error.shortSummary)
                 }
 
-                if (itemsList.value.isNullOrEmpty()) {
+                if (itemList.value.isNullOrEmpty()) {
                     mainError.value = viewError
                 } else {
                     eventsSubject.onNext(Event.ShowFloatingError(viewError))
@@ -449,146 +478,6 @@ class GalleryViewModel(
             .addTo(disposable)
 
         disposable.autoDispose(this)
-    }
-
-    private fun subscribeToPreferences() {
-        galleryPreferences.itemScale
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { newItemScale ->
-                if (newItemScale != itemScale.value) {
-                    itemScale.value = newItemScale
-                    val postItems = itemsList.value != null
-
-                    log.debug {
-                        "subscribeToPreferences(): item_scale_changed:" +
-                                "\nnewItemScale=$newItemScale," +
-                                "\npostItems=$postItems"
-                    }
-
-                    if (postItems) {
-                        postGalleryItemsAsync()
-                    }
-                }
-            }
-            .autoDispose(this)
-    }
-
-    private fun subscribeGalleryItemsPosting() =
-        galleryItemsPostingSubject
-            .observeOn(Schedulers.computation())
-            // Post empty lists immediately for better visual,
-            // therefore do not proceed further.
-            .filter { repository ->
-                if (repository.itemsList.isEmpty()) {
-                    postGalleryItems(repository)
-                    false
-                } else {
-                    true
-                }
-            }
-            // Small debounce is nice for situations when multiple changes
-            // trigger items posting, e.g. state and repository.
-            .debounce(30, TimeUnit.MILLISECONDS)
-            // Proceed only if the repository remained the same.
-            .filter { it == currentMediaRepository }
-            .subscribe(::postGalleryItems)
-            .autoDispose(this)
-
-    /**
-     * Schedules preparation and posting the items in a non-main thread.
-     *
-     * @see subscribeGalleryItemsPosting
-     */
-    private fun postGalleryItemsAsync() {
-        val repository = currentMediaRepository.checkNotNull {
-            "There must be a media repository to post items from"
-        }
-        galleryItemsPostingSubject.onNext(repository)
-    }
-
-    private fun postGalleryItems(repository: SimpleGalleryMediaRepository) {
-        val galleryMediaList = repository.itemsList
-        val itemScale = itemScale.value.checkNotNull {
-            "There must be an item scale to consider"
-        }
-
-        mainError.postValue(
-            when {
-                galleryMediaList.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
-                    Error.SearchDoesNotFitAllowedTypes
-
-                galleryMediaList.isEmpty() && !repository.isNeverUpdated ->
-                    Error.NoMediaFound
-
-                else ->
-                    // Dismiss the main error when there are items.
-                    null
-            }
-        )
-
-        val newListItems = mutableListOf<GalleryListItem>()
-        val currentState = this.currentState
-        val areViewButtonsVisible = currentState is State.Selecting
-        val areSelectionViewsVisible = currentState is State.Selecting && currentState.allowMultiple
-        val onlyGroupByMonths = itemScale == GalleryItemScale.TINY
-
-        // Add date headers.
-        galleryMediaList.forEachIndexed { i, galleryMedia ->
-            val takenAtLocal = galleryMedia.takenAtLocal
-
-            // Month header.
-            //
-            // For the first item – show if only grouping by months, or if its month
-            // doesn't match the current (e.g. it is November, but the first photo is from October).
-            //
-            // For other items – show on month change, that is when the item's month
-            // doesn't match the previous one's.
-            if (i == 0 && (onlyGroupByMonths || !takenAtLocal.isSameMonthAs(currentLocalDate))
-                || i != 0 && !takenAtLocal.isSameMonthAs(galleryMediaList[i - 1].takenAtLocal)
-            ) {
-                newListItems.add(
-                    GalleryListItem.Header.month(
-                        localDate = takenAtLocal,
-                        withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
-                    )
-                )
-            }
-
-            // Day header.
-            //
-            // Do not show if only grouping by months.
-            //
-            // For the first item – always show.
-            //
-            // For other items – show on day change, that is when the item's day
-            // doesn't match the previous one's.
-            if (!onlyGroupByMonths
-                && (i == 0 || !takenAtLocal.isSameDayAs(galleryMediaList[i - 1].takenAtLocal))
-            ) {
-                newListItems.add(
-                    if (takenAtLocal.isSameDayAs(currentLocalDate))
-                        GalleryListItem.Header.today()
-                    else
-                        GalleryListItem.Header.day(
-                            localDate = takenAtLocal,
-                            withYear = !takenAtLocal.isSameYearAs(currentLocalDate),
-                        )
-                )
-            }
-
-            newListItems.add(
-                GalleryListItem.Media(
-                    source = galleryMedia,
-                    isViewButtonVisible = areViewButtonsVisible,
-                    isSelectionViewVisible = areSelectionViewsVisible,
-                    isMediaSelected = multipleSelectionFilesByMediaUid.containsKey(galleryMedia.uid),
-                    itemScale = itemScale,
-                )
-            )
-        }
-
-        itemsList.postValue(newListItems)
     }
 
     private fun update(force: Boolean = false) {
@@ -615,204 +504,6 @@ class GalleryViewModel(
         }
     }
 
-    fun onItemClicked(item: GalleryListItem) {
-        log.debug {
-            "onItemClicked(): gallery_item_clicked:" +
-                    "\nitem=$item"
-        }
-
-        val media = (item as? GalleryListItem.Media)?.source
-            ?: return
-
-        when (val state = currentState) {
-            is State.Selecting -> {
-                if (state.allowMultiple) {
-                    toggleMediaMultipleSelection(media)
-                } else {
-                    selectMedia(media)
-                }
-            }
-
-            is State.Viewing -> {
-                openViewer(
-                    media = media,
-                    areActionsEnabled = true,
-                )
-            }
-        }
-    }
-
-    fun onItemViewButtonClicked(item: GalleryListItem) {
-        log.debug {
-            "onItemViewButtonClicked(): gallery_item_view_button_clicked:" +
-                    "\nitem=$item"
-        }
-
-        if (item !is GalleryListItem.Media) {
-            return
-        }
-
-        if (item.source != null) {
-            openViewer(
-                media = item.source,
-                areActionsEnabled = false,
-            )
-        }
-    }
-
-    fun onItemLongClicked(item: GalleryListItem) {
-        log.debug {
-            "onItemLongClicked(): gallery_item_long_clicked:" +
-                    "\nitem=$item"
-        }
-
-        val media = (item as? GalleryListItem.Media)?.source
-            ?: return
-
-        when (currentState) {
-            State.Viewing -> {
-                log.debug { "onItemLongClicked(): switching_to_selecting_for_user" }
-
-                switchToSelectingForUser(media)
-            }
-
-            else -> {
-                // Long click does nothing in other states.
-                log.debug { "onItemLongClicked(): ignored" }
-            }
-        }
-    }
-
-    /**
-     * @param target an entry the user interacted with initiating the switch.
-     */
-    private fun switchToSelectingForUser(target: GalleryMedia) {
-        assert(currentState is State.Viewing) {
-            "Switching to selecting is only possible while viewing"
-        }
-
-        stateSubject.onNext(State.Selecting.ForUser)
-
-        // Automatically select the target media.
-        toggleMediaMultipleSelection(target)
-
-        postGalleryItemsAsync()
-        postMultipleSelectionItemsCount()
-
-        // Make the back button press switch back to viewing.
-        backPressActionsStack.pushUniqueAction(switchBackToViewingOnBackPress)
-    }
-
-    private fun selectMedia(media: GalleryMedia) {
-        assert(currentState is State.Selecting) {
-            "Media can only be selected handled in the corresponding state"
-        }
-
-        if (media.files.size > 1) {
-            openFileSelectionDialog(media.files)
-        } else {
-            downloadAndReturnFile(media.files.firstOrNull().checkNotNull {
-                "There must be at least one file in the gallery media object"
-            })
-        }
-    }
-
-    private fun toggleMediaMultipleSelection(media: GalleryMedia) {
-        assert(currentState is State.Selecting) {
-            "Media multiple selection can only be toggled in the corresponding state"
-        }
-
-        if (multipleSelectionFilesByMediaUid.containsKey(media.uid)) {
-            // When clicking currently selected media in the multiple selection state,
-            // just unselect it.
-            removeMediaFromMultipleSelection(media.uid)
-        } else {
-            if (media.files.size > 1) {
-                openFileSelectionDialog(media.files)
-            } else {
-                addFileToMultipleSelection(media.files.firstOrNull().checkNotNull {
-                    "There must be at least one file in the gallery media object"
-                })
-            }
-        }
-    }
-
-    private fun addFileToMultipleSelection(file: GalleryMedia.File) {
-        val currentState = this.currentState
-        check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Media file can only be added to the multiple selection in the corresponding state"
-        }
-
-        multipleSelectionFilesByMediaUid[file.mediaUid] = file
-
-        log.debug {
-            "addFileToMultipleSelection(): file_added:" +
-                    "\nfile=$file," +
-                    "\nmediaUid=${file.mediaUid}"
-        }
-
-        postGalleryItemsAsync()
-        postMultipleSelectionItemsCount()
-    }
-
-    private fun removeMediaFromMultipleSelection(mediaUid: String) {
-        val currentState = this.currentState
-        check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Media can only be removed from the multiple selection in the corresponding state"
-        }
-
-        multipleSelectionFilesByMediaUid.remove(mediaUid)
-
-        log.debug {
-            "removeMediaFromMultipleSelection(): media_removed:" +
-                    "\nmediaUid=$mediaUid"
-        }
-
-        // If the last selected item has been removed, automatically switch back to viewing.
-        // But only if was selecting for user.
-        if (multipleSelectionFilesByMediaUid.isEmpty()
-            && currentState is State.Selecting.ForUser
-        ) {
-            log.debug { "removeMediaFromMultipleSelection(): unselected_last_switching_to_viewing" }
-
-            switchToViewing()
-        }
-
-        postGalleryItemsAsync()
-        postMultipleSelectionItemsCount()
-    }
-
-    private fun postMultipleSelectionItemsCount() {
-        multipleSelectionItemsCount.value = multipleSelectionFilesByMediaUid.keys.size
-    }
-
-    private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
-        log.debug {
-            "openFileSelectionDialog(): posting_open_event:" +
-                    "\nfiles=$files"
-        }
-
-        eventsSubject.onNext(Event.OpenFileSelectionDialog(files))
-    }
-
-    fun onFileSelected(file: GalleryMedia.File) {
-        val currentState = this.currentState
-        check(currentState is State.Selecting) {
-            "Media files can only be selected in the selection state"
-        }
-
-        log.debug {
-            "onFileSelected(): file_selected:" +
-                    "\nfile=$file"
-        }
-
-        if (currentState.allowMultiple) {
-            addFileToMultipleSelection(file)
-        } else {
-            downloadAndReturnFile(file)
-        }
-    }
-
     private fun downloadAndReturnFile(file: GalleryMedia.File) {
         downloadMediaFileViewModel.downloadFile(
             file = file,
@@ -836,7 +527,7 @@ class GalleryViewModel(
         intent: DownloadSelectedFilesIntent,
     ) {
         val filesAndDestinations =
-            multipleSelectionFilesByMediaUid.values.mapIndexed { i, mediaFile ->
+            selectedFilesByMediaUid.values.mapIndexed { i, mediaFile ->
                 when (intent) {
                     DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE ->
                         mediaFile to downloadMediaFileViewModel.getExternalDownloadDestination(
@@ -896,70 +587,6 @@ class GalleryViewModel(
         )
     }
 
-    private fun openViewer(
-        media: GalleryMedia,
-        areActionsEnabled: Boolean,
-    ) {
-        val currentMediaRepository = this.currentMediaRepository
-            ?: return
-
-        val index = currentMediaRepository.itemsList.indexOf(media)
-        val repositoryParams = currentMediaRepository.params
-
-        log.debug {
-            "openViewer(): opening_viewer:" +
-                    "\nmedia=$media," +
-                    "\nindex=$index," +
-                    "\nrepositoryParams=$repositoryParams," +
-                    "\nareActionsEnabled=$areActionsEnabled"
-        }
-
-        eventsSubject.onNext(
-            Event.OpenViewer(
-                mediaIndex = index,
-                repositoryParams = repositoryParams,
-                areActionsEnabled = areActionsEnabled,
-            )
-        )
-    }
-
-    fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int) {
-        // Find the media list item index considering there are other item types.
-        var mediaListItemIndex = -1
-        var listItemIndex = 0
-        var mediaItemsCounter = 0
-        for (item in itemsList.value ?: emptyList()) {
-            if (item is GalleryListItem.Media) {
-                mediaItemsCounter++
-            }
-            if (mediaItemsCounter == lastViewedMediaIndex + 1) {
-                mediaListItemIndex = listItemIndex
-                break
-            }
-            listItemIndex++
-        }
-
-        // Ensure that the last viewed media is visible in the gallery list.
-        if (mediaListItemIndex >= 0) {
-            log.debug {
-                "onViewerReturnedLastViewedMediaIndex(): ensuring_media_list_item_visibility:" +
-                        "\nmediaIndex=$lastViewedMediaIndex" +
-                        "\nmediaListItemIndex=$mediaListItemIndex"
-            }
-
-            eventsSubject.onNext(
-                Event.EnsureListItemVisible(
-                    listItemIndex = mediaListItemIndex,
-                )
-            )
-        } else {
-            log.error {
-                "onViewerReturnedLastViewedMediaIndex(): cant_find_media_list_item_index:" +
-                        "\nmediaIndex=$lastViewedMediaIndex"
-            }
-        }
-    }
-
     fun onMainErrorRetryClicked() {
         update()
     }
@@ -980,41 +607,13 @@ class GalleryViewModel(
         eventsSubject.onNext(Event.OpenFolders)
     }
 
-    fun onClearMultipleSelectionClicked() {
-        val currentState = this.currentState
-
-        check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Clear multiple selection button is only clickable in the corresponding state"
-        }
-
-        when (currentState) {
-            is State.Selecting.ForOtherApp -> {
-                log.debug { "onClearMultipleSelectionClicked(): clearing_selection" }
-
-                clearMultipleSelection()
-            }
-
-            State.Selecting.ForUser -> {
-                log.debug { "onClearMultipleSelectionClicked(): switching_to_viewing" }
-
-                switchToViewing()
-            }
-        }
-    }
-
-    private fun clearMultipleSelection() {
-        multipleSelectionFilesByMediaUid.clear()
-        postGalleryItemsAsync()
-        postMultipleSelectionItemsCount()
-    }
-
     fun onDoneMultipleSelectionClicked() {
         val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
             "Done multiple selection button is only clickable when selecting multiple for other app"
         }
 
-        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+        check(selectedFilesByMediaUid.isNotEmpty()) {
             "Done multiple selection button is only clickable when something is selected"
         }
 
@@ -1028,7 +627,7 @@ class GalleryViewModel(
             "Share multiple selection button is only clickable when selecting"
         }
 
-        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+        check(selectedFilesByMediaUid.isNotEmpty()) {
             "Share multiple selection button is only clickable when something is selected"
         }
 
@@ -1042,7 +641,7 @@ class GalleryViewModel(
             "Download multiple selection button is only clickable when selecting"
         }
 
-        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+        check(selectedFilesByMediaUid.isNotEmpty()) {
             "Download multiple selection button is only clickable when something is selected"
         }
 
@@ -1068,7 +667,7 @@ class GalleryViewModel(
             "Archive multiple selection button is only clickable when selecting"
         }
 
-        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+        check(selectedFilesByMediaUid.isNotEmpty()) {
             "Archive multiple selection button is only clickable when something is selected"
         }
 
@@ -1076,7 +675,7 @@ class GalleryViewModel(
             "There must be a media repository to archive items from"
         }
 
-        val mediaUids = multipleSelectionFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys
 
         archiveGalleryMediaUseCase
             .invoke(
@@ -1113,7 +712,7 @@ class GalleryViewModel(
             "Delete multiple selection button is only clickable when selecting"
         }
 
-        check(multipleSelectionFilesByMediaUid.isNotEmpty()) {
+        check(selectedFilesByMediaUid.isNotEmpty()) {
             "Delete multiple selection button is only clickable when something is selected"
         }
 
@@ -1125,7 +724,7 @@ class GalleryViewModel(
             "There must be a media repository to delete items from"
         }
 
-        val mediaUids = multipleSelectionFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys
 
         deleteGalleryMediaUseCase
             .invoke(
@@ -1231,10 +830,7 @@ class GalleryViewModel(
             "Switching to viewing is only possible while selecting to share"
         }
 
-        backPressActionsStack.removeAction(switchBackToViewingOnBackPress)
-        stateSubject.onNext(State.Viewing)
-
-        clearMultipleSelection()
+        listViewModel.switchFromSelectingToViewing()
     }
 
     fun onDownloadedFilesShared() {
@@ -1303,13 +899,6 @@ class GalleryViewModel(
 
     sealed interface Event {
         /**
-         * Open the media file selection dialog.
-         *
-         * Once selected, the [onFileSelected] method should be called.
-         */
-        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
-
-        /**
          * Return the files to the requesting app when the selection is done.
          */
         class ReturnDownloadedFiles(
@@ -1325,12 +914,6 @@ class GalleryViewModel(
          */
         class ShareDownloadedFiles(
             val files: List<SendableFile>,
-        ) : Event
-
-        class OpenViewer(
-            val mediaIndex: Int,
-            val repositoryParams: SimpleGalleryMediaRepository.Params,
-            val areActionsEnabled: Boolean,
         ) : Event
 
         /**
@@ -1349,11 +932,6 @@ class GalleryViewModel(
         object OpenPreferences : Event
 
         object OpenFolders : Event
-
-        /**
-         * Ensure that the given item of the [itemsList] is visible on the screen.
-         */
-        class EnsureListItemVisible(val listItemIndex: Int) : Event
 
         /**
          * Close the screen and go to the connection,

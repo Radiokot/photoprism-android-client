@@ -37,6 +37,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
@@ -120,6 +122,8 @@ val galleryFeatureModule = module {
 
         viewModelOf(::GalleryFastScrollViewModel)
 
+        viewModelOf(::GalleryListViewModelImpl) bind GalleryListViewModel::class
+
         viewModel {
             GalleryViewModel(
                 galleryMediaRepositoryFactory = get(),
@@ -127,13 +131,13 @@ val galleryFeatureModule = module {
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 downloadMediaFileViewModel = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
-                galleryPreferences = get(),
                 archiveGalleryMediaUseCase = get(),
                 deleteGalleryMediaUseCase = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
                 memoriesListViewModel = get(),
+                listViewModel = get(),
                 galleryExtensionsStateRepository = get(),
             )
         }
