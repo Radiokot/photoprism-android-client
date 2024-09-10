@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Make the file import more stable by retrying failed uploads
 - Make the file import faster by running uploads in parallel
+- Recently downloaded files are no longer re-downloaded 
+  when you want to share them or open them in another app once again
 
 ## [1.30.0] - 2024-09-01
 
