@@ -22,4 +22,9 @@ data class SendableFile(
         mimeType = mediaFile.mimeType,
         displayName = File(mediaFile.name).name,
     )
+
+    constructor(fileAndDestination: Pair<GalleryMedia.File, File>): this(
+        downloadedMediaFile = fileAndDestination.second,
+        mediaFile = fileAndDestination.first,
+    )
 }

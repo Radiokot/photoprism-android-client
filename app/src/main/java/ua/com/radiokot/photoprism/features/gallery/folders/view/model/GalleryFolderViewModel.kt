@@ -11,33 +11,30 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadSelectedFilesIntent
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
-import java.io.File
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class GalleryFolderViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val internalDownloadsDir: File,
-    private val externalDownloadsDir: File,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
-    val downloadMediaFileViewModel: DownloadMediaFileViewModel,
     private val listViewModel: GalleryListViewModelImpl,
+    private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
 ) : ViewModel(),
-    GalleryListViewModel by listViewModel {
+    GalleryListViewModel by listViewModel,
+    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel {
+
     // TODO: refactor to eliminate duplication.
 
     private val log = kLogger("GalleryFolderVM")
@@ -93,7 +90,11 @@ class GalleryFolderViewModel(
 
         if (!allowMultiple) {
             listViewModel.initSelectingSingle(
-                onSingleMediaFileSelected = ::downloadAndReturnFile,
+                onSingleMediaFileSelected = { file ->
+                    mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
+                        files = listOf(file),
+                    )
+                },
                 shouldPostItemsNow = { true },
             )
         } else {
@@ -223,89 +224,6 @@ class GalleryFolderViewModel(
         }
     }
 
-    private fun downloadAndReturnFile(file: GalleryMedia.File) {
-        downloadMediaFileViewModel.downloadFile(
-            file = file,
-            destination = downloadMediaFileViewModel.getInternalDownloadDestination(
-                downloadsDirectory = internalDownloadsDir,
-            ),
-            onSuccess = { destinationFile ->
-                eventsSubject.onNext(
-                    Event.ReturnDownloadedFiles(
-                        SendableFile(
-                            downloadedMediaFile = destinationFile,
-                            mediaFile = file,
-                        )
-                    )
-                )
-            }
-        )
-    }
-
-    private fun downloadMultipleSelectionFiles(
-        intent: DownloadSelectedFilesIntent,
-    ) {
-        val filesAndDestinations =
-            selectedFilesByMediaUid.values.mapIndexed { i, mediaFile ->
-                when (intent) {
-                    DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE ->
-                        mediaFile to downloadMediaFileViewModel.getExternalDownloadDestination(
-                            downloadsDirectory = externalDownloadsDir,
-                            file = mediaFile,
-                        )
-
-                    else ->
-                        mediaFile to downloadMediaFileViewModel.getInternalDownloadDestination(
-                            downloadsDirectory = internalDownloadsDir,
-                            index = i,
-                        )
-                }
-            }
-
-        log.debug {
-            "downloadMultipleSelectionFiles(): start_downloading_files:" +
-                    "\nintent=$intent"
-        }
-
-        downloadMediaFileViewModel.downloadFiles(
-            filesAndDestinations = filesAndDestinations,
-            onSuccess = {
-                val downloadedFiles = filesAndDestinations.map { (mediaFile, destination) ->
-                    SendableFile(
-                        downloadedMediaFile = destination,
-                        mediaFile = mediaFile,
-                    )
-                }
-
-                when (intent) {
-                    DownloadSelectedFilesIntent.RETURN -> {
-                        log.debug {
-                            "downloadMultipleSelectionFiles(): returning_files:" +
-                                    "\ndownloadedFiles=${downloadedFiles.size}"
-                        }
-
-                        eventsSubject.onNext(Event.ReturnDownloadedFiles(downloadedFiles))
-                    }
-
-                    DownloadSelectedFilesIntent.SHARE -> {
-                        log.debug {
-                            "downloadMultipleSelectionFiles(): sharing_files:" +
-                                    "\ndownloadedFiles=${downloadedFiles.size}"
-                        }
-
-                        eventsSubject.onNext(Event.ShareDownloadedFiles(downloadedFiles))
-                    }
-
-                    DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE -> {
-                        eventsSubject.onNext(Event.ShowFilesDownloadedMessage)
-
-                        switchToViewing()
-                    }
-                }
-            }
-        )
-    }
-
     fun onMainErrorRetryClicked() {
         update()
     }
@@ -328,8 +246,8 @@ class GalleryFolderViewModel(
             "Done multiple selection button is only clickable when something is selected"
         }
 
-        downloadMultipleSelectionFiles(
-            intent = DownloadSelectedFilesIntent.RETURN,
+        mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
+            files = selectedFilesByMediaUid.values,
         )
     }
 
@@ -342,8 +260,11 @@ class GalleryFolderViewModel(
             "Share multiple selection button is only clickable when something is selected"
         }
 
-        downloadMultipleSelectionFiles(
-            intent = DownloadSelectedFilesIntent.SHARE,
+        mediaFilesActionsViewModel.downloadAndShareMediaFiles(
+            files = selectedFilesByMediaUid.values,
+            onShared = {
+                switchToViewing()
+            }
         )
     }
 
@@ -356,21 +277,12 @@ class GalleryFolderViewModel(
             "Download multiple selection button is only clickable when something is selected"
         }
 
-        if (downloadMediaFileViewModel.isExternalDownloadStoragePermissionRequired) {
-            log.debug {
-                "onDownloadMultipleSelectionClicked(): must_request_storage_permission"
+        mediaFilesActionsViewModel.downloadMediaFilesToExternalStorage(
+            files = selectedFilesByMediaUid.values,
+            onDownloadFinished = {
+                switchToViewing()
             }
-
-            eventsSubject.onNext(Event.RequestStoragePermission)
-        } else {
-            log.debug {
-                "onDownloadMultipleSelectionClicked(): no_need_to_check_storage_permission"
-            }
-
-            downloadMultipleSelectionFiles(
-                intent = DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE,
-            )
-        }
+        )
     }
 
     fun onArchiveMultipleSelectionClicked() {
@@ -459,37 +371,12 @@ class GalleryFolderViewModel(
             .autoDispose(this)
     }
 
-    fun onStoragePermissionResult(isGranted: Boolean) {
-        log.debug {
-            "onStoragePermissionResult(): received_result:" +
-                    "\nisGranted=$isGranted"
-        }
-
-        when (val state = currentState) {
-            is State.Selecting.ForUser ->
-                if (isGranted) {
-                    downloadMultipleSelectionFiles(
-                        intent = DownloadSelectedFilesIntent.DOWNLOAD_TO_EXTERNAL_STORAGE,
-                    )
-                } else {
-                    eventsSubject.onNext(Event.ShowMissingStoragePermissionMessage)
-                }
-
-            else ->
-                error("Can't handle storage permission in $state state")
-        }
-    }
-
     private fun switchToViewing() {
         assert(currentState is State.Selecting.ForUser) {
             "Switching to viewing is only possible while selecting to share"
         }
 
         listViewModel.switchFromSelectingToViewing()
-    }
-
-    fun onDownloadedFilesShared() {
-        switchToViewing()
     }
 
     fun onSwipeRefreshPulled() {
@@ -536,25 +423,6 @@ class GalleryFolderViewModel(
 
     sealed interface Event {
         /**
-         * Return the files to the requesting app when the selection is done.
-         */
-        class ReturnDownloadedFiles(
-            val files: List<SendableFile>,
-        ) : Event {
-            constructor(downloadedFile: SendableFile) : this(listOf(downloadedFile))
-        }
-
-        /**
-         * Share the files with any app of the user's choice when the selection is done.
-         *
-         * Once shared, the [onDownloadedFilesShared] method should be called.
-         */
-        class ShareDownloadedFiles(
-            val files: List<SendableFile>,
-        ) : Event
-
-
-        /**
          * Reset the scroll (to the top) and the infinite scrolling.
          */
         object ResetScroll : Event
@@ -566,16 +434,6 @@ class GalleryFolderViewModel(
          * if the error assumes retrying.
          */
         class ShowFloatingError(val error: Error) : Event
-
-        object ShowFilesDownloadedMessage : Event
-
-        /**
-         * Request the external storage write permission reporting the result
-         * to the [onStoragePermissionResult] method.
-         */
-        object RequestStoragePermission : Event
-
-        object ShowMissingStoragePermissionMessage : Event
 
         /**
          * Show item deletion confirmation, reporting the choice

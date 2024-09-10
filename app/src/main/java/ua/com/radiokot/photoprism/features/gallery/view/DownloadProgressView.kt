@@ -26,11 +26,11 @@ class DownloadProgressView(
             DownloadProgressDialogFragment.CANCELLATION_REQUEST_KEY,
             this
         ) { _, _ ->
-            viewModel.onDownloadProgressDialogCancelled()
+            viewModel.onUserCancelledDownload()
         }
     }
 
-    private fun subscribeToState() = viewModel.downloadState.subscribe(this) { state ->
+    private fun subscribeToState() = viewModel.downloadProgressState.subscribe(this) { state ->
         when (state) {
             DownloadProgressViewModel.State.Idle ->
                 dismissDownloadProgress()
@@ -45,7 +45,7 @@ class DownloadProgressView(
     }
 
     private fun subscribeToEvents(
-    ) = viewModel.downloadEvents.subscribe(this) { event ->
+    ) = viewModel.downloadProgressEvents.subscribe(this) { event ->
         log.debug {
             "subscribeToEvents(): received_new_event:" +
                     "\nevent=$event"

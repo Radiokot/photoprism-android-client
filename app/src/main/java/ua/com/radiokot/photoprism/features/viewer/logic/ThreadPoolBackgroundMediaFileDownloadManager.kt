@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
  * A [BackgroundMediaFileDownloadManager] which utilizes a fixed thread pool.
  */
 class ThreadPoolBackgroundMediaFileDownloadManager(
-    private val downloadFileUseCaseFactory: DownloadFileUseCase.Factory,
+    private val downloadFileUseCase: DownloadFileUseCase,
     poolSize: Int,
 ) : BackgroundMediaFileDownloadManager {
     private val log = kLogger("RxBackgroundMFDownloadManager")
@@ -38,13 +38,12 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
             .mergeWith(
                 // Then merge it with the actual download progress,
                 // which execution may be delayed.
-                downloadFileUseCaseFactory
-                    .get(
+                downloadFileUseCase
+                    .invoke(
                         url = file.downloadUrl,
                         destination = destination,
                         mimeType = file.mimeType
                     )
-                    .invoke()
                     .subscribeOn(scheduler)
                     .map { progress ->
                         BackgroundMediaFileDownloadManager.Status.InProgress(

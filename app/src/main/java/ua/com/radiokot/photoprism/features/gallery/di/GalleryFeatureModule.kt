@@ -35,11 +35,14 @@ import ua.com.radiokot.photoprism.features.gallery.search.gallerySearchFeatureMo
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.DownloadMediaFileViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
+import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
 import ua.com.radiokot.photoprism.util.downloader.OkHttpObservableDownloader
 
@@ -97,13 +100,11 @@ val galleryFeatureModule = module {
             )
         } bind MediaWebUrlFactory::class
 
-        scopedOf(DownloadFileUseCase::Factory)
+        scopedOf(::DownloadFileUseCase)
 
         // Downloader must be session-scoped to have the correct
         // HTTP client (e.g. for mTLS)
         scopedOf(::OkHttpObservableDownloader) bind ObservableDownloader::class
-
-        viewModelOf(::DownloadMediaFileViewModel)
 
         scoped {
             SimpleGalleryMediaRepository.Factory(
@@ -118,6 +119,13 @@ val galleryFeatureModule = module {
             )
         } bind SimpleGalleryMediaRepository.Factory::class
 
+        scoped {
+            ThreadPoolBackgroundMediaFileDownloadManager(
+                downloadFileUseCase = get(),
+                poolSize = 6,
+            )
+        } bind BackgroundMediaFileDownloadManager::class
+
         viewModelOf(::GallerySearchViewModel)
 
         viewModelOf(::GalleryFastScrollViewModel)
@@ -125,11 +133,17 @@ val galleryFeatureModule = module {
         viewModelOf(::GalleryListViewModelImpl) bind GalleryListViewModel::class
 
         viewModel {
-            GalleryViewModel(
-                galleryMediaRepositoryFactory = get(),
+            MediaFileDownloadActionsViewModelDelegateImpl(
                 internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
-                downloadMediaFileViewModel = get(),
+                backgroundMediaFileDownloadManager = get(),
+                downloadFileUseCase = get(),
+            )
+        } bind MediaFileDownloadActionsViewModelDelegate::class
+
+        viewModel {
+            GalleryViewModel(
+                galleryMediaRepositoryFactory = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
                 archiveGalleryMediaUseCase = get(),
                 deleteGalleryMediaUseCase = get(),
@@ -138,6 +152,7 @@ val galleryFeatureModule = module {
                 disconnectFromEnvUseCase = get(),
                 memoriesListViewModel = get(),
                 listViewModel = get(),
+                mediaFilesActionsViewModel = get(),
                 galleryExtensionsStateRepository = get(),
             )
         }

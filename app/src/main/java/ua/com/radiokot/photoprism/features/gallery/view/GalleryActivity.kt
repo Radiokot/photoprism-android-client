@@ -62,6 +62,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
@@ -101,7 +102,7 @@ class GalleryActivity : BaseActivity() {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = viewModel.downloadMediaFileViewModel,
+            viewModel = viewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.galleryRecyclerView,
             lifecycleOwner = this
@@ -345,6 +346,38 @@ class GalleryActivity : BaseActivity() {
             }
         }
 
+        viewModel.mediaFileDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is MediaFileDownloadActionsViewModel.Event.OpenDownloadedFile ->
+                    error("Unsupported event")
+
+                MediaFileDownloadActionsViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
+
+                is MediaFileDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
+                    returnDownloadedFiles(event.files)
+
+                is MediaFileDownloadActionsViewModel.Event.ShareDownloadedFiles ->
+                    shareDownloadedFiles(event.files)
+
+                MediaFileDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
+                    showFloatingMessage(getString(R.string.files_saved_to_downloads))
+
+                MediaFileDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showFloatingMessage(getString(R.string.error_storage_permission_is_required))
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
+        }
+
         viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
@@ -352,12 +385,6 @@ class GalleryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GalleryViewModel.Event.ReturnDownloadedFiles ->
-                    returnDownloadedFiles(event.files)
-
-                is GalleryViewModel.Event.ShareDownloadedFiles ->
-                    shareDownloadedFiles(event.files)
-
                 is GalleryViewModel.Event.ResetScroll -> {
                     resetScroll()
                 }
@@ -377,22 +404,6 @@ class GalleryActivity : BaseActivity() {
                 is GalleryViewModel.Event.GoToEnvConnection -> {
                     goToEnvConnection(
                         rootUrl = event.rootUrl,
-                    )
-                }
-
-                is GalleryViewModel.Event.ShowFilesDownloadedMessage -> {
-                    showFloatingMessage(
-                        message = getString(R.string.files_saved_to_downloads),
-                    )
-                }
-
-                is GalleryViewModel.Event.RequestStoragePermission -> {
-                    requestStoragePermission()
-                }
-
-                is GalleryViewModel.Event.ShowMissingStoragePermissionMessage -> {
-                    showFloatingMessage(
-                        message = getString(R.string.error_storage_permission_is_required),
                     )
                 }
 

@@ -52,15 +52,18 @@ import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.fadeVisibility
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.recyclerView
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
@@ -73,7 +76,6 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
 import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
-import java.io.File
 import java.text.DateFormat
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -97,7 +99,7 @@ class MediaViewerActivity : BaseActivity() {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = viewModel.downloadMediaFileViewModel,
+            viewModel = viewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.viewPager,
             lifecycleOwner = this
@@ -759,64 +761,84 @@ class MediaViewerActivity : BaseActivity() {
     private fun showSystemUI() =
         windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
 
-    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
-        log.debug {
-            "subscribeToEvents(): received_new_event:" +
-                    "\nevent=$event"
+    private fun subscribeToEvents() {
+        viewModel.mediaFileDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is MediaFileDownloadActionsViewModel.Event.OpenDownloadedFile ->
+                    openDownloadedFile(event.file)
+
+                MediaFileDownloadActionsViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
+
+                is MediaFileDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
+                    error("Unsupported event")
+
+                is MediaFileDownloadActionsViewModel.Event.ShareDownloadedFiles ->
+                    shareDownloadedFiles(event.files)
+
+                MediaFileDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
+                    error("Unsupported event")
+
+                MediaFileDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showMissingStoragePermissionMessage()
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
         }
 
-        when (event) {
-            is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
-                openMediaFilesDialog(
-                    files = event.files,
-                )
+        viewModel.events.subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_new_event:" +
+                        "\nevent=$event"
+            }
 
-            is MediaViewerViewModel.Event.ShareDownloadedFile ->
-                shareDownloadedFile(
-                    downloadedFile = event.downloadedFile,
-                    mimeType = event.mimeType,
-                    displayName = event.displayName,
-                )
+            when (event) {
+                is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
+                    openMediaFilesDialog(
+                        files = event.files,
+                    )
 
-            is MediaViewerViewModel.Event.OpenDownloadedFile ->
-                openDownloadedFile(
-                    downloadedFile = event.downloadedFile,
-                    mimeType = event.mimeType,
-                    displayName = event.displayName,
-                )
+                is MediaViewerViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
 
-            is MediaViewerViewModel.Event.RequestStoragePermission ->
-                requestStoragePermission()
+                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                    showStartedDownloadMessage(
+                        destinationFileName = event.destinationFileName,
+                    )
 
-            is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
-                showStartedDownloadMessage(
-                    destinationFileName = event.destinationFileName,
-                )
+                is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showMissingStoragePermissionMessage()
 
-            is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
-                showMissingStoragePermissionMessage()
+                is MediaViewerViewModel.Event.OpenWebViewer ->
+                    openWebViewer(
+                        url = event.url,
+                    )
 
-            is MediaViewerViewModel.Event.OpenWebViewer ->
-                openWebViewer(
-                    url = event.url,
-                )
+                is MediaViewerViewModel.Event.OpenSlideshow ->
+                    openSlideshow(
+                        mediaIndex = event.mediaIndex,
+                        repositoryParams = event.repositoryParams,
+                    )
 
-            is MediaViewerViewModel.Event.OpenSlideshow ->
-                openSlideshow(
-                    mediaIndex = event.mediaIndex,
-                    repositoryParams = event.repositoryParams,
-                )
+                MediaViewerViewModel.Event.Finish ->
+                    finish()
 
-            MediaViewerViewModel.Event.Finish ->
-                finish()
+                MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
+                    openDeletingConfirmationDialog()
+            }
 
-            MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
-                openDeletingConfirmationDialog()
-        }
-
-        log.debug {
-            "subscribeToEvents(): handled_new_event:" +
-                    "\nevent=$event"
+            log.debug {
+                "subscribeToEvents(): handled_new_event:" +
+                        "\nevent=$event"
+            }
         }
     }
 
@@ -839,43 +861,36 @@ class MediaViewerActivity : BaseActivity() {
         )
     }
 
-    private fun shareDownloadedFile(
-        downloadedFile: File,
-        mimeType: String,
-        displayName: String,
+    private fun shareDownloadedFiles(
+        files: List<SendableFile>,
     ) {
-        val resultIntent = fileReturnIntentCreator.createIntent(
-            fileToReturn = downloadedFile,
-            mimeType = mimeType,
-            displayName = displayName,
-        )
+        val resultIntent = fileReturnIntentCreator.createIntent(files)
 
         log.debug {
-            "shareDownloadedFile(): starting_intent:" +
-                    "\nintent=$resultIntent" +
-                    "\ndownloadedFile=$downloadedFile"
+            "shareDownloadedFiles(): starting_intent:" +
+                    "\nintent=$resultIntent," +
+                    "\nfilesCount=${files.size}"
         }
 
-        startActivity(Intent.createChooser(resultIntent, getString(R.string.share)))
+        startActivity(
+            Intent.createChooser(
+                resultIntent,
+                getString(R.string.share),
+            )
+        )
+
+        viewModel.onDownloadedMediaFilesShared()
     }
 
-    private fun openDownloadedFile(
-        downloadedFile: File,
-        mimeType: String,
-        displayName: String,
-    ) {
-        val resultIntent = fileReturnIntentCreator.createIntent(
-            fileToReturn = downloadedFile,
-            mimeType = mimeType,
-            displayName = displayName,
-        ).also {
+    private fun openDownloadedFile(sendableFile: SendableFile) {
+        val resultIntent = fileReturnIntentCreator.createIntent(listOf(sendableFile)).also {
             it.action = Intent.ACTION_VIEW
         }
 
         log.debug {
             "openDownloadedFile(): starting_intent:" +
                     "\nintent=$resultIntent" +
-                    "\ndownloadedFile=$downloadedFile"
+                    "\ndownloadedFile=$sendableFile"
         }
 
         startActivity(resultIntent)

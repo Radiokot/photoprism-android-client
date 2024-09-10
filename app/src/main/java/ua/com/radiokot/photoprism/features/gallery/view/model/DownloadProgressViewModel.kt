@@ -1,12 +1,13 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 interface DownloadProgressViewModel {
-    val downloadState: Observable<State>
-    val downloadEvents: Observable<Event>
+    val downloadProgressState: BehaviorSubject<State>
+    val downloadProgressEvents: PublishSubject<Event>
 
-    fun onDownloadProgressDialogCancelled()
+    fun onUserCancelledDownload()
 
     sealed interface State {
         object Idle : State

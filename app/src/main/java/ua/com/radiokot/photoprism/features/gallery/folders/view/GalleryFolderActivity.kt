@@ -49,6 +49,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.ShareSheetShareEventRece
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
@@ -82,7 +83,7 @@ class GalleryFolderActivity : BaseActivity() {
     }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
-            viewModel = viewModel.downloadMediaFileViewModel,
+            viewModel = viewModel,
             fragmentManager = supportFragmentManager,
             errorSnackbarView = view.galleryRecyclerView,
             lifecycleOwner = this
@@ -235,7 +236,7 @@ class GalleryFolderActivity : BaseActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             ShareSheetShareEventReceiver.shareEvents.subscribe(this) {
-                viewModel.onDownloadedFilesShared()
+                viewModel.onDownloadedMediaFilesShared()
             }
         }
 
@@ -504,6 +505,38 @@ class GalleryFolderActivity : BaseActivity() {
             }
         }
 
+        viewModel.mediaFileDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                is MediaFileDownloadActionsViewModel.Event.OpenDownloadedFile ->
+                    error("Unsupported event")
+
+                MediaFileDownloadActionsViewModel.Event.RequestStoragePermission ->
+                    requestStoragePermission()
+
+                is MediaFileDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
+                    returnDownloadedFiles(event.files)
+
+                is MediaFileDownloadActionsViewModel.Event.ShareDownloadedFiles ->
+                    shareDownloadedFiles(event.files)
+
+                MediaFileDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
+                    showFloatingMessage(getString(R.string.files_saved_to_downloads))
+
+                MediaFileDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
+                    showFloatingMessage(getString(R.string.error_storage_permission_is_required))
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_media_files_actions_event:" +
+                        "\nevent=$event"
+            }
+        }
+
         viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
@@ -520,25 +553,6 @@ class GalleryFolderActivity : BaseActivity() {
 
                 GalleryFolderViewModel.Event.OpenDeletingConfirmationDialog ->
                     openDeletingConfirmationDialog()
-
-                GalleryFolderViewModel.Event.RequestStoragePermission ->
-                    requestStoragePermission()
-
-                is GalleryFolderViewModel.Event.ReturnDownloadedFiles ->
-                    returnDownloadedFiles(event.files)
-
-                is GalleryFolderViewModel.Event.ShareDownloadedFiles ->
-                    shareDownloadedFiles(event.files)
-
-                GalleryFolderViewModel.Event.ShowFilesDownloadedMessage ->
-                    showFloatingMessage(
-                        message = getString(R.string.files_saved_to_downloads),
-                    )
-
-                GalleryFolderViewModel.Event.ShowMissingStoragePermissionMessage ->
-                    showFloatingMessage(
-                        message = getString(R.string.error_storage_permission_is_required),
-                    )
             }
 
             log.debug {
@@ -671,7 +685,7 @@ class GalleryFolderActivity : BaseActivity() {
                 )
             )
 
-            viewModel.onDownloadedFilesShared()
+            viewModel.onDownloadedMediaFilesShared()
         }
     }
 
