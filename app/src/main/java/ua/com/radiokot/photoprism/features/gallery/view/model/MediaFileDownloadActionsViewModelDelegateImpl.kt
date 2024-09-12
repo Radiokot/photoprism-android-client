@@ -216,20 +216,20 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
 
         val destinations = filesAndDestinations.map(Pair<*, File>::second)
 
-        if (destinations.all { it.exists() && it.canRead() }) {
-            log.debug {
-                "downloadFiles(): returning_already_download_files"
-            }
-
-            onSuccess(filesAndDestinations.map(::SendableFile))
-
-            return
-        }
-
         downloadDisposable?.dispose()
         downloadDisposable = filesAndDestinations
             .mapIndexed { currentDownloadIndex, (file, destination) ->
                 val downloadUrl = file.downloadUrl
+
+                if (destination.exists() && destination.canRead()) {
+                    return@mapIndexed Completable.complete().doOnSubscribe {
+                        log.debug {
+                            "downloadFiles(): skip_already_download_file:" +
+                                    "\nurl=$downloadUrl" +
+                                    "\ncurrentDownloadIndex=$currentDownloadIndex"
+                        }
+                    }
+                }
 
                 downloadFileUseCase
                     .invoke(
