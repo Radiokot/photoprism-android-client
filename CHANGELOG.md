@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Recently downloaded files are no longer re-downloaded 
   when you want to share them or open them in another app once again
 
+### Fixed
+
+- Crashing on screens with strings containing numbers 
+  when the app language is French or Czech
+
 ## [1.30.0] - 2024-09-01
 
 ### Added

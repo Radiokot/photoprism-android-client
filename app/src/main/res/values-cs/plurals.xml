@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- There must be "other" equal to "many",
+         otherwise the app crashes in runtime -->
+
     <plurals name="imported_search_bookmarks">
         <item quantity="one">importována %1$d záložka</item>
         <item quantity="few">importováné %1$d záložky</item>
         <item quantity="many">importováno %1$d záložek</item>
+        <item quantity="other">importováno %1$d záložek</item>
     </plurals>
     <plurals name="years_ago">
         <item quantity="one">Před rokem</item>
         <item quantity="few">Před %1$d roky</item>
         <item quantity="many">Před %1$d lety</item>
+        <item quantity="other">Před %1$d lety</item>
     </plurals>
     <plurals name="activated_extensions">
         <item quantity="one">%1$d aktivované rozšíření</item>
         <item quantity="few">%1$d aktivovaná rozšíření</item>
         <item quantity="many">%1$d aktivovaných rozšíření</item>
+        <item quantity="other">%1$d aktivovaných rozšíření</item>
     </plurals>
     <plurals name="files">
         <item quantity="one">%1$d soubor</item>
         <item quantity="few">%1$d soubory</item>
         <item quantity="many">%1$d souborů</item>
+        <item quantity="other">%1$d souborů</item>
     </plurals>
 </resources>
