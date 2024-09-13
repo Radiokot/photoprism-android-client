@@ -19,8 +19,8 @@ import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredExcep
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.basicAuth
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
 
@@ -215,8 +215,11 @@ class EnvConnectionViewModel(
                 .trim { it == '/' || it.isWhitespace() }
                 // Silently correct PhotoPrism library routes
                 // so they are not treated as SSO later on.
-                .substringBeforeLast("/library/browse")
-                .substringBeforeLast("/library/login")
+                .let { trimmedRootHttpUrl ->
+                    COMMON_LIBRARY_ROUTES.fold(trimmedRootHttpUrl) { result, route ->
+                        result.substringBeforeLast("/library/$route")
+                    }
+                }
                 .toHttpUrl()
 
             EnvConnectionParams(
@@ -359,5 +362,12 @@ class EnvConnectionViewModel(
          * Call [onTfaCodeEntered] on successful result.
          */
         object RequestTfaCodeInput : Event
+    }
+
+    private companion object {
+        private val COMMON_LIBRARY_ROUTES = setOf(
+            "login", "browse", "review", "archive", "albums", "videos", "people", "favorites",
+            "moments", "calendar", "places", "labels", "folders", "private", "index", "settings",
+        )
     }
 }

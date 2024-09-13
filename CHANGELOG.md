@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Make the file import more stable by retrying failed uploads
-- Make the file import faster by running uploads in parallel
+- Made the file import more stable by retrying failed uploads
+- Made the file import faster by running uploads in parallel
 - Recently downloaded files are no longer re-downloaded 
   when you want to share them or open them in another app once again
+- Extended the silent correction of PhotoPrism library page URLs during the connection.
+  Now all the common `/library/` routes are being corrected
 
 ### Fixed
 
