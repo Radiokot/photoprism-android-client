@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Crashing on screens with strings containing numbers 
   when the app language is French or Czech
+- Showing indeterminate download progress (when Content-Length is not available) as 1%
 
 ## [1.30.0] - 2024-09-01
 

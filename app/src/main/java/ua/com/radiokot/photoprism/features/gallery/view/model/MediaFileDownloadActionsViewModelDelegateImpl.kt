@@ -257,7 +257,11 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
                     .doOnNext { progress ->
                         downloadProgressState.onNext(
                             DownloadProgressViewModel.State.Running(
-                                percent = progress.percent.roundToInt().coerceAtLeast(1),
+                                percent =
+                                if (progress.percent < 0)
+                                    -1
+                                else
+                                    progress.percent.roundToInt().coerceAtLeast(1),
                                 currentDownloadNumber = currentDownloadIndex + 1,
                                 downloadsCount = filesAndDestinations.size,
                             )
