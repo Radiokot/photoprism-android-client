@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=20&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=21&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -50,6 +50,7 @@ It may work with older ones though, I just haven't tested it.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension store](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/104279101?s=100" alt="PitRejection2359" title="PitRejection2359" height=70 />](https://github.com/PitRejection2359)
 [<img src="https://avatars.githubusercontent.com/u/35728385?s=100" alt="Sayantan Santra" title="Sayantan Santra" height=70 />](https://github.com/SinTan1729)
 [<img src="https://avatars.githubusercontent.com/u/136379342?s=100" alt="Philipp" title="Philipp" height=70 />](https://github.com/Blendan1)
 [<img src="https://avatars.githubusercontent.com/u/28670365?s=100" alt="Daniel Fuchs" title="Daniel Fuchs" height=70 />](https://github.com/dfoxg)
