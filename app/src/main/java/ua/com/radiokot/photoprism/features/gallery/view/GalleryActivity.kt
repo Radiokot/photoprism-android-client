@@ -62,8 +62,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
@@ -293,8 +293,7 @@ class GalleryActivity : BaseActivity() {
             updateMultipleSelectionMenuVisibility()
         }
 
-        viewModel.itemScale.observeOnMain()
-            .subscribe(this) { itemScale ->
+        viewModel.itemScale.observeOnMain().subscribe(this) { itemScale ->
             if (currentListItemScale != null && itemScale != currentListItemScale) {
                 // Will not do for pinch gesture.
                 lifecycleScope.launchWhenResumed {

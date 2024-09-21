@@ -253,4 +253,11 @@
     <string name="no_folders_found">No folders found</string>
     <string name="failed_to_load_folders">Failed to load folders</string>
     <string name="menu">Menu</string>
+    <string name="sort_preference">Sort</string>
+    <string name="sort_order_name">Name</string>
+    <string name="sort_order_name_desc">Name, descending</string>
+    <string name="sort_order_newest_first">Newest first</string>
+    <string name="sort_order_oldest_first">Oldest first</string>
+    <string name="sort_order_recently_updated">Recently updated</string>
+    <string name="sort_favorites_first">Favorites first</string>
 </resources>

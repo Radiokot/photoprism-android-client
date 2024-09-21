@@ -24,6 +24,7 @@ import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
+import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderOrder
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
@@ -60,6 +61,16 @@ class GalleryFoldersActivity : BaseActivity() {
 
         // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
+
+        supportFragmentManager.setFragmentResultListener(
+            GalleryFoldersSortDialogFragment.REQUEST_KEY,
+            this
+        ) { _, result ->
+            viewModel.onSortDialogResult(
+                selectedOrder = GalleryFoldersSortDialogFragment.getSelectedOrder(result),
+                areFavoritesFirst = GalleryFoldersSortDialogFragment.areFavoritesFirst(result),
+            )
+        }
     }
 
     private fun initList() {
@@ -185,6 +196,12 @@ class GalleryFoldersActivity : BaseActivity() {
                     folderTitle = event.folderTitle,
                     repositoryParams = event.repositoryParams,
                 )
+
+            is GalleryFoldersViewModel.Event.OpenSortDialog ->
+                openSortDialog(
+                    selectedOrder = event.selectedOrder,
+                    areFavoritesFirst = event.areFavoritesFirst,
+                )
         }
 
         log.debug {
@@ -218,8 +235,27 @@ class GalleryFoldersActivity : BaseActivity() {
             )
     )
 
+    private fun openSortDialog(
+        selectedOrder: GalleryFolderOrder,
+        areFavoritesFirst: Boolean,
+    ) {
+        val fragment =
+            (supportFragmentManager.findFragmentByTag(GalleryFoldersSortDialogFragment.TAG)
+                    as? GalleryFoldersSortDialogFragment)
+                ?: GalleryFoldersSortDialogFragment().apply {
+                    arguments = GalleryFoldersSortDialogFragment.getBundle(
+                        selectedOrder = selectedOrder,
+                        areFavoritesFirst = areFavoritesFirst,
+                    )
+                }
+
+        if (!fragment.isAdded || !fragment.showsDialog) {
+            fragment.showNow(supportFragmentManager, GalleryFoldersSortDialogFragment.TAG)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_overview, menu)
+        menuInflater.inflate(R.menu.gallery_folders, menu)
 
         // Set up the search.
         with(menu?.findItem(R.id.search_view)?.actionView as SearchView) {
@@ -227,6 +263,11 @@ class GalleryFoldersActivity : BaseActivity() {
             fixCloseButtonColor()
             hideUnderline()
             bindToViewModel(viewModel, this@GalleryFoldersActivity)
+        }
+
+        menu.findItem(R.id.sort)?.setOnMenuItemClickListener {
+            viewModel.onSortClicked()
+            true
         }
 
         return super.onCreateOptionsMenu(menu)

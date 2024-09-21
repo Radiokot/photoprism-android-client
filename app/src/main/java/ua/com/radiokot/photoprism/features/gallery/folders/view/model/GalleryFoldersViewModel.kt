@@ -166,6 +166,32 @@ class GalleryFoldersViewModel(
         }
     }
 
+    fun onSortClicked() {
+        log.debug {
+            "onSortClicked(): opening_sort_dialog"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenSortDialog(
+                selectedOrder = GalleryFolderOrder.NAME_DESC,
+                areFavoritesFirst = true,
+            )
+        )
+    }
+
+    fun onSortDialogResult(
+        selectedOrder: GalleryFolderOrder,
+        areFavoritesFirst: Boolean,
+    ) {
+        log.debug {
+            "onSortDialogResult():" +
+                    "\nselectedOrder=$selectedOrder," +
+                    "\nareFavoritesFirst=$areFavoritesFirst"
+        }
+
+        // TODO update the comparator and re-post items.
+    }
+
     private fun onBackPressed() {
         log.debug {
             "onBackPressed(): handling_back_press"
@@ -198,6 +224,14 @@ class GalleryFoldersViewModel(
         class OpenFolder(
             val folderTitle: String,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
+
+        /**
+         * Show the sort dialog, return the result to [onSortDialogResult].
+         */
+        class OpenSortDialog(
+            val selectedOrder: GalleryFolderOrder,
+            val areFavoritesFirst: Boolean,
         ) : Event
     }
 
