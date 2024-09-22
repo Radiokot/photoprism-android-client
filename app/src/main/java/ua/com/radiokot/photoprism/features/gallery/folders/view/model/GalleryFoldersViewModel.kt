@@ -31,6 +31,10 @@ class GalleryFoldersViewModel(
         override fun handleOnBackPressed() = onBackPressed()
     }
 
+    // TODO load and save to preferences
+    private var sortOrder: GalleryFolderOrder = GalleryFolderOrder.NAME
+    private var areFavoritesFirst: Boolean = true
+
     init {
         subscribeToRepository()
         subscribeToSearch()
@@ -105,10 +109,38 @@ class GalleryFoldersViewModel(
             "postFolderItems(): posting_items:" +
                     "\nalbumCount=${repositoryAlbums.size}," +
                     "\nsearchQuery=$searchQuery," +
-                    "\nfilteredAlbumCount=${filteredRepositoryAlbums.size}"
+                    "\nfilteredAlbumCount=${filteredRepositoryAlbums.size}," +
+                    "\nsortOrder=$sortOrder," +
+                    "\nareFavoritesFirst=$areFavoritesFirst"
         }
 
-        itemsList.value = filteredRepositoryAlbums.map(::GalleryFolderListItem)
+        val comparator: Comparator<Album> = when (sortOrder) {
+            GalleryFolderOrder.NAME ->
+                compareBy(Album::title)
+
+            GalleryFolderOrder.NAME_DESC ->
+                compareByDescending(Album::title)
+
+            GalleryFolderOrder.NEWEST_FIRST ->
+                compareByDescending(Album::createdAt)
+
+            GalleryFolderOrder.OLDEST_FIRST ->
+                compareBy(Album::createdAt)
+
+            GalleryFolderOrder.RECENTLY_UPDATED ->
+                compareByDescending(Album::updatedAt)
+        }.let { orderComparator ->
+            if (areFavoritesFirst) {
+                compareByDescending(Album::isFavorite)
+                    .then(orderComparator)
+            } else {
+                orderComparator
+            }
+        }
+
+        itemsList.value = filteredRepositoryAlbums
+            .sortedWith(comparator)
+            .map(::GalleryFolderListItem)
 
         mainError.value =
             when {
@@ -173,8 +205,8 @@ class GalleryFoldersViewModel(
 
         eventsSubject.onNext(
             Event.OpenSortDialog(
-                selectedOrder = GalleryFolderOrder.NAME_DESC,
-                areFavoritesFirst = true,
+                selectedOrder = sortOrder,
+                areFavoritesFirst = areFavoritesFirst,
             )
         )
     }
@@ -189,7 +221,10 @@ class GalleryFoldersViewModel(
                     "\nareFavoritesFirst=$areFavoritesFirst"
         }
 
-        // TODO update the comparator and re-post items.
+        this.sortOrder = selectedOrder
+        this.areFavoritesFirst = areFavoritesFirst
+
+        postFolderItems()
     }
 
     private fun onBackPressed() {

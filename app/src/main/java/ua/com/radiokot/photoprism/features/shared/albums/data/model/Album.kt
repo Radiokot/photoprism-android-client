@@ -3,7 +3,9 @@ package ua.com.radiokot.photoprism.features.shared.albums.data.model
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import java.util.Date
 
 class Album(
     /*
@@ -19,6 +21,8 @@ class Album(
     val path: String?,
     val uid: String,
     val isFavorite: Boolean,
+    val createdAt: Date,
+    val updatedAt: Date,
     previewHash: String,
     previewUrlFactory: MediaPreviewUrlFactory,
 ) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
@@ -33,6 +37,8 @@ class Album(
         path = source.path.takeIf(String::isNotEmpty),
         uid = source.uid,
         isFavorite = source.favorite,
+        createdAt = parsePhotoPrismDate(source.createdAt)!!,
+        updatedAt = parsePhotoPrismDate(source.updatedAt)!!,
         previewHash = source.thumb,
         previewUrlFactory = previewUrlFactory,
     )
