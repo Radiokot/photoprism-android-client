@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.shared.albums.data.storage
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
-import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
@@ -49,8 +48,6 @@ class AlbumsRepository(
                     val items = photoPrismAlbumsService.getAlbums(
                         count = PAGE_LIMIT,
                         offset = offset,
-                        // Doesn't matter, the results will be sorted locally.
-                        order = PhotoPrismOrder.NAME,
                         type = type.value,
                     )
 

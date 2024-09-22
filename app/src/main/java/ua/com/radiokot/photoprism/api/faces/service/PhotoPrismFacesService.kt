@@ -16,8 +16,6 @@ interface PhotoPrismFacesService {
         count: Int,
         @Query("offset")
         offset: Int,
-        @Query("order")
-        order: PhotoPrismOrder,
         @Query("unknown")
         unknown: Boolean,
         @Query("markers")

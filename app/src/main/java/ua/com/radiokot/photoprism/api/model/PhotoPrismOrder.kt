@@ -1,13 +1,10 @@
 package ua.com.radiokot.photoprism.api.model
 
-import java.util.*
+import java.util.Locale
 
 enum class PhotoPrismOrder {
     NEWEST,
     OLDEST,
-    FAVORITES,
-    NAME,
-    PLACE,
     ;
 
     override fun toString(): String {

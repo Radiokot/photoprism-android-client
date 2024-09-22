@@ -18,8 +18,6 @@ interface PhotoPrismSubjectsService {
         offset: Int,
         @Query("type")
         type: String,
-        @Query("order")
-        order: PhotoPrismOrder,
         @Query("q")
         q: String? = null,
     ): List<PhotoPrismSubject>

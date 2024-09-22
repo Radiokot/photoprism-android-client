@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.gallery.search.people.data.storage
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.api.faces.service.PhotoPrismFacesService
-import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.subjects.service.PhotoPrismSubjectsService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
@@ -30,17 +29,15 @@ class PeopleRepository(
             .thenByDescending(Person::photoCount)
             .thenBy(Person::name)
 
-    override fun getCollection(): Single<List<Person>> {
-        return Single.zip(
+    override fun getCollection(): Single<List<Person>> =
+        Single.mergeDelayError(
             getFromPersonSubjects(),
             getFromUnknownFaces(),
-        ) { list1, list2 ->
-            list1.toMutableList().apply {
-                addAll(list2)
-                sortWith(comparator)
+        )
+            .collectInto(mutableListOf<Person>()) { collectedPeople, people ->
+                collectedPeople.addAll(people)
             }
-        }
-    }
+            .map { it.sortedWith(comparator) }
 
     private fun getFromPersonSubjects(): Single<List<Person>> {
         val loader = PagedCollectionLoader(
@@ -51,7 +48,6 @@ class PeopleRepository(
                     val items = photoPrismSubjectsService.getSubjects(
                         count = PAGE_LIMIT,
                         offset = offset,
-                        order = PhotoPrismOrder.FAVORITES,
                         type = "person"
                     )
 
@@ -86,7 +82,6 @@ class PeopleRepository(
                     val items = photoPrismFacesService.getFaces(
                         count = PAGE_LIMIT,
                         offset = offset,
-                        order = PhotoPrismOrder.FAVORITES,
                         markers = true,
                         unknown = true,
                     )
