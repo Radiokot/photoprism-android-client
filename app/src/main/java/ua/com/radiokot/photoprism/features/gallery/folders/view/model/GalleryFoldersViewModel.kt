@@ -117,7 +117,7 @@ class GalleryFoldersViewModel(
         }
 
         itemsList.value = filteredRepositoryAlbums
-            .sortedWith(sort.comparator)
+            .sortedWith(sort)
             .map(::GalleryFolderListItem)
 
         mainError.value =

@@ -9,31 +9,6 @@ data class AlbumSort(
 ) : Serializable,
     Comparator<Album> {
 
-    val comparator: Comparator<Album>
-        get() = when (order) {
-            Order.NAME ->
-                compareBy(Album::title)
-
-            Order.NAME_DESC ->
-                compareByDescending(Album::title)
-
-            Order.NEWEST_FIRST ->
-                compareByDescending(Album::createdAt)
-
-            Order.OLDEST_FIRST ->
-                compareBy(Album::createdAt)
-
-            Order.RECENTLY_UPDATED ->
-                compareByDescending(Album::updatedAt)
-        }.let { orderComparator ->
-            if (areFavoritesFirst) {
-                compareByDescending(Album::isFavorite)
-                    .then(orderComparator)
-            } else {
-                orderComparator
-            }
-        }
-
     override fun compare(a1: Album, a2: Album): Int {
         val comparedByOrder = when (order) {
             Order.NAME ->
@@ -43,13 +18,15 @@ data class AlbumSort(
                 a2.title.compareTo(a1.title)
 
             Order.NEWEST_FIRST ->
-                a2.createdAt.compareTo(a1.createdAt)
+                // This is how PhotoPrism "Newest first" works.
+                a2.ymd.compareTo(a1.ymd)
 
             Order.OLDEST_FIRST ->
-                a1.createdAt.compareTo(a2.createdAt)
+                // See above.
+                a1.ymd.compareTo(a2.ymd)
 
-            Order.RECENTLY_UPDATED ->
-                a2.updatedAt.compareTo(a1.updatedAt)
+            Order.RECENTLY_ADDED ->
+                a2.createdAt.compareTo(a1.createdAt)
         }
 
         return if (areFavoritesFirst) {
@@ -69,7 +46,7 @@ data class AlbumSort(
         NAME_DESC,
         NEWEST_FIRST,
         OLDEST_FIRST,
-        RECENTLY_UPDATED,
+        RECENTLY_ADDED,
         ;
     }
 }

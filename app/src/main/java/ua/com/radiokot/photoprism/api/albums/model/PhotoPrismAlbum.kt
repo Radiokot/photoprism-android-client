@@ -16,12 +16,16 @@ constructor(
     val type: String,
     @JsonProperty("CreatedAt")
     val createdAt: String,
-    @JsonProperty("UpdatedAt")
-    val updatedAt: String,
     @JsonProperty("Favorite")
     val favorite: Boolean,
     @JsonProperty("Description")
     val description: String,
     @JsonProperty("Path")
     val path: String,
+    @JsonProperty("Year")
+    val year: Int,
+    @JsonProperty("Month")
+    val month: Int,
+    @JsonProperty("Day")
+    val day: Int,
 )

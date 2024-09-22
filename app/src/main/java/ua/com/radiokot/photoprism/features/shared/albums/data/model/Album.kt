@@ -21,8 +21,18 @@ class Album(
     val path: String?,
     val uid: String,
     val isFavorite: Boolean,
+    /**
+     * Creation date, but it should not be used to sort automatically created folders
+     * like "December 2023". For those, see [ymd].
+     * Makes sense for actual albums.
+     */
     val createdAt: Date,
-    val updatedAt: Date,
+    /**
+     * String representation of album's YYYYMMDD.
+     * This "date" can be used to sort automatically created folders like "December 2023".
+     * Makes no sense for actual albums.
+     */
+    val ymd: String,
     previewHash: String,
     previewUrlFactory: MediaPreviewUrlFactory,
 ) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
@@ -38,7 +48,7 @@ class Album(
         uid = source.uid,
         isFavorite = source.favorite,
         createdAt = parsePhotoPrismDate(source.createdAt)!!,
-        updatedAt = parsePhotoPrismDate(source.updatedAt)!!,
+        ymd = "%04d%02d%02d".format(source.year, source.month, source.day),
         previewHash = source.thumb,
         previewUrlFactory = previewUrlFactory,
     )

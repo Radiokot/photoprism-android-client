@@ -18,7 +18,7 @@ object AlbumSortResources {
         AlbumSort.Order.OLDEST_FIRST ->
             R.string.sort_order_oldest_first
 
-        AlbumSort.Order.RECENTLY_UPDATED ->
-            R.string.sort_order_recently_updated
+        AlbumSort.Order.RECENTLY_ADDED ->
+            R.string.sort_order_recently_added
     }
 }
