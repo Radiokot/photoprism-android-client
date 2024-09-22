@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
@@ -32,8 +33,10 @@ class GalleryFoldersViewModel(
     }
 
     // TODO load and save to preferences
-    private var sortOrder: GalleryFolderOrder = GalleryFolderOrder.NAME
-    private var areFavoritesFirst: Boolean = true
+    private var sort: AlbumSort = AlbumSort(
+        order = AlbumSort.Order.NAME,
+        areFavoritesFirst = true,
+    )
 
     init {
         subscribeToRepository()
@@ -110,36 +113,11 @@ class GalleryFoldersViewModel(
                     "\nalbumCount=${repositoryAlbums.size}," +
                     "\nsearchQuery=$searchQuery," +
                     "\nfilteredAlbumCount=${filteredRepositoryAlbums.size}," +
-                    "\nsortOrder=$sortOrder," +
-                    "\nareFavoritesFirst=$areFavoritesFirst"
-        }
-
-        val comparator: Comparator<Album> = when (sortOrder) {
-            GalleryFolderOrder.NAME ->
-                compareBy(Album::title)
-
-            GalleryFolderOrder.NAME_DESC ->
-                compareByDescending(Album::title)
-
-            GalleryFolderOrder.NEWEST_FIRST ->
-                compareByDescending(Album::createdAt)
-
-            GalleryFolderOrder.OLDEST_FIRST ->
-                compareBy(Album::createdAt)
-
-            GalleryFolderOrder.RECENTLY_UPDATED ->
-                compareByDescending(Album::updatedAt)
-        }.let { orderComparator ->
-            if (areFavoritesFirst) {
-                compareByDescending(Album::isFavorite)
-                    .then(orderComparator)
-            } else {
-                orderComparator
-            }
+                    "\nsort=$sort"
         }
 
         itemsList.value = filteredRepositoryAlbums
-            .sortedWith(comparator)
+            .sortedWith(sort.comparator)
             .map(::GalleryFolderListItem)
 
         mainError.value =
@@ -205,24 +183,20 @@ class GalleryFoldersViewModel(
 
         eventsSubject.onNext(
             Event.OpenSortDialog(
-                selectedOrder = sortOrder,
-                areFavoritesFirst = areFavoritesFirst,
+                currentSort = sort,
             )
         )
     }
 
     fun onSortDialogResult(
-        selectedOrder: GalleryFolderOrder,
-        areFavoritesFirst: Boolean,
+        newSort: AlbumSort,
     ) {
         log.debug {
             "onSortDialogResult():" +
-                    "\nselectedOrder=$selectedOrder," +
-                    "\nareFavoritesFirst=$areFavoritesFirst"
+                    "\nnewSort=$newSort"
         }
 
-        this.sortOrder = selectedOrder
-        this.areFavoritesFirst = areFavoritesFirst
+        this.sort = newSort
 
         postFolderItems()
     }
@@ -265,8 +239,7 @@ class GalleryFoldersViewModel(
          * Show the sort dialog, return the result to [onSortDialogResult].
          */
         class OpenSortDialog(
-            val selectedOrder: GalleryFolderOrder,
-            val areFavoritesFirst: Boolean,
+            val currentSort: AlbumSort,
         ) : Event
     }
 

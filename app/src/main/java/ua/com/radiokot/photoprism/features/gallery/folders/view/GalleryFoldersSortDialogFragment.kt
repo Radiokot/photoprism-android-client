@@ -8,13 +8,16 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogGalleryFoldersSortBinding
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderOrder
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderOrderResources
+import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSortResources
 
 class GalleryFoldersSortDialogFragment :
     BaseMaterialDialogFragment(R.layout.dialog_gallery_folders_sort) {
 
     private lateinit var viewBinding: DialogGalleryFoldersSortBinding
+    private val initialSort: AlbumSort by lazy {
+        getResult(requireArguments())
+    }
 
     override fun onDialogViewCreated(dialogView: View, savedInstanceState: Bundle?) {
         viewBinding = DialogGalleryFoldersSortBinding.bind(dialogView)
@@ -31,20 +34,18 @@ class GalleryFoldersSortDialogFragment :
             requireContext(),
             R.layout.select_dialog_singlechoice_material,
             android.R.id.text1,
-            GalleryFolderOrder.values().map { order ->
-                getString(GalleryFolderOrderResources.getName(order))
+            AlbumSort.Order.values().map { order ->
+                getString(AlbumSortResources.getName(order))
             }
         )
         setItemChecked(
-            GalleryFolderOrder.values().indexOf(
-                getSelectedOrder(requireArguments())
-            ),
+            AlbumSort.Order.values().indexOf(initialSort.order),
             true
         )
     }
 
     private fun initOptions() {
-        viewBinding.favoritesFirstCheckBox.isChecked = areFavoritesFirst(requireArguments())
+        viewBinding.favoritesFirstCheckBox.isChecked = initialSort.areFavoritesFirst
     }
 
     private fun initButtons() {
@@ -61,31 +62,27 @@ class GalleryFoldersSortDialogFragment :
         setFragmentResult(
             REQUEST_KEY,
             getBundle(
-                selectedOrder = GalleryFolderOrder.values()[viewBinding.orderListView.checkedItemPosition],
-                areFavoritesFirst = viewBinding.favoritesFirstCheckBox.isChecked,
+                AlbumSort(
+                    order = AlbumSort.Order.values()[viewBinding.orderListView.checkedItemPosition],
+                    areFavoritesFirst = viewBinding.favoritesFirstCheckBox.isChecked,
+                )
             )
         )
         dismiss()
     }
 
     companion object {
-        private const val SELECTED_ORDER_EXTRA = "selected-order"
-        private const val ARE_FAVORITES_FIRST_EXTRA = "are-favorites-first"
+        private const val SORT_EXTRA = "sort"
         const val REQUEST_KEY = "folders-sort"
         const val TAG = "folders-sort"
 
         fun getBundle(
-            selectedOrder: GalleryFolderOrder,
-            areFavoritesFirst: Boolean,
+            sort: AlbumSort,
         ) = Bundle().apply {
-            putSerializable(SELECTED_ORDER_EXTRA, selectedOrder)
-            putBoolean(ARE_FAVORITES_FIRST_EXTRA, areFavoritesFirst)
+            putSerializable(SORT_EXTRA, sort)
         }
 
-        fun getSelectedOrder(bundle: Bundle): GalleryFolderOrder =
-            bundle.getSerializable(SELECTED_ORDER_EXTRA, GalleryFolderOrder::class.java)!!
-
-        fun areFavoritesFirst(bundle: Bundle): Boolean =
-            bundle.getBoolean(ARE_FAVORITES_FIRST_EXTRA, false)
+        fun getResult(bundle: Bundle): AlbumSort =
+            bundle.getSerializable(SORT_EXTRA, AlbumSort::class.java)!!
     }
 }

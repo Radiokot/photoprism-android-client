@@ -9,29 +9,28 @@ import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
- * A repository for albums which the gallery content can be filtered by.
- * Combines albums of multiple types.
+ * A repository for albums, which can be folders, actual albums, months, etc.
+ * Combines albums of multiple [types] sorting them with [defaultSort].
  */
 class AlbumsRepository(
-    private val photoPrismAlbumsService: PhotoPrismAlbumsService,
     private val types: Set<Album.TypeName>,
+    private val defaultSort: AlbumSort,
+    private val photoPrismAlbumsService: PhotoPrismAlbumsService,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Album>() {
-    private val comparator: Comparator<Album> =
-        compareByDescending(Album::isFavorite)
-            .thenBy(Album::title)
-
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
-            .collect<MutableList<Album>>(
-                { mutableListOf() },
-                { collectedAlbums, albums -> collectedAlbums.addAll(albums) }
-            )
+            .collectInto(mutableListOf<Album>()) { collectedAlbums, albums ->
+                collectedAlbums.addAll(albums)
+            }
             .map { collectedAlbums ->
-                collectedAlbums.sortedWith(comparator)
+                // Collected (concat) albums must be sorted locally,
+                // as PhotoPrism order is applied per collection.
+                collectedAlbums.sortedWith(defaultSort)
             }
 
     /**
@@ -50,7 +49,8 @@ class AlbumsRepository(
                     val items = photoPrismAlbumsService.getAlbums(
                         count = PAGE_LIMIT,
                         offset = offset,
-                        order = PhotoPrismOrder.FAVORITES,
+                        // Doesn't matter, the results will be sorted locally.
+                        order = PhotoPrismOrder.NAME,
                         type = type.value,
                     )
 
@@ -78,7 +78,5 @@ class AlbumsRepository(
 
     private companion object {
         private const val PAGE_LIMIT = 30
-        private const val ALBUM_TYPE = "album"
-        private const val FOLDER_TYPE = "folder"
     }
 }

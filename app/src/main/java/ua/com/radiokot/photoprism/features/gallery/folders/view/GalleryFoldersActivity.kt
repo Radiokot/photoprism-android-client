@@ -24,11 +24,11 @@ import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderOrder
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
+import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.view.ErrorView
 
 class GalleryFoldersActivity : BaseActivity() {
@@ -67,8 +67,7 @@ class GalleryFoldersActivity : BaseActivity() {
             this
         ) { _, result ->
             viewModel.onSortDialogResult(
-                selectedOrder = GalleryFoldersSortDialogFragment.getSelectedOrder(result),
-                areFavoritesFirst = GalleryFoldersSortDialogFragment.areFavoritesFirst(result),
+                newSort = GalleryFoldersSortDialogFragment.getResult(result),
             )
         }
     }
@@ -199,8 +198,7 @@ class GalleryFoldersActivity : BaseActivity() {
 
             is GalleryFoldersViewModel.Event.OpenSortDialog ->
                 openSortDialog(
-                    selectedOrder = event.selectedOrder,
-                    areFavoritesFirst = event.areFavoritesFirst,
+                    currentSort = event.currentSort,
                 )
         }
 
@@ -236,16 +234,14 @@ class GalleryFoldersActivity : BaseActivity() {
     )
 
     private fun openSortDialog(
-        selectedOrder: GalleryFolderOrder,
-        areFavoritesFirst: Boolean,
+        currentSort: AlbumSort,
     ) {
         val fragment =
             (supportFragmentManager.findFragmentByTag(GalleryFoldersSortDialogFragment.TAG)
                     as? GalleryFoldersSortDialogFragment)
                 ?: GalleryFoldersSortDialogFragment().apply {
                     arguments = GalleryFoldersSortDialogFragment.getBundle(
-                        selectedOrder = selectedOrder,
-                        areFavoritesFirst = areFavoritesFirst,
+                        sort = currentSort,
                     )
                 }
 
