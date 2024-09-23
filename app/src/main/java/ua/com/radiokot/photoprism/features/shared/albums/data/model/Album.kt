@@ -18,7 +18,7 @@ class Album(
     val type: TypeName,
     val title: String, //same as photos name,
     val description: String?,
-    val path: String?,
+    val path: String,
     val uid: String,
     val isFavorite: Boolean,
     /**
@@ -44,7 +44,7 @@ class Album(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
         description = source.description.takeIf(String::isNotEmpty),
-        path = source.path.takeIf(String::isNotEmpty),
+        path = source.path,
         uid = source.uid,
         isFavorite = source.favorite,
         createdAt = parsePhotoPrismDate(source.createdAt)!!,
