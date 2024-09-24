@@ -248,5 +248,12 @@
     <string name="menu">Menu</string>
     <string name="no_folders_found">Žádné složky nebyly nalezeny</string>
     <string name="failed_to_load_folders">Nepodařilo se načíst složky</string>
+    <string name="sort_preference">Řazení</string>
+    <string name="sort_order_name">Název</string>
+    <string name="sort_order_name_desc">Název, sestupně</string>
+    <string name="sort_order_newest_first">Nejnovější první</string>
+    <string name="sort_order_oldest_first">Nejstarší první</string>
+    <string name="sort_order_recently_added">Nedávno přidané</string>
+    <string name="sort_favorites_first">Oblíbené první</string>
 
 </resources>

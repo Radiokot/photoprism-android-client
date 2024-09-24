@@ -247,5 +247,12 @@
     <string name="menu">Menü</string>
     <string name="no_folders_found">Klasör bulunamadı</string>
     <string name="failed_to_load_folders">Klasörler yüklenemedi</string>
+    <string name="sort_preference">Sıralama</string>
+    <string name="sort_order_name">Başlık</string>
+    <string name="sort_order_name_desc">Başlık, azalan</string>
+    <string name="sort_order_newest_first">En yeni önce</string>
+    <string name="sort_order_oldest_first">En eski önce</string>
+    <string name="sort_order_recently_added">Son eklenen</string>
+    <string name="sort_favorites_first">Favoriler önce</string>
 
 </resources>

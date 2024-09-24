@@ -247,5 +247,12 @@
     <string name="menu">Меню</string>
     <string name="no_folders_found">Папки не знайдено</string>
     <string name="failed_to_load_folders">Не вдалося завантажити папки</string>
+    <string name="sort_preference">Сортування</string>
+    <string name="sort_order_name">Назва</string>
+    <string name="sort_order_name_desc">Назва, за спаданням</string>
+    <string name="sort_order_newest_first">Спочатку нові</string>
+    <string name="sort_order_oldest_first">Спочатку старі</string>
+    <string name="sort_order_recently_added">Нещодавно додані</string>
+    <string name="sort_favorites_first">Спочатку вибране</string>
 
 </resources>

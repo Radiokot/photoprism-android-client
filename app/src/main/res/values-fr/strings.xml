@@ -248,5 +248,12 @@
     <string name="menu">Menu</string>
     <string name="no_folders_found">Aucun dossier trouvé</string>
     <string name="failed_to_load_folders">Échec du chargement des dossiers</string>
+    <string name="sort_preference">Tri</string>
+    <string name="sort_order_name">Titre</string>
+    <string name="sort_order_name_desc">Titre, décroissant</string>
+    <string name="sort_order_newest_first">Le plus récent en premier</string>
+    <string name="sort_order_oldest_first">Le plus ancien en premier</string>
+    <string name="sort_order_recently_added">Récemment ajouté</string>
+    <string name="sort_favorites_first">Favoris en premier</string>
 
 </resources>

@@ -247,5 +247,12 @@
     <string name="menu">菜单</string>
     <string name="no_folders_found">未找到文件夹</string>
     <string name="failed_to_load_folders">加载文件夹失败</string>
+    <string name="sort_preference">排序</string>
+    <string name="sort_order_name">标题</string>
+    <string name="sort_order_name_desc">标题，降序</string>
+    <string name="sort_order_newest_first">最新优先</string>
+    <string name="sort_order_oldest_first">最旧优先</string>
+    <string name="sort_order_recently_added">最近添加</string>
+    <string name="sort_favorites_first">最爱优先</string>
 
 </resources>

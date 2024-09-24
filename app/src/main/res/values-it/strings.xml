@@ -247,5 +247,12 @@
     <string name="menu">Menu</string>
     <string name="no_folders_found">Nessuna cartella trovata</string>
     <string name="failed_to_load_folders">Caricamento delle cartelle non riuscito</string>
+    <string name="sort_preference">Ordinamento</string>
+    <string name="sort_order_name">Titolo</string>
+    <string name="sort_order_name_desc">Titolo, discendente</string>
+    <string name="sort_order_newest_first">Più recente prima</string>
+    <string name="sort_order_oldest_first">Più vecchio prima</string>
+    <string name="sort_order_recently_added">Aggiunto di recente</string>
+    <string name="sort_favorites_first">Preferiti prima</string>
 
 </resources>

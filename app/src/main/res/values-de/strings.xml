@@ -245,5 +245,12 @@
     <string name="menu">Menü</string>
     <string name="no_folders_found">Keine Ordner gefunden</string>
     <string name="failed_to_load_folders">Ordner konnten nicht geladen werden</string>
+    <string name="sort_preference">Sortierung</string>
+    <string name="sort_order_name">Bezeichnung</string>
+    <string name="sort_order_name_desc">Bezeichnung, absteigend</string>
+    <string name="sort_order_newest_first">Neueste zuerst</string>
+    <string name="sort_order_oldest_first">Älteste zuerst</string>
+    <string name="sort_order_recently_added">Kürzlich hinzugefügt</string>
+    <string name="sort_favorites_first">Favoriten zuerst</string>
 
 </resources>

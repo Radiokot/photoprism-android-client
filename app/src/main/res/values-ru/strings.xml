@@ -247,5 +247,12 @@
     <string name="menu">Меню</string>
     <string name="no_folders_found">Папки не найдены</string>
     <string name="failed_to_load_folders">Не удалось загрузить папки</string>
+    <string name="sort_preference">Сортировка</string>
+    <string name="sort_order_name">Название</string>
+    <string name="sort_order_name_desc">Название, по убыванию</string>
+    <string name="sort_order_newest_first">Сначала новые</string>
+    <string name="sort_order_oldest_first">Сначала старые</string>
+    <string name="sort_order_recently_added">Недавно добавленные</string>
+    <string name="sort_favorites_first">Сначала избранное</string>
 
 </resources>

@@ -247,5 +247,12 @@
     <string name="menu">菜單</string>
     <string name="no_folders_found">未找到資料夾</string>
     <string name="failed_to_load_folders">加載資料夾失敗</string>
+    <string name="sort_preference">排序</string>
+    <string name="sort_order_name">標題</string>
+    <string name="sort_order_name_desc">標題，降序</string>
+    <string name="sort_order_newest_first">最新優先</string>
+    <string name="sort_order_oldest_first">最舊優先</string>
+    <string name="sort_order_recently_added">最近添加</string>
+    <string name="sort_favorites_first">最愛優先</string>
 
 </resources>

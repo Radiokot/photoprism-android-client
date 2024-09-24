@@ -247,5 +247,12 @@
     <string name="menu">Μενού</string>
     <string name="no_folders_found">Δεν βρέθηκαν φάκελοι</string>
     <string name="failed_to_load_folders">Αποτυχία φόρτωσης φακέλων</string>
+    <string name="sort_preference">Ταξινόμηση</string>
+    <string name="sort_order_name">Τίτλος</string>
+    <string name="sort_order_name_desc">Τίτλος, φθίνουσα</string>
+    <string name="sort_order_newest_first">Νεότερα πρώτα</string>
+    <string name="sort_order_oldest_first">Παλαιότερα πρώτα</string>
+    <string name="sort_order_recently_added">Πρόσφατα προστέθηκε</string>
+    <string name="sort_favorites_first">Αγαπημένα πρώτα</string>
 
 </resources>
