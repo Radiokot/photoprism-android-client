@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to change the folder sorting
+
 ### Changed
 
 - Made the file import more stable by retrying failed uploads
