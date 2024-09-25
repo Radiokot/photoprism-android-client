@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 
 /**
  * @return A subject which holds the value read from the preferences and writes new values
@@ -16,7 +17,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
  * the write is applied rather than committed.
  */
 @SuppressLint("CheckResult")
-inline fun <reified ValueType: Any> preferenceSubject(
+inline fun <reified ValueType : Any> preferenceSubject(
     preferences: SharedPreferences,
     key: String,
     readValue: SharedPreferences.(key: String) -> ValueType,
@@ -64,7 +65,7 @@ fun booleanPreferenceSubject(
  * @param stringDeserializer deserializer for the string value,
  * if returns **null** then [defaultValue] is used
  */
-inline fun <reified ValueType: Any> stringifyPreferenceSubject(
+inline fun <reified ValueType : Any> stringifyPreferenceSubject(
     preferences: SharedPreferences,
     key: String,
     defaultValue: ValueType,
@@ -83,3 +84,22 @@ inline fun <reified ValueType: Any> stringifyPreferenceSubject(
             putString(key, stringSerializer(newValue))
         }
     )
+
+/**
+ * @return A subject which holds the value read from the persistence and writes new values
+ * when they are posted with [BehaviorSubject.onNext].
+ *
+ * @param persistence persistence to read and write the values to
+ * @param defaultValue value to be held if missing one in the persistence
+ */
+@SuppressLint("CheckResult")
+inline fun <reified ValueType : Any> objectPersistenceSubject(
+    persistence: ObjectPersistence<ValueType>,
+    defaultValue: ValueType,
+): BehaviorSubject<ValueType> =
+    BehaviorSubject.createDefault(persistence.loadItem() ?: defaultValue).apply {
+        skip(1).subscribe { newValue ->
+            persistence.saveItem(newValue)
+        }
+    }
+

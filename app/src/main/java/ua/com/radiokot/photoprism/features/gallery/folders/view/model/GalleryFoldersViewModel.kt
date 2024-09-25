@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryFoldersPreferences
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
@@ -18,6 +19,7 @@ import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewVi
 
 class GalleryFoldersViewModel(
     private val albumsRepository: AlbumsRepository,
+    private val preferences: GalleryFoldersPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
@@ -32,15 +34,10 @@ class GalleryFoldersViewModel(
         override fun handleOnBackPressed() = onBackPressed()
     }
 
-    // TODO load and save to preferences
-    private var sort: AlbumSort = AlbumSort(
-        order = AlbumSort.Order.NAME,
-        areFavoritesFirst = true,
-    )
-
     init {
         subscribeToRepository()
         subscribeToSearch()
+        subscribeToPreferences()
 
         update()
     }
@@ -69,6 +66,14 @@ class GalleryFoldersViewModel(
 
         albumsRepository.loading
             .subscribe(isLoading::postValue)
+            .autoDispose(this)
+    }
+
+    private fun subscribeToPreferences() {
+        preferences.sort
+            .observeOnMain()
+            .skip(1)
+            .subscribe { postFolderItems() }
             .autoDispose(this)
     }
 
@@ -107,6 +112,7 @@ class GalleryFoldersViewModel(
                 }
             else
                 repositoryAlbums
+        val sort = preferences.sort.value!!
 
         log.debug {
             "postFolderItems(): posting_items:" +
@@ -183,7 +189,7 @@ class GalleryFoldersViewModel(
 
         eventsSubject.onNext(
             Event.OpenSortDialog(
-                currentSort = sort,
+                currentSort = preferences.sort.value!!,
             )
         )
     }
@@ -192,13 +198,11 @@ class GalleryFoldersViewModel(
         newSort: AlbumSort,
     ) {
         log.debug {
-            "onSortDialogResult():" +
+            "onSortDialogResult(): saving_new_sort" +
                     "\nnewSort=$newSort"
         }
 
-        this.sort = newSort
-
-        postFolderItems()
+        preferences.sort.onNext(newSort)
     }
 
     private fun onBackPressed() {
