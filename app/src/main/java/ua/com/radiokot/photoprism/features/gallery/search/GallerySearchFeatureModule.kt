@@ -16,8 +16,8 @@ import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferences
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel

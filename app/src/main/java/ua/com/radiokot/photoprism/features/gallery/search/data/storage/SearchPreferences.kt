@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.data.storage
+package ua.com.radiokot.photoprism.features.gallery.search.data.storage
 
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
