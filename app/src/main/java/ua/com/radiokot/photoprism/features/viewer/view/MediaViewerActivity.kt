@@ -63,6 +63,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
@@ -833,6 +835,9 @@ class MediaViewerActivity : BaseActivity() {
 
                 MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
                     openDeletingConfirmationDialog()
+
+                is MediaViewerViewModel.Event.ShowFloatingError ->
+                    showFloatingError(event.error)
             }
 
             log.debug {
@@ -921,6 +926,19 @@ class MediaViewerActivity : BaseActivity() {
             getString(R.string.error_storage_permission_is_required),
             Snackbar.LENGTH_SHORT,
         ).show()
+    }
+
+    private fun showFloatingError(error: GalleryContentLoadingError) {
+        Snackbar.make(
+            view.snackbarArea,
+            GalleryContentLoadingErrorResources.getMessage(
+                error = error,
+                context = this,
+            ),
+            Snackbar.LENGTH_SHORT
+        )
+            .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
+            .show()
     }
 
     private fun openWebViewer(url: String) {

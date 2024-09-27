@@ -18,6 +18,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
@@ -159,8 +160,11 @@ class MediaViewerViewModel(
 
         galleryMediaRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                log.error(it) { "subscribeToRepository(): error_occurred" }
+            .subscribe { error ->
+                log.error(error) { "subscribeToRepository(): error_occurred" }
+
+                val contentLoadingError = GalleryContentLoadingError.from(error)
+                eventsSubject.onNext(Event.ShowFloatingError(contentLoadingError))
             }
             .autoDispose(this)
     }
@@ -196,8 +200,17 @@ class MediaViewerViewModel(
             }
     }
 
-    private fun update() {
-        galleryMediaRepository.updateIfNotFresh()
+    private fun update(force: Boolean = false) {
+        log.debug {
+            "update(): updating:" +
+                    "\nforce=$force"
+        }
+
+        if (force) {
+            galleryMediaRepository.update()
+        } else {
+            galleryMediaRepository.updateIfNotFresh()
+        }
     }
 
     fun loadMore() {
@@ -677,6 +690,14 @@ class MediaViewerViewModel(
                 )
     }
 
+    fun onFloatingErrorRetryClicked() {
+        log.debug {
+            "onFloatingErrorRetryClicked(): updating"
+        }
+
+        update(force = true)
+    }
+
     sealed interface SubtitleValue {
         class Static(val value: String) : SubtitleValue
 
@@ -705,6 +726,17 @@ class MediaViewerViewModel(
          * to the [onDeletingConfirmed] method.
          */
         object OpenDeletingConfirmationDialog : Event
+
+        /**
+         * Show a dismissible floating error.
+         *
+         * The [onFloatingErrorRetryClicked] method should be called
+         * if the error assumes retrying.
+         */
+        @JvmInline
+        value class ShowFloatingError(
+            val error: GalleryContentLoadingError
+        ) : Event
     }
 
     private sealed interface State {

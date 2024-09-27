@@ -59,6 +59,8 @@ import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFoldersAc
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
@@ -263,21 +265,24 @@ class GalleryActivity : BaseActivity() {
                         context = this,
                     )
 
-                GalleryViewModel.Error.CredentialsHaveBeenChanged,
-                GalleryViewModel.Error.SessionHasBeenExpired ->
-                    ErrorView.Error.General(
-                        message = error.localizedMessage,
-                        imageRes = R.drawable.image_melting,
-                        retryButtonText = getString(R.string.disconnect_from_library),
-                        retryButtonClickListener = viewModel::onErrorDisconnectClicked
-                    )
+                is GalleryViewModel.Error.ContentLoadingError ->
+                    when (error.contentLoadingError) {
+                        GalleryContentLoadingError.CredentialsHaveBeenChanged,
+                        GalleryContentLoadingError.SessionHasBeenExpired ->
+                            ErrorView.Error.General(
+                                message = error.localizedMessage,
+                                imageRes = R.drawable.image_melting,
+                                retryButtonText = getString(R.string.disconnect_from_library),
+                                retryButtonClickListener = viewModel::onErrorDisconnectClicked
+                            )
 
-                else ->
-                    ErrorView.Error.General(
-                        message = error.localizedMessage,
-                        retryButtonText = getString(R.string.try_again),
-                        retryButtonClickListener = viewModel::onMainErrorRetryClicked
-                    )
+                        else ->
+                            ErrorView.Error.General(
+                                message = error.localizedMessage,
+                                retryButtonText = getString(R.string.try_again),
+                                retryButtonClickListener = viewModel::onMainErrorRetryClicked
+                            )
+                    }
             }
 
             view.errorView.showError(errorToShow)
@@ -1001,26 +1006,17 @@ class GalleryActivity : BaseActivity() {
 
     private val GalleryViewModel.Error.localizedMessage: String
         get() = when (this) {
-            GalleryViewModel.Error.LibraryNotAccessible ->
-                getString(R.string.error_library_not_accessible_try_again)
-
-            is GalleryViewModel.Error.LoadingFailed ->
-                getString(
-                    R.string.template_error_failed_to_load_content,
-                    shortSummary,
-                )
-
             GalleryViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
 
             GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
 
-            GalleryViewModel.Error.CredentialsHaveBeenChanged ->
-                getString(R.string.error_invalid_password)
-
-            GalleryViewModel.Error.SessionHasBeenExpired ->
-                getString(R.string.error_session_expired)
+            is GalleryViewModel.Error.ContentLoadingError ->
+                GalleryContentLoadingErrorResources.getMessage(
+                    error = contentLoadingError,
+                    context = this@GalleryActivity,
+                )
         }
 
     private companion object {

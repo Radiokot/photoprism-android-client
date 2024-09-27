@@ -12,18 +12,15 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
-import java.net.NoRouteToHostException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 class GalleryFolderViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -187,20 +184,14 @@ class GalleryFolderViewModel(
             .subscribe { error ->
                 log.error(error) { "subscribeToRepository(): error_occurred" }
 
-                val viewError = when (error) {
-                    is UnknownHostException,
-                    is NoRouteToHostException,
-                    is SocketTimeoutException ->
-                        Error.LibraryNotAccessible
-
-                    else ->
-                        Error.LoadingFailed(error.shortSummary)
-                }
+                val contentLoadingError = Error.ContentLoadingError(
+                    GalleryContentLoadingError.from(error)
+                )
 
                 if (itemList.value.isNullOrEmpty()) {
-                    mainError.value = viewError
+                    mainError.value = contentLoadingError
                 } else {
-                    eventsSubject.onNext(Event.ShowFloatingError(viewError))
+                    eventsSubject.onNext(Event.ShowFloatingError(contentLoadingError))
                 }
             }
             .autoDispose(this)
@@ -433,7 +424,8 @@ class GalleryFolderViewModel(
          * The [onFloatingErrorRetryClicked] method should be called
          * if the error assumes retrying.
          */
-        class ShowFloatingError(val error: Error) : Event
+        @JvmInline
+        value class ShowFloatingError(val error: Error) : Event
 
         /**
          * Show item deletion confirmation, reporting the choice
@@ -443,16 +435,10 @@ class GalleryFolderViewModel(
     }
 
     sealed interface Error {
-        /**
-         * Can't establish a connection with the library
-         */
-        object LibraryNotAccessible : Error
-
-        /**
-         * The data has been requested, but something went wrong
-         * while receiving the response.
-         */
-        class LoadingFailed(val shortSummary: String) : Error
+        @JvmInline
+        value class ContentLoadingError(
+            val contentLoadingError: GalleryContentLoadingError
+        ) : Error
 
         /**
          * Nothing is found for the given search.

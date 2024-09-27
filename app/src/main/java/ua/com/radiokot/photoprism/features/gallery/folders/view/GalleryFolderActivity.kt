@@ -46,6 +46,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.ShareSheetShareEventReceiver
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
@@ -699,17 +700,14 @@ class GalleryFolderActivity : BaseActivity() {
 
     private val GalleryFolderViewModel.Error.localizedMessage: String
         get() = when (this) {
-            is GalleryFolderViewModel.Error.LoadingFailed ->
-                getString(
-                    R.string.template_error_failed_to_load_content,
-                    shortSummary,
-                )
-
             GalleryFolderViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
 
-            GalleryFolderViewModel.Error.LibraryNotAccessible ->
-                getString(R.string.error_library_not_accessible_try_again)
+            is GalleryFolderViewModel.Error.ContentLoadingError ->
+                GalleryContentLoadingErrorResources.getMessage(
+                    error = contentLoadingError,
+                    context = this@GalleryFolderActivity,
+                )
         }
 
     companion object {

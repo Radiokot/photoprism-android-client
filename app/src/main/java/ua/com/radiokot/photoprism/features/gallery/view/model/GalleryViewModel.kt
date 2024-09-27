@@ -12,8 +12,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
-import ua.com.radiokot.photoprism.env.data.model.InvalidCredentialsException
-import ua.com.radiokot.photoprism.env.data.model.TfaRequiredException
 import ua.com.radiokot.photoprism.env.data.model.WebPageInteractionRequiredException
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -32,9 +30,6 @@ import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseC
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
-import java.net.NoRouteToHostException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
@@ -446,26 +441,14 @@ class GalleryViewModel(
             .subscribe { error ->
                 log.error(error) { "subscribeToRepository(): error_occurred" }
 
-                val viewError = when (error) {
-                    is UnknownHostException,
-                    is NoRouteToHostException,
-                    is SocketTimeoutException ->
-                        Error.LibraryNotAccessible
-
-                    is InvalidCredentialsException ->
-                        Error.CredentialsHaveBeenChanged
-
-                    is TfaRequiredException ->
-                        Error.SessionHasBeenExpired
-
-                    else ->
-                        Error.LoadingFailed(error.shortSummary)
-                }
+                val contentLoadingError = Error.ContentLoadingError(
+                    GalleryContentLoadingError.from(error)
+                )
 
                 if (itemList.value.isNullOrEmpty()) {
-                    mainError.value = viewError
+                    mainError.value = contentLoadingError
                 } else {
-                    eventsSubject.onNext(Event.ShowFloatingError(viewError))
+                    eventsSubject.onNext(Event.ShowFloatingError(contentLoadingError))
                 }
 
                 if (error is WebPageInteractionRequiredException) {
@@ -706,8 +689,10 @@ class GalleryViewModel(
 
                     eventsSubject.onNext(
                         Event.ShowFloatingError(
-                            Error.LoadingFailed(
-                                shortSummary = error.shortSummary
+                            Error.ContentLoadingError(
+                                GalleryContentLoadingError.GeneralFailure(
+                                    shortSummary = error.shortSummary
+                                )
                             )
                         )
                     )
@@ -800,7 +785,8 @@ class GalleryViewModel(
          * The [onFloatingErrorRetryClicked] method should be called
          * if the error assumes retrying.
          */
-        class ShowFloatingError(val error: Error) : Event
+        @JvmInline
+        value class ShowFloatingError(val error: Error) : Event
 
         object OpenPreferences : Event
 
@@ -825,16 +811,10 @@ class GalleryViewModel(
     }
 
     sealed interface Error {
-        /**
-         * Can't establish a connection with the library
-         */
-        object LibraryNotAccessible : Error
-
-        /**
-         * The data has been requested, but something went wrong
-         * while receiving the response.
-         */
-        class LoadingFailed(val shortSummary: String) : Error
+        @JvmInline
+        value class ContentLoadingError(
+            val contentLoadingError: GalleryContentLoadingError,
+        ) : Error
 
         /**
          * Nothing is found for the given search.
@@ -847,18 +827,6 @@ class GalleryViewModel(
          * are not allowed by the requesting app.
          */
         object SearchDoesNotFitAllowedTypes : Error
-
-        /**
-         * Automatic session renewal failed because the credentials
-         * have been changed. Disconnect is required.
-         */
-        object CredentialsHaveBeenChanged : Error
-
-        /**
-         * The session is expired and can't be renewed automatically.
-         * Disconnect is required.
-         */
-        object SessionHasBeenExpired : Error
     }
 
     private sealed class MediaRepositoryChange(
