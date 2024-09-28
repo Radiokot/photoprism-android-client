@@ -1,1 +1,1 @@
-An unofficial convenient gallery for your PhotoPrism library with plenty of useful features
+A convenient gallery for PhotoPrism with plenty of useful features

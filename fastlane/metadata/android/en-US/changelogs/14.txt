@@ -1,6 +1,0 @@
-Fixed:
-- Laggy chronological scroll dragging
-- Not bringing the list to the top when scrolling to the current month
-
-Added:
-- Display of album name in the search bar when an album is selected

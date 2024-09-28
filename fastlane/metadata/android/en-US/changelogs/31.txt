@@ -1,2 +1,0 @@
-Fixed:
-- Refusing to play HEVC video of custom size (odd width or height)

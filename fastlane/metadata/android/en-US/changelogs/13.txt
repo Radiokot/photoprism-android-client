@@ -1,6 +1,0 @@
-Added:
-- Ability to filter library content by album (or folder)
-
-Changed:
-- Made the search bar be always visible
-- Placed Apply and Reset search buttons above the keyboard

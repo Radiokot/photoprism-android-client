@@ -1,5 +1,0 @@
-Full changelog:
-https://github.com/Radiokot/photoprism-android-client/blob/main/CHANGELOG.md
-
-Fixed:
-- Not playing some HEVC videos (instant stop)

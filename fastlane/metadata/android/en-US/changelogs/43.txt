@@ -1,6 +1,0 @@
-Full changelog:
-https://radiokot.com.ua/pp-changes
-
-Fixed:
-- Text color mismatch on guide web pages with dark theme
-- Not importing files when the library is password protected

@@ -1,9 +1,0 @@
-Added:
-- Ability to include private content on the search screen
-- Preview of RAW and vector images
-- Support of mTLS (mutual TLS) authentication for Android 6 and higher
-- Support of HTTP basic authentication with URL credentials (https://username:password@host.com)
-- Showing an error when connecting to a private library without credentials
-
-Fixed:
-- Crash when there were too many months on the fast scroll bar

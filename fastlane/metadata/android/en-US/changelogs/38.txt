@@ -1,8 +1,0 @@
-Full changelog:
-https://radiokot.com.ua/pp-changes
-
-Changed:
-- Increased quality of album thumbnails
-
-Fixed:
-- Not playing HEIC Samsung live photos properly

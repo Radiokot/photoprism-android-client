@@ -1,3 +1,0 @@
-Added:
-- Video preview – now you can preview videos, animations and live photos without downloading them
-- Empty view – when no media found, a corresponding view is shown instead of a blank screen

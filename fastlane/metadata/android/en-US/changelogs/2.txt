@@ -1,7 +1,0 @@
-Changed:
-- Trust installed user CA so it is possible to use HTTPS with self-signed certificates
-- Make env connection and content loading errors show the short summary of the cause
-
-Fixed:
-- "Library is not accessible" during the connection, when the entered root URL doesn't match the
-PHOTOPRISM_SITE_URL server config value

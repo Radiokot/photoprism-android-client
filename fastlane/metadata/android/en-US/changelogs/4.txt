@@ -1,7 +1,0 @@
-Added:
-- Search bookmarks – the search configuration can be bookmarked and applied later with a click
-- Search filters guide shortcut to the search screen
-
-Changed:
-- "Clear text" button icon on the search screen made different from the "Reset search" button
-icon on the main screen
