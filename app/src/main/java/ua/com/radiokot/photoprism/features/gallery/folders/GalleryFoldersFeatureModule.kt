@@ -31,7 +31,10 @@ val galleryFoldersFeatureModule = module {
                 albumsRepository = get(),
                 preferences = get(),
                 searchPredicate = { album: Album, query: String ->
-                    SearchPredicates.generalCondition(query, album.title)
+                    val pathFragments = album.path
+                        .split('/')
+                        .filterNot(String::isEmpty)
+                    SearchPredicates.generalCondition(query, pathFragments + album.title)
                 },
             )
         }

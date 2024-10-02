@@ -9,7 +9,7 @@ object SearchPredicates {
     private val WHITESPACE_REGEX = "\\s+".toRegex()
 
     /**
-     * Query is being lowercased and splitted by whitespace.
+     * Query is being lowercased and split by whitespace.
      * Match is confirmed if all query parts are matched with given fields
      * by [String.startsWith] condition.
      *
@@ -20,15 +20,31 @@ object SearchPredicates {
      * @param query search query
      * @param fields entity fields to match query
      */
-    fun generalCondition(query: String, vararg fields: String?): Boolean {
-        val unmatchedFieldsParts = fields.fold(mutableSetOf<String>()) { acc, item ->
-            if (item != null) {
-                acc.addAll(splitByWhitespace(item.lowercase(Locale.getDefault())))
-            }
-            acc
+    fun generalCondition(query: String, vararg fields: String?): Boolean =
+        generalCondition(query, fields.toList())
+
+    /**
+     * Query is being lowercased and split by whitespace.
+     * Match is confirmed if all query parts are matched with given fields
+     * by [String.startsWith] condition.
+     *
+     * For example, for person's fields "John" (first name) and "Doe" (last name) the following
+     * queries will be matched: "john", "jo", "j", "doe", "d", "j d", "jo do", "john doe", "doe john", etc.
+     * The same match condition is implemented in Android contacts app.
+     *
+     * @param query search query
+     * @param fields entity fields to match query
+     */
+    fun generalCondition(query: String, fields: Collection<String?>): Boolean {
+        val unmatchedFieldsParts = fields.flatMapTo(mutableSetOf()) { field ->
+            if (field != null)
+                splitByWhitespace(field.lowercase(Locale.getDefault()))
+            else
+                emptySet()
         }
 
-        val unmatchedQueryParts = splitByWhitespace(query.lowercase(Locale.getDefault())).toMutableList()
+        val unmatchedQueryParts =
+            splitByWhitespace(query.lowercase(Locale.getDefault())).toMutableList()
         var unmatchedChanged = true
         while (unmatchedFieldsParts.isNotEmpty()
             && unmatchedQueryParts.isNotEmpty()
