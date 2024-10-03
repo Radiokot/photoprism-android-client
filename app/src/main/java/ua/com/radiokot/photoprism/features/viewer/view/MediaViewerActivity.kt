@@ -394,6 +394,7 @@ class MediaViewerActivity : BaseActivity() {
                 KeyEvent.KEYCODE_DPAD_RIGHT,
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 KeyEvent.KEYCODE_DPAD_UP,
+                KeyEvent.KEYCODE_DPAD_DOWN,
                 KeyEvent.KEYCODE_ENTER,
                 KeyEvent.KEYCODE_DPAD_CENTER,
             ) || keyCode in setOf(
@@ -465,6 +466,15 @@ class MediaViewerActivity : BaseActivity() {
                 }
 
                 viewModel.onPageClicked()
+            }
+
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                log.debug {
+                    "initKeyboardNavigation(): focus_buttons:" +
+                            "\nkey=down"
+                }
+
+                view.buttonsLayout.requestFocus(View.FOCUS_DOWN)
             }
         }
 
