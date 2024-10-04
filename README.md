@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=22&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=23&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
