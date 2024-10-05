@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
@@ -130,8 +131,9 @@ class GalleryMemoriesListViewModel(
     }
 
     fun onDeletingConfirmed() {
-        val memoryToDelete = this.memoryToDelete
-            ?: error("Confirming deletion when there's no memory to delete")
+        val memoryToDelete = memoryToDelete.checkNotNull {
+            "Confirming deletion when there's no memory to delete"
+        }
 
         memoriesRepository.delete(memoryToDelete)
             .subscribeBy()

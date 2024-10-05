@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -42,6 +41,8 @@ class MediaViewerViewModel(
     private var isPageIndicatorEnabled = false
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
+    private var fileSelectionIntent: FileSelectionIntent? = null
+    private var itemToDelete: GalleryMedia? = null
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -50,7 +51,6 @@ class MediaViewerViewModel(
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOnMain()
-    private val stateSubject = BehaviorSubject.createDefault<State>(State.Idle)
     val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isPageIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isToolbarVisible: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -230,9 +230,8 @@ class MediaViewerViewModel(
             return
         }
 
-        stateSubject.onNext(State.Sharing)
-
         if (item.files.size > 1) {
+            fileSelectionIntent = FileSelectionIntent.SHARING
             openFileSelectionDialog(item.files)
         } else {
             downloadAndShareFile(item.files.firstOrNull().checkNotNull {
@@ -270,9 +269,8 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        stateSubject.onNext(State.OpeningIn)
-
         if (item.files.size > 1) {
+            fileSelectionIntent = FileSelectionIntent.OPENING_IN
             openFileSelectionDialog(item.files)
         } else {
             downloadAndOpenFile(item.files.firstOrNull().checkNotNull {
@@ -353,43 +351,38 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        stateSubject.onNext(State.Deleting(item))
+        itemToDelete = item
         eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
     }
 
     fun onDeletingConfirmed() {
-        val deletingState = checkNotNull(stateSubject.value as? State.Deleting) {
-            "Deleting can only be confirmed in the deleting state"
+        val itemToDelete = itemToDelete.checkNotNull{
+            "Confirming deletion when there's no item to delete"
         }
-
-        val item = deletingState.media
 
         log.debug {
             "onDeletingConfirmed(): deleting:" +
-                    "\nitem=$item"
+                    "\nitem=$itemToDelete"
         }
 
         deleteGalleryMediaUseCase
             .invoke(
-                mediaUid = item.uid,
+                mediaUid = itemToDelete.uid,
                 currentGalleryMediaRepository = galleryMediaRepository,
             )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                stateSubject.onNext(State.Idle)
-            }
             .subscribeBy(
                 onError = { error ->
                     log.error(error) {
                         "onDeletingConfirmed(): failed_deleting:" +
-                                "\nitem=$item"
+                                "\nitem=$itemToDelete"
                     }
                 },
                 onComplete = {
                     log.debug {
                         "onDeletingConfirmed(): successfully_deleted:" +
-                                "\nitem=$item"
+                                "\nitem=$itemToDelete"
                     }
                 }
             )
@@ -415,7 +408,14 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        downloadToExternalStorage(item)
+        if (item.files.size > 1) {
+            fileSelectionIntent = FileSelectionIntent.DOWNLOADING
+            openFileSelectionDialog(item.files)
+        } else {
+            downloadFileToExternalStorageInBackground(item.files.firstOrNull().checkNotNull {
+                "There must be at least one file in the gallery media object"
+            })
+        }
     }
 
     fun onCancelDownloadClicked(position: Int) {
@@ -503,17 +503,6 @@ class MediaViewerViewModel(
         }
     }
 
-    private fun downloadToExternalStorage(media: GalleryMedia) {
-        if (media.files.size > 1) {
-            stateSubject.onNext(State.DownloadingToExternalStorage)
-            openFileSelectionDialog(media.files)
-        } else {
-            downloadFileToExternalStorageInBackground(media.files.firstOrNull().checkNotNull {
-                "There must be at least one file in the gallery media object"
-            })
-        }
-    }
-
     private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
         log.debug {
             "openFileSelectionDialog(): posting_open_event:" +
@@ -529,18 +518,19 @@ class MediaViewerViewModel(
                     "\nfile=$file"
         }
 
-        when (stateSubject.value.checkNotNull()) {
-            State.Sharing ->
+        val intent = fileSelectionIntent.checkNotNull {
+            "File is selected when there's no intent"
+        }
+
+        when (intent) {
+            FileSelectionIntent.SHARING ->
                 downloadAndShareFile(file)
 
-            State.OpeningIn ->
+            FileSelectionIntent.OPENING_IN ->
                 downloadAndOpenFile(file)
 
-            State.DownloadingToExternalStorage ->
+            FileSelectionIntent.DOWNLOADING ->
                 downloadFileToExternalStorageInBackground(file)
-
-            else ->
-                error("Can't select files in ${stateSubject.value} state")
         }
     }
 
@@ -565,18 +555,12 @@ class MediaViewerViewModel(
     private fun downloadAndShareFile(file: GalleryMedia.File) {
         mediaFilesActionsViewModel.downloadAndShareMediaFiles(
             files = listOf(file),
-            onDownloadFinished = {
-                stateSubject.onNext(State.Idle)
-            }
         )
     }
 
     private fun downloadAndOpenFile(file: GalleryMedia.File) {
         mediaFilesActionsViewModel.downloadAndOpenMediaFile(
             file = file,
-            onDownloadFinished = {
-                stateSubject.onNext(State.Idle)
-            }
         )
     }
 
@@ -594,10 +578,7 @@ class MediaViewerViewModel(
                         mediaUid = file.mediaUid,
                     )
 
-
                 subscribeToMediaBackgroundDownloadStatus(progressObservable)
-
-                stateSubject.onNext(State.Idle)
 
                 eventsSubject.onNext(
                     Event.ShowStartedDownloadMessage(
@@ -739,11 +720,10 @@ class MediaViewerViewModel(
         ) : Event
     }
 
-    private sealed interface State {
-        object Idle : State
-        object Sharing : State
-        object OpeningIn : State
-        class Deleting(val media: GalleryMedia) : State
-        object DownloadingToExternalStorage : State
+    private enum class FileSelectionIntent {
+        SHARING,
+        OPENING_IN,
+        DOWNLOADING,
+        ;
     }
 }
