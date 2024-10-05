@@ -252,5 +252,6 @@
     <string name="sort_order_oldest_first">Älteste zuerst</string>
     <string name="sort_order_recently_added">Kürzlich hinzugefügt</string>
     <string name="sort_favorites_first">Favoriten zuerst</string>
+    <string name="memory_deleting_confirmation">Diese Erinnerung löschen?</string>
 
 </resources>

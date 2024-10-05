@@ -254,5 +254,6 @@
     <string name="sort_order_oldest_first">Παλαιότερα πρώτα</string>
     <string name="sort_order_recently_added">Πρόσφατα προστέθηκε</string>
     <string name="sort_favorites_first">Αγαπημένα πρώτα</string>
+    <string name="memory_deleting_confirmation">Διαγραφή αυτής της ανάμνησης;</string>
 
 </resources>

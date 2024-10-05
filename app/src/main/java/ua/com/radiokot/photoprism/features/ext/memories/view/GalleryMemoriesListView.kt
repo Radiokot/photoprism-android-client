@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.ext.memories.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -57,6 +58,9 @@ class GalleryMemoriesListView(
                     repositoryParams = event.repositoryParams,
                     staticSubtitle = event.staticSubtitle,
                 )
+
+            is GalleryMemoriesListViewModel.Event.OpenDeletingConfirmationDialog ->
+                openDeletingConfirmationDialog()
         }
 
         log.debug {
@@ -80,6 +84,16 @@ class GalleryMemoriesListView(
                     )
                 )
         )
+    }
+
+    private fun openDeletingConfirmationDialog() {
+        MaterialAlertDialogBuilder(activity)
+            .setMessage(R.string.memory_deleting_confirmation)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                viewModel.onDeletingConfirmed()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     companion object {

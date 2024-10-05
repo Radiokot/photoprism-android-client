@@ -260,4 +260,5 @@
     <string name="sort_order_oldest_first">Oldest first</string>
     <string name="sort_order_recently_added">Recently added</string>
     <string name="sort_favorites_first">Favorites first</string>
+    <string name="memory_deleting_confirmation">Delete this memory?</string>
 </resources>

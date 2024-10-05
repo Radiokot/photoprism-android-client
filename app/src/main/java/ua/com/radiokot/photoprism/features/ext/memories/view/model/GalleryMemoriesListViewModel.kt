@@ -10,9 +10,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import java.util.concurrent.TimeUnit
 
 class GalleryMemoriesListViewModel(
@@ -26,6 +27,7 @@ class GalleryMemoriesListViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
     private var isInitialized: Boolean = false
+    private var memoryToDelete: Memory? = null
 
     /**
      * To be set from the outside whenever
@@ -115,10 +117,39 @@ class GalleryMemoriesListViewModel(
         }
     }
 
+    fun onMemoryItemLongClicked(item: MemoryListItem) {
+        log.debug {
+            "onMemoryItemLongClicked(): memory_item_long_clicked:" +
+                    "\nitem=$item"
+        }
+
+        if (item.source != null) {
+            memoryToDelete = item.source
+            eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
+        }
+    }
+
+    fun onDeletingConfirmed() {
+        val memoryToDelete = this.memoryToDelete
+            ?: error("Confirming deletion when there's no memory to delete")
+
+        memoriesRepository.delete(memoryToDelete)
+            .subscribeBy()
+            .autoDispose(this)
+
+        memoriesNotificationsManager.cancelNewMemoriesNotification()
+    }
+
     sealed interface Event {
         class OpenViewer(
             val repositoryParams: SimpleGalleryMediaRepository.Params,
             val staticSubtitle: MemoryTitle,
         ) : Event
+
+        /**
+         * Show item deletion confirmation, reporting the choice
+         * to the [onDeletingConfirmed] method.
+         */
+        object OpenDeletingConfirmationDialog : Event
     }
 }

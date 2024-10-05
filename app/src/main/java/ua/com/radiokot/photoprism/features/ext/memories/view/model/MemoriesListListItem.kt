@@ -47,6 +47,10 @@ class MemoriesListListItem(
                     viewModel.onMemoryItemClicked(item)
                     true
                 }
+                onLongClickListener = {_, _, item: MemoryListItem, _ ->
+                    viewModel.onMemoryItemLongClicked(item)
+                    true
+                }
             }
         }
 

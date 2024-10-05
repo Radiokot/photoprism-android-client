@@ -254,5 +254,6 @@
     <string name="sort_order_oldest_first">En eski önce</string>
     <string name="sort_order_recently_added">Son eklenen</string>
     <string name="sort_favorites_first">Favoriler önce</string>
+    <string name="memory_deleting_confirmation">Bu hatırayı sil?</string>
 
 </resources>

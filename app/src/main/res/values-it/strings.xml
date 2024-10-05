@@ -254,5 +254,6 @@
     <string name="sort_order_oldest_first">Più vecchio prima</string>
     <string name="sort_order_recently_added">Aggiunto di recente</string>
     <string name="sort_favorites_first">Preferiti prima</string>
+    <string name="memory_deleting_confirmation">Eliminare questo ricordo?</string>
 
 </resources>

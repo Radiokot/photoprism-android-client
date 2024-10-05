@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to delete a memory with a long press
+
 ### Fixed
 
 - Search on the folders screen ignoring folder paths
@@ -23,14 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Made the file import more stable by retrying failed uploads
 - Made the file import faster by running uploads in parallel
-- Recently downloaded files are no longer re-downloaded 
+- Recently downloaded files are no longer re-downloaded
   when you want to share them or open them in another app once again
 - Extended the silent correction of PhotoPrism library page URLs during the connection.
   Now all the common `/library/` routes are being corrected
 
 ### Fixed
 
-- Crashing on screens with strings containing numbers 
+- Crashing on screens with strings containing numbers
   when the app language is French or Czech
 - Showing indeterminate download progress (when Content-Length is not available) as 1%
 

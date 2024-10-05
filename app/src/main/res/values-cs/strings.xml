@@ -255,5 +255,6 @@
     <string name="sort_order_oldest_first">Nejstarší první</string>
     <string name="sort_order_recently_added">Nedávno přidané</string>
     <string name="sort_favorites_first">Oblíbené první</string>
+    <string name="memory_deleting_confirmation">Smazat tuto vzpomínku?</string>
 
 </resources>

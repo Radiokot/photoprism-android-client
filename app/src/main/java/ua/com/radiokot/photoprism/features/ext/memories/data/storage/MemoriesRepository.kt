@@ -7,9 +7,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntity
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class MemoriesRepository(
     private val memoriesDao: MemoriesDbDao,
@@ -75,10 +75,23 @@ class MemoriesRepository(
             broadcast()
         }
 
-    fun markAllAsNotSeenLocally() =
-        itemsList
-            .forEach { it.isSeen = false }
-            .also { broadcast() }
+    fun delete(memory: Memory): Completable = {
+        memoriesDao.delete(
+            memorySearchQuery = memory.searchQuery,
+        )
+    }
+        .toCompletable()
+        .subscribeOn(Schedulers.io())
+        .doOnComplete {
+            mutableItemsList.remove(memory)
+
+            log.debug {
+                "delete(): memory_deleted:" +
+                        "\nmemory=$memory"
+            }
+
+            broadcast()
+        }
 
     private companion object {
         private const val KEEP_MEMORIES_FOR_DAYS = 2
