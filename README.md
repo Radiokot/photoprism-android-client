@@ -50,6 +50,7 @@ It may work with older ones though, I just haven't tested it.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension store](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/103765434?s=100" alt="₿logging₿itcoin" title="₿logging₿itcoin" height=70 />](https://github.com/BrutusBondBTC)
 [<img src="https://avatars.githubusercontent.com/u/104279101?s=100" alt="PitRejection2359" title="PitRejection2359" height=70 />](https://github.com/PitRejection2359)
 [<img src="https://avatars.githubusercontent.com/u/35728385?s=100" alt="Sayantan Santra" title="Sayantan Santra" height=70 />](https://github.com/SinTan1729)
 [<img src="https://avatars.githubusercontent.com/u/136379342?s=100" alt="Philipp" title="Philipp" height=70 />](https://github.com/Blendan1)
