@@ -1,0 +1,9 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to delete a memory with a long press
+
+Fixed:
+- Search on the folders screen ignoring folder paths
+- Inability to focus the video timeline or the buttons using the "Down" button on the media viewer screen
+- Inability to change the folder sorting on Android 12 and older
