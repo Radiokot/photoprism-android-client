@@ -1,12 +1,14 @@
 package ua.com.radiokot.photoprism.features.shared.albums.view.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
-import java.io.Serializable
 
+@Parcelize
 data class AlbumSort(
     val order: Order,
     val areFavoritesFirst: Boolean,
-) : Serializable,
+) : Parcelable,
     Comparator<Album> {
 
     override fun compare(a1: Album, a2: Album): Int {

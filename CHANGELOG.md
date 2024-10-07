@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Search on the folders screen ignoring folder paths
 - Inability to focus the video timeline or the buttons using the "Down" button
   on the media viewer screen
+- Inability to change the folder sorting on Android 12 and older
 
 ## [1.31.0] - 2024-09-28
 

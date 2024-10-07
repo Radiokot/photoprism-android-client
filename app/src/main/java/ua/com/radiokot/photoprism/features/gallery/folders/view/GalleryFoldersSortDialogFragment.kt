@@ -79,10 +79,11 @@ class GalleryFoldersSortDialogFragment :
         fun getBundle(
             sort: AlbumSort,
         ) = Bundle().apply {
-            putSerializable(SORT_EXTRA, sort)
+            putParcelable(SORT_EXTRA, sort)
         }
 
+        @Suppress("DEPRECATION")
         fun getResult(bundle: Bundle): AlbumSort =
-            bundle.getSerializable(SORT_EXTRA, AlbumSort::class.java)!!
+            bundle.getParcelable(SORT_EXTRA)!!
     }
 }
