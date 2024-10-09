@@ -1,9 +1,6 @@
 ---
 name: Bug report
 about: Describe the bug you've faced to help make the gallery better
-title: ''
-labels: bug
-assignees: ''
 
 ---
 
