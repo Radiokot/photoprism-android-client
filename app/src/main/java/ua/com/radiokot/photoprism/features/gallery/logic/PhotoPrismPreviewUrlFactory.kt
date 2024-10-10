@@ -12,7 +12,7 @@ class PhotoPrismPreviewUrlFactory(
 
     private val previewUrlBase = "${apiUrl}v1"
 
-    override fun getThumbnail100Url(hash: String): String=
+    override fun getThumbnail100Url(hash: String): String =
         getTilePreviewUrl(hash, 100)
 
     override fun getThumbnail224Url(hash: String): String =
@@ -61,7 +61,11 @@ class PhotoPrismPreviewUrlFactory(
         val videoCodec = videoFile.codec ?: ""
 
         val previewFormat = when {
-            (videoCodec == "hvc1" || videoCodec == "hev1") && videoFormatSupport.canPlayHevc() ->
+            // HEIC (live photo) = HEVC is an assumption,
+            // but it works for Samsung and Google files.
+            // Although some Apple shots may have AVC inside.
+            (videoCodec == "hvc1" || videoCodec == "hev1" || videoCodec == "heic")
+                    && videoFormatSupport.canPlayHevc() ->
                 "hevc"
 
             videoCodec == "vp8" && videoFormatSupport.canPlayVp8() ->
