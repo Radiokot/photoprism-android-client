@@ -5,4 +5,5 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 
 interface GalleryPreferences {
     val itemScale: BehaviorSubject<GalleryItemScale>
+    var livePhotosAsImages: BehaviorSubject<Boolean>
 }

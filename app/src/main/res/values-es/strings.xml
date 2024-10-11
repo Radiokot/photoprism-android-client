@@ -256,5 +256,7 @@
     <string name="sort_order_recently_added">Recientemente añadido</string>
     <string name="sort_favorites_first">Favoritos primero</string>
     <string name="memory_deleting_confirmation">¿Eliminar este recuerdo?</string>
+    <string name="live_photos_as_images">Fotos en vivo como imágenes</string>
+    <string name="live_photos_as_images_explanation">No animar fotos en vivo en JPEG o HEIF</string>
 
 </resources>

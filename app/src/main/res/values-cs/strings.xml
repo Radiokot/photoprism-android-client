@@ -256,5 +256,7 @@
     <string name="sort_order_recently_added">Nedávno přidané</string>
     <string name="sort_favorites_first">Oblíbené první</string>
     <string name="memory_deleting_confirmation">Smazat tuto vzpomínku?</string>
+    <string name="live_photos_as_images">Živá fota jako obrázky</string>
+    <string name="live_photos_as_images_explanation">Neanimažovat živá fota ve formátech JPEG nebo HEIF</string>
 
 </resources>

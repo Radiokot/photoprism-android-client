@@ -255,5 +255,7 @@
     <string name="sort_order_recently_added">Недавно добавленные</string>
     <string name="sort_favorites_first">Сначала избранное</string>
     <string name="memory_deleting_confirmation">Удалить это воспоминание?</string>
+    <string name="live_photos_as_images">Живые фото как изображения</string>
+    <string name="live_photos_as_images_explanation">Не анимировать живые фото в форматах JPEG или HEIF</string>
 
 </resources>

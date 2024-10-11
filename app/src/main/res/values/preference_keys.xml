@@ -12,6 +12,7 @@
     <string name="pk_show_album_folders" translatable="false">show_album_folders</string>
     <string name="pk_slideshow_speed" translatable="false">slideshow_speed</string>
     <string name="pk_gallery_item_scale" translatable="false">gallery_item_scale</string>
+    <string name="pk_live_photos_as_images" translatable="false">lp_as_images</string>
     <string name="pk_language" translatable="false">language</string>
     <string name="pk_extensions" translatable="false">extensions</string>
 

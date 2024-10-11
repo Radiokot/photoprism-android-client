@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit
 class SlideshowViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val slideshowPreferences: SlideshowPreferences,
+    private val galleryPreferences: GalleryPreferences,
 ) : ViewModel() {
     private val log = kLogger("SlideshowVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -131,6 +133,7 @@ class SlideshowViewModel(
                     MediaViewerPage.fromGalleryMedia(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
+                        livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
                     )
             }
             .also {

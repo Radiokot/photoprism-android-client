@@ -50,8 +50,8 @@ import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPrefer
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
@@ -207,6 +207,11 @@ class PreferencesFragment :
                 slideshowPreferences.speed = SlideshowSpeed.valueOf(newValue as String)
                 true
             }
+        }
+
+        with(requirePreference(R.string.pk_live_photos_as_images)){
+            this as SwitchPreferenceCompat
+            bindToSubject(galleryPreferences.livePhotosAsImages, viewLifecycleOwner)
         }
 
         with(requirePreference(R.string.pk_show_people)) {

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to disable animation of JPEG and HEIF live photos in the preferences
+
 ### Changed
 
 - For HEIF (HEIC) live photos, the video is now requested in HEVC

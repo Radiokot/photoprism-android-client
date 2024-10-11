@@ -255,5 +255,7 @@
     <string name="sort_order_recently_added">最近添加</string>
     <string name="sort_favorites_first">最愛優先</string>
     <string name="memory_deleting_confirmation">刪除此回憶？</string>
+    <string name="live_photos_as_images">實況照片作為圖片</string>
+    <string name="live_photos_as_images_explanation">不要為JPEG或HEIF實況照片添加動畫</string>
 
 </resources>

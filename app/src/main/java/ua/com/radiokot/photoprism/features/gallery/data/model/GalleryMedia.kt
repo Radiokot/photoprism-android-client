@@ -186,12 +186,12 @@ class GalleryMedia(
                 }
             }
 
-            sealed class Kind {
+            enum class Kind {
                 /**
                  * Just a short video treated by PhotoPrism as a live photo
                  * having the still image generated from the first frame.
                  */
-                object ShortVideo : Kind()
+                SHORT_VIDEO,
 
                 /**
                  * Real live photo with with a high quality still image
@@ -200,7 +200,7 @@ class GalleryMedia(
                  *
                  * [Samsung: Motion Photos](https://www.samsung.com/au/support/mobile-devices/motion-photos/)
                  */
-                object Samsung : Kind()
+                SAMSUNG,
 
                 /**
                  * Real live photo with a high quality still image
@@ -209,7 +209,7 @@ class GalleryMedia(
                  *
                  * [Apple: Live Photos](https://support.apple.com/en-gb/HT207310)
                  */
-                object Apple : Kind()
+                APPLE,
 
                 /**
                  * Google motion still photo with a high quality still image
@@ -219,12 +219,14 @@ class GalleryMedia(
                  *
                  * [Google: Motion Stills](https://blog.research.google/2018/03/behind-motion-photos-technology-in.html)
                  */
-                object Google : Kind()
+                GOOGLE,
 
                 /**
                  * Unknown kind of live photo.
                  */
-                object Other : Kind()
+                OTHER,
+
+                ;
             }
         }
 
@@ -286,19 +288,19 @@ class GalleryMedia(
                                         && videoFile.codec != "heic"
                                         && mainFile.name.startsWith(videoFile.name)
                             } ->
-                                Live.Kind.ShortVideo
+                                Live.Kind.SHORT_VIDEO
 
                             source.cameraMake == "Samsung" ->
-                                Live.Kind.Samsung
+                                Live.Kind.SAMSUNG
 
                             source.cameraMake == "Apple" ->
-                                Live.Kind.Apple
+                                Live.Kind.APPLE
 
                             source.cameraMake == "Google" ->
-                                Live.Kind.Google
+                                Live.Kind.GOOGLE
 
                             else ->
-                                Live.Kind.Other
+                                Live.Kind.OTHER
                         },
                         mediaPreviewUrlFactory = previewUrlFactory,
                     )

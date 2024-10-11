@@ -6,7 +6,6 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier._q
@@ -44,15 +43,7 @@ val mediaViewerFeatureModule = module {
     } bind Cache::class
 
     scope<EnvSession> {
-        viewModel {
-            MediaViewerViewModel(
-                galleryMediaRepositoryFactory = get(),
-                setGalleryMediaFavoriteUseCase = get(),
-                archiveGalleryMediaUseCase = get(),
-                deleteGalleryMediaUseCase = get(),
-                mediaFilesActionsViewModel = get(),
-            )
-        }
+        viewModelOf(::MediaViewerViewModel)
 
         scoped {
             val session = get<EnvSession>()

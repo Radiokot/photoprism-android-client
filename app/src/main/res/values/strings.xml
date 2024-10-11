@@ -261,4 +261,6 @@
     <string name="sort_order_recently_added">Recently added</string>
     <string name="sort_favorites_first">Favorites first</string>
     <string name="memory_deleting_confirmation">Delete this memory?</string>
+    <string name="live_photos_as_images">Live photos as images</string>
+    <string name="live_photos_as_images_explanation">Do not animate JPEG or HEIF live photos</string>
 </resources>

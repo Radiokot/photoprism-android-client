@@ -48,6 +48,14 @@
             app:persistent="false"
             app:summary="%1$s"
             app:title="@string/slideshow_speed_preference" />
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_live_photos_as_images"
+            app:persistent="false"
+            app:summary="@string/live_photos_as_images_explanation"
+            app:title="@string/live_photos_as_images"
+            app:widgetLayout="@layout/preference_material_switch" />
     </PreferenceCategory>
 
     <PreferenceCategory

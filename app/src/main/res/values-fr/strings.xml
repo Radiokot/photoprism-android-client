@@ -255,6 +255,8 @@
     <string name="sort_order_oldest_first">Le plus ancien en premier</string>
     <string name="sort_order_recently_added">Récemment ajouté</string>
     <string name="sort_favorites_first">Favoris en premier</string>
-    <string name="memory_deleting_confirmation">Supprimer ce souvenir ?</string>
+    <string name="memory_deleting_confirmation">Supprimer ce souvenir ?</string>
+    <string name="live_photos_as_images">Photos en direct en tant qu\'images</string>
+    <string name="live_photos_as_images_explanation">Ne pas animer les photos en direct en JPEG ou HEIF</string>
 
 </resources>
