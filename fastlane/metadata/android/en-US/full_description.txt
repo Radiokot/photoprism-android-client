@@ -17,6 +17,7 @@ It does not support all the official web app functionality, but nevertheless has
   - Memories – get a daily collection of photos and videos from the same day in past years
   - Photo frame widget – see random photos from your library on the home screen
 
-The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism versions from July 11, 2024 down to October 9, 2021.
+The gallery runs on Android 5.0+ and it is confirmed to work the PhotoPrism release of September 15, 2024.
+Compatibility with older PhotoPrism versions may be partial.
 
 This is a free open-source app under the GPLv3 license: https://github.com/Radiokot/photoprism-android-client

@@ -35,10 +35,9 @@ The gallery is not intended to sync content with the library.
 For this, I recommend [Autosync](https://play.google.com/store/apps/details?id=com.ttxapps.autosync).
 
 ## Compatibility
-The gallery runs on Android 5.0+ and it is confirmed to work with PhotoPrism versions from 
-[September 15, 2024](https://github.com/photoprism/photoprism/releases/tag/240915-e1280b2fb) 
-down to [October 9, 2021](https://github.com/photoprism/photoprism/releases/tag/211009-d6cc8df5). 
-It may work with older ones though, I just haven't tested it.
+The gallery runs on Android 5.0+ and it is confirmed to work with the PhotoPrism release of 
+[September 15, 2024](https://github.com/photoprism/photoprism/releases/tag/240915-e1280b2fb).
+Compatibility with older PhotoPrism versions may be partial.
 
 ## Download
 [<img src="repository-assets/icon-github.svg" alt="APK" style="height: 1em;"/> APK from the latest release](https://github.com/Radiokot/photoprism-android-client/releases/latest)
