@@ -360,7 +360,7 @@ class MediaViewerViewModel(
     }
 
     fun onDeletingConfirmed() {
-        val itemToDelete = itemToDelete.checkNotNull{
+        val itemToDelete = itemToDelete.checkNotNull {
             "Confirming deletion when there's no item to delete"
         }
 
@@ -649,7 +649,10 @@ class MediaViewerViewModel(
 
                     if (status is BackgroundMediaFileDownloadManager.Status.InProgress) {
                         cancelDownloadButtonProgressPercent.value =
-                            status.percent.roundToInt().coerceAtLeast(1)
+                            if (status.percent < 0)
+                                -1
+                            else
+                                status.percent.roundToInt().coerceAtLeast(1)
                     }
                 },
             )

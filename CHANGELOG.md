@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ability to disable animation of JPEG and HEIF live photos in the preferences
 
+### Fixed
+
+- Showing indeterminate background download progress (when Content-Length is not available) as 1%
+
 ### Changed
 
 - For HEIF (HEIC) live photos, the video is now requested in HEVC
