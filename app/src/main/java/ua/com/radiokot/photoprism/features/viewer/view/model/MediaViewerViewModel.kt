@@ -19,6 +19,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
@@ -34,7 +35,7 @@ class MediaViewerViewModel(
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
     private val galleryPreferences: GalleryPreferences,
 ) : ViewModel(),
-    MediaFileDownloadActionsViewModelDelegate by mediaFilesActionsViewModel {
+    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel {
 
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository

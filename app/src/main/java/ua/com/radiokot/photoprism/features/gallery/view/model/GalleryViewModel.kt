@@ -45,7 +45,7 @@ class GalleryViewModel(
     galleryExtensionsStateRepository: GalleryExtensionsStateRepository,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
-    MediaFileDownloadActionsViewModelDelegate by mediaFilesActionsViewModel {
+    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel {
 
     private val log = kLogger("GalleryVM")
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
