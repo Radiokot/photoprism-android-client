@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Ability to disable animation of JPEG and HEIF live photos in the preferences
+- Ability to see and export activated extension keys
 
 ### Fixed
 

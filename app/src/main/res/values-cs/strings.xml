@@ -258,5 +258,6 @@
     <string name="memory_deleting_confirmation">Smazat tuto vzpomínku?</string>
     <string name="live_photos_as_images">Živá fota jako obrázky</string>
     <string name="live_photos_as_images_explanation">Neanimažovat živá fota ve formátech JPEG nebo HEIF</string>
+    <string name="activated_keys">Aktivované klíče</string>
 
 </resources>

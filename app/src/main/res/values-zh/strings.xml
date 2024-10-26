@@ -257,5 +257,6 @@
     <string name="memory_deleting_confirmation">删除此回忆？</string>
     <string name="live_photos_as_images">实况照片为图像</string>
     <string name="live_photos_as_images_explanation">不要为JPEG或HEIF实况照片添加动画</string>
+    <string name="activated_keys">已激活的密钥</string>
 
 </resources>

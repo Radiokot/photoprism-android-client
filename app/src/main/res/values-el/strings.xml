@@ -257,5 +257,6 @@
     <string name="memory_deleting_confirmation">Διαγραφή αυτής της ανάμνησης;</string>
     <string name="live_photos_as_images">Ζωντανές φωτογραφίες ως εικόνες</string>
     <string name="live_photos_as_images_explanation">Να μην κάνετε animate ζωντανές φωτογραφίες JPEG ή HEIF</string>
+    <string name="activated_keys">Ενεργοποιημένα κλειδιά</string>
 
 </resources>

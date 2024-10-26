@@ -1,11 +1,15 @@
 package ua.com.radiokot.photoprism.features.ext.prefs.view
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.widget.TextView
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -25,6 +29,7 @@ import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPre
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
+
 
 // When renaming or moving this fragment,
 // make sure to manually update the preference "fragment" value in preferences.xml.
@@ -57,22 +62,35 @@ class GalleryExtensionPreferencesFragment :
         subscribeToExtensionsState()
     }
 
-    private fun initGeneralPreferences(preferenceScreen: PreferenceScreen) = with(preferenceScreen) {
-        with(requirePreference(R.string.pk_ext_store)) {
-            isVisible = featureFlags.hasExtensionStore
-            setOnPreferenceClickListener {
-                startActivity(Intent(requireActivity(), GalleryExtensionStoreActivity::class.java))
-                true
+    private fun initGeneralPreferences(preferenceScreen: PreferenceScreen) =
+        with(preferenceScreen) {
+            with(requirePreference(R.string.pk_ext_store)) {
+                isVisible = featureFlags.hasExtensionStore
+                setOnPreferenceClickListener {
+                    startActivity(
+                        Intent(
+                            requireActivity(),
+                            GalleryExtensionStoreActivity::class.java
+                        )
+                    )
+                    true
+                }
             }
-        }
 
-        with(requirePreference(R.string.pk_ext_activate_key)) {
-            setOnPreferenceClickListener {
-                startActivity(Intent(requireActivity(), KeyActivationActivity::class.java))
-                true
+            with(requirePreference(R.string.pk_ext_activate_key)) {
+                setOnPreferenceClickListener {
+                    startActivity(Intent(requireActivity(), KeyActivationActivity::class.java))
+                    true
+                }
+            }
+
+            with(requirePreference(R.string.pk_ext_activated_keys)) {
+                setOnPreferenceClickListener {
+                    showActivatedKeysDialog()
+                    true
+                }
             }
         }
-    }
 
     private fun subscribeToExtensionsState() {
         galleryExtensionsStateRepository.state
@@ -130,6 +148,34 @@ class GalleryExtensionPreferencesFragment :
                 updateMemoriesNotificationsChecked()
             }
         }
+    }
+
+    private fun showActivatedKeysDialog() {
+        val keysString = galleryExtensionsStateRepository.currentState
+            .activatedKeys
+            .joinToString("\n\n")
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.activated_keys)
+            .setMessage(keysString)
+            .setNeutralButton(R.string.share) { _, _ ->
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, keysString)
+                }
+                runCatching {
+                    startActivity(Intent.createChooser(intent, getString(R.string.activated_keys)))
+                }
+            }
+            .setPositiveButton(R.string.ok, null)
+            .show()
+            .apply {
+                with(findViewById<TextView>(android.R.id.message)!!) {
+                    setTypeface(Typeface.MONOSPACE)
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                    setTextIsSelectable(true)
+                }
+            }
     }
 
     override fun onResume() {

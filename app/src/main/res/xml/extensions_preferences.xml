@@ -18,6 +18,12 @@
 
     <Preference
         app:iconSpaceReserved="false"
+        app:key="@string/pk_ext_activated_keys"
+        app:persistent="false"
+        app:title="@string/activated_keys" />
+
+    <Preference
+        app:iconSpaceReserved="false"
         app:key="@string/pk_ext_activate_key"
         app:persistent="false"
         app:title="@string/activate_key_preference" />

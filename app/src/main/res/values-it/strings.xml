@@ -257,5 +257,6 @@
     <string name="memory_deleting_confirmation">Eliminare questo ricordo?</string>
     <string name="live_photos_as_images">Foto live come immagini</string>
     <string name="live_photos_as_images_explanation">Non animare le foto live in formato JPEG o HEIF</string>
+    <string name="activated_keys">Chiavi attivate</string>
 
 </resources>

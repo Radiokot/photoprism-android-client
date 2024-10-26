@@ -257,5 +257,6 @@
     <string name="memory_deleting_confirmation">Bu hatırayı sil?</string>
     <string name="live_photos_as_images">Canlı fotoğraflar resimler gibi</string>
     <string name="live_photos_as_images_explanation">JPEG veya HEIF canlı fotoğrafları animasyon yapmayın</string>
+    <string name="activated_keys">Etkinleştirilmiş anahtarlar</string>
 
 </resources>

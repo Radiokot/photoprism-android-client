@@ -263,4 +263,5 @@
     <string name="memory_deleting_confirmation">Delete this memory?</string>
     <string name="live_photos_as_images">Live photos as images</string>
     <string name="live_photos_as_images_explanation">Do not animate JPEG or HEIF live photos</string>
+    <string name="activated_keys">Activated keys</string>
 </resources>

@@ -257,5 +257,6 @@
     <string name="memory_deleting_confirmation">Видалити цей спогад?</string>
     <string name="live_photos_as_images">Живі фото як зображення</string>
     <string name="live_photos_as_images_explanation">Не анімувати живі фото у форматах JPEG або HEIF</string>
+    <string name="activated_keys">Активовані ключі</string>
 
 </resources>
