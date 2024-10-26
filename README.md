@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=23&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=24&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -49,6 +49,7 @@ Compatibility with older PhotoPrism versions may be partial.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension store](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/9728953?s=100" alt="reverendj1" title="reverendj1" height=70 />](https://github.com/reverendj1)
 [<img src="https://avatars.githubusercontent.com/u/103765434?s=100" alt="₿logging₿itcoin" title="₿logging₿itcoin" height=70 />](https://github.com/BrutusBondBTC)
 [<img src="https://avatars.githubusercontent.com/u/104279101?s=100" alt="PitRejection2359" title="PitRejection2359" height=70 />](https://github.com/PitRejection2359)
 [<img src="https://avatars.githubusercontent.com/u/35728385?s=100" alt="Sayantan Santra" title="Sayantan Santra" height=70 />](https://github.com/SinTan1729)
@@ -68,7 +69,7 @@ Compatibility with older PhotoPrism versions may be partial.
 [<img src="https://avatars.githubusercontent.com/u/6351543?s=100" alt="Tobias Fiechter" title="Tobias Fiechter" height=70 />](https://github.com/tobiasfiechter)
 [<img src="https://avatars.githubusercontent.com/u/52239579?s=100" alt="ippocratis" title="ippocratis" height=70 />](https://github.com/ippocratis)
 <br>
-…and 3 anonymous sponsors.
+…and 5 anonymous sponsors.
 
 *I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ❤️ To join this public list, email me the transaction reference once it is complete. By the way, sponsors get [extensions](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions) for free.*
 
