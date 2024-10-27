@@ -5,11 +5,13 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhotoUpdate
 import java.io.IOException
 
 interface PhotoPrismPhotosService {
@@ -55,5 +57,14 @@ interface PhotoPrismPhotosService {
     @POST("v1/batch/photos/delete")
     fun batchDelete(
         @Body batchPhotoUids: PhotoPrismBatchPhotoUids,
+    ): Any // There must be some non-void return type because of Retrofit assertions.
+
+    @kotlin.jvm.Throws(IOException::class)
+    @JvmSuppressWildcards
+    @Headers("Accept: application/json")
+    @PUT("v1/photos/{photoUid}")
+    fun updatePhoto(
+        @Path("photoUid") photoUid: String,
+        @Body update: PhotoPrismPhotoUpdate,
     ): Any // There must be some non-void return type because of Retrofit assertions.
 }

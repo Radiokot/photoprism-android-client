@@ -549,9 +549,16 @@ class MediaViewerActivity : BaseActivity() {
         val actionItems = listOf(
             menu.findItem(R.id.archive),
             menu.findItem(R.id.delete),
+            menu.findItem(R.id.is_private),
         )
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
             actionItems.forEach { it.isVisible = areActionsVisible }
+        }
+
+        with(menu.findItem(R.id.is_private)) {
+            viewModel.isPrivate.observe(this@MediaViewerActivity) { isPrivate ->
+                isChecked = isPrivate
+            }
         }
 
         return super.onCreateOptionsMenu(menu)
@@ -588,6 +595,13 @@ class MediaViewerActivity : BaseActivity() {
 
         R.id.delete -> {
             viewModel.onDeleteClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        R.id.is_private -> {
+            viewModel.onTogglePrivateClicked(
                 position = view.viewPager.currentItem
             )
             true

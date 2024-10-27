@@ -23,6 +23,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadA
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
+import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaPrivateUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -30,6 +31,7 @@ import kotlin.math.roundToInt
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val setGalleryMediaFavoriteUseCase: SetGalleryMediaFavoriteUseCase,
+    private val setGalleryMediaPrivateUseCase: SetGalleryMediaPrivateUseCase,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
@@ -64,6 +66,7 @@ class MediaViewerViewModel(
     val title: MutableLiveData<String> = MutableLiveData()
     val subtitle: MutableLiveData<SubtitleValue> = MutableLiveData()
     val isFavorite: MutableLiveData<Boolean> = MutableLiveData()
+    val isPrivate: MutableLiveData<Boolean> = MutableLiveData()
 
     /**
      * Size of the image viewing area in px.
@@ -490,6 +493,54 @@ class MediaViewerViewModel(
             .autoDispose(this)
     }
 
+    fun onTogglePrivateClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onTogglePrivateClicked(): position_out_of_range"
+            }
+            return
+        }
+
+        // Switch currently shown private state.
+        val toSetPrivate = isPrivate.value != true
+
+        log.debug {
+            "onTogglePrivateClicked(): switching_private:" +
+                    "\nitem=$item," +
+                    "\ntoSetPrivate=$toSetPrivate"
+        }
+
+        setGalleryMediaPrivateUseCase
+            .invoke(
+                mediaUid = item.uid,
+                isPrivate = toSetPrivate,
+                currentGalleryMediaRepository = galleryMediaRepository,
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onTogglePrivateClicked(): failed_switching_private:" +
+                                "\nitem=$item," +
+                                "\ntoSetPrivate=$toSetPrivate"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onTogglePrivateClicked(): successfully_switched_private:" +
+                                "\nitem=$item," +
+                                "\ntoSetPrivate=$toSetPrivate"
+                    }
+
+                    isPrivate.value = toSetPrivate
+                }
+            )
+            .autoDispose(this)
+    }
+
     fun onPageClicked() {
         log.debug { "onPageClicked(): toggling_full_screen" }
 
@@ -616,6 +667,7 @@ class MediaViewerViewModel(
         )
         updateTitleAndSubtitle(item)
         isFavorite.value = item.isFavorite
+        isPrivate.value = item.isPrivate
 
         // When switching to a video (not live photo or GIF), go full screen if currently is not.
         if (item.media is GalleryMedia.TypeData.Video && isFullScreen.value == false) {

@@ -42,4 +42,13 @@
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="never"
         tools:ignore="PrivateResource" />
+
+    <item
+        android:id="@+id/is_private"
+        android:icon="@drawable/ic_eye_off"
+        android:checkable="true"
+        android:title="@string/is_private"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never"
+        tools:ignore="PrivateResource" />
 </menu>

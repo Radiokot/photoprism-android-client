@@ -31,6 +31,8 @@ constructor(
     val favorite: Boolean,
     @JsonProperty("Quality")
     val quality: Int,
+    @JsonProperty("Private")
+    val private: Boolean,
 ) {
     val mainFile: File?
         // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L520

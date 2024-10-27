@@ -53,6 +53,10 @@ class GalleryMedia(
      * Whether the entry is liked (added to favorites) or not.
      */
     var isFavorite: Boolean,
+    /**
+     * Whether the entry is hidden (marked as private) or not.
+     */
+    var isPrivate: Boolean,
     val hash: String,
     files: List<File>,
     previewUrlFactory: MediaPreviewUrlFactory,
@@ -80,6 +84,7 @@ class GalleryMedia(
         title = source.title,
         webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
         isFavorite = source.favorite,
+        isPrivate = source.private,
         files = source.files.map { photoPrismFile ->
             File(
                 source = photoPrismFile,

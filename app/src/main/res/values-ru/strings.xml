@@ -258,5 +258,6 @@
     <string name="live_photos_as_images">Живые фото как изображения</string>
     <string name="live_photos_as_images_explanation">Не анимировать живые фото в форматах JPEG или HEIF</string>
     <string name="activated_keys">Активированные ключи</string>
+    <string name="is_private">Приватный</string>
 
 </resources>

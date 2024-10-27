@@ -256,5 +256,6 @@
     <string name="live_photos_as_images">Live-Fotos als Bilder</string>
     <string name="live_photos_as_images_explanation">Nicht animieren JPEG- oder HEIF-Live-Fotos</string>
     <string name="activated_keys">Aktivierte Schlüssel</string>
+    <string name="is_private">Privat</string>
 
 </resources>

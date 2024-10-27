@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhotoUpdate
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.model.PagingOrder
@@ -249,6 +250,28 @@ class SimpleGalleryMediaRepository(
                 ?.also { itemToChange ->
                     // Update the state locally.
                     itemToChange.isFavorite = isFavorite
+                    broadcast()
+                }
+        }
+
+    fun setPrivate(
+        itemUid: String,
+        isPrivate: Boolean,
+    ): Completable = {
+        photoPrismPhotosService.updatePhoto(
+            photoUid = itemUid,
+            update = PhotoPrismPhotoUpdate(
+                private = isPrivate,
+            ),
+        )
+    }
+        .toCompletable()
+        .doOnComplete {
+            itemsList
+                .find { it.uid == itemUid }
+                ?.also { itemToChange ->
+                    // Update the state locally.
+                    itemToChange.isPrivate = isPrivate
                     broadcast()
                 }
         }
