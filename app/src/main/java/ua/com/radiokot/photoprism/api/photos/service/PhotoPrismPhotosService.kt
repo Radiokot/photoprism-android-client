@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.api.photos.service
 
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -30,20 +29,6 @@ interface PhotoPrismPhotosService {
         @Query("q")
         q: String? = null
     ): List<PhotoPrismMergedPhoto>
-
-    @kotlin.jvm.Throws(IOException::class)
-    @Headers("Accept: application/json")
-    @POST("v1/photos/{photoUid}/like")
-    fun likePhoto(
-        @Path("photoUid") photoUid: String,
-    ): Any // There must be some non-void return type because of Retrofit assertions.
-
-    @kotlin.jvm.Throws(IOException::class)
-    @Headers("Accept: application/json")
-    @DELETE("v1/photos/{photoUid}/like")
-    fun dislikePhoto(
-        @Path("photoUid") photoUid: String,
-    ): Any // There must be some non-void return type because of Retrofit assertions.
 
     @kotlin.jvm.Throws(IOException::class)
     @Headers("Accept: application/json")

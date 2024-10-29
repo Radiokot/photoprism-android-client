@@ -234,33 +234,15 @@ class SimpleGalleryMediaRepository(
         }
     }
 
-    fun setFavorite(
+    fun updateAttributes(
         itemUid: String,
-        isFavorite: Boolean,
-    ): Completable = {
-        if (isFavorite)
-            photoPrismPhotosService.likePhoto(itemUid)
-        else
-            photoPrismPhotosService.dislikePhoto(itemUid)
-    }
-        .toCompletable()
-        .doOnComplete {
-            itemsList
-                .find { it.uid == itemUid }
-                ?.also { itemToChange ->
-                    // Update the state locally.
-                    itemToChange.isFavorite = isFavorite
-                    broadcast()
-                }
-        }
-
-    fun setPrivate(
-        itemUid: String,
-        isPrivate: Boolean,
+        isFavorite: Boolean? = null,
+        isPrivate: Boolean? = null,
     ): Completable = {
         photoPrismPhotosService.updatePhoto(
             photoUid = itemUid,
             update = PhotoPrismPhotoUpdate(
+                favorite = isFavorite,
                 private = isPrivate,
             ),
         )
@@ -271,7 +253,9 @@ class SimpleGalleryMediaRepository(
                 .find { it.uid == itemUid }
                 ?.also { itemToChange ->
                     // Update the state locally.
-                    itemToChange.isPrivate = isPrivate
+                    isFavorite?.also(itemToChange::isFavorite::set)
+                    isPrivate?.also(itemToChange::isPrivate::set)
+
                     broadcast()
                 }
         }

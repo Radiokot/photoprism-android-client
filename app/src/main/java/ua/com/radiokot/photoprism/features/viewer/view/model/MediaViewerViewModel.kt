@@ -22,16 +22,14 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoad
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
-import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaPrivateUseCase
+import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val setGalleryMediaFavoriteUseCase: SetGalleryMediaFavoriteUseCase,
-    private val setGalleryMediaPrivateUseCase: SetGalleryMediaPrivateUseCase,
+    private val updateGalleryMediaAttributesUseCase: UpdateGalleryMediaAttributesUseCase,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
@@ -462,7 +460,7 @@ class MediaViewerViewModel(
                     "\ntoSetFavorite=$toSetFavorite"
         }
 
-        setGalleryMediaFavoriteUseCase
+        updateGalleryMediaAttributesUseCase
             .invoke(
                 mediaUid = item.uid,
                 isFavorite = toSetFavorite,
@@ -493,12 +491,12 @@ class MediaViewerViewModel(
             .autoDispose(this)
     }
 
-    fun onTogglePrivateClicked(position: Int) {
+    fun onPrivateClicked(position: Int) {
         val item = galleryMediaRepository.itemsList.getOrNull(position)
 
         if (item == null) {
             log.warn {
-                "onTogglePrivateClicked(): position_out_of_range"
+                "onPrivateClicked(): position_out_of_range"
             }
             return
         }
@@ -507,12 +505,12 @@ class MediaViewerViewModel(
         val toSetPrivate = isPrivate.value != true
 
         log.debug {
-            "onTogglePrivateClicked(): switching_private:" +
+            "onPrivateClicked(): switching_private:" +
                     "\nitem=$item," +
                     "\ntoSetPrivate=$toSetPrivate"
         }
 
-        setGalleryMediaPrivateUseCase
+        updateGalleryMediaAttributesUseCase
             .invoke(
                 mediaUid = item.uid,
                 isPrivate = toSetPrivate,
@@ -523,14 +521,14 @@ class MediaViewerViewModel(
             .subscribeBy(
                 onError = { error ->
                     log.error(error) {
-                        "onTogglePrivateClicked(): failed_switching_private:" +
+                        "onPrivateClicked(): failed_switching_private:" +
                                 "\nitem=$item," +
                                 "\ntoSetPrivate=$toSetPrivate"
                     }
                 },
                 onComplete = {
                     log.debug {
-                        "onTogglePrivateClicked(): successfully_switched_private:" +
+                        "onPrivateClicked(): successfully_switched_private:" +
                                 "\nitem=$item," +
                                 "\ntoSetPrivate=$toSetPrivate"
                     }

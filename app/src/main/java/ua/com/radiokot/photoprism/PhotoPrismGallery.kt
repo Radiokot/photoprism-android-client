@@ -36,7 +36,7 @@ import ua.com.radiokot.photoprism.features.ext.store.galleryExtensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
 import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
-import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
+import ua.com.radiokot.photoprism.features.viewer.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
 import ua.com.radiokot.photoprism.features.welcome.di.welcomeScreenFeatureModule

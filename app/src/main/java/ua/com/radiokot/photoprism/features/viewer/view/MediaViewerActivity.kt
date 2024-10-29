@@ -601,7 +601,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         R.id.is_private -> {
-            viewModel.onTogglePrivateClicked(
+            viewModel.onPrivateClicked(
                 position = view.viewPager.currentItem
             )
             true

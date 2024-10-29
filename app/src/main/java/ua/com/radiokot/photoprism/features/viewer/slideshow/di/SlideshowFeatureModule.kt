@@ -6,7 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.viewer.di.mediaViewerFeatureModule
+import ua.com.radiokot.photoprism.features.viewer.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.model.SlideshowViewModel

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.viewer.di
+package ua.com.radiokot.photoprism.features.viewer
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
@@ -18,8 +18,7 @@ import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
-import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaFavoriteUseCase
-import ua.com.radiokot.photoprism.features.viewer.logic.SetGalleryMediaPrivateUseCase
+import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
@@ -69,7 +68,6 @@ val mediaViewerFeatureModule = module {
 
         viewModelOf(::VideoPlayerCacheViewModel)
 
-        scopedOf(::SetGalleryMediaFavoriteUseCase)
-        scopedOf(::SetGalleryMediaPrivateUseCase)
+        scopedOf(::UpdateGalleryMediaAttributesUseCase)
     }
 }
