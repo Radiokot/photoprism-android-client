@@ -1,8 +1,8 @@
-package ua.com.radiokot.photoprism.features.shared.albums.view.model
+package ua.com.radiokot.photoprism.features.albums.view.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 
 @Parcelize
 data class AlbumSort(

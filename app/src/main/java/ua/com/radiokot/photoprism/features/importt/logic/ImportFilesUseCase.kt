@@ -14,10 +14,10 @@ import ua.com.radiokot.photoprism.api.upload.service.PhotoPrismUploadService
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.retryWithDelay
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBody
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import java.util.concurrent.TimeUnit
 
 /**
@@ -39,7 +39,7 @@ class ImportFilesUseCase(
      */
     operator fun invoke(
         files: List<ImportableFile>,
-        albums: Set<ImportAlbum>,
+        albums: Set<DestinationAlbum>,
         uploadToken: String,
     ): Observable<Status> {
         require(files.isNotEmpty()) {
@@ -87,7 +87,7 @@ class ImportFilesUseCase(
             .doOnComplete {
                 // Update albums repository if there are albums to create,
                 // so they are available in subsequent imports.
-                if (albums.any { it is ImportAlbum.ToCreate }) {
+                if (albums.any { it is DestinationAlbum.ToCreate }) {
                     albumsRepository?.invalidate()
                     albumsRepository?.updateIfEverUpdated()
 
@@ -188,7 +188,7 @@ class ImportFilesUseCase(
     }.subscribeOn(Schedulers.io())
 
     private fun processUploadedFiles(
-        albums: Set<ImportAlbum>,
+        albums: Set<DestinationAlbum>,
         userId: String,
         uploadToken: String,
     ): Completable = {
@@ -198,10 +198,10 @@ class ImportFilesUseCase(
             uploadOptions = PhotoPrismUploadOptions(
                 albums = albums.map { album ->
                     when (album) {
-                        is ImportAlbum.Existing ->
+                        is DestinationAlbum.Existing ->
                             album.uid
 
-                        is ImportAlbum.ToCreate ->
+                        is DestinationAlbum.ToCreate ->
                             album.title
                     }
                 },

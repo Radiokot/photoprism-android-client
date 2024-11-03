@@ -28,7 +28,7 @@ import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFol
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.view.ErrorView
 
 class GalleryFoldersActivity : BaseActivity() {

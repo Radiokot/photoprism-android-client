@@ -8,16 +8,16 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumSelectionViewModel
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.view.model.DestinationAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesUseCase
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
-import ua.com.radiokot.photoprism.features.shared.albums.sharedAlbumsModule
+import ua.com.radiokot.photoprism.features.albums.albumsModule
 
 val importFeatureModule = module {
-    includes(sharedAlbumsModule)
+    includes(albumsModule)
 
     scope<EnvSession> {
         scoped {
@@ -32,12 +32,12 @@ val importFeatureModule = module {
         viewModelOf(::ImportViewModel)
 
         viewModel {
-            ImportAlbumSelectionViewModel(
+            DestinationAlbumSelectionViewModel(
                 albumsRepository = get(),
-                searchPredicate = { album: ImportAlbum, query: String ->
+                searchPredicate = { album: DestinationAlbum, query: String ->
                     SearchPredicates.generalCondition(query, album.title)
                 },
-                exactMatchPredicate = { album: ImportAlbum, query: String ->
+                exactMatchPredicate = { album: DestinationAlbum, query: String ->
                     album.title.equals(query, ignoreCase = true)
                 },
             )

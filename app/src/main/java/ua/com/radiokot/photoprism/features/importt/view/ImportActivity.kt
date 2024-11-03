@@ -25,7 +25,7 @@ import ua.com.radiokot.photoprism.databinding.ActivityImportBinding
 import ua.com.radiokot.photoprism.databinding.IncludeImportCardContentBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.importt.albums.view.ImportAlbumSelectionActivity
+import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.importt.view.model.ImportViewModel
 
 class ImportActivity : BaseActivity() {
@@ -120,9 +120,9 @@ class ImportActivity : BaseActivity() {
 
             is ImportViewModel.Event.OpenAlbumSelectionForResult ->
                 albumSelectionLauncher.launch(
-                    Intent(this, ImportAlbumSelectionActivity::class.java)
+                    Intent(this, DestinationAlbumSelectionActivity::class.java)
                         .putExtras(
-                            ImportAlbumSelectionActivity.getBundle(
+                            DestinationAlbumSelectionActivity.getBundle(
                                 selectedAlbums = event.currentlySelectedAlbums,
                             )
                         )
@@ -203,7 +203,7 @@ class ImportActivity : BaseActivity() {
         val bundle = result.data?.extras
         if (result.resultCode == Activity.RESULT_OK && bundle != null) {
             viewModel.onAlbumSelectionResult(
-                selectedAlbums = ImportAlbumSelectionActivity.getSelectedAlbums(bundle)
+                selectedAlbums = DestinationAlbumSelectionActivity.getSelectedAlbums(bundle)
             )
         }
     }

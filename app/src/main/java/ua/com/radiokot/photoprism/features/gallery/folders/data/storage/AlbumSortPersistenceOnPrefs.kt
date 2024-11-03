@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 
 class AlbumSortPersistenceOnPrefs(
     key: String,

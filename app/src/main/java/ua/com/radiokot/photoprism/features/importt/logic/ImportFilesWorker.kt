@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.sizeMb
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
@@ -45,10 +45,10 @@ class ImportFilesWorker(
             ?.let(::File)
             ?: error("Missing $FILE_LIST_JSON_PATH")
     }
-    private val albums: Set<ImportAlbum> by lazy {
+    private val albums: Set<DestinationAlbum> by lazy {
         jsonObjectMapper
-            .readerForListOf(ImportAlbum::class.java)
-            .readValue<Collection<ImportAlbum>>(workerParams.inputData.getString(ALBUMS_JSON_KEY))
+            .readerForListOf(DestinationAlbum::class.java)
+            .readValue<Collection<DestinationAlbum>>(workerParams.inputData.getString(ALBUMS_JSON_KEY))
             .toSet()
     }
     private val uploadToken = System.currentTimeMillis().toString()
@@ -185,7 +185,7 @@ class ImportFilesWorker(
          */
         fun getInputData(
             fileListJsonFile: File,
-            albums: Set<ImportAlbum>,
+            albums: Set<DestinationAlbum>,
             jsonObjectMapper: JsonObjectMapper,
         ) = Data.Builder()
             .putString(FILE_LIST_JSON_PATH, fileListJsonFile.path)

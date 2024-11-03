@@ -12,7 +12,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGalleryFolderBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 
 class GalleryFolderListItem(
     private val title: String,

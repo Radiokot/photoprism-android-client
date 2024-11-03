@@ -222,8 +222,8 @@
     <string name="import_started_in_background">Запущено у фоні</string>
     <string name="import_notifications_permission_rationale">Дозвіл на надсилання сповіщень забезпечує надійну роботу імпорту в фоні</string>
     <string name="import_media_permission_rationale">Дозвіл на доступ до фотографій та відео запобігає видаленню геоданих з файлів</string>
-    <string name="template_import_album_create_new">Створити \"%1$s\"</string>
-    <string name="import_albums_enter_album_title">Введіть назву альбому</string>
+    <string name="template_destination_album_selection_create_new">Створити \"%1$s\"</string>
+    <string name="destination_album_selection_enter_album_title">Введіть назву альбому</string>
     <string name="import_albums_not_selected">Не вибрано</string>
     <string name="photo_frame_widget_name">Фоторамка</string>
     <string name="photo_frame_widget_description">Показує випадкове фото, що змінюється кожні кілька годин</string>

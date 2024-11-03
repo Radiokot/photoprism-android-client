@@ -3,7 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.folders.data.storage
 import android.content.SharedPreferences
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.util.objectPersistenceSubject
 
 class GalleryFoldersPreferencesOnPrefs(

@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.importt.albums.view.model
+package ua.com.radiokot.photoprism.features.albums.view.model
 
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
@@ -8,16 +8,16 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModelImpl
 
-class ImportAlbumSelectionViewModel(
+class DestinationAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
-    private val searchPredicate: (album: ImportAlbum, query: String) -> Boolean,
-    private val exactMatchPredicate: (album: ImportAlbum, query: String) -> Boolean,
+    private val searchPredicate: (album: DestinationAlbum, query: String) -> Boolean,
+    private val exactMatchPredicate: (album: DestinationAlbum, query: String) -> Boolean,
 ) : ViewModel(),
     SearchInputViewModel by SearchInputViewModelImpl() {
 
@@ -26,16 +26,16 @@ class ImportAlbumSelectionViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<ImportAlbumListItem>>()
+    val itemsList = MutableLiveData<List<DestinationAlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
     val isDoneButtonVisible = MutableLiveData(false)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
     private var isInitialized = false
-    private var albumsToCreate: Set<ImportAlbum.ToCreate> = emptySet()
-    private var selectedAlbums: Set<ImportAlbum> = emptySet()
-    private var initiallySelectedAlbums: Set<ImportAlbum> = emptySet()
+    private var albumsToCreate: Set<DestinationAlbum.ToCreate> = emptySet()
+    private var selectedAlbums: Set<DestinationAlbum> = emptySet()
+    private var initiallySelectedAlbums: Set<DestinationAlbum> = emptySet()
 
     init {
         subscribeToRepository()
@@ -45,7 +45,7 @@ class ImportAlbumSelectionViewModel(
     }
 
     fun initOnce(
-        currentlySelectedAlbums: Set<ImportAlbum>,
+        currentlySelectedAlbums: Set<DestinationAlbum>,
     ) {
         if (isInitialized) {
             return
@@ -53,7 +53,7 @@ class ImportAlbumSelectionViewModel(
 
         initiallySelectedAlbums = currentlySelectedAlbums
         selectedAlbums = currentlySelectedAlbums
-        albumsToCreate = currentlySelectedAlbums.filterIsInstance<ImportAlbum.ToCreate>().toSet()
+        albumsToCreate = currentlySelectedAlbums.filterIsInstance<DestinationAlbum.ToCreate>().toSet()
 
         isInitialized = true
 
@@ -116,7 +116,7 @@ class ImportAlbumSelectionViewModel(
         val allAlbums = albumsToCreate +
                 albumsRepository.itemsList
                     .filter { it.type == Album.TypeName.ALBUM }
-                    .map(ImportAlbum::Existing)
+                    .map(DestinationAlbum::Existing)
         val searchQuery = currentSearchInput
         val filteredAlbums =
             if (searchQuery != null)
@@ -126,9 +126,9 @@ class ImportAlbumSelectionViewModel(
             else
                 allAlbums
 
-        val newItems: MutableList<ImportAlbumListItem> = filteredAlbums
+        val newItems: MutableList<DestinationAlbumListItem> = filteredAlbums
             .map { album ->
-                ImportAlbumListItem.Album(
+                DestinationAlbumListItem.Album(
                     source = album,
                     isAlbumSelected = album in selectedAlbums,
                 )
@@ -139,7 +139,7 @@ class ImportAlbumSelectionViewModel(
         if (searchQuery != null && allAlbums.none { exactMatchPredicate(it, searchQuery) }) {
             newItems.add(
                 0,
-                ImportAlbumListItem.CreateNew(
+                DestinationAlbumListItem.CreateNew(
                     newAlbumTitle = searchQuery,
                 )
             )
@@ -158,9 +158,9 @@ class ImportAlbumSelectionViewModel(
         mainError.value = null
     }
 
-    fun onListItemClicked(item: ImportAlbumListItem) {
+    fun onListItemClicked(item: DestinationAlbumListItem) {
         when (item) {
-            is ImportAlbumListItem.Album -> {
+            is DestinationAlbumListItem.Album -> {
                 if (item.source != null) {
                     switchAlbumSelection(
                         album = item.source,
@@ -168,7 +168,7 @@ class ImportAlbumSelectionViewModel(
                 }
             }
 
-            is ImportAlbumListItem.CreateNew -> {
+            is DestinationAlbumListItem.CreateNew -> {
                 addAlbumToCreate(
                     newAlbumTitle = item.newAlbumTitle,
                 )
@@ -177,7 +177,7 @@ class ImportAlbumSelectionViewModel(
     }
 
     private fun addAlbumToCreate(newAlbumTitle: String) {
-        val albumToCreate = ImportAlbum.ToCreate(
+        val albumToCreate = DestinationAlbum.ToCreate(
             title = newAlbumTitle,
         )
 
@@ -194,7 +194,7 @@ class ImportAlbumSelectionViewModel(
         postAlbumItems()
     }
 
-    private fun switchAlbumSelection(album: ImportAlbum) {
+    private fun switchAlbumSelection(album: DestinationAlbum) {
         if (album in selectedAlbums) {
             log.debug {
                 "switchAlbumSelection(): unselect:" +
@@ -265,10 +265,10 @@ class ImportAlbumSelectionViewModel(
             ?: return
 
         val createNewItem = allItems
-            .filterIsInstance<ImportAlbumListItem.CreateNew>()
+            .filterIsInstance<DestinationAlbumListItem.CreateNew>()
             .firstOrNull()
         val firstAlbumItem = allItems
-            .filterIsInstance<ImportAlbumListItem.Album>()
+            .filterIsInstance<DestinationAlbumListItem.Album>()
             .firstOrNull()
 
         if (createNewItem != null) {
@@ -300,7 +300,7 @@ class ImportAlbumSelectionViewModel(
          * Set an OK result with the [selectedAlbums] and finish.
          */
         class FinishWithResult(
-            val selectedAlbums: Set<ImportAlbum>,
+            val selectedAlbums: Set<DestinationAlbum>,
         ) : Event
     }
 

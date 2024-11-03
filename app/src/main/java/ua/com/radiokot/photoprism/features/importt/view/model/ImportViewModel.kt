@@ -20,12 +20,12 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.isSelfPermissionGranted
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.importt.logic.ImportFilesWorker
 import ua.com.radiokot.photoprism.features.importt.logic.ParseImportIntentUseCase
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.sizeMb
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import java.io.File
 
 class ImportViewModel(
@@ -40,7 +40,7 @@ class ImportViewModel(
     private var isInitialized = false
     private lateinit var files: List<ImportableFile>
     private val permissionsToCheckBeforeStart = mutableListOf<String>()
-    private var albums: Set<ImportAlbum> = emptySet()
+    private var albums: Set<DestinationAlbum> = emptySet()
     private val uploadUniqueName = "${ImportFilesWorker.TAG}:${System.currentTimeMillis()}"
 
     val summary: MutableLiveData<Summary> = MutableLiveData()
@@ -126,7 +126,7 @@ class ImportViewModel(
         )
     }
 
-    fun onAlbumSelectionResult(selectedAlbums: Set<ImportAlbum>) {
+    fun onAlbumSelectionResult(selectedAlbums: Set<DestinationAlbum>) {
         log.debug {
             "onAlbumsSelected(): updating_selection:" +
                     "\nselectedAlbums=${selectedAlbums.size}"
@@ -135,7 +135,7 @@ class ImportViewModel(
         this.albums = selectedAlbums
 
         summary.value = summary.value!!.copy(
-            albums = selectedAlbums.map(ImportAlbum::title),
+            albums = selectedAlbums.map(DestinationAlbum::title),
         )
     }
 
@@ -224,7 +224,7 @@ class ImportViewModel(
          * [onAlbumSelectionResult] must be called when the result is obtained.
          */
         class OpenAlbumSelectionForResult(
-            val currentlySelectedAlbums: Set<ImportAlbum>,
+            val currentlySelectedAlbums: Set<DestinationAlbum>,
         ) : Event
     }
 }

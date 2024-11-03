@@ -222,8 +222,8 @@
     <string name="import_started_in_background">Ξεκίνησε στο παρασκήνιο</string>
     <string name="import_notifications_permission_rationale">Η άδεια για αποστολή ειδοποιήσεων επιτρέπει την αξιόπιστη λειτουργία της εισαγωγής στο παρασκήνιο</string>
     <string name="import_media_permission_rationale">Η άδεια πρόσβασης σε φωτογραφίες και βίντεο εμποδίζει τη διαγραφή γεωτοποθετικών δεδομένων από τα αρχεία</string>
-    <string name="template_import_album_create_new">Δημιουργία \"%1$s\"</string>
-    <string name="import_albums_enter_album_title">Εισαγάγετε τον τίτλο του άλμπουμ</string>
+    <string name="template_destination_album_selection_create_new">Δημιουργία \"%1$s\"</string>
+    <string name="destination_album_selection_enter_album_title">Εισαγάγετε τον τίτλο του άλμπουμ</string>
     <string name="import_albums_not_selected">Δεν επιλέχθηκαν</string>
     <string name="photo_frame_widget_name">Κορνίζα φωτογραφίας</string>
     <string name="photo_frame_widget_description">Εμφανίζει μια τυχαία φωτογραφία που αλλάζει κάθε λίγες ώρες</string>

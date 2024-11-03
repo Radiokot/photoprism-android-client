@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.importt.albums.view
+package ua.com.radiokot.photoprism.features.albums.view
 
 import android.app.Activity
 import android.content.Intent
@@ -11,28 +11,28 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityImportAlbumSelectionBinding
+import ua.com.radiokot.photoprism.databinding.ActivityDestinationAlbumSelectionBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.subscribe
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumListItem
-import ua.com.radiokot.photoprism.features.importt.albums.view.model.ImportAlbumSelectionViewModel
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.view.model.DestinationAlbumListItem
+import ua.com.radiokot.photoprism.features.albums.view.model.DestinationAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class ImportAlbumSelectionActivity : BaseActivity() {
-    private val log = kLogger("ImportAlbumSelectionActivity")
+class DestinationAlbumSelectionActivity : BaseActivity() {
+    private val log = kLogger("DestinationAlbumSelectionActivity")
 
-    private lateinit var view: ActivityImportAlbumSelectionBinding
-    private val viewModel: ImportAlbumSelectionViewModel by viewModel()
-    private val adapter = ItemAdapter<ImportAlbumListItem>()
+    private lateinit var view: ActivityDestinationAlbumSelectionBinding
+    private val viewModel: DestinationAlbumSelectionViewModel by viewModel()
+    private val adapter = ItemAdapter<DestinationAlbumListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = ActivityImportAlbumSelectionBinding.inflate(layoutInflater)
+        view = ActivityDestinationAlbumSelectionBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -40,7 +40,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
 
         viewModel.initOnce(
             currentlySelectedAlbums = intent.extras
-                ?.let(::getSelectedAlbums)
+                ?.let(Companion::getSelectedAlbums)
                 ?: emptySet()
         )
 
@@ -60,7 +60,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
         val itemsAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: ImportAlbumListItem, _ ->
+            onClickListener = { _, _, item: DestinationAlbumListItem, _ ->
                 viewModel.onListItemClicked(item)
                 true
             }
@@ -90,7 +90,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
     }
 
     private fun subscribeToData() {
-        val diffCallback = ImportAlbumListItemDiffCallback()
+        val diffCallback = DestinationAlbumListItemDiffCallback()
         viewModel.itemsList.observe(this) { newItems ->
             FastAdapterDiffUtil.setBetter(
                 recyclerView = view.albumsRecyclerView,
@@ -105,7 +105,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                ImportAlbumSelectionViewModel.Error.LoadingFailed ->
+                DestinationAlbumSelectionViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
@@ -136,13 +136,13 @@ class ImportAlbumSelectionActivity : BaseActivity() {
         }
 
         when (event) {
-            ImportAlbumSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
+            DestinationAlbumSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is ImportAlbumSelectionViewModel.Event.Finish ->
+            is DestinationAlbumSelectionViewModel.Event.Finish ->
                 finish()
 
-            is ImportAlbumSelectionViewModel.Event.FinishWithResult ->
+            is DestinationAlbumSelectionViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedAlbums)
         }
 
@@ -152,7 +152,7 @@ class ImportAlbumSelectionActivity : BaseActivity() {
         }
     }
 
-    private fun finishWithResult(selectedAlbums: Set<ImportAlbum>) {
+    private fun finishWithResult(selectedAlbums: Set<DestinationAlbum>) {
         log.debug {
             "finishWithResult(): finishing:" +
                     "\nselectedAlbumCount=${selectedAlbums.size}"
@@ -180,17 +180,17 @@ class ImportAlbumSelectionActivity : BaseActivity() {
     companion object {
         private const val SELECTED_ALBUMS_EXTRA = "selected_albums"
 
-        fun getBundle(selectedAlbums: Set<ImportAlbum>) = Bundle().apply {
+        fun getBundle(selectedAlbums: Set<DestinationAlbum>) = Bundle().apply {
             putParcelableArrayList(SELECTED_ALBUMS_EXTRA, ArrayList(selectedAlbums))
         }
 
-        private fun createResult(selectedAlbums: Set<ImportAlbum>) =
+        private fun createResult(selectedAlbums: Set<DestinationAlbum>) =
             getBundle(selectedAlbums)
 
         @Suppress("DEPRECATION")
-        fun getSelectedAlbums(bundle: Bundle): Set<ImportAlbum> =
+        fun getSelectedAlbums(bundle: Bundle): Set<DestinationAlbum> =
             requireNotNull(
-                bundle.getParcelableArrayList<ImportAlbum>(SELECTED_ALBUMS_EXTRA)?.toSet()
+                bundle.getParcelableArrayList<DestinationAlbum>(SELECTED_ALBUMS_EXTRA)?.toSet()
             ) {
                 "No $SELECTED_ALBUMS_EXTRA specified"
             }

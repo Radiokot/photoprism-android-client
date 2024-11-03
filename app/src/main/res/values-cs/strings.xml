@@ -223,8 +223,8 @@
     <string name="import_started_in_background">Spuštěno na pozadí</string>
     <string name="import_notifications_permission_rationale">Povolení k odesílání oznámení umožňuje spolehlivý běh importu na pozadí</string>
     <string name="import_media_permission_rationale">Povolení k přístupu k fotografiím a videím zabrání vymazání geolokačních údajů z souborů</string>
-    <string name="template_import_album_create_new">Vytvořit \"%1$s\"</string>
-    <string name="import_albums_enter_album_title">Zadejte název alba</string>
+    <string name="template_destination_album_selection_create_new">Vytvořit \"%1$s\"</string>
+    <string name="destination_album_selection_enter_album_title">Zadejte název alba</string>
     <string name="import_albums_not_selected">Nevybráno</string>
     <string name="photo_frame_widget_name">Fotorámeček</string>
     <string name="photo_frame_widget_description">Zobrazuje náhodnou fotografii, která se mění každých několik hodin</string>

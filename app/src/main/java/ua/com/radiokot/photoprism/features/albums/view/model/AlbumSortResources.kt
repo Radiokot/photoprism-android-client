@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.shared.albums.view.model
+package ua.com.radiokot.photoprism.features.albums.view.model
 
 import androidx.annotation.StringRes
 import ua.com.radiokot.photoprism.R

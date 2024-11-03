@@ -222,8 +222,8 @@
     <string name="import_started_in_background">Arka planda başlatıldı</string>
     <string name="import_notifications_permission_rationale">Bildirim gönderme izni, arka planda güvenilir bir şekilde içe aktarımın çalışmasını sağlar</string>
     <string name="import_media_permission_rationale">Fotoğraflara ve videolara erişim izni, dosyalardaki coğrafi konum verilerinin silinmesini engeller</string>
-    <string name="template_import_album_create_new">\"%1$s\" Oluştur</string>
-    <string name="import_albums_enter_album_title">Albüm başlığını girin</string>
+    <string name="template_destination_album_selection_create_new">\"%1$s\" Oluştur</string>
+    <string name="destination_album_selection_enter_album_title">Albüm başlığını girin</string>
     <string name="import_albums_not_selected">Seçilmedi</string>
     <string name="photo_frame_widget_name">Fotoğraf çerçevesi</string>
     <string name="photo_frame_widget_description">Rastgele bir fotoğraf gösterir ve her birkaç saatte bir değişir</string>

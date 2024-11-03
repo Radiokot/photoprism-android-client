@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.shared.albums.data.model
+package ua.com.radiokot.photoprism.features.albums.data.model
 
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail

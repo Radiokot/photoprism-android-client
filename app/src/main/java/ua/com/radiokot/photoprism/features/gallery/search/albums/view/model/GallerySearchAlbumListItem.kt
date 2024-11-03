@@ -14,7 +14,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 
 data class GallerySearchAlbumListItem(
     val title: String,

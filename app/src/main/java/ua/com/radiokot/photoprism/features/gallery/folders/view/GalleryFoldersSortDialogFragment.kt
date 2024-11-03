@@ -8,8 +8,8 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
 import ua.com.radiokot.photoprism.databinding.DialogGalleryFoldersSortBinding
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSortResources
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSortResources
 
 class GalleryFoldersSortDialogFragment :
     BaseMaterialDialogFragment(R.layout.dialog_gallery_folders_sort) {

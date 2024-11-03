@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.importt.albums.view.ImportAlbumSelectionActivity">
+    tools:context=".features.albums.view.DestinationAlbumSelectionActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:background="@null"
-            android:hint="@string/import_albums_enter_album_title"
+            android:hint="@string/destination_album_selection_enter_album_title"
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"

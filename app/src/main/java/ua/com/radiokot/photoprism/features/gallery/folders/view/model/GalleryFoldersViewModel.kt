@@ -11,9 +11,9 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryFoldersPreferences
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 

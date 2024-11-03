@@ -11,11 +11,11 @@ import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryF
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderViewModel
 import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.shared.albums.sharedAlbumsModule
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.albumsModule
 
 val galleryFoldersFeatureModule = module {
-    includes(sharedAlbumsModule)
+    includes(albumsModule)
 
     single {
         GalleryFoldersPreferencesOnPrefs(

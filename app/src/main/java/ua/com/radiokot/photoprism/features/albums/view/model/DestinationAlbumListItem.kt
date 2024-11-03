@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.importt.albums.view.model
+package ua.com.radiokot.photoprism.features.albums.view.model
 
 import android.view.View
 import android.widget.TextView
@@ -6,19 +6,19 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemImportAlbumBinding
-import ua.com.radiokot.photoprism.features.importt.albums.data.model.ImportAlbum
-import ua.com.radiokot.photoprism.features.importt.albums.view.ImportAlbumListItemDiffCallback
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumListItemDiffCallback
 
-sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out ImportAlbumListItem>>() {
+sealed class DestinationAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out DestinationAlbumListItem>>() {
 
     /**
-     * Do not forget to update [ImportAlbumListItemDiffCallback]
+     * Do not forget to update [DestinationAlbumListItemDiffCallback]
      * when changing fields.
      */
 
     class CreateNew(
         val newAlbumTitle: String,
-    ) : ImportAlbumListItem() {
+    ) : DestinationAlbumListItem() {
 
         override var identifier: Long =
             "create_new".hashCode().toLong()
@@ -37,7 +37,7 @@ sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out Impor
 
             override fun bindView(item: CreateNew, payloads: List<Any>) {
                 titleTextView.text = titleTextView.context.getString(
-                    R.string.template_import_album_create_new,
+                    R.string.template_destination_album_selection_create_new,
                     item.newAlbumTitle
                 )
             }
@@ -55,8 +55,8 @@ sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out Impor
     class Album(
         val title: String,
         val isAlbumSelected: Boolean,
-        val source: ImportAlbum?,
-    ) : ImportAlbumListItem() {
+        val source: DestinationAlbum?,
+    ) : DestinationAlbumListItem() {
 
         override var identifier: Long =
             source?.hashCode()?.toLong() ?: -1L
@@ -68,7 +68,7 @@ sealed class ImportAlbumListItem : AbstractItem<FastAdapter.ViewHolder<out Impor
             R.layout.list_item_import_album
 
         constructor(
-            source: ImportAlbum,
+            source: DestinationAlbum,
             isAlbumSelected: Boolean,
         ) : this(
             title = source.title,

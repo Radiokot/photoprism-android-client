@@ -1,13 +1,13 @@
-package ua.com.radiokot.photoprism.features.shared.albums
+package ua.com.radiokot.photoprism.features.albums
 
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.shared.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.shared.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.shared.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 
-val sharedAlbumsModule = module {
+val albumsModule = module {
     single {
         AlbumSort(
             order = AlbumSort.Order.NAME,
