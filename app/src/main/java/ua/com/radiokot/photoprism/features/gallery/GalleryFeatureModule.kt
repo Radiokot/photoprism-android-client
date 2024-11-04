@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.di
+package ua.com.radiokot.photoprism.features.gallery
 
 import android.net.Uri
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,6 +20,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferenc
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.folders.galleryFoldersFeatureModule
+import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
@@ -38,9 +39,9 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegateImpl
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
@@ -147,6 +148,7 @@ val galleryFeatureModule = module {
                 connectionParams = get<EnvSession>().envConnectionParams,
                 archiveGalleryMediaUseCase = get(),
                 deleteGalleryMediaUseCase = get(),
+                addGalleryMediaToAlbumUseCase = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
@@ -159,5 +161,6 @@ val galleryFeatureModule = module {
 
         scopedOf(::ArchiveGalleryMediaUseCase)
         scopedOf(::DeleteGalleryMediaUseCase)
+        scopedOf(::AddGalleryMediaToAlbumUseCase)
     }
 }

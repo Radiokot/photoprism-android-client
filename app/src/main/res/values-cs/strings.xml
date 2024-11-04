@@ -260,5 +260,7 @@
     <string name="live_photos_as_images_explanation">Neanimažovat živá fota ve formátech JPEG nebo HEIF</string>
     <string name="activated_keys">Aktivované klíče</string>
     <string name="is_private">Soukromé</string>
+    <string name="add_to_album">Přidat do alba</string>
+    <string name="template_selected_added_to_album">Přidáno do %1$s</string>
 
 </resources>

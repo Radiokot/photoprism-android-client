@@ -259,5 +259,7 @@
     <string name="live_photos_as_images_explanation">Не анімувати живі фото у форматах JPEG або HEIF</string>
     <string name="activated_keys">Активовані ключі</string>
     <string name="is_private">Приватний</string>
+    <string name="add_to_album">Додати до альбому</string>
+    <string name="template_selected_added_to_album">Додано до %1$s</string>
 
 </resources>

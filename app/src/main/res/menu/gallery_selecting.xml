@@ -14,6 +14,12 @@
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="always" />
     <item
+        android:id="@+id/add_to_album"
+        android:icon="@drawable/ic_album"
+        android:title="@string/add_to_album"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/archive"
         android:icon="@drawable/ic_archive"
         android:title="@string/archive_action"
@@ -21,7 +27,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/delete"
-        android:icon="@drawable/ic_delete_forever"
+        android:icon="@drawable/ic_delete"
         android:title="@string/delete"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="ifRoom"/>

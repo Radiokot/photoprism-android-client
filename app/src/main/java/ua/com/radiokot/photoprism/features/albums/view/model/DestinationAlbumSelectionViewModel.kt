@@ -8,8 +8,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModelImpl
@@ -36,6 +36,7 @@ class DestinationAlbumSelectionViewModel(
     private var albumsToCreate: Set<DestinationAlbum.ToCreate> = emptySet()
     private var selectedAlbums: Set<DestinationAlbum> = emptySet()
     private var initiallySelectedAlbums: Set<DestinationAlbum> = emptySet()
+    private var isSingleSelection = false
 
     init {
         subscribeToRepository()
@@ -46,6 +47,7 @@ class DestinationAlbumSelectionViewModel(
 
     fun initOnce(
         currentlySelectedAlbums: Set<DestinationAlbum>,
+        isSingleSelection: Boolean,
     ) {
         if (isInitialized) {
             return
@@ -53,13 +55,16 @@ class DestinationAlbumSelectionViewModel(
 
         initiallySelectedAlbums = currentlySelectedAlbums
         selectedAlbums = currentlySelectedAlbums
-        albumsToCreate = currentlySelectedAlbums.filterIsInstance<DestinationAlbum.ToCreate>().toSet()
+        albumsToCreate =
+            currentlySelectedAlbums.filterIsInstance<DestinationAlbum.ToCreate>().toSet()
+        this.isSingleSelection = isSingleSelection
 
         isInitialized = true
 
         log.debug {
             "initOnce(): initialized:" +
-                    "\ncurrentlySelectedAlbums:${currentlySelectedAlbums.size}"
+                    "\ncurrentlySelectedAlbums:${currentlySelectedAlbums.size}," +
+                    "\nisSingleSelection=$isSingleSelection"
         }
     }
 
@@ -187,11 +192,8 @@ class DestinationAlbumSelectionViewModel(
         }
 
         albumsToCreate += albumToCreate
-        selectedAlbums += albumToCreate
 
-        isDoneButtonVisible.value = selectedAlbums != initiallySelectedAlbums
-
-        postAlbumItems()
+        switchAlbumSelection(albumToCreate)
     }
 
     private fun switchAlbumSelection(album: DestinationAlbum) {
@@ -202,6 +204,13 @@ class DestinationAlbumSelectionViewModel(
             }
 
             selectedAlbums -= album
+        } else if (isSingleSelection) {
+            log.debug {
+                "switchAlbumSelection(): select_single:" +
+                        "\nalbum=$album"
+            }
+
+            selectedAlbums = setOf(album)
         } else {
             log.debug {
                 "switchAlbumSelection(): select:" +

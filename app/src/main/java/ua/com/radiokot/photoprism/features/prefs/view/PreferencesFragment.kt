@@ -50,7 +50,7 @@ import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPrefer
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
-import ua.com.radiokot.photoprism.features.gallery.di.ImportSearchBookmarksUseCaseParams
+import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase

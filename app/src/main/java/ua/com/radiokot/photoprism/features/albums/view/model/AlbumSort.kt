@@ -27,7 +27,7 @@ data class AlbumSort(
 
         val comparedByOrder = when (order) {
             Order.NAME ->
-                if (a1.path.isNotEmpty() && a2.path.isNotEmpty())
+                if (a1.path != null && a2.path != null)
                     a1.path.compareTo(a2.path)
                 else
                     a1.title.compareTo(a2.title)
@@ -35,7 +35,7 @@ data class AlbumSort(
             Order.NAME_DESC ->
                 // This is how PhotoPrism "Name" works,
                 // considering albums are not compared to folders at this point.
-                if (a1.path.isNotEmpty() && a2.path.isNotEmpty())
+                if (a1.path != null && a2.path != null)
                     a2.path.compareTo(a1.path)
                 else
                     a2.title.compareTo(a1.title)

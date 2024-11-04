@@ -50,6 +50,7 @@ import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -77,7 +78,6 @@ import ua.com.radiokot.photoprism.view.ErrorView
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.roundToInt
-
 
 class GalleryActivity : BaseActivity() {
     private lateinit var rootView: ActivityGalleryBinding
@@ -153,6 +153,10 @@ class GalleryActivity : BaseActivity() {
     private val foldersLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::proxyOkResult,
+    )
+    private val addDestinationAlbumSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onAddingDestinationAlbumSelectionResult,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -419,6 +423,19 @@ class GalleryActivity : BaseActivity() {
 
                 GalleryViewModel.Event.OpenDeletingConfirmationDialog -> {
                     openDeletingConfirmationDialog()
+                }
+
+                GalleryViewModel.Event.OpenAddingToAlbumDestinationSelection -> {
+                    openAddingDestinationAlbumSelection()
+                }
+
+                is GalleryViewModel.Event.ShowFloatingAddedToAlbumMessage -> {
+                    showFloatingMessage(
+                        getString(
+                            R.string.template_selected_added_to_album,
+                            event.albumTitle,
+                        )
+                    )
                 }
             }
 
@@ -732,6 +749,9 @@ class GalleryActivity : BaseActivity() {
                     R.id.download ->
                         viewModel.onDownloadMultipleSelectionClicked()
 
+                    R.id.add_to_album ->
+                        viewModel.onAddToAlbumMultipleSelectionClicked()
+
                     R.id.archive ->
                         viewModel.onArchiveMultipleSelectionClicked()
 
@@ -939,6 +959,29 @@ class GalleryActivity : BaseActivity() {
     private fun onWebViewerRedirectHandlingResult(result: ActivityResult) {
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.onWebViewerHandledRedirect()
+        }
+    }
+
+    private fun openAddingDestinationAlbumSelection() {
+        addDestinationAlbumSelectionLauncher.launch(
+            Intent(this, DestinationAlbumSelectionActivity::class.java)
+                .putExtras(
+                    DestinationAlbumSelectionActivity.getBundle(
+                        selectedAlbums = emptySet(),
+                        isSingleSelection = true,
+                    )
+                )
+        )
+    }
+
+    private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onAddToAlbumMultipleSelectionDestinationSelected(
+                selectedAlbum = DestinationAlbumSelectionActivity
+                    .getSelectedAlbums(bundle)
+                    .first()
+            )
         }
     }
 

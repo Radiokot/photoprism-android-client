@@ -21,7 +21,7 @@ constructor(
     @JsonProperty("Description")
     val description: String,
     @JsonProperty("Path")
-    val path: String,
+    val path: String?,
     @JsonProperty("Year")
     val year: Int,
     @JsonProperty("Month")

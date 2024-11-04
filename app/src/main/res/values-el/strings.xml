@@ -259,5 +259,7 @@
     <string name="live_photos_as_images_explanation">Να μην κάνετε animate ζωντανές φωτογραφίες JPEG ή HEIF</string>
     <string name="activated_keys">Ενεργοποιημένα κλειδιά</string>
     <string name="is_private">Ιδιωτικό</string>
+    <string name="add_to_album">Προσθήκη στο άλμπουμ</string>
+    <string name="template_selected_added_to_album">Προστέθηκε στο %1$s</string>
 
 </resources>

@@ -18,6 +18,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
@@ -26,6 +27,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
@@ -37,6 +39,7 @@ class GalleryViewModel(
     private val connectionParams: EnvConnectionParams,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
+    private val addGalleryMediaToAlbumUseCase: AddGalleryMediaToAlbumUseCase,
     val searchViewModel: GallerySearchViewModel,
     val fastScrollViewModel: GalleryFastScrollViewModel,
     val memoriesListViewModel: GalleryMemoriesListViewModel,
@@ -557,6 +560,56 @@ class GalleryViewModel(
         )
     }
 
+    fun onAddToAlbumMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Adding multiple selection to album button is only clickable when selecting"
+        }
+
+        check(selectedFilesByMediaUid.isNotEmpty()) {
+            "Adding multiple selection to album button is only clickable when something is selected"
+        }
+
+        eventsSubject.onNext(Event.OpenAddingToAlbumDestinationSelection)
+    }
+
+    fun onAddToAlbumMultipleSelectionDestinationSelected(selectedAlbum: DestinationAlbum) {
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
+
+        addGalleryMediaToAlbumUseCase
+            .invoke(
+                mediaUids = mediaUids,
+                destinationAlbum = selectedAlbum,
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "onAddToAlbumMultipleSelectionDestinationSelected(): start_adding:" +
+                            "\nitems=${mediaUids.size}," +
+                            "\nalbum=$selectedAlbum"
+                }
+
+                switchToViewing()
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onAddToAlbumMultipleSelectionDestinationSelected(): failed_adding"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onAddToAlbumMultipleSelectionDestinationSelected(): successfully_added"
+                    }
+
+                    eventsSubject.onNext(Event.ShowFloatingAddedToAlbumMessage(
+                        albumTitle = selectedAlbum.title,
+                    ))
+                }
+            )
+            .autoDispose(this)
+    }
+
     fun onArchiveMultipleSelectionClicked() {
         check(currentState is State.Selecting.ForUser) {
             "Archive multiple selection button is only clickable when selecting"
@@ -570,7 +623,7 @@ class GalleryViewModel(
             "There must be a media repository to archive items from"
         }
 
-        val mediaUids = selectedFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
 
         archiveGalleryMediaUseCase
             .invoke(
@@ -584,6 +637,8 @@ class GalleryViewModel(
                     "onArchiveMultipleSelectionClicked(): start_archiving:" +
                             "\nitems=${mediaUids.size}"
                 }
+
+                switchToViewing()
             }
             .subscribeBy(
                 onError = { error ->
@@ -595,8 +650,6 @@ class GalleryViewModel(
                     log.debug {
                         "onArchiveMultipleSelectionClicked(): successfully_archived"
                     }
-
-                    switchToViewing()
                 }
             )
             .autoDispose(this)
@@ -619,7 +672,7 @@ class GalleryViewModel(
             "There must be a media repository to delete items from"
         }
 
-        val mediaUids = selectedFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
 
         deleteGalleryMediaUseCase
             .invoke(
@@ -633,6 +686,8 @@ class GalleryViewModel(
                     "onDeletingMultipleSelectionConfirmed(): start_deleting:" +
                             "\nitems=${mediaUids.size}"
                 }
+
+                switchToViewing()
             }
             .subscribeBy(
                 onError = { error ->
@@ -644,8 +699,6 @@ class GalleryViewModel(
                     log.debug {
                         "onDeletingMultipleSelectionConfirmed(): successfully_deleted"
                     }
-
-                    switchToViewing()
                 }
             )
             .autoDispose(this)
@@ -808,6 +861,16 @@ class GalleryViewModel(
          * to the [onDeletingMultipleSelectionConfirmed] method.
          */
         object OpenDeletingConfirmationDialog : Event
+
+        /**
+         * Open destination album selection screen, reporting the choice
+         * to the [onAddToAlbumMultipleSelectionDestinationSelected] method.
+         */
+        object OpenAddingToAlbumDestinationSelection : Event
+
+        class ShowFloatingAddedToAlbumMessage(
+            val albumTitle: String,
+        ): Event
     }
 
     sealed interface Error {

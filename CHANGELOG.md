@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to disable animation of JPEG and HEIF live photos in the preferences
 - Ability to see and export activated extension keys
 - Ability to mark an entry as private on the media viewer screen
+- Ability to add selected items to an album
 
 ### Fixed
 

@@ -259,5 +259,7 @@
     <string name="live_photos_as_images_explanation">不要為JPEG或HEIF實況照片添加動畫</string>
     <string name="activated_keys">已啟動的密鑰</string>
     <string name="is_private">私人</string>
+    <string name="add_to_album">添加到相簿</string>
+    <string name="template_selected_added_to_album">已添加到 %1$s</string>
 
 </resources>

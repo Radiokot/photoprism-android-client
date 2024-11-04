@@ -1,14 +1,18 @@
 package ua.com.radiokot.photoprism.features.albums.data.storage
 
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbumCreation
 import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
@@ -72,6 +76,40 @@ class AlbumsRepository(
             }
             .subscribeOn(Schedulers.io())
     }
+
+    fun create(
+        title: String,
+    ): Single<Album> = {
+        photoPrismAlbumsService.createAlbum(
+            PhotoPrismAlbumCreation(
+                title = title,
+            )
+        )
+            .let { photoPrismAlbum ->
+                Album(
+                    source = photoPrismAlbum,
+                    previewUrlFactory = previewUrlFactory,
+                )
+            }
+            .also { createdAlbum ->
+                mutableItemsList.add(createdAlbum)
+                broadcast()
+            }
+    }.toSingle().subscribeOn(Schedulers.io())
+
+    fun addItemsToAlbum(
+        albumUid: String,
+        itemUids: Collection<String>,
+    ): Completable = {
+        photoPrismAlbumsService.addPhotos(
+            albumUid = albumUid,
+            batchPhotoUids = PhotoPrismBatchPhotoUids(itemUids),
+        )
+
+        // Invalidate as adding items may change the album thumb,
+        // but unfortunately it is not updated instantly.
+        invalidate()
+    }.toCompletable().subscribeOn(Schedulers.io())
 
     private companion object {
         private const val PAGE_LIMIT = 30

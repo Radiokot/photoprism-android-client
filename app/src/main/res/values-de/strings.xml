@@ -257,5 +257,7 @@
     <string name="live_photos_as_images_explanation">Nicht animieren JPEG- oder HEIF-Live-Fotos</string>
     <string name="activated_keys">Aktivierte Schlüssel</string>
     <string name="is_private">Privat</string>
+    <string name="add_to_album">Zum Album hinzufügen</string>
+    <string name="template_selected_added_to_album">Hinzugefügt zu %1$s</string>
 
 </resources>

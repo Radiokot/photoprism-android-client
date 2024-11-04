@@ -33,7 +33,7 @@ import ua.com.radiokot.photoprism.features.ext.memories.di.memoriesFeatureModule
 import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.store.galleryExtensionStoreModule
-import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.gallery.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
 import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 import ua.com.radiokot.photoprism.features.viewer.mediaViewerFeatureModule

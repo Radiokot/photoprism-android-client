@@ -41,7 +41,8 @@ class DestinationAlbumSelectionActivity : BaseActivity() {
         viewModel.initOnce(
             currentlySelectedAlbums = intent.extras
                 ?.let(Companion::getSelectedAlbums)
-                ?: emptySet()
+                ?: emptySet(),
+            isSingleSelection = intent.getBooleanExtra(IS_SINGLE_SELECTION_EXTRA, false),
         )
 
         initList()
@@ -179,9 +180,12 @@ class DestinationAlbumSelectionActivity : BaseActivity() {
 
     companion object {
         private const val SELECTED_ALBUMS_EXTRA = "selected_albums"
+        private const val IS_SINGLE_SELECTION_EXTRA = "is_single_selection"
 
-        fun getBundle(selectedAlbums: Set<DestinationAlbum>) = Bundle().apply {
+        fun getBundle(selectedAlbums: Set<DestinationAlbum>,
+                      isSingleSelection: Boolean = false,) = Bundle().apply {
             putParcelableArrayList(SELECTED_ALBUMS_EXTRA, ArrayList(selectedAlbums))
+            putBoolean(IS_SINGLE_SELECTION_EXTRA, isSingleSelection)
         }
 
         private fun createResult(selectedAlbums: Set<DestinationAlbum>) =

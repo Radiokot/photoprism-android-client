@@ -16,7 +16,7 @@ import ua.com.radiokot.photoprism.di.EnvHttpClientParams
 import ua.com.radiokot.photoprism.di.HttpClient
 import ua.com.radiokot.photoprism.di.VIDEO_CACHE_DIRECTORY
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.gallery.di.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.gallery.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
