@@ -38,6 +38,12 @@ class GalleryNavigationView(
         navigationMenu: Menu,
         onItemClicked: () -> Unit = {},
     ) {
+        navigationMenu.findItem(R.id.albums).setOnMenuItemClickListener {
+            viewModel.onAlbumsClicked()
+            onItemClicked()
+            true
+        }
+
         navigationMenu.findItem(R.id.folders).setOnMenuItemClickListener {
             viewModel.onFoldersClicked()
             onItemClicked()

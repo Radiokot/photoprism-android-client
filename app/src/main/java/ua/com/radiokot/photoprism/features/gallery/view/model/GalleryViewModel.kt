@@ -511,6 +511,10 @@ class GalleryViewModel(
         eventsSubject.onNext(Event.OpenFolders)
     }
 
+    fun onAlbumsClicked() {
+        eventsSubject.onNext(Event.OpenAlbums)
+    }
+
     fun onDoneMultipleSelectionClicked() {
         val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
@@ -844,6 +848,8 @@ class GalleryViewModel(
         object OpenPreferences : Event
 
         object OpenFolders : Event
+
+        object OpenAlbums: Event
 
         /**
          * Close the screen and go to the connection,

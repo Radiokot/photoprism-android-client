@@ -150,7 +150,7 @@ class GalleryActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onWebViewerRedirectHandlingResult,
     )
-    private val foldersLauncher = registerForActivityResult(
+    private val albumsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::proxyOkResult,
     )
@@ -407,6 +407,10 @@ class GalleryActivity : BaseActivity() {
 
                 is GalleryViewModel.Event.OpenFolders -> {
                     openFolders()
+                }
+
+                is GalleryViewModel.Event.OpenAlbums -> {
+                    openAlbums()
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
@@ -898,7 +902,15 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun openFolders() {
-        foldersLauncher.launch(
+        albumsLauncher.launch(
+            Intent(this, GalleryFoldersActivity::class.java)
+                .putExtras(intent.extras ?: Bundle())
+                .setAction(intent.action)
+        )
+    }
+
+    private fun openAlbums() {
+        albumsLauncher.launch(
             Intent(this, GalleryFoldersActivity::class.java)
                 .putExtras(intent.extras ?: Bundle())
                 .setAction(intent.action)

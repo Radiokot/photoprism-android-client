@@ -9,6 +9,11 @@
         android:title="@string/photos" />
 
     <item
+        android:id="@+id/albums"
+        android:icon="@drawable/ic_album"
+        android:title="@string/albums" />
+
+    <item
         android:id="@+id/folders"
         android:icon="@drawable/ic_folder"
         android:title="@string/folders" />
