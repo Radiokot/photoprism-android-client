@@ -260,6 +260,6 @@
     <string name="activated_keys">Etkinleştirilmiş anahtarlar</string>
     <string name="is_private">Gizlenmiş</string>
     <string name="add_to_album">Albüm ekle</string>
-    <string name="template_selected_added_to_album">%1$s eklendi</string>
+    <string name="template_selected_added_to_album">%1$s albümüne eklendi</string>
 
 </resources>
