@@ -206,9 +206,8 @@
         </activity>
 
         <activity
-            android:name=".features.gallery.folders.view.GalleryFoldersActivity"
+            android:name=".features.albums.view.AlbumsActivity"
             android:exported="false"
-            android:label="@string/folders"
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />
 

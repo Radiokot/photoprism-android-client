@@ -50,13 +50,14 @@ import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFoldersActivity
+import ua.com.radiokot.photoprism.features.albums.view.AlbumsActivity
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
@@ -903,16 +904,24 @@ class GalleryActivity : BaseActivity() {
 
     private fun openFolders() {
         albumsLauncher.launch(
-            Intent(this, GalleryFoldersActivity::class.java)
+            Intent(this, AlbumsActivity::class.java)
                 .putExtras(intent.extras ?: Bundle())
+                .putExtras(
+                    AlbumsActivity.getBundle(
+                    albumType = Album.TypeName.FOLDER,
+                ))
                 .setAction(intent.action)
         )
     }
 
     private fun openAlbums() {
         albumsLauncher.launch(
-            Intent(this, GalleryFoldersActivity::class.java)
+            Intent(this, AlbumsActivity::class.java)
                 .putExtras(intent.extras ?: Bundle())
+                .putExtras(
+                    AlbumsActivity.getBundle(
+                    albumType = Album.TypeName.ALBUM,
+                ))
                 .setAction(intent.action)
         )
     }

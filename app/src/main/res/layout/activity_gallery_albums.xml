@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.gallery.folders.view.GalleryFoldersActivity">
+    tools:context=".features.albums.view.AlbumsActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -19,7 +19,7 @@
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingStart="@dimen/list_item_gallery_folder_margin_end"
+        android:paddingStart="@dimen/list_item_gallery_album_margin_end"
         android:paddingEnd="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -28,13 +28,13 @@
             This affects span count calculation-->
 
         <me.zhanghai.android.fastscroll.FixOnItemTouchListenerRecyclerView
-            android:id="@+id/folders_recycler_view"
+            android:id="@+id/albums_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:listitem="@layout/list_item_gallery_folder"
+            tools:listitem="@layout/list_item_album"
             tools:spanCount="2" />
     </ua.com.radiokot.photoprism.view.ThemedSwipeRefreshLayout>
 

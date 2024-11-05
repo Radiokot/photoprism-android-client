@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.albums.data.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
@@ -17,7 +19,6 @@ class Album(
      */
     val type: TypeName,
     val title: String, //same as photos name,
-    val description: String?,
     val path: String?,
     val uid: String,
     val isFavorite: Boolean,
@@ -43,7 +44,6 @@ class Album(
     ) : this(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
-        description = source.description.takeIf(String::isNotEmpty),
         path = source.path?.takeIf(String::isNotEmpty),
         uid = source.uid,
         isFavorite = source.favorite,
@@ -72,7 +72,8 @@ class Album(
         return "Album(uid='$uid', title='$title', type=$type)"
     }
 
-    enum class TypeName(val value: String) { //all types of Album
+    @Parcelize
+    enum class TypeName(val value: String) : Parcelable { //all types of Album
         ALBUM("album"), //order by favorites
         FOLDER("folder"), //order by name
         MOMENT("moment"), //order by newest

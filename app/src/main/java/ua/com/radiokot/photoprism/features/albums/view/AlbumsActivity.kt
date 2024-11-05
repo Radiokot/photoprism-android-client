@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.view
+package ua.com.radiokot.photoprism.features.albums.view
 
 import android.content.Context
 import android.content.Intent
@@ -18,24 +18,26 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityGalleryFoldersBinding
+import ua.com.radiokot.photoprism.databinding.ActivityGalleryAlbumsBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderListItem
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFoldersViewModel
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumListItem
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFolderActivity
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
-import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class GalleryFoldersActivity : BaseActivity() {
+class AlbumsActivity : BaseActivity() {
 
-    private val log = kLogger("GalleryFoldersActivity")
-    private lateinit var view: ActivityGalleryFoldersBinding
-    private val viewModel: GalleryFoldersViewModel by viewModel()
+    private val log = kLogger("AlbumsActivity")
+    private lateinit var view: ActivityGalleryAlbumsBinding
+    private val viewModel: AlbumsViewModel by viewModel()
     private val folderLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::proxyOkResult,
@@ -44,14 +46,17 @@ class GalleryFoldersActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = ActivityGalleryFoldersBinding.inflate(layoutInflater)
+        view = ActivityGalleryAlbumsBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        setSupportActionBar(view.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        @Suppress("DEPRECATION")
+        viewModel.initOnce(
+            albumType = intent.getParcelableExtra(ALBUM_TYPE_EXTRA)!!,
+        )
 
+        initToolbar()
         // Init the list once it is laid out.
-        view.foldersRecyclerView.doOnPreDraw {
+        view.albumsRecyclerView.doOnPreDraw {
             initList()
         }
         initErrorView()
@@ -63,21 +68,33 @@ class GalleryFoldersActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
 
         supportFragmentManager.setFragmentResultListener(
-            GalleryFoldersSortDialogFragment.REQUEST_KEY,
+            AlbumSortDialogFragment.REQUEST_KEY,
             this
         ) { _, result ->
             viewModel.onSortDialogResult(
-                newSort = GalleryFoldersSortDialogFragment.getResult(result),
+                newSort = AlbumSortDialogFragment.getResult(result),
             )
         }
     }
 
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = when (viewModel.albumType) {
+            Album.TypeName.FOLDER ->
+                getString(R.string.folders)
+
+            else ->
+                getString(R.string.albums)
+        }
+    }
+
     private fun initList() {
-        val albumsAdapter = ItemAdapter<GalleryFolderListItem>()
+        val albumsAdapter = ItemAdapter<AlbumListItem>()
 
         viewModel.itemsList.observe(this, albumsAdapter::setNewList)
 
-        with(view.foldersRecyclerView) {
+        with(view.albumsRecyclerView) {
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
             // as it means initializing of a not laid out list.
@@ -89,7 +106,7 @@ class GalleryFoldersActivity : BaseActivity() {
                     }
 
             val minItemWidthPx =
-                resources.getDimensionPixelSize(R.dimen.list_item_gallery_folder_width)
+                resources.getDimensionPixelSize(R.dimen.list_item_gallery_album_width)
             val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
 
             log.debug {
@@ -103,8 +120,8 @@ class GalleryFoldersActivity : BaseActivity() {
                 stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-                onClickListener = { _, _, item: GalleryFolderListItem, _ ->
-                    viewModel.onFolderItemClicked(item)
+                onClickListener = { _, _, item: AlbumListItem, _ ->
+                    viewModel.onAlbumItemClicked(item)
                     true
                 }
             }
@@ -113,7 +130,7 @@ class GalleryFoldersActivity : BaseActivity() {
             // by overriding the layout manager layout params factory.
             layoutManager = object : GridLayoutManager(context, spanCount) {
                 val rowSpacing: Int =
-                    resources.getDimensionPixelSize(R.dimen.list_item_gallery_folder_margin_end)
+                    resources.getDimensionPixelSize(R.dimen.list_item_gallery_album_margin_end)
 
                 override fun generateLayoutParams(
                     c: Context,
@@ -146,28 +163,42 @@ class GalleryFoldersActivity : BaseActivity() {
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
-        viewModel.isLoading.observe(this@GalleryFoldersActivity, ::setRefreshing)
+        viewModel.isLoading.observe(this@AlbumsActivity, ::setRefreshing)
     }
 
     private fun initErrorView() {
-        view.errorView.replaces(view.foldersRecyclerView)
+        view.errorView.replaces(view.albumsRecyclerView)
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                GalleryFoldersViewModel.Error.LoadingFailed ->
+                AlbumsViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
-                            messageRes = R.string.failed_to_load_folders,
+                            messageRes =
+                            when (viewModel.albumType) {
+                                Album.TypeName.FOLDER ->
+                                    R.string.failed_to_load_folders
+
+                                else ->
+                                    R.string.failed_to_load_albums
+                            },
                             retryButtonTextRes = R.string.try_again,
                             retryButtonClickListener = viewModel::onRetryClicked
                         )
                     )
 
-                GalleryFoldersViewModel.Error.NothingFound ->
+                AlbumsViewModel.Error.NothingFound ->
                     view.errorView.showError(
                         ErrorView.Error.EmptyView(
                             context = view.errorView.context,
-                            messageRes = R.string.no_folders_found,
+                            messageRes =
+                            when (viewModel.albumType) {
+                                Album.TypeName.FOLDER ->
+                                    R.string.no_folders_found
+
+                                else ->
+                                    R.string.no_albums_found
+                            },
                         )
                     )
 
@@ -184,19 +215,19 @@ class GalleryFoldersActivity : BaseActivity() {
         }
 
         when (event) {
-            GalleryFoldersViewModel.Event.ShowFloatingLoadingFailedError ->
+            AlbumsViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is GalleryFoldersViewModel.Event.Finish ->
+            is AlbumsViewModel.Event.Finish ->
                 finish()
 
-            is GalleryFoldersViewModel.Event.OpenFolder ->
-                openFolder(
-                    folderTitle = event.folderTitle,
+            is AlbumsViewModel.Event.OpenAlbum ->
+                openAlbum(
+                    title = event.title,
                     repositoryParams = event.repositoryParams,
                 )
 
-            is GalleryFoldersViewModel.Event.OpenSortDialog ->
+            is AlbumsViewModel.Event.OpenSortDialog ->
                 openSortDialog(
                     currentSort = event.currentSort,
                 )
@@ -211,15 +242,21 @@ class GalleryFoldersActivity : BaseActivity() {
     private fun showFloatingLoadingFailedError() {
         Snackbar.make(
             view.swipeRefreshLayout,
-            getString(R.string.failed_to_load_folders),
+            when (viewModel.albumType) {
+                Album.TypeName.FOLDER ->
+                    R.string.failed_to_load_folders
+
+                else ->
+                    R.string.failed_to_load_albums
+            },
             Snackbar.LENGTH_SHORT
         )
             .setAction(R.string.try_again) { viewModel.onRetryClicked() }
             .show()
     }
 
-    private fun openFolder(
-        folderTitle: String,
+    private fun openAlbum(
+        title: String,
         repositoryParams: SimpleGalleryMediaRepository.Params,
     ) = folderLauncher.launch(
         Intent(this, GalleryFolderActivity::class.java)
@@ -227,7 +264,7 @@ class GalleryFoldersActivity : BaseActivity() {
             .putExtras(intent.extras ?: Bundle())
             .putExtras(
                 GalleryFolderActivity.getBundle(
-                    title = folderTitle,
+                    title = title,
                     repositoryParams = repositoryParams,
                 )
             )
@@ -237,16 +274,16 @@ class GalleryFoldersActivity : BaseActivity() {
         currentSort: AlbumSort,
     ) {
         val fragment =
-            (supportFragmentManager.findFragmentByTag(GalleryFoldersSortDialogFragment.TAG)
-                    as? GalleryFoldersSortDialogFragment)
-                ?: GalleryFoldersSortDialogFragment().apply {
-                    arguments = GalleryFoldersSortDialogFragment.getBundle(
+            (supportFragmentManager.findFragmentByTag(AlbumSortDialogFragment.TAG)
+                    as? AlbumSortDialogFragment)
+                ?: AlbumSortDialogFragment().apply {
+                    arguments = AlbumSortDialogFragment.getBundle(
                         sort = currentSort,
                     )
                 }
 
         if (!fragment.isAdded || !fragment.showsDialog) {
-            fragment.showNow(supportFragmentManager, GalleryFoldersSortDialogFragment.TAG)
+            fragment.showNow(supportFragmentManager, AlbumSortDialogFragment.TAG)
         }
     }
 
@@ -258,7 +295,7 @@ class GalleryFoldersActivity : BaseActivity() {
             queryHint = getString(R.string.enter_the_query)
             fixCloseButtonColor()
             hideUnderline()
-            bindToViewModel(viewModel, this@GalleryFoldersActivity)
+            bindToViewModel(viewModel, this@AlbumsActivity)
         }
 
         menu.findItem(R.id.sort)?.setOnMenuItemClickListener {
@@ -271,5 +308,10 @@ class GalleryFoldersActivity : BaseActivity() {
 
     companion object {
         private const val FALLBACK_LIST_SIZE = 100
+        private const val ALBUM_TYPE_EXTRA = "album_type"
+
+        fun getBundle(albumType: Album.TypeName) = Bundle().apply {
+            putParcelable(ALBUM_TYPE_EXTRA, albumType)
+        }
     }
 }

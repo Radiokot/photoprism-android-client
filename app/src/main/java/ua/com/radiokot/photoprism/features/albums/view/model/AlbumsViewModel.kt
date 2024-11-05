@@ -1,52 +1,78 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.view.model
+package ua.com.radiokot.photoprism.features.albums.view.model
 
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryFoldersPreferences
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
-import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryAlbumsPreferences
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
-class GalleryFoldersViewModel(
+class AlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
-    private val preferences: GalleryFoldersPreferences,
+    private val preferences: GalleryAlbumsPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
-    private val log = kLogger("GalleryFoldersVM")
+    private val log = kLogger("AlbumsVM")
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<GalleryFolderListItem>>()
+    val itemsList = MutableLiveData<List<AlbumListItem>>()
     val mainError = MutableLiveData<Error?>(null)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
+    private var isInitialized = false
+    lateinit var albumType: Album.TypeName
+        private set
+    private lateinit var sortPreferenceSubject: BehaviorSubject<AlbumSort>
 
-    init {
+    fun initOnce(
+        albumType: Album.TypeName,
+    ) {
+        if (isInitialized) {
+            return
+        }
+
+        this.albumType = albumType
+        this.sortPreferenceSubject = when (albumType) {
+            Album.TypeName.FOLDER ->
+                preferences.folderSort
+
+            else ->
+                preferences.albumSort
+        }
+
         subscribeToRepository()
         subscribeToSearch()
         subscribeToPreferences()
 
         update()
+
+        isInitialized = true
+
+        log.debug {
+            "initOnce(): initialized:" +
+                    "\nalbumType=$albumType"
+        }
     }
 
     private fun subscribeToRepository() {
         albumsRepository.items
             .filter { !albumsRepository.isNeverUpdated }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { postFolderItems() }
+            .subscribe { postAlbumItems() }
             .autoDispose(this)
 
         albumsRepository.errors
@@ -70,10 +96,10 @@ class GalleryFoldersViewModel(
     }
 
     private fun subscribeToPreferences() {
-        preferences.sort
+        sortPreferenceSubject
             .observeOnMain()
             .skip(1)
-            .subscribe { postFolderItems() }
+            .subscribe { postAlbumItems() }
             .autoDispose(this)
     }
 
@@ -95,14 +121,14 @@ class GalleryFoldersViewModel(
             // Only react to the folders are loaded.
             .filter { itemsList.value != null }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { postFolderItems() }
+            .subscribe { postAlbumItems() }
             .autoDispose(this)
     }
 
-    private fun postFolderItems() {
+    private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
             .filter { album ->
-                album.type == Album.TypeName.FOLDER
+                album.type == albumType
             }
         val searchQuery = currentSearchInput
         val filteredRepositoryAlbums =
@@ -112,10 +138,10 @@ class GalleryFoldersViewModel(
                 }
             else
                 repositoryAlbums
-        val sort = preferences.sort.value!!
+        val sort = preferences.folderSort.value!!
 
         log.debug {
-            "postFolderItems(): posting_items:" +
+            "postAlbumItems(): posting_items:" +
                     "\nalbumCount=${repositoryAlbums.size}," +
                     "\nsearchQuery=$searchQuery," +
                     "\nfilteredAlbumCount=${filteredRepositoryAlbums.size}," +
@@ -124,7 +150,7 @@ class GalleryFoldersViewModel(
 
         itemsList.value = filteredRepositoryAlbums
             .sortedWith(sort)
-            .map(::GalleryFolderListItem)
+            .map(::AlbumListItem)
 
         mainError.value =
             when {
@@ -153,10 +179,9 @@ class GalleryFoldersViewModel(
         update(force = true)
     }
 
-
-    fun onFolderItemClicked(item: GalleryFolderListItem) {
+    fun onAlbumItemClicked(item: AlbumListItem) {
         log.debug {
-            "onFolderItemClicked(): folder_item_clicked:" +
+            "onAlbumItemClicked(): album_item_clicked:" +
                     "\nitem=$item"
         }
 
@@ -164,13 +189,13 @@ class GalleryFoldersViewModel(
             val uid = item.source.uid
 
             log.debug {
-                "onFolderItemClicked(): opening_folder:" +
+                "onAlbumItemClicked(): opening_album:" +
                         "\nuid=$uid"
             }
 
             eventsSubject.onNext(
-                Event.OpenFolder(
-                    folderTitle = item.source.title,
+                Event.OpenAlbum(
+                    title = item.source.title,
                     repositoryParams = SimpleGalleryMediaRepository.Params(
                         searchConfig = SearchConfig.DEFAULT.copy(
                             includePrivate = true,
@@ -189,7 +214,7 @@ class GalleryFoldersViewModel(
 
         eventsSubject.onNext(
             Event.OpenSortDialog(
-                currentSort = preferences.sort.value!!,
+                currentSort = sortPreferenceSubject.value!!,
             )
         )
     }
@@ -202,7 +227,7 @@ class GalleryFoldersViewModel(
                     "\nnewSort=$newSort"
         }
 
-        preferences.sort.onNext(newSort)
+        sortPreferenceSubject.onNext(newSort)
     }
 
     private fun onBackPressed() {
@@ -234,8 +259,8 @@ class GalleryFoldersViewModel(
 
         object Finish : Event
 
-        class OpenFolder(
-            val folderTitle: String,
+        class OpenAlbum(
+            val title: String,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
         ) : Event
 

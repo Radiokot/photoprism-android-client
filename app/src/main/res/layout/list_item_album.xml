@@ -2,16 +2,17 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/list_item_gallery_folder_width"
+    android:layout_width="@dimen/list_item_gallery_album_width"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/list_item_gallery_folder_margin_end"
+    android:layout_marginEnd="@dimen/list_item_gallery_album_margin_end"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="8dp"
     app:strokeColor="?colorOutline">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp">
 
         <ImageView
             android:id="@+id/image_view"
@@ -43,12 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_text_view"
             tools:text="/Oleg/My Folder" />
 

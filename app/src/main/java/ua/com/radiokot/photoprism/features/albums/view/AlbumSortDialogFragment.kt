@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.view
+package ua.com.radiokot.photoprism.features.albums.view
 
 import android.os.Bundle
 import android.view.View
@@ -6,21 +6,21 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.setFragmentResult
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseMaterialDialogFragment
-import ua.com.radiokot.photoprism.databinding.DialogGalleryFoldersSortBinding
+import ua.com.radiokot.photoprism.databinding.DialogAlbumSortBinding
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSortResources
 
-class GalleryFoldersSortDialogFragment :
-    BaseMaterialDialogFragment(R.layout.dialog_gallery_folders_sort) {
+class AlbumSortDialogFragment :
+    BaseMaterialDialogFragment(R.layout.dialog_album_sort) {
 
-    private lateinit var viewBinding: DialogGalleryFoldersSortBinding
+    private lateinit var viewBinding: DialogAlbumSortBinding
     private val initialSort: AlbumSort by lazy {
         getResult(requireArguments())
     }
 
     override fun onDialogViewCreated(dialogView: View, savedInstanceState: Bundle?) {
-        viewBinding = DialogGalleryFoldersSortBinding.bind(dialogView)
+        viewBinding = DialogAlbumSortBinding.bind(dialogView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,8 +73,8 @@ class GalleryFoldersSortDialogFragment :
 
     companion object {
         private const val SORT_EXTRA = "sort"
-        const val REQUEST_KEY = "folders-sort"
-        const val TAG = "folders-sort"
+        const val TAG = "album-sort"
+        const val REQUEST_KEY = TAG
 
         fun getBundle(
             sort: AlbumSort,

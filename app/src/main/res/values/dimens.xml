@@ -43,6 +43,6 @@
     <dimen name="list_item_memory_margin_end">8dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_vertical">24dp</dimen>
     <dimen name="photo_frame_widget_configuration_shape_margin_horizontal">12dp</dimen>
-    <dimen name="list_item_gallery_folder_width">128dp</dimen>
-    <dimen name="list_item_gallery_folder_margin_end">12dp</dimen>
+    <dimen name="list_item_gallery_album_width">128dp</dimen>
+    <dimen name="list_item_gallery_album_margin_end">12dp</dimen>
 </resources>
