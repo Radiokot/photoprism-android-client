@@ -19,7 +19,6 @@ import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeature
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.folders.galleryFoldersFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
@@ -39,6 +38,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegateImpl
@@ -55,7 +55,6 @@ val galleryFeatureModule = module {
     includes(envConnectionFeatureModule)
     includes(dateFormatModule)
     includes(gallerySearchFeatureModules)
-    includes(galleryFoldersFeatureModule)
 
     single {
         FileReturnIntentCreator(
@@ -156,6 +155,17 @@ val galleryFeatureModule = module {
                 listViewModel = get(),
                 mediaFilesActionsViewModel = get(),
                 galleryExtensionsStateRepository = get(),
+            )
+        }
+
+        viewModel {
+            GallerySingleRepositoryViewModel(
+                galleryMediaRepositoryFactory = get(),
+                archiveGalleryMediaUseCase = get(),
+                deleteGalleryMediaUseCase = get(),
+                addGalleryMediaToAlbumUseCase = get(),
+                listViewModel = get(),
+                mediaFilesActionsViewModel = get(),
             )
         }
 

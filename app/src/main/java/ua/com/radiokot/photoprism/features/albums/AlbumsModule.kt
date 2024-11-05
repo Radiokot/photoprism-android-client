@@ -10,8 +10,8 @@ import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
-import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryAlbumsPreferences
-import ua.com.radiokot.photoprism.features.gallery.folders.data.storage.GalleryAlbumsPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 
 val albumsModule = module {
@@ -23,12 +23,12 @@ val albumsModule = module {
     } bind AlbumSort::class
 
     single {
-        GalleryAlbumsPreferencesOnPrefs(
+        AlbumsPreferencesOnPrefs(
             defaultSort = get(),
             preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
             jsonObjectMapper = get(),
         )
-    } bind GalleryAlbumsPreferences::class
+    } bind AlbumsPreferences::class
 
     scope<EnvSession> {
         scoped {

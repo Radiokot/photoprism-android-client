@@ -1,6 +1,7 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.view
+package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -29,7 +30,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityGalleryFolderBinding
+import ua.com.radiokot.photoprism.databinding.ActivityGallerySingleRepositoryBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -37,19 +38,16 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.folders.view.model.GalleryFolderViewModel
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
-import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
-import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
-import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
-import ua.com.radiokot.photoprism.features.gallery.view.ShareSheetShareEventReceiver
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
@@ -58,11 +56,11 @@ import ua.com.radiokot.photoprism.view.ErrorView
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-class GalleryFolderActivity : BaseActivity() {
+class GallerySingleRepositoryActivity : BaseActivity() {
 
-    private val log = kLogger("GalleryFolderActivity")
-    private lateinit var view: ActivityGalleryFolderBinding
-    private val viewModel: GalleryFolderViewModel by viewModel()
+    private val log = kLogger("GallerySingleRepositoryActivity")
+    private lateinit var view: ActivityGallerySingleRepositoryBinding
+    private val viewModel: GallerySingleRepositoryViewModel by viewModel()
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private val viewerLauncher = registerForActivityResult(
@@ -75,6 +73,10 @@ class GalleryFolderActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             this::onStoragePermissionResult
         )
+    private val addDestinationAlbumSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onAddingDestinationAlbumSelectionResult,
+    )
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
     private val mediaFileSelectionView: MediaFileSelectionView by lazy {
         MediaFileSelectionView(
@@ -94,7 +96,7 @@ class GalleryFolderActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = ActivityGalleryFolderBinding.inflate(layoutInflater)
+        view = ActivityGallerySingleRepositoryBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         @Suppress("DEPRECATION")
@@ -139,7 +141,7 @@ class GalleryFolderActivity : BaseActivity() {
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
 
-        viewModel.isLoading.observe(this@GalleryFolderActivity) { isLoading ->
+        viewModel.isLoading.observe(this@GallerySingleRepositoryActivity) { isLoading ->
             // Do not show refreshing if there are no gallery items,
             // as in this case the loading footer is on top and visible.
             // It also must not be shown if the recycler is not on the top,
@@ -159,7 +161,7 @@ class GalleryFolderActivity : BaseActivity() {
             }
 
             val errorToShow: ErrorView.Error = when (error) {
-                GalleryFolderViewModel.Error.NoMediaFound ->
+                GallerySingleRepositoryViewModel.Error.NoMediaFound ->
                     ErrorView.Error.EmptyView(
                         messageRes = R.string.no_media_found,
                         context = this,
@@ -201,6 +203,9 @@ class GalleryFolderActivity : BaseActivity() {
                     R.id.download ->
                         viewModel.onDownloadMultipleSelectionClicked()
 
+                    R.id.add_to_album ->
+                        viewModel.onAddToAlbumMultipleSelectionClicked()
+
                     R.id.archive ->
                         viewModel.onArchiveMultipleSelectionClicked()
 
@@ -216,12 +221,12 @@ class GalleryFolderActivity : BaseActivity() {
                 // because Gone for an unknown reason causes FAB misplacement
                 // when switching from Viewing to Selecting 🤷🏻
                 isInvisible =
-                    state is GalleryFolderViewModel.State.Viewing
+                    state is GallerySingleRepositoryViewModel.State.Viewing
 
                 navigationIcon =
-                    if (state is GalleryFolderViewModel.State.Selecting && state.allowMultiple)
+                    if (state is GallerySingleRepositoryViewModel.State.Selecting && state.allowMultiple)
                         ContextCompat.getDrawable(
-                            this@GalleryFolderActivity,
+                            this@GallerySingleRepositoryActivity,
                             R.drawable.ic_close
                         )
                     else
@@ -254,7 +259,7 @@ class GalleryFolderActivity : BaseActivity() {
         viewModel.state.subscribeBy { state ->
             // The FAB is only used when selecting for other app,
             // as selecting for user allows more than 1 action.
-            if (state is GalleryFolderViewModel.State.Selecting.ForOtherApp) {
+            if (state is GallerySingleRepositoryViewModel.State.Selecting.ForOtherApp) {
                 viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                     if (count > 0) {
                         view.doneSelectingFab.show()
@@ -272,7 +277,7 @@ class GalleryFolderActivity : BaseActivity() {
         val multipleSelectionItemsCount = viewModel.selectedItemsCount.value ?: 0
         val state = viewModel.currentState
         val areUserSelectionItemsVisible =
-            multipleSelectionItemsCount > 0 && state is GalleryFolderViewModel.State.Selecting.ForUser
+            multipleSelectionItemsCount > 0 && state is GallerySingleRepositoryViewModel.State.Selecting.ForUser
 
         with(view.selectionBottomAppBar.menu) {
             forEach { menuItem ->
@@ -285,7 +290,7 @@ class GalleryFolderActivity : BaseActivity() {
         val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
             setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
 
-            viewModel.isLoading.observe(this@GalleryFolderActivity) { isLoading ->
+            viewModel.isLoading.observe(this@GallerySingleRepositoryActivity) { isLoading ->
                 this[0] = GalleryLoadingFooterListItem(
                     isLoading = isLoading,
                     canLoadMore = viewModel.canLoadMore
@@ -414,7 +419,7 @@ class GalleryFolderActivity : BaseActivity() {
                 visibleThreshold = gridLayoutManager.spanCount * 5
             ) {
                 init {
-                    viewModel.isLoading.observe(this@GalleryFolderActivity) { isLoading ->
+                    viewModel.isLoading.observe(this@GallerySingleRepositoryActivity) { isLoading ->
                         if (isLoading) {
                             disable()
                         } else {
@@ -463,7 +468,7 @@ class GalleryFolderActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.observeOnMain().subscribe(this@GalleryFolderActivity) { newItems ->
+        viewModel.itemList.observeOnMain().subscribe(this@GallerySingleRepositoryActivity) { newItems ->
             FastAdapterDiffUtil.setBetter(
                 recyclerView = view.galleryRecyclerView,
                 adapter = galleryItemsAdapter,
@@ -545,15 +550,29 @@ class GalleryFolderActivity : BaseActivity() {
             }
 
             when (event) {
-                is GalleryFolderViewModel.Event.ResetScroll -> {
+                is GallerySingleRepositoryViewModel.Event.ResetScroll -> {
                     resetScroll()
                 }
 
-                is GalleryFolderViewModel.Event.ShowFloatingError ->
+                is GallerySingleRepositoryViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
 
-                GalleryFolderViewModel.Event.OpenDeletingConfirmationDialog ->
+                GallerySingleRepositoryViewModel.Event.OpenDeletingConfirmationDialog ->
                     openDeletingConfirmationDialog()
+
+
+                GallerySingleRepositoryViewModel.Event.OpenAddingToAlbumDestinationSelection -> {
+                    openAddingDestinationAlbumSelection()
+                }
+
+                is GallerySingleRepositoryViewModel.Event.ShowFloatingAddedToAlbumMessage -> {
+                    showFloatingMessage(
+                        getString(
+                            R.string.template_selected_added_to_album,
+                            event.albumTitle,
+                        )
+                    )
+                }
             }
 
             log.debug {
@@ -574,7 +593,7 @@ class GalleryFolderActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingError(error: GalleryFolderViewModel.Error) {
+    private fun showFloatingError(error: GallerySingleRepositoryViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
@@ -607,6 +626,29 @@ class GalleryFolderActivity : BaseActivity() {
             ?: return
 
         viewModel.onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex)
+    }
+
+    private fun openAddingDestinationAlbumSelection() {
+        addDestinationAlbumSelectionLauncher.launch(
+            Intent(this, DestinationAlbumSelectionActivity::class.java)
+                .putExtras(
+                    DestinationAlbumSelectionActivity.getBundle(
+                        selectedAlbums = emptySet(),
+                        isSingleSelection = true,
+                    )
+                )
+        )
+    }
+
+    private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onAddToAlbumMultipleSelectionDestinationSelected(
+                selectedAlbum = DestinationAlbumSelectionActivity
+                    .getSelectedAlbums(bundle)
+                    .first()
+            )
+        }
     }
 
     private fun openDeletingConfirmationDialog() {
@@ -698,15 +740,15 @@ class GalleryFolderActivity : BaseActivity() {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private val GalleryFolderViewModel.Error.localizedMessage: String
+    private val GallerySingleRepositoryViewModel.Error.localizedMessage: String
         get() = when (this) {
-            GalleryFolderViewModel.Error.NoMediaFound ->
+            GallerySingleRepositoryViewModel.Error.NoMediaFound ->
                 getString(R.string.no_media_found)
 
-            is GalleryFolderViewModel.Error.ContentLoadingError ->
+            is GallerySingleRepositoryViewModel.Error.ContentLoadingError ->
                 GalleryContentLoadingErrorResources.getMessage(
                     error = contentLoadingError,
-                    context = this@GalleryFolderActivity,
+                    context = this@GallerySingleRepositoryActivity,
                 )
         }
 

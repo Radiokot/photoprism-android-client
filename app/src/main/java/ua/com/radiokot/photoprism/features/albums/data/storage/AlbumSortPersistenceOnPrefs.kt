@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.data.storage
+package ua.com.radiokot.photoprism.features.albums.data.storage
 
 import android.content.SharedPreferences
 import com.fasterxml.jackson.annotation.JsonCreator

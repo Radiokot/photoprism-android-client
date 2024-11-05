@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.data.storage
+package ua.com.radiokot.photoprism.features.albums.data.storage
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
@@ -7,12 +7,12 @@ import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.util.objectPersistenceSubject
 
-class GalleryAlbumsPreferencesOnPrefs(
+class AlbumsPreferencesOnPrefs(
     defaultSort: AlbumSort,
     preferences: SharedPreferences,
     keyPrefix: String = "albums",
     jsonObjectMapper: JsonObjectMapper,
-) : GalleryAlbumsPreferences {
+) : AlbumsPreferences {
     init {
         val folderSortKeyV1 = "folders_sort1"
         val folderSortKeyV2 = "${keyPrefix}_folder_sort1"

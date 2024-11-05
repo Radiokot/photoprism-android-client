@@ -212,7 +212,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".features.gallery.folders.view.GalleryFolderActivity"
+            android:name=".features.gallery.view.GallerySingleRepositoryActivity"
             android:exported="false"
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />

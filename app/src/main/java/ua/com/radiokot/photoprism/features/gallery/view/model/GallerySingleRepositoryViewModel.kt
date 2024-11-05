@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.folders.view.model
+package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
@@ -12,20 +12,18 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
-class GalleryFolderViewModel(
+class GallerySingleRepositoryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
+    private val addGalleryMediaToAlbumUseCase: AddGalleryMediaToAlbumUseCase,
     private val listViewModel: GalleryListViewModelImpl,
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
 ) : ViewModel(),
@@ -34,7 +32,7 @@ class GalleryFolderViewModel(
 
     // TODO: refactor to eliminate duplication.
 
-    private val log = kLogger("GalleryFolderVM")
+    private val log = kLogger("GallerySingleRepositoryVM")
     private var isInitialized = false
     private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -276,6 +274,58 @@ class GalleryFolderViewModel(
         )
     }
 
+    fun onAddToAlbumMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Adding multiple selection to album button is only clickable when selecting"
+        }
+
+        check(selectedFilesByMediaUid.isNotEmpty()) {
+            "Adding multiple selection to album button is only clickable when something is selected"
+        }
+
+        eventsSubject.onNext(Event.OpenAddingToAlbumDestinationSelection)
+    }
+
+    fun onAddToAlbumMultipleSelectionDestinationSelected(selectedAlbum: DestinationAlbum) {
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
+
+        addGalleryMediaToAlbumUseCase
+            .invoke(
+                mediaUids = mediaUids,
+                destinationAlbum = selectedAlbum,
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "onAddToAlbumMultipleSelectionDestinationSelected(): start_adding:" +
+                            "\nitems=${mediaUids.size}," +
+                            "\nalbum=$selectedAlbum"
+                }
+
+                switchToViewing()
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "onAddToAlbumMultipleSelectionDestinationSelected(): failed_adding"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "onAddToAlbumMultipleSelectionDestinationSelected(): successfully_added"
+                    }
+
+                    eventsSubject.onNext(
+                        Event.ShowFloatingAddedToAlbumMessage(
+                            albumTitle = selectedAlbum.title,
+                        )
+                    )
+                }
+            )
+            .autoDispose(this)
+    }
+
     fun onArchiveMultipleSelectionClicked() {
         check(currentState is State.Selecting.ForUser) {
             "Archive multiple selection button is only clickable when selecting"
@@ -285,7 +335,7 @@ class GalleryFolderViewModel(
             "Archive multiple selection button is only clickable when something is selected"
         }
 
-        val mediaUids = selectedFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
 
         archiveGalleryMediaUseCase
             .invoke(
@@ -299,6 +349,8 @@ class GalleryFolderViewModel(
                     "onArchiveMultipleSelectionClicked(): start_archiving:" +
                             "\nitems=${mediaUids.size}"
                 }
+
+                switchToViewing()
             }
             .subscribeBy(
                 onError = { error ->
@@ -310,8 +362,6 @@ class GalleryFolderViewModel(
                     log.debug {
                         "onArchiveMultipleSelectionClicked(): successfully_archived"
                     }
-
-                    switchToViewing()
                 }
             )
             .autoDispose(this)
@@ -330,7 +380,7 @@ class GalleryFolderViewModel(
     }
 
     fun onDeletingMultipleSelectionConfirmed() {
-        val mediaUids = selectedFilesByMediaUid.keys
+        val mediaUids = selectedFilesByMediaUid.keys.toList()
 
         deleteGalleryMediaUseCase
             .invoke(
@@ -344,6 +394,8 @@ class GalleryFolderViewModel(
                     "onDeletingMultipleSelectionConfirmed(): start_deleting:" +
                             "\nitems=${mediaUids.size}"
                 }
+
+                switchToViewing()
             }
             .subscribeBy(
                 onError = { error ->
@@ -355,8 +407,6 @@ class GalleryFolderViewModel(
                     log.debug {
                         "onDeletingMultipleSelectionConfirmed(): successfully_deleted"
                     }
-
-                    switchToViewing()
                 }
             )
             .autoDispose(this)
@@ -432,6 +482,16 @@ class GalleryFolderViewModel(
          * to the [onDeletingMultipleSelectionConfirmed] method.
          */
         object OpenDeletingConfirmationDialog : Event
+
+        /**
+         * Open destination album selection screen, reporting the choice
+         * to the [onAddToAlbumMultipleSelectionDestinationSelected] method.
+         */
+        object OpenAddingToAlbumDestinationSelection : Event
+
+        class ShowFloatingAddedToAlbumMessage(
+            val albumTitle: String,
+        ): Event
     }
 
     sealed interface Error {

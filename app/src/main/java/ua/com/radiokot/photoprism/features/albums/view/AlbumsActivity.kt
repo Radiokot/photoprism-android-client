@@ -27,7 +27,7 @@ import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumListItem
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
-import ua.com.radiokot.photoprism.features.gallery.folders.view.GalleryFolderActivity
+import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
@@ -259,11 +259,11 @@ class AlbumsActivity : BaseActivity() {
         title: String,
         repositoryParams: SimpleGalleryMediaRepository.Params,
     ) = folderLauncher.launch(
-        Intent(this, GalleryFolderActivity::class.java)
+        Intent(this, GallerySingleRepositoryActivity::class.java)
             .setAction(intent.action)
             .putExtras(intent.extras ?: Bundle())
             .putExtras(
-                GalleryFolderActivity.getBundle(
+                GallerySingleRepositoryActivity.getBundle(
                     title = title,
                     repositoryParams = repositoryParams,
                 )
