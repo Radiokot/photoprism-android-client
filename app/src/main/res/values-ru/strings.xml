@@ -260,6 +260,6 @@
     <string name="activated_keys">Активированные ключи</string>
     <string name="is_private">Приватный</string>
     <string name="add_to_album">Добавить в альбом</string>
-    <string name="template_selected_added_to_album">Добавлено в %1$s</string>
+    <string name="template_selected_added_to_album">Добавлено в альбом %1$s</string>
 
 </resources>
