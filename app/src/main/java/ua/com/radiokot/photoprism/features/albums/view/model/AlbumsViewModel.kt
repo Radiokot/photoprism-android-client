@@ -10,10 +10,10 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
@@ -138,7 +138,7 @@ class AlbumsViewModel(
                 }
             else
                 repositoryAlbums
-        val sort = preferences.folderSort.value!!
+        val sort: AlbumSort = sortPreferenceSubject.value!!
 
         log.debug {
             "postAlbumItems(): posting_items:" +

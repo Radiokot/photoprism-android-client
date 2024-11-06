@@ -5,9 +5,7 @@ import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
 import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import java.util.Date
 
 class Album(
     /*
@@ -22,12 +20,6 @@ class Album(
     val path: String?,
     val uid: String,
     val isFavorite: Boolean,
-    /**
-     * Creation date, but it should not be used to sort automatically created folders
-     * like "December 2023". For those, see [ymd].
-     * Makes sense for actual albums.
-     */
-    val createdAt: Date,
     /**
      * String representation of album's YYYYMMDD.
      * This "date" can be used to sort automatically created folders like "December 2023".
@@ -47,7 +39,6 @@ class Album(
         path = source.path?.takeIf(String::isNotEmpty),
         uid = source.uid,
         isFavorite = source.favorite,
-        createdAt = parsePhotoPrismDate(source.createdAt)!!,
         ymd = "%04d%02d%02d".format(source.year, source.month, source.day),
         previewHash = source.thumb,
         previewUrlFactory = previewUrlFactory,
@@ -91,5 +82,9 @@ class Album(
                 }
             }
         }
+    }
+
+    companion object {
+        const val YMD_UNSPECIFIED = "00000000"
     }
 }

@@ -26,30 +26,37 @@ data class AlbumSort(
         }
 
         val comparedByOrder = when (order) {
+            // https://github.com/photoprism/photoprism/blob/f7e5b7b9207205be61b3d9aac70990c57a9ddcd1/internal/entity/search/albums.go#L118
             Order.NAME ->
                 if (a1.path != null && a2.path != null)
                     a1.path.compareTo(a2.path)
                 else
                     a1.title.compareTo(a2.title)
 
+            // https://github.com/photoprism/photoprism/blob/f7e5b7b9207205be61b3d9aac70990c57a9ddcd1/internal/entity/search/albums.go#L118
             Order.NAME_DESC ->
-                // This is how PhotoPrism "Name" works,
-                // considering albums are not compared to folders at this point.
                 if (a1.path != null && a2.path != null)
                     a2.path.compareTo(a1.path)
                 else
                     a2.title.compareTo(a1.title)
 
+            // https://github.com/photoprism/photoprism/blob/f7e5b7b9207205be61b3d9aac70990c57a9ddcd1/internal/entity/search/albums.go#L82
             Order.NEWEST_FIRST ->
-                // This is how PhotoPrism "Newest first" works.
-                a2.ymd.compareTo(a1.ymd)
+                if (a1.ymd != Album.YMD_UNSPECIFIED && a2.ymd != Album.YMD_UNSPECIFIED)
+                    a2.ymd.compareTo(a1.ymd)
+                else
+                    a2.uid.compareTo(a1.uid)
 
+            // https://github.com/photoprism/photoprism/blob/f7e5b7b9207205be61b3d9aac70990c57a9ddcd1/internal/entity/search/albums.go#L90
             Order.OLDEST_FIRST ->
-                // See above.
-                a1.ymd.compareTo(a2.ymd)
+                if (a1.ymd != Album.YMD_UNSPECIFIED && a2.ymd != Album.YMD_UNSPECIFIED)
+                    a1.ymd.compareTo(a2.ymd)
+                else
+                    a1.uid.compareTo(a2.uid)
 
+            // https://github.com/photoprism/photoprism/blob/f7e5b7b9207205be61b3d9aac70990c57a9ddcd1/internal/entity/search/albums.go#L98
             Order.RECENTLY_ADDED ->
-                a2.createdAt.compareTo(a1.createdAt)
+                a2.uid.compareTo(a1.uid)
         }
 
         return comparedByOrder
