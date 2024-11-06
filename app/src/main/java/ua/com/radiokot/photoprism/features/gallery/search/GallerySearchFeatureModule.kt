@@ -32,7 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.Gall
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.albums.albumsModule
+import ua.com.radiokot.photoprism.features.albums.albumsFeatureModule
 
 val gallerySearchFeatureModules: List<Module> = listOf(
     // Bookmarks.
@@ -71,7 +71,7 @@ val gallerySearchFeatureModules: List<Module> = listOf(
 
     // Albums.
     module {
-        includes(albumsModule)
+        includes(albumsFeatureModule)
 
         scope<EnvSession> {
             viewModelOf(::GallerySearchAlbumsViewModel)

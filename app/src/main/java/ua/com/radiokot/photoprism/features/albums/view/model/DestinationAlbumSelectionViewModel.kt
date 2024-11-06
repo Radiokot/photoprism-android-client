@@ -10,18 +10,20 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchInputViewModelImpl
 
 class DestinationAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
+    private val preferences: AlbumsPreferences,
     private val searchPredicate: (album: DestinationAlbum, query: String) -> Boolean,
     private val exactMatchPredicate: (album: DestinationAlbum, query: String) -> Boolean,
 ) : ViewModel(),
     SearchInputViewModel by SearchInputViewModelImpl() {
 
-    private val log = kLogger("ImportAlbumSelectionVM")
+    private val log = kLogger("DestinationAlbumSelectionVM")
 
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
@@ -118,9 +120,11 @@ class DestinationAlbumSelectionViewModel(
     }
 
     private fun postAlbumItems() {
+        val albumSort = preferences.albumSort.value!!
         val allAlbums = albumsToCreate +
                 albumsRepository.itemsList
                     .filter { it.type == Album.TypeName.ALBUM }
+                    .sortedWith(albumSort)
                     .map(DestinationAlbum::Existing)
         val searchQuery = currentSearchInput
         val filteredAlbums =
