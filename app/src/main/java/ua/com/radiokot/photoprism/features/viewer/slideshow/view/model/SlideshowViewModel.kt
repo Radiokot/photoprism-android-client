@@ -200,8 +200,8 @@ class SlideshowViewModel(
         // The 'page content presented' callback may be launched late,
         // we only care if the current page has been presented.
         if (pageIndex == currentPageIndex) {
-            when (currentPage) {
-                is VideoViewerPage ->
+            when {
+                currentPage is VideoViewerPage && !currentPage.isLooped ->
                     // For videos, switch immediately after playback end.
                     scheduleSwitchingPage(
                         destinationPageIndex = nextPageIndex,
