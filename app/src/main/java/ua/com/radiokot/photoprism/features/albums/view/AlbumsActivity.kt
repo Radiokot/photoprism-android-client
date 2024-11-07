@@ -23,14 +23,15 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumListItem
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
+import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
 import ua.com.radiokot.photoprism.view.ErrorView
 
 class AlbumsActivity : BaseActivity() {
@@ -52,6 +53,7 @@ class AlbumsActivity : BaseActivity() {
         @Suppress("DEPRECATION")
         viewModel.initOnce(
             albumType = intent.getParcelableExtra(ALBUM_TYPE_EXTRA)!!,
+            defaultSearchConfig = intent.getParcelableExtra(DEFAULT_SEARCH_CONFIG_EXTRA)!!,
         )
 
         initToolbar()
@@ -309,9 +311,18 @@ class AlbumsActivity : BaseActivity() {
     companion object {
         private const val FALLBACK_LIST_SIZE = 100
         private const val ALBUM_TYPE_EXTRA = "album_type"
+        private const val DEFAULT_SEARCH_CONFIG_EXTRA = "default_search_config"
 
-        fun getBundle(albumType: Album.TypeName) = Bundle().apply {
+        /**
+         * @param defaultSearchConfig [SearchConfig] to be used as a base for opening an album.
+         * It could, for example, include limited media types.
+         */
+        fun getBundle(
+            albumType: Album.TypeName,
+            defaultSearchConfig: SearchConfig,
+        ) = Bundle().apply {
             putParcelable(ALBUM_TYPE_EXTRA, albumType)
+            putParcelable(DEFAULT_SEARCH_CONFIG_EXTRA, defaultSearchConfig)
         }
     }
 }

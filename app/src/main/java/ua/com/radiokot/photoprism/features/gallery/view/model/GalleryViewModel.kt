@@ -204,16 +204,7 @@ class GalleryViewModel(
     }
 
     private fun resetRepositoryAndSearchConfig() {
-        val currentState = this.currentState
-
-        currentSearchConfig = when {
-            currentState is State.Selecting.ForOtherApp ->
-                SearchConfig.DEFAULT
-                    .withOnlyAllowedMediaTypes(currentState.allowedMediaTypes)
-
-            else ->
-                SearchConfig.DEFAULT
-        }
+        currentSearchConfig = getStateDefaultSearchConfig()
 
         mediaRepositoryChanges.onNext(
             MediaRepositoryChange.ResetToInitial(
@@ -221,6 +212,16 @@ class GalleryViewModel(
             )
         )
     }
+
+    private fun getStateDefaultSearchConfig(): SearchConfig =
+        when (val currentState = this.currentState) {
+            is State.Selecting.ForOtherApp ->
+                SearchConfig.DEFAULT
+                    .withOnlyAllowedMediaTypes(currentState.allowedMediaTypes)
+
+            else ->
+                SearchConfig.DEFAULT
+        }
 
     private fun subscribeToSearch() {
         searchViewModel.state.subscribe { state ->
@@ -502,15 +503,31 @@ class GalleryViewModel(
     }
 
     fun onFoldersClicked() {
-        eventsSubject.onNext(Event.OpenFolders)
+        eventsSubject.onNext(
+            Event.OpenFolders(
+                defaultSearchConfig = getStateDefaultSearchConfig(),
+            )
+        )
     }
 
     fun onAlbumsClicked() {
-        eventsSubject.onNext(Event.OpenAlbums)
+        eventsSubject.onNext(
+            Event.OpenAlbums(
+                defaultSearchConfig = getStateDefaultSearchConfig(),
+            )
+        )
     }
 
     fun onFavoritesClicked() {
-        eventsSubject.onNext(Event.OpenFavorites)
+        eventsSubject.onNext(
+            Event.OpenFavorites(
+                repositoryParams = SimpleGalleryMediaRepository.Params(
+                    searchConfig = getStateDefaultSearchConfig().copy(
+                        onlyFavorite = true,
+                    ),
+                ),
+            )
+        )
     }
 
     fun onDoneMultipleSelectionClicked() {
@@ -847,11 +864,17 @@ class GalleryViewModel(
 
         object OpenPreferences : Event
 
-        object OpenFolders : Event
+        class OpenFolders(
+            val defaultSearchConfig: SearchConfig,
+        ) : Event
 
-        object OpenAlbums : Event
+        class OpenAlbums(
+            val defaultSearchConfig: SearchConfig,
+        ) : Event
 
-        object OpenFavorites : Event
+        class OpenFavorites(
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
 
         /**
          * Close the screen and go to the connection,

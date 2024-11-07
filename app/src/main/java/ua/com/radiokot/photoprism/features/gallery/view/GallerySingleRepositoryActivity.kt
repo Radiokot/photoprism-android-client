@@ -163,8 +163,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             val errorToShow: ErrorView.Error = when (error) {
                 GallerySingleRepositoryViewModel.Error.NoMediaFound ->
                     ErrorView.Error.EmptyView(
-                        messageRes = R.string.no_media_found,
-                        context = this,
+                        message = error.localizedMessage,
                     )
 
                 else ->

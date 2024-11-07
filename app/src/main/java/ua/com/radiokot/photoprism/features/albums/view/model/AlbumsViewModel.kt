@@ -36,16 +36,20 @@ class AlbumsViewModel(
     private var isInitialized = false
     lateinit var albumType: Album.TypeName
         private set
+    private lateinit var defaultSearchConfig: SearchConfig
     private lateinit var sortPreferenceSubject: BehaviorSubject<AlbumSort>
 
     fun initOnce(
         albumType: Album.TypeName,
+        defaultSearchConfig: SearchConfig,
     ) {
         if (isInitialized) {
             return
         }
 
         this.albumType = albumType
+        this.defaultSearchConfig = defaultSearchConfig
+
         this.sortPreferenceSubject = when (albumType) {
             Album.TypeName.FOLDER ->
                 preferences.folderSort
@@ -197,7 +201,7 @@ class AlbumsViewModel(
                 Event.OpenAlbum(
                     title = item.source.title,
                     repositoryParams = SimpleGalleryMediaRepository.Params(
-                        searchConfig = SearchConfig.DEFAULT.copy(
+                        searchConfig = defaultSearchConfig.copy(
                             includePrivate = true,
                             albumUid = uid,
                         )

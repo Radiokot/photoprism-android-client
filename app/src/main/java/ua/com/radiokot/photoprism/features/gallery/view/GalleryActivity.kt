@@ -259,16 +259,10 @@ class GalleryActivity : BaseActivity() {
             }
 
             val errorToShow: ErrorView.Error = when (error) {
-                GalleryViewModel.Error.NoMediaFound ->
-                    ErrorView.Error.EmptyView(
-                        messageRes = R.string.no_media_found,
-                        context = this,
-                    )
-
+                GalleryViewModel.Error.NoMediaFound,
                 GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                     ErrorView.Error.EmptyView(
-                        messageRes = R.string.search_doesnt_fit_allowed_types,
-                        context = this,
+                        message = error.localizedMessage,
                     )
 
                 is GalleryViewModel.Error.ContentLoadingError ->
@@ -408,15 +402,23 @@ class GalleryActivity : BaseActivity() {
                 }
 
                 is GalleryViewModel.Event.OpenFolders -> {
-                    openFolders()
+                    openAlbums(
+                        albumType = Album.TypeName.FOLDER,
+                        defaultSearchConfig = event.defaultSearchConfig,
+                    )
                 }
 
                 is GalleryViewModel.Event.OpenAlbums -> {
-                    openAlbums()
+                    openAlbums(
+                        albumType = Album.TypeName.ALBUM,
+                        defaultSearchConfig = event.defaultSearchConfig,
+                    )
                 }
 
                 is GalleryViewModel.Event.OpenFavorites -> {
-                    openFavorites()
+                    openFavorites(
+                        repositoryParams = event.repositoryParams,
+                    )
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
@@ -907,44 +909,33 @@ class GalleryActivity : BaseActivity() {
         startActivity(Intent(this, PreferencesActivity::class.java))
     }
 
-    private fun openFolders() {
+    private fun openAlbums(
+        albumType: Album.TypeName,
+        defaultSearchConfig: SearchConfig,
+    ) {
         proxyOkResultLauncher.launch(
             Intent(this, AlbumsActivity::class.java)
                 .putExtras(intent.extras ?: Bundle())
                 .putExtras(
                     AlbumsActivity.getBundle(
-                        albumType = Album.TypeName.FOLDER,
+                        albumType = albumType,
+                        defaultSearchConfig = defaultSearchConfig,
                     )
                 )
                 .setAction(intent.action)
         )
     }
 
-    private fun openAlbums() {
-        proxyOkResultLauncher.launch(
-            Intent(this, AlbumsActivity::class.java)
-                .putExtras(intent.extras ?: Bundle())
-                .putExtras(
-                    AlbumsActivity.getBundle(
-                        albumType = Album.TypeName.ALBUM,
-                    )
-                )
-                .setAction(intent.action)
-        )
-    }
-
-    private fun openFavorites() {
+    private fun openFavorites(
+        repositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
         proxyOkResultLauncher.launch(
             Intent(this, GallerySingleRepositoryActivity::class.java)
                 .putExtras(intent.extras ?: Bundle())
                 .putExtras(
                     GallerySingleRepositoryActivity.getBundle(
                         title = getString(R.string.favorites),
-                        repositoryParams = SimpleGalleryMediaRepository.Params(
-                            searchConfig = SearchConfig.DEFAULT.copy(
-                                onlyFavorite = true,
-                            )
-                        ),
+                        repositoryParams = repositoryParams,
                     )
                 )
                 .setAction(intent.action)

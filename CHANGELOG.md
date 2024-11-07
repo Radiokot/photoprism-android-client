@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Showing indeterminate background download progress (when Content-Length is not available) as 1%
 - Immediate slideshow switch for GIFs and looped videos
+- Showing folder content of unsupported types when selecting content for another app
 
 ### Changed
 
