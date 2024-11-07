@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to mark an entry as private on the media viewer screen
 - Ability to add selected items to an album
 - Ability to browse albums from the main menu
+- Ability to browse favorites from the main menu
 
 ### Fixed
 

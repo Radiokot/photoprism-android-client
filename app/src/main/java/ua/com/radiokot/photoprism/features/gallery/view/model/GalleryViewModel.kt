@@ -54,7 +54,7 @@ class GalleryViewModel(
     private val mediaRepositoryChanges = BehaviorSubject.create<MediaRepositoryChange>()
 
     // Current search config regardless the fast scroll.
-    private var currentSearchConfig: SearchConfig? = null
+    private var currentSearchConfig: SearchConfig = SearchConfig.DEFAULT
     private var isInitialized = false
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value?.repository
@@ -200,31 +200,26 @@ class GalleryViewModel(
         subscribeToSearch()
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
-        resetRepositoryToInitial()
+        resetRepositoryAndSearchConfig()
     }
 
-    private fun resetRepositoryToInitial() {
+    private fun resetRepositoryAndSearchConfig() {
         val currentState = this.currentState
 
-        if (currentState is State.Selecting.ForOtherApp) {
-            val searchConfig =
+        currentSearchConfig = when {
+            currentState is State.Selecting.ForOtherApp ->
                 SearchConfig.DEFAULT
                     .withOnlyAllowedMediaTypes(currentState.allowedMediaTypes)
 
-            currentSearchConfig = searchConfig
-            mediaRepositoryChanges.onNext(
-                MediaRepositoryChange.ResetToInitial(
-                    galleryMediaRepositoryFactory.get(searchConfig),
-                )
-            )
-        } else {
-            currentSearchConfig = null
-            mediaRepositoryChanges.onNext(
-                MediaRepositoryChange.ResetToInitial(
-                    galleryMediaRepositoryFactory.get(),
-                )
-            )
+            else ->
+                SearchConfig.DEFAULT
         }
+
+        mediaRepositoryChanges.onNext(
+            MediaRepositoryChange.ResetToInitial(
+                galleryMediaRepositoryFactory.get(currentSearchConfig),
+            )
+        )
     }
 
     private fun subscribeToSearch() {
@@ -269,7 +264,7 @@ class GalleryViewModel(
 
                 GallerySearchViewModel.State.NoSearch -> {
                     fastScrollViewModel.reset(isInitiatedByUser = false)
-                    resetRepositoryToInitial()
+                    resetRepositoryAndSearchConfig()
 
                     // When search is switched to NoSearch, no need to reset
                     // fast scroll or close the configuration view.
@@ -331,14 +326,13 @@ class GalleryViewModel(
         month: GalleryMonth?,
         isScrolledToTheTop: Boolean,
     ) {
-        val searchConfigForMonth: SearchConfig? =
+        val searchConfigForMonth: SearchConfig =
             if (isScrolledToTheTop || month == null)
             // For top month we don't need to alter the "before" date,
             // if altered the result is the same as if the date is not set at all.
                 currentSearchConfig
             else
-                (currentSearchConfig ?: SearchConfig.DEFAULT)
-                    .copy(beforeLocal = month.nextDayAfter)
+                currentSearchConfig.copy(beforeLocal = month.nextDayAfter)
 
         // Always reset the scroll.
         // If the list is scrolled manually, setting fast scroll to the same month
@@ -360,7 +354,7 @@ class GalleryViewModel(
                         "\nconfig=$searchConfigForMonth"
             }
 
-            if (searchConfigForMonth != null) {
+            if (searchConfigForMonth != SearchConfig.DEFAULT) {
                 val repositoryForMonth =
                     galleryMediaRepositoryFactory.get(searchConfigForMonth)
 
@@ -368,7 +362,7 @@ class GalleryViewModel(
                     MediaRepositoryChange.FastScroll(repositoryForMonth)
                 )
             } else {
-                resetRepositoryToInitial()
+                resetRepositoryAndSearchConfig()
             }
         }
     }
@@ -412,7 +406,7 @@ class GalleryViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { items ->
                 mainError.value = when {
-                    items.isEmpty() && currentSearchConfig?.mediaTypes?.isEmpty() == true ->
+                    items.isEmpty() && currentSearchConfig.mediaTypes?.isEmpty() == true ->
                         Error.SearchDoesNotFitAllowedTypes
 
                     items.isEmpty() && !currentMediaRepository.isNeverUpdated ->
@@ -515,6 +509,10 @@ class GalleryViewModel(
         eventsSubject.onNext(Event.OpenAlbums)
     }
 
+    fun onFavoritesClicked() {
+        eventsSubject.onNext(Event.OpenFavorites)
+    }
+
     fun onDoneMultipleSelectionClicked() {
         val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
@@ -606,9 +604,11 @@ class GalleryViewModel(
                         "onAddToAlbumMultipleSelectionDestinationSelected(): successfully_added"
                     }
 
-                    eventsSubject.onNext(Event.ShowFloatingAddedToAlbumMessage(
-                        albumTitle = selectedAlbum.title,
-                    ))
+                    eventsSubject.onNext(
+                        Event.ShowFloatingAddedToAlbumMessage(
+                            albumTitle = selectedAlbum.title,
+                        )
+                    )
                 }
             )
             .autoDispose(this)
@@ -849,7 +849,9 @@ class GalleryViewModel(
 
         object OpenFolders : Event
 
-        object OpenAlbums: Event
+        object OpenAlbums : Event
+
+        object OpenFavorites : Event
 
         /**
          * Close the screen and go to the connection,
@@ -876,7 +878,7 @@ class GalleryViewModel(
 
         class ShowFloatingAddedToAlbumMessage(
             val albumTitle: String,
-        ): Event
+        ) : Event
     }
 
     sealed interface Error {

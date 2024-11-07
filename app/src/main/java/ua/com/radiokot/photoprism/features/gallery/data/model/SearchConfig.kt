@@ -141,6 +141,7 @@ data class SearchConfig(
 
         return queryBuilder
             .toString()
+            .trim()
             .takeUnless(String::isNullOrBlank)
     }
 

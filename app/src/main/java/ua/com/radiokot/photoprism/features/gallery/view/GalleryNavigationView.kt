@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.view.Menu
+import android.view.MenuItem
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigationrail.NavigationRailView
@@ -38,22 +39,22 @@ class GalleryNavigationView(
         navigationMenu: Menu,
         onItemClicked: () -> Unit = {},
     ) {
-        navigationMenu.findItem(R.id.albums).setOnMenuItemClickListener {
-            viewModel.onAlbumsClicked()
+        fun getClickListener(extraAction: () -> Any) = MenuItem.OnMenuItemClickListener {
+            extraAction()
             onItemClicked()
             true
         }
 
-        navigationMenu.findItem(R.id.folders).setOnMenuItemClickListener {
-            viewModel.onFoldersClicked()
-            onItemClicked()
-            true
-        }
+        navigationMenu.findItem(R.id.albums)
+            .setOnMenuItemClickListener(getClickListener(viewModel::onAlbumsClicked))
 
-        navigationMenu.findItem(R.id.preferences).setOnMenuItemClickListener {
-            viewModel.onPreferencesClicked()
-            onItemClicked()
-            true
-        }
+        navigationMenu.findItem(R.id.favorites)
+            .setOnMenuItemClickListener(getClickListener(viewModel::onFavoritesClicked))
+
+        navigationMenu.findItem(R.id.folders)
+            .setOnMenuItemClickListener(getClickListener(viewModel::onFoldersClicked))
+
+        navigationMenu.findItem(R.id.preferences)
+            .setOnMenuItemClickListener(getClickListener(viewModel::onPreferencesClicked))
     }
 }

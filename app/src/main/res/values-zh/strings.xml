@@ -261,5 +261,6 @@
     <string name="is_private">私人</string>
     <string name="add_to_album">添加到相册</string>
     <string name="template_selected_added_to_album">已添加到 %1$s</string>
+    <string name="favorites">收藏</string>
 
 </resources>
