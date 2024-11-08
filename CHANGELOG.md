@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - For HEIF (HEIC) live photos, the video is now requested in HEVC
   if the device supports this codec. This prevents transcoding to AVC
+- Refreshed navigation icons and labels
 
 ## [1.31.1] - 2024-10-07
 
