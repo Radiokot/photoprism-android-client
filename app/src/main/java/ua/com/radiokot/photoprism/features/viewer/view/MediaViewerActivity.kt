@@ -65,6 +65,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
@@ -820,6 +821,29 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
+        viewModel.galleryMediaRemoteActionsEvents.observeOnMain().subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_gallery_media_remote_actions_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                GalleryMediaRemoteActionsViewModel.Event.OpenAlbumForAddingSelection ->
+                    error("Unsupported event")
+
+                GalleryMediaRemoteActionsViewModel.Event.OpenDeletingConfirmationDialog ->
+                    openDeletingConfirmationDialog()
+
+                is GalleryMediaRemoteActionsViewModel.Event.ShowFloatingAddedToAlbumMessage ->
+                    error("Unsupported event")
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_gallery_media_remote_actions_event:" +
+                        "\nevent=$event"
+            }
+        }
+
         viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
@@ -856,9 +880,6 @@ class MediaViewerActivity : BaseActivity() {
 
                 MediaViewerViewModel.Event.Finish ->
                     finish()
-
-                MediaViewerViewModel.Event.OpenDeletingConfirmationDialog ->
-                    openDeletingConfirmationDialog()
 
                 is MediaViewerViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
@@ -1000,7 +1021,7 @@ class MediaViewerActivity : BaseActivity() {
         MaterialAlertDialogBuilder(this)
             .setMessage(R.string.media_viewer_deleting_confirmation)
             .setPositiveButton(R.string.delete) { _, _ ->
-                viewModel.onDeletingConfirmed()
+                viewModel.onDeletingGalleryMediaConfirmed()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

@@ -38,6 +38,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
@@ -141,33 +143,24 @@ val galleryFeatureModule = module {
             )
         } bind MediaFileDownloadActionsViewModelDelegate::class
 
+        viewModelOf(::GalleryMediaRemoteActionsViewModelDelegateImpl) bind GalleryMediaRemoteActionsViewModelDelegate::class
+
         viewModel {
             GalleryViewModel(
                 galleryMediaRepositoryFactory = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
-                archiveGalleryMediaUseCase = get(),
-                deleteGalleryMediaUseCase = get(),
-                addGalleryMediaToAlbumUseCase = get(),
                 searchViewModel = get(),
                 fastScrollViewModel = get(),
                 disconnectFromEnvUseCase = get(),
                 memoriesListViewModel = get(),
                 listViewModel = get(),
                 mediaFilesActionsViewModel = get(),
+                galleryMediaRemoteActionsViewModel = get(),
                 galleryExtensionsStateRepository = get(),
             )
         }
 
-        viewModel {
-            GallerySingleRepositoryViewModel(
-                galleryMediaRepositoryFactory = get(),
-                archiveGalleryMediaUseCase = get(),
-                deleteGalleryMediaUseCase = get(),
-                addGalleryMediaToAlbumUseCase = get(),
-                listViewModel = get(),
-                mediaFilesActionsViewModel = get(),
-            )
-        }
+        viewModelOf(::GallerySingleRepositoryViewModel)
 
         scopedOf(::ArchiveGalleryMediaUseCase)
         scopedOf(::DeleteGalleryMediaUseCase)

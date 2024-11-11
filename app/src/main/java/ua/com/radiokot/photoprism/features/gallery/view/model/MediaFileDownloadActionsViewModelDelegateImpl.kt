@@ -27,8 +27,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
     private val downloadFileUseCase: DownloadFileUseCase,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
 ) : ViewModel(),
-    MediaFileDownloadActionsViewModelDelegate,
-    DownloadProgressViewModel {
+    MediaFileDownloadActionsViewModelDelegate {
 
     private val log = kLogger("MediaFileDownloadActionsVMDI")
 

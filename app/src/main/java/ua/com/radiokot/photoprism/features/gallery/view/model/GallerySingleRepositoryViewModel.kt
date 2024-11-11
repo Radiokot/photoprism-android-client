@@ -5,32 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
 class GallerySingleRepositoryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
-    private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
-    private val addGalleryMediaToAlbumUseCase: AddGalleryMediaToAlbumUseCase,
     private val listViewModel: GalleryListViewModelImpl,
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
+    private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
-    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel {
-
-    // TODO: refactor to eliminate duplication.
+    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("GallerySingleRepositoryVM")
     private var isInitialized = false
@@ -283,47 +274,10 @@ class GallerySingleRepositoryViewModel(
             "Adding multiple selection to album button is only clickable when something is selected"
         }
 
-        eventsSubject.onNext(Event.OpenAddingToAlbumDestinationSelection)
-    }
-
-    fun onAddToAlbumMultipleSelectionDestinationSelected(selectedAlbum: DestinationAlbum) {
-        val mediaUids = selectedFilesByMediaUid.keys.toList()
-
-        addGalleryMediaToAlbumUseCase
-            .invoke(
-                mediaUids = mediaUids,
-                destinationAlbum = selectedAlbum,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                log.debug {
-                    "onAddToAlbumMultipleSelectionDestinationSelected(): start_adding:" +
-                            "\nitems=${mediaUids.size}," +
-                            "\nalbum=$selectedAlbum"
-                }
-
-                switchToViewing()
-            }
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onAddToAlbumMultipleSelectionDestinationSelected(): failed_adding"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onAddToAlbumMultipleSelectionDestinationSelected(): successfully_added"
-                    }
-
-                    eventsSubject.onNext(
-                        Event.ShowFloatingAddedToAlbumMessage(
-                            albumTitle = selectedAlbum.title,
-                        )
-                    )
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.addGalleryMediaToAlbum(
+            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            onStarted = ::switchToViewing,
+        )
     }
 
     fun onArchiveMultipleSelectionClicked() {
@@ -335,36 +289,11 @@ class GallerySingleRepositoryViewModel(
             "Archive multiple selection button is only clickable when something is selected"
         }
 
-        val mediaUids = selectedFilesByMediaUid.keys.toList()
-
-        archiveGalleryMediaUseCase
-            .invoke(
-                mediaUids = mediaUids,
-                currentGalleryMediaRepository = currentMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                log.debug {
-                    "onArchiveMultipleSelectionClicked(): start_archiving:" +
-                            "\nitems=${mediaUids.size}"
-                }
-
-                switchToViewing()
-            }
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onArchiveMultipleSelectionClicked(): failed_archiving"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onArchiveMultipleSelectionClicked(): successfully_archived"
-                    }
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.archiveGalleryMedia(
+            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            currentMediaRepository = currentMediaRepository,
+            onStarted = ::switchToViewing,
+        )
     }
 
     fun onDeleteMultipleSelectionClicked() {
@@ -376,40 +305,11 @@ class GallerySingleRepositoryViewModel(
             "Delete multiple selection button is only clickable when something is selected"
         }
 
-        eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
-    }
-
-    fun onDeletingMultipleSelectionConfirmed() {
-        val mediaUids = selectedFilesByMediaUid.keys.toList()
-
-        deleteGalleryMediaUseCase
-            .invoke(
-                mediaUids = mediaUids,
-                currentGalleryMediaRepository = currentMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                log.debug {
-                    "onDeletingMultipleSelectionConfirmed(): start_deleting:" +
-                            "\nitems=${mediaUids.size}"
-                }
-
-                switchToViewing()
-            }
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onDeletingMultipleSelectionConfirmed(): failed_deleting"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onDeletingMultipleSelectionConfirmed(): successfully_deleted"
-                    }
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.deleteGalleryMedia(
+            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            currentMediaRepository = currentMediaRepository,
+            onStarted = ::switchToViewing,
+        )
     }
 
     private fun switchToViewing() {
@@ -476,28 +376,12 @@ class GallerySingleRepositoryViewModel(
          */
         @JvmInline
         value class ShowFloatingError(val error: Error) : Event
-
-        /**
-         * Show item deletion confirmation, reporting the choice
-         * to the [onDeletingMultipleSelectionConfirmed] method.
-         */
-        object OpenDeletingConfirmationDialog : Event
-
-        /**
-         * Open destination album selection screen, reporting the choice
-         * to the [onAddToAlbumMultipleSelectionDestinationSelected] method.
-         */
-        object OpenAddingToAlbumDestinationSelection : Event
-
-        class ShowFloatingAddedToAlbumMessage(
-            val albumTitle: String,
-        ): Event
     }
 
     sealed interface Error {
         @JvmInline
         value class ContentLoadingError(
-            val contentLoadingError: GalleryContentLoadingError
+            val contentLoadingError: GalleryContentLoadingError,
         ) : Error
 
         /**

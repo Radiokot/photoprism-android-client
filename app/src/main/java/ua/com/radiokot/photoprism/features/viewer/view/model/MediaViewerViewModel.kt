@@ -7,7 +7,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -16,26 +15,24 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
-import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
-import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class MediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val updateGalleryMediaAttributesUseCase: UpdateGalleryMediaAttributesUseCase,
-    private val archiveGalleryMediaUseCase: ArchiveGalleryMediaUseCase,
-    private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
+    private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
     private val galleryPreferences: GalleryPreferences,
 ) : ViewModel(),
-    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel {
+    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -45,7 +42,6 @@ class MediaViewerViewModel(
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
     private var fileSelectionIntent: FileSelectionIntent? = null
-    private var itemToDelete: GalleryMedia? = null
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -312,33 +308,10 @@ class MediaViewerViewModel(
             return
         }
 
-        log.debug {
-            "onArchiveClicked(): archiving:" +
-                    "\nitem=$item"
-        }
-
-        archiveGalleryMediaUseCase
-            .invoke(
-                mediaUid = item.uid,
-                currentGalleryMediaRepository = galleryMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onArchiveClicked(): failed_archiving:" +
-                                "\nitem=$item"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onArchiveClicked(): successfully_archived:" +
-                                "\nitem=$item"
-                    }
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.archiveGalleryMedia(
+            mediaUids = listOf(item.uid),
+            currentMediaRepository = galleryMediaRepository,
+        )
     }
 
     fun onDeleteClicked(position: Int) {
@@ -351,47 +324,10 @@ class MediaViewerViewModel(
             return
         }
 
-        log.debug {
-            "onDeleteClicked(): start_deleting:" +
-                    "\nitem=$item"
-        }
-
-        itemToDelete = item
-        eventsSubject.onNext(Event.OpenDeletingConfirmationDialog)
-    }
-
-    fun onDeletingConfirmed() {
-        val itemToDelete = itemToDelete.checkNotNull {
-            "Confirming deletion when there's no item to delete"
-        }
-
-        log.debug {
-            "onDeletingConfirmed(): deleting:" +
-                    "\nitem=$itemToDelete"
-        }
-
-        deleteGalleryMediaUseCase
-            .invoke(
-                mediaUid = itemToDelete.uid,
-                currentGalleryMediaRepository = galleryMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onDeletingConfirmed(): failed_deleting:" +
-                                "\nitem=$itemToDelete"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onDeletingConfirmed(): successfully_deleted:" +
-                                "\nitem=$itemToDelete"
-                    }
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.deleteGalleryMedia(
+            mediaUids = listOf(item.uid),
+            currentMediaRepository = galleryMediaRepository,
+        )
     }
 
     fun onDownloadClicked(position: Int) {
@@ -454,41 +390,14 @@ class MediaViewerViewModel(
         // Switch currently shown favorite state.
         val toSetFavorite = isFavorite.value != true
 
-        log.debug {
-            "onFavoriteClicked(): switching_favorite:" +
-                    "\nitem=$item," +
-                    "\ntoSetFavorite=$toSetFavorite"
-        }
-
-        updateGalleryMediaAttributesUseCase
-            .invoke(
-                mediaUid = item.uid,
-                isFavorite = toSetFavorite,
-                currentGalleryMediaRepository = galleryMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                // Change the value immediately for pleasant user experience.
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUid = item.uid,
+            currentMediaRepository = galleryMediaRepository,
+            isFavorite = toSetFavorite,
+            onStarted = {
                 isFavorite.value = toSetFavorite
-            }
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onFavoriteClicked(): failed_switching_favorite:" +
-                                "\nitem=$item," +
-                                "\ntoSetFavorite=$toSetFavorite"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onFavoriteClicked(): successfully_switched_favorite:" +
-                                "\nitem=$item," +
-                                "\ntoSetFavorite=$toSetFavorite"
-                    }
-                }
-            )
-            .autoDispose(this)
+            },
+        )
     }
 
     fun onPrivateClicked(position: Int) {
@@ -504,39 +413,14 @@ class MediaViewerViewModel(
         // Switch currently shown private state.
         val toSetPrivate = isPrivate.value != true
 
-        log.debug {
-            "onPrivateClicked(): switching_private:" +
-                    "\nitem=$item," +
-                    "\ntoSetPrivate=$toSetPrivate"
-        }
-
-        updateGalleryMediaAttributesUseCase
-            .invoke(
-                mediaUid = item.uid,
-                isPrivate = toSetPrivate,
-                currentGalleryMediaRepository = galleryMediaRepository,
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onError = { error ->
-                    log.error(error) {
-                        "onPrivateClicked(): failed_switching_private:" +
-                                "\nitem=$item," +
-                                "\ntoSetPrivate=$toSetPrivate"
-                    }
-                },
-                onComplete = {
-                    log.debug {
-                        "onPrivateClicked(): successfully_switched_private:" +
-                                "\nitem=$item," +
-                                "\ntoSetPrivate=$toSetPrivate"
-                    }
-
-                    isPrivate.value = toSetPrivate
-                }
-            )
-            .autoDispose(this)
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUid = item.uid,
+            currentMediaRepository = galleryMediaRepository,
+            isPrivate = toSetPrivate,
+            onUpdated = {
+                isPrivate.value = toSetPrivate
+            }
+        )
     }
 
     fun onPageClicked() {
@@ -760,12 +644,6 @@ class MediaViewerViewModel(
         object Finish : Event
 
         /**
-         * Show item deletion confirmation, reporting the choice
-         * to the [onDeletingConfirmed] method.
-         */
-        object OpenDeletingConfirmationDialog : Event
-
-        /**
          * Show a dismissible floating error.
          *
          * The [onFloatingErrorRetryClicked] method should be called
@@ -773,7 +651,7 @@ class MediaViewerViewModel(
          */
         @JvmInline
         value class ShowFloatingError(
-            val error: GalleryContentLoadingError
+            val error: GalleryContentLoadingError,
         ) : Event
     }
 

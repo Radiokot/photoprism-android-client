@@ -47,6 +47,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoad
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
@@ -542,6 +543,34 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
         }
 
+        viewModel.galleryMediaRemoteActionsEvents.observeOnMain().subscribe(this) { event ->
+            log.debug {
+                "subscribeToEvents(): received_gallery_media_remote_actions_event:" +
+                        "\nevent=$event"
+            }
+
+            when (event) {
+                GalleryMediaRemoteActionsViewModel.Event.OpenAlbumForAddingSelection ->
+                    openAddingDestinationAlbumSelection()
+
+                GalleryMediaRemoteActionsViewModel.Event.OpenDeletingConfirmationDialog ->
+                    openDeletingConfirmationDialog()
+
+                is GalleryMediaRemoteActionsViewModel.Event.ShowFloatingAddedToAlbumMessage ->
+                    showFloatingMessage(
+                        getString(
+                            R.string.template_selected_added_to_album,
+                            event.albumTitle,
+                        )
+                    )
+            }
+
+            log.debug {
+                "subscribeToEvents(): handled_gallery_media_remote_actions_event:" +
+                        "\nevent=$event"
+            }
+        }
+
         viewModel.events.subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_new_event:" +
@@ -555,23 +584,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
                 is GallerySingleRepositoryViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
-
-                GallerySingleRepositoryViewModel.Event.OpenDeletingConfirmationDialog ->
-                    openDeletingConfirmationDialog()
-
-
-                GallerySingleRepositoryViewModel.Event.OpenAddingToAlbumDestinationSelection -> {
-                    openAddingDestinationAlbumSelection()
-                }
-
-                is GallerySingleRepositoryViewModel.Event.ShowFloatingAddedToAlbumMessage -> {
-                    showFloatingMessage(
-                        getString(
-                            R.string.template_selected_added_to_album,
-                            event.albumTitle,
-                        )
-                    )
-                }
             }
 
             log.debug {
@@ -642,7 +654,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
     private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
         if (result.resultCode == Activity.RESULT_OK && bundle != null) {
-            viewModel.onAddToAlbumMultipleSelectionDestinationSelected(
+            viewModel.onAlbumForAddingGalleryMediaSelected(
                 selectedAlbum = DestinationAlbumSelectionActivity
                     .getSelectedAlbums(bundle)
                     .first()
@@ -654,7 +666,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         MaterialAlertDialogBuilder(this)
             .setMessage(R.string.gallery_deleting_confirmation)
             .setPositiveButton(R.string.delete) { _, _ ->
-                viewModel.onDeletingMultipleSelectionConfirmed()
+                viewModel.onDeletingGalleryMediaConfirmed()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
