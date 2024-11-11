@@ -1,0 +1,18 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to disable animation of JPEG and HEIF live photos in the preferences
+- Ability to see and export activated extension keys
+- Ability to mark an entry as private on the media viewer screen
+- Ability to add selected items to an album
+- Ability to browse albums from the main menu
+- Ability to browse favorites from the main menu
+
+Fixed:
+- Showing indeterminate background download progress (when Content-Length is not available) as 1%
+- Immediate slideshow switch for GIFs and looped videos
+- Showing folder content of unsupported types when selecting content for another app
+
+Changed:
+- For HEIF (HEIC) live photos, the video is now requested in HEVC if the device supports this codec. This prevents transcoding to AVC
+- Refreshed navigation icons and labels
