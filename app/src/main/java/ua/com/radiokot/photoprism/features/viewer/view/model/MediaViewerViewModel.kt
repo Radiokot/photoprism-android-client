@@ -144,18 +144,19 @@ class MediaViewerViewModel(
 
     private fun subscribeToRepository() {
         galleryMediaRepository.items
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .doOnNext {
+                // Detect emptiness ASAP, otherwise isFresh could be changed
+                // by the time the main thread scheduler processes the emission.
                 if (it.isEmpty() && galleryMediaRepository.isFresh) {
                     log.debug {
                         "subscribeToRepository(): finishing_as_nothing_left"
                     }
 
                     eventsSubject.onNext(Event.Finish)
-                } else {
-                    broadcastItemsFromRepository()
                 }
             }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { broadcastItemsFromRepository() }
             .autoDispose(this)
 
         galleryMediaRepository.loading
