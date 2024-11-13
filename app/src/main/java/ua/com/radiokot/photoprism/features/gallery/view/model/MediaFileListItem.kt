@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.view.model
 
-import android.content.Context
 import android.os.Parcelable
 import android.text.format.Formatter
 import android.view.View
@@ -16,24 +15,28 @@ import ua.com.radiokot.photoprism.databinding.ListItemMediaFileBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 @Parcelize
 class MediaFileListItem(
     val name: String,
     val thumbnailUrl: String,
-    val size: String?,
+    val sizeBytes: Long,
     val mimeType: String,
     val source: GalleryMedia.File?,
 ) : AbstractItem<MediaFileListItem.ViewHolder>(), Parcelable {
 
     constructor(
         source: GalleryMedia.File,
-        context: Context,
+        previewUrlFactory: MediaPreviewUrlFactory,
     ) : this(
         name = source.name,
-        thumbnailUrl = source.smallThumbnailUrl,
+        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+            thumbnailHash = source.hash,
+            sizePx = 250,
+        ),
         mimeType = source.mimeType,
-        size = source.sizeBytes?.let { Formatter.formatFileSize(context, it) },
+        sizeBytes = source.sizeBytes ?: 0L,
         source = source,
     )
 
@@ -64,7 +67,10 @@ class MediaFileListItem(
             view.nameTextView.text = item.name
             view.nameTextView.isSelected = true
 
-            view.sizeTextView.text = item.size
+            view.sizeTextView.text = Formatter.formatFileSize(
+                view.root.context,
+                item.sizeBytes,
+            )
             view.typeTextView.text = item.mimeType
 
             picasso

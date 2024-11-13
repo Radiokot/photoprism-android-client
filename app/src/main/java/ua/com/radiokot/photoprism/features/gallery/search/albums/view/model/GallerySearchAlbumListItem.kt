@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 data class GallerySearchAlbumListItem(
     val title: String,
@@ -34,9 +35,13 @@ data class GallerySearchAlbumListItem(
     constructor(
         source: Album,
         isAlbumSelected: Boolean,
+        previewUrlFactory: MediaPreviewUrlFactory,
     ) : this(
         title = source.title,
-        thumbnailUrl = source.getThumbnailUrl(500),
+        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+            thumbnailHash = source.thumbnailHash,
+            sizePx = 500,
+        ),
         isAlbumSelected = isAlbumSelected,
         source = source,
     )

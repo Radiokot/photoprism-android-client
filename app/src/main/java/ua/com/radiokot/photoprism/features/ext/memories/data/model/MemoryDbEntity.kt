@@ -13,7 +13,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.Date
 
 @Entity(
@@ -29,7 +28,7 @@ data class MemoryDbEntity(
     @ColumnInfo("created_at_ms")
     val createdAtMs: Long,
     @ColumnInfo("preview_hash")
-    val previewHash: String,
+    val thumbnailHash: String,
     @ColumnInfo("type_data")
     val typeData: TypeData,
 ) {
@@ -81,16 +80,15 @@ data class MemoryDbEntity(
         searchQuery = memory.searchQuery,
         isSeen = memory.isSeen,
         createdAtMs = memory.createdAt.time,
-        previewHash = memory.previewHash,
+        thumbnailHash = memory.thumbnailHash,
         typeData = TypeData.fromMemoryTypeData(memory.typeData),
     )
 
-    fun toMemory(previewUrlFactory: MediaPreviewUrlFactory) = Memory(
+    fun toMemory() = Memory(
         typeData = typeData.toMemoryTypeData(),
         searchQuery = this.searchQuery,
         isSeen = this.isSeen,
         createdAt = Date(this.createdAtMs),
-        previewHash = this.previewHash,
-        previewUrlFactory = previewUrlFactory,
+        thumbnailHash = this.thumbnailHash,
     )
 }

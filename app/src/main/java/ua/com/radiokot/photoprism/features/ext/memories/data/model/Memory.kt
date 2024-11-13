@@ -1,8 +1,5 @@
 package ua.com.radiokot.photoprism.features.ext.memories.data.model
 
-import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
-import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 import java.util.Date
@@ -24,9 +21,8 @@ class Memory(
      * Whether the user have seen this memory.
      */
     var isSeen: Boolean = false,
-    val previewHash: String,
-    previewUrlFactory: MediaPreviewUrlFactory,
-) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
+    val thumbnailHash: String,
+) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

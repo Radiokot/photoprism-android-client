@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.storage.SlideshowPreferences
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
@@ -24,6 +25,7 @@ class SlideshowViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val slideshowPreferences: SlideshowPreferences,
     private val galleryPreferences: GalleryPreferences,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel() {
     private val log = kLogger("SlideshowVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
@@ -128,12 +130,13 @@ class SlideshowViewModel(
             .itemsList
             .map { galleryMedia ->
                 if (galleryMedia in afterAllNotViewableMedia)
-                    MediaViewerPage.unsupported(galleryMedia)
+                    MediaViewerPage.unsupported(galleryMedia, previewUrlFactory)
                 else
                     MediaViewerPage.fromGalleryMedia(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
                         livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
+                        previewUrlFactory = previewUrlFactory,
                     )
             }
             .also {

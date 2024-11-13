@@ -28,9 +28,9 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaCodecVideoFormatSu
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaDownloadUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaFileDownloadUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.gallerySearchFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
@@ -78,7 +78,7 @@ val galleryFeatureModule = module {
         scoped {
             val session = get<EnvSession>()
 
-            PhotoPrismPreviewUrlFactory(
+            PhotoPrismMediaPreviewUrlFactory(
                 apiUrl = session.envConnectionParams.apiUrl.toString(),
                 previewToken = session.previewToken,
                 videoFormatSupport = MediaCodecVideoFormatSupport()
@@ -88,7 +88,7 @@ val galleryFeatureModule = module {
         scoped {
             val session = get<EnvSession>()
 
-            PhotoPrismMediaDownloadUrlFactory(
+            PhotoPrismMediaFileDownloadUrlFactory(
                 apiUrl = session.envConnectionParams.apiUrl.toString(),
                 downloadToken = session.downloadToken,
             )
@@ -111,9 +111,6 @@ val galleryFeatureModule = module {
         scoped {
             SimpleGalleryMediaRepository.Factory(
                 photoPrismPhotosService = get(),
-                thumbnailUrlFactory = get(),
-                downloadUrlFactory = get(),
-                webUrlFactory = get(),
                 // Always 80 elements – not great, not terrible.
                 // It is better, of course, to dynamically adjust
                 // to the max number of items on the screen.
@@ -124,6 +121,7 @@ val galleryFeatureModule = module {
         scoped {
             ThreadPoolBackgroundMediaFileDownloadManager(
                 downloadFileUseCase = get(),
+                downloadUrlFactory = get(),
                 poolSize = 6,
             )
         } bind BackgroundMediaFileDownloadManager::class
@@ -140,6 +138,7 @@ val galleryFeatureModule = module {
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 backgroundMediaFileDownloadManager = get(),
                 downloadFileUseCase = get(),
+                downloadUrlFactory = get(),
             )
         } bind MediaFileDownloadActionsViewModelDelegate::class
 

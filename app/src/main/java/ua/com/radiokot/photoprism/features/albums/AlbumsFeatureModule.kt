@@ -8,11 +8,11 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
-import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
-import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.albums.view.model.DestinationAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
 
@@ -41,7 +41,6 @@ val albumsFeatureModule = module {
                 ),
                 defaultSort = get(),
                 photoPrismAlbumsService = get(),
-                previewUrlFactory = get(),
             )
         } bind AlbumsRepository::class
 
@@ -60,6 +59,7 @@ val albumsFeatureModule = module {
 
                     SearchPredicates.generalCondition(query, fields)
                 },
+                previewUrlFactory = get(),
             )
         }
 

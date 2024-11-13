@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel.Event
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel.State
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class GalleryListViewModelImpl(
     galleryPreferences: GalleryPreferences,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
     GalleryListViewModel {
 
@@ -208,6 +210,7 @@ class GalleryListViewModelImpl(
                         isSelectionViewVisible = areSelectionViewsVisible,
                         isMediaSelected = selectedFilesByMediaUid.containsKey(galleryMedia.uid),
                         itemScale = itemScale,
+                        previewUrlFactory = previewUrlFactory,
                     )
                 )
             }
@@ -469,7 +472,12 @@ class GalleryListViewModelImpl(
                     "\nfiles=$files"
         }
 
-        itemListEvents.onNext(Event.OpenFileSelectionDialog(files))
+        itemListEvents.onNext(Event.OpenFileSelectionDialog(files.map { file ->
+            MediaFileListItem(
+                source = file,
+                previewUrlFactory = previewUrlFactory,
+            )
+        }))
     }
 
     override fun onGalleryMediaFileSelected(file: GalleryMedia.File) {

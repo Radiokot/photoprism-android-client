@@ -44,7 +44,7 @@ interface GalleryListViewModel {
          *
          * Once selected, the [onGalleryMediaFileSelected] method should be called.
          */
-        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+        class OpenFileSelectionDialog(val fileItems: List<MediaFileListItem>) : Event
     }
 
     sealed interface State {

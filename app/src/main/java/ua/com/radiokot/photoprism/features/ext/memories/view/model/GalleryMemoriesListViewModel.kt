@@ -15,11 +15,13 @@ import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.util.concurrent.TimeUnit
 
 class GalleryMemoriesListViewModel(
     private val memoriesRepository: MemoriesRepository,
     private val memoriesNotificationsManager: MemoriesNotificationsManager,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel() {
     private val log = kLogger("GalleryMemoriesListVM")
 
@@ -67,7 +69,12 @@ class GalleryMemoriesListViewModel(
         memoriesRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { memories ->
-                itemsList.value = memories.map(::MemoryListItem)
+                itemsList.value = memories.map { memory ->
+                    MemoryListItem(
+                        source = memory,
+                        previewUrlFactory = previewUrlFactory,
+                    )
+                }
             }
             .autoDispose(this)
 

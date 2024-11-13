@@ -1,20 +1,33 @@
 package ua.com.radiokot.photoprism.features.gallery.logic
 
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
 interface MediaPreviewUrlFactory {
-    fun getThumbnail100Url(hash: String): String
-    fun getThumbnail224Url(hash: String): String
-    fun getThumbnail500Url(hash: String): String
+    fun getThumbnailUrl(
+        thumbnailHash: String,
+        sizePx: Int,
+    ): String
 
-    fun getImagePreview720Url(hash: String): String
-    fun getImagePreview1280Url(hash: String): String
-    fun getImagePreview1920Url(hash: String): String
-    fun getImagePreview2048Url(hash: String): String
-    fun getImagePreview2560Url(hash: String): String
-    fun getImagePreview3840Url(hash: String): String
-    fun getImagePreview4096Url(hash: String): String
-    fun getImagePreview7680Url(hash: String): String
+    fun getImagePreviewUrl(
+        previewHash: String,
+        sizePx: Int,
+    ): String
 
-    fun getVideoPreviewUrl(mergedPhoto: PhotoPrismMergedPhoto): String
+    fun getVideoPreviewUrl(
+        previewHash: String,
+        videoFileHash: String?,
+        videoFileCodec: String?,
+    ): String
+
+    fun getVideoPreviewUrl(
+        galleryMedia: GalleryMedia,
+    ): String {
+        val videoFile = galleryMedia.videoFile
+
+        return getVideoPreviewUrl(
+            previewHash = galleryMedia.hash,
+            videoFileHash = videoFile?.hash,
+            videoFileCodec = videoFile?.codec,
+        )
+    }
 }

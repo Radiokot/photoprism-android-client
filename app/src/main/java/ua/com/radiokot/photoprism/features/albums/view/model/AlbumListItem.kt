@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class AlbumListItem(
     private val title: String,
@@ -22,10 +23,16 @@ class AlbumListItem(
     val source: Album?,
 ) : AbstractItem<AlbumListItem.ViewHolder>() {
 
-    constructor(source: Album) : this(
+    constructor(
+        source: Album,
+        previewUrlFactory: MediaPreviewUrlFactory,
+    ) : this(
         title = source.title,
         description = source.path?.let { "/$it" },
-        thumbnailUrl = source.getThumbnailUrl(500),
+        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+            thumbnailHash = source.thumbnailHash,
+            sizePx = 500,
+        ),
         source = source,
     )
 

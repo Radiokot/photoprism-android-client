@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel.Event
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import java.io.File
@@ -26,6 +27,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
     private val externalDownloadsDir: File,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
+    private val downloadUrlFactory: MediaFileDownloadUrlFactory,
 ) : ViewModel(),
     MediaFileDownloadActionsViewModelDelegate {
 
@@ -218,7 +220,9 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
         downloadDisposable?.dispose()
         downloadDisposable = filesAndDestinations
             .mapIndexed { currentDownloadIndex, (file, destination) ->
-                val downloadUrl = file.downloadUrl
+                val downloadUrl =  downloadUrlFactory.getDownloadUrl(
+                    hash = file.hash,
+                )
 
                 if (destination.exists() && destination.canRead()) {
                     return@mapIndexed Completable.complete().doOnSubscribe {

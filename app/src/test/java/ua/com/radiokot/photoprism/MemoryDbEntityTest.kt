@@ -4,7 +4,6 @@ import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -41,8 +40,7 @@ class MemoryDbEntityTest : KoinComponent {
             searchQuery = "uid:1|2|3",
             createdAt = Date(1706952860000),
             isSeen = false,
-            previewHash = "hash",
-            previewUrlFactory = get(),
+            thumbnailHash = "hash",
         )
 
         val entity = MemoryDbEntity(memory)
@@ -50,7 +48,7 @@ class MemoryDbEntityTest : KoinComponent {
         Assert.assertEquals(memory.searchQuery, entity.searchQuery)
         Assert.assertEquals(memory.createdAt.time, entity.createdAtMs)
         Assert.assertEquals(memory.isSeen, entity.isSeen)
-        Assert.assertEquals(memory.previewHash, entity.previewHash)
+        Assert.assertEquals(memory.thumbnailHash, entity.thumbnailHash)
 
         val typeData = assertIs<MemoryDbEntity.TypeData.ThisDayInThePast>(entity.typeData)
         Assert.assertEquals((memory.typeData as Memory.TypeData.ThisDayInThePast).year, typeData.year)
@@ -62,20 +60,18 @@ class MemoryDbEntityTest : KoinComponent {
             searchQuery = "uid:1|2|3",
             createdAtMs = 1706952860000,
             isSeen = false,
-            previewHash = "hash",
+            thumbnailHash = "hash",
             typeData = MemoryDbEntity.TypeData.ThisDayInThePast(
                 year = 2021,
             )
         )
 
-        val memory = entity.toMemory(
-            previewUrlFactory = get()
-        )
+        val memory = entity.toMemory()
 
         Assert.assertEquals(entity.searchQuery, memory.searchQuery)
         Assert.assertEquals(entity.createdAtMs, memory.createdAt.time)
         Assert.assertEquals(entity.isSeen, memory.isSeen)
-        Assert.assertEquals(entity.previewHash, memory.previewHash)
+        Assert.assertEquals(entity.thumbnailHash, memory.thumbnailHash)
 
         val thisDayInThePast = assertIs<Memory.TypeData.ThisDayInThePast>(memory.typeData)
         Assert.assertEquals(

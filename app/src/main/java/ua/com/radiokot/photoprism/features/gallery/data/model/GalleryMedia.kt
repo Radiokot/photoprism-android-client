@@ -3,9 +3,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto.File
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 
@@ -46,10 +44,6 @@ class GalleryMedia(
      */
     val title: String,
     /**
-     * Direct URL to open this media in the web viewer.
-     */
-    val webViewUrl: String,
-    /**
      * Whether the entry is liked (added to favorites) or not.
      */
     var isFavorite: Boolean,
@@ -59,42 +53,19 @@ class GalleryMedia(
     var isPrivate: Boolean,
     val hash: String,
     files: List<File>,
-    previewUrlFactory: MediaPreviewUrlFactory,
-) : WithThumbnail by WithThumbnailFromUrlFactory(hash, previewUrlFactory) {
+) {
+
     /**
      * Files associated with this media.
      */
     var files: List<File> = files
         private set
 
-    constructor(
-        source: PhotoPrismMergedPhoto,
-        previewUrlFactory: MediaPreviewUrlFactory,
-        downloadUrlFactory: MediaFileDownloadUrlFactory,
-        webUrlFactory: MediaWebUrlFactory,
-    ) : this(
-        media = TypeData.fromPhotoPrism(
-            source = source,
-            previewUrlFactory = previewUrlFactory
-        ),
-        uid = source.uid,
-        width = source.width,
-        height = source.height,
-        takenAtLocal = LocalDate(localDate = parsePhotoPrismDate(source.takenAtLocal)!!),
-        title = source.title,
-        webViewUrl = webUrlFactory.getWebViewUrl(source.uid),
-        isFavorite = source.favorite,
-        isPrivate = source.private,
-        files = source.files.map { photoPrismFile ->
-            File(
-                source = photoPrismFile,
-                thumbnailUrlFactory = previewUrlFactory,
-                downloadUrlFactory = downloadUrlFactory,
-            )
-        }.toMutableList(),
-        hash = source.hash,
-        previewUrlFactory = previewUrlFactory,
-    )
+    val mainFile: File?
+        get() = files.mainFile
+
+    val videoFile: File?
+        get() = files.videoFile
 
     /**
      * Merges current [files] with [moreFiles] overwriting the value
@@ -109,9 +80,7 @@ class GalleryMedia(
 
         other as GalleryMedia
 
-        if (uid != other.uid) return false
-
-        return true
+        return uid == other.uid
     }
 
     override fun hashCode(): Int {
@@ -122,6 +91,57 @@ class GalleryMedia(
         return "GalleryMedia(uid='$uid', media=$media)"
     }
 
+    companion object {
+        private val Collection<File>.mainFile: File?
+            get() =
+                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L520
+                find {
+                    it.isPrimary == true
+                } ?: find {
+                    it.type == "jpg" || it.type == "png"
+                } ?: find {
+                    it.isSidecar == false
+                }
+
+        private val Collection<File>.videoFile: File?
+            get() =
+                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L459
+                find {
+                    it.codec == "avc1"
+                } ?: find {
+                    it.type == "mp4"
+                } ?: find {
+                    it.isVideo == true
+                } ?: animatedFile
+
+        private val Collection<File>.animatedFile: File?
+            get() =
+                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L459
+                find {
+                    it.type == "gif" || it.duration != null || it.frames != null
+                }
+
+        fun fromPhotoPrism(source: PhotoPrismMergedPhoto): GalleryMedia {
+            val files = source.files.map(::File).toMutableList()
+            val typeData = TypeData.fromPhotoPrism(
+                source = source,
+                files = files,
+            )
+
+            return GalleryMedia(
+                media = typeData,
+                uid = source.uid,
+                width = source.width,
+                height = source.height,
+                takenAtLocal = LocalDate(localDate = parsePhotoPrismDate(source.takenAtLocal)!!),
+                title = source.title,
+                isFavorite = source.favorite,
+                isPrivate = source.private,
+                files = files,
+                hash = source.hash,
+            )
+        }
+    }
 
     /**
     photoprism/pkg/media/types.go
@@ -155,36 +175,24 @@ class GalleryMedia(
 
     sealed class TypeData(val typeName: TypeName) {
 
-        object Unknown : TypeData(TypeName.UNKNOWN)
+        object Image : TypeData(TypeName.IMAGE), Viewable.AsImage
 
-        class Image(
-            hash: String,
-            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
-        ) : TypeData(TypeName.IMAGE),
-            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
+        object Raw : TypeData(TypeName.RAW), Viewable.AsImage
 
-        class Raw(
-            hash: String,
-            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
-        ) : TypeData(TypeName.RAW),
-            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
+        object Vector : TypeData(TypeName.VECTOR), Viewable.AsImage
 
-        class Animated(
-            override val videoPreviewUrl: String,
-        ) : TypeData(TypeName.ANIMATED), ViewableAsVideo
+        object Animated : TypeData(TypeName.ANIMATED), Viewable.AsVideo
+
+        object Video : TypeData(TypeName.VIDEO), Viewable.AsVideo
 
         class Live(
-            override val videoPreviewUrl: String,
             /**
              * Non-zero duration of the full video in milliseconds,
              * or null if it couldn't be determined.
              */
             val fullDurationMs: Long?,
             val kind: Kind,
-            hash: String,
-            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
-        ) : TypeData(TypeName.LIVE), ViewableAsVideo,
-            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory) {
+        ) : TypeData(TypeName.LIVE), Viewable.AsVideo, Viewable.AsImage {
             init {
                 require((fullDurationMs ?: 0L) != 0L) {
                     "The full duration must be either null or positive"
@@ -235,54 +243,46 @@ class GalleryMedia(
             }
         }
 
-        class Video(
-            override val videoPreviewUrl: String,
-        ) : TypeData(TypeName.VIDEO), ViewableAsVideo
-
-        class Vector(
-            hash: String,
-            mediaPreviewUrlFactory: MediaPreviewUrlFactory,
-        ) : TypeData(TypeName.VECTOR),
-            ViewableAsImage by ViewableAsImageWithUrlFactory(hash, mediaPreviewUrlFactory)
-
         object Sidecar : TypeData(TypeName.SIDECAR)
+
         object Text : TypeData(TypeName.TEXT)
+
         object Other : TypeData(TypeName.OTHER)
+
+        object Unknown : TypeData(TypeName.UNKNOWN)
 
         companion object {
             fun fromPhotoPrism(
                 source: PhotoPrismMergedPhoto,
-                previewUrlFactory: MediaPreviewUrlFactory,
+                files: List<File>,
             ): TypeData =
                 when (val type = source.type) {
                     TypeName.UNKNOWN.value -> Unknown
-                    TypeName.IMAGE.value -> Image(
-                        hash = source.hash,
-                        mediaPreviewUrlFactory = previewUrlFactory,
-                    )
 
-                    TypeName.RAW.value -> Raw(
-                        hash = source.hash,
-                        mediaPreviewUrlFactory = previewUrlFactory,
-                    )
+                    TypeName.IMAGE.value -> Image
 
-                    TypeName.ANIMATED.value -> Animated(
-                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
-                    )
+                    TypeName.RAW.value -> Raw
+
+                    TypeName.ANIMATED.value -> Animated
+
+                    TypeName.VIDEO.value -> Video
+
+                    TypeName.VECTOR.value -> Vector
+
+                    TypeName.SIDECAR.value -> Sidecar
+
+                    TypeName.TEXT.value -> Text
+
+                    TypeName.OTHER.value -> Other
 
                     TypeName.LIVE.value -> Live(
-                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
                         // Find the duration among video files.
-                        fullDurationMs = source.files
+                        fullDurationMs = files
                             .find { it.duration != null && it.duration > 0 }
                             ?.duration
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
-                        hash = source.hash,
                         kind = when {
-                            source.let {
-                                val videoFile = it.videoFile
-                                val mainFile = it.mainFile
-
+                            (files.mainFile to files.videoFile).let { (mainFile, videoFile) ->
                                 // Short videos have primary image file
                                 // generated from the video file,
                                 // while real live photos have the preview generated
@@ -307,21 +307,8 @@ class GalleryMedia(
                             else ->
                                 Live.Kind.OTHER
                         },
-                        mediaPreviewUrlFactory = previewUrlFactory,
                     )
 
-                    TypeName.VIDEO.value -> Video(
-                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(source),
-                    )
-
-                    TypeName.VECTOR.value -> Vector(
-                        hash = source.hash,
-                        mediaPreviewUrlFactory = previewUrlFactory,
-                    )
-
-                    TypeName.SIDECAR.value -> Sidecar
-                    TypeName.TEXT.value -> Text
-                    TypeName.OTHER.value -> Other
                     else -> error("Unsupported PhotoPrism media type '$type'")
                 }
         }
@@ -343,27 +330,32 @@ class GalleryMedia(
         val mediaUid: String,
         val mimeType: String,
         val sizeBytes: Long?,
-        /**
-         * Direct URL to the small square static thumbnail.
-         */
-        val smallThumbnailUrl: String,
-        /**
-         * Direct URL download this file.
-         */
-        val downloadUrl: String,
+        val isPrimary: Boolean?,
+        val isSidecar: Boolean?,
+        val isVideo: Boolean?,
+        val type: String?,
+        val codec: String?,
+        val duration: Long?,
+        val frames: Long?,
+        val hash: String,
     ) : Parcelable {
+
         constructor(
             source: PhotoPrismMergedPhoto.File,
-            thumbnailUrlFactory: MediaPreviewUrlFactory,
-            downloadUrlFactory: MediaFileDownloadUrlFactory,
         ) : this(
             name = source.name,
             uid = source.uid,
             mediaUid = source.photoUid,
             mimeType = source.mime ?: "application/octet-stream",
             sizeBytes = source.size,
-            smallThumbnailUrl = thumbnailUrlFactory.getThumbnail224Url(source.hash),
-            downloadUrl = downloadUrlFactory.getDownloadUrl(source.hash),
+            isPrimary = source.primary,
+            isSidecar = source.sidecar,
+            isVideo = source.video,
+            type = source.fileType,
+            codec = source.codec,
+            duration = source.duration,
+            frames = source.frames,
+            hash = source.hash,
         )
 
         override fun equals(other: Any?): Boolean {
@@ -372,9 +364,7 @@ class GalleryMedia(
 
             other as File
 
-            if (uid != other.uid) return false
-
-            return true
+            return uid == other.uid
         }
 
         override fun hashCode(): Int {
@@ -386,3 +376,4 @@ class GalleryMedia(
         }
     }
 }
+

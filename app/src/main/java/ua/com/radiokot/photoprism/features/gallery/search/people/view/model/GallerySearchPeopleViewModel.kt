@@ -8,12 +8,14 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
 
 class GallerySearchPeopleViewModel(
     private val peopleRepository: PeopleRepository,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
     searchPreferences: SearchPreferences,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchPeopleVM")
@@ -90,6 +92,7 @@ class GallerySearchPeopleViewModel(
                         source = person,
                         isPersonSelected = person.id in selectedPersonIds,
                         isNameShown = hasAnyNames,
+                        previewUrlFactory = previewUrlFactory,
                     )
                 }
             )
@@ -186,7 +189,13 @@ class GallerySearchPeopleViewModel(
     }
 
     fun getPersonThumbnail(uid: String, viewSizePx: Int): String? =
-        peopleRepository.getLoadedPerson(uid)?.getThumbnailUrl(viewSizePx)
+        peopleRepository.getLoadedPerson(uid)
+            ?.let { person ->
+                previewUrlFactory.getThumbnailUrl(
+                    thumbnailHash = person.thumbnailHash,
+                    sizePx = viewSizePx,
+                )
+            }
 
     sealed interface State {
         object Loading : State

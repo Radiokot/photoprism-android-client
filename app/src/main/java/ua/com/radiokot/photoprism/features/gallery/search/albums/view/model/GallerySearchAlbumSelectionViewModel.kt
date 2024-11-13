@@ -8,9 +8,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
@@ -18,6 +19,7 @@ class GallerySearchAlbumSelectionViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
     private val searchPreferences: SearchPreferences,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
@@ -129,6 +131,7 @@ class GallerySearchAlbumSelectionViewModel(
                 GallerySearchAlbumListItem(
                     source = album,
                     isAlbumSelected = album.uid == selectedAlbumUid,
+                    previewUrlFactory = previewUrlFactory,
                 )
             }
 

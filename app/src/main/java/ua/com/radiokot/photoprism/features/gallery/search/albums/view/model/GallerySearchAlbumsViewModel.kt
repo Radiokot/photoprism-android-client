@@ -8,9 +8,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 
 /**
  * A viewmodel that controls list of selectable albums for the gallery search.
@@ -21,6 +22,7 @@ import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 class GallerySearchAlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
     private val searchPreferences: SearchPreferences,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchAlbumsVM")
 
@@ -106,7 +108,8 @@ class GallerySearchAlbumsViewModel(
                 albums = repositoryAlbums.map { album ->
                     GallerySearchAlbumListItem(
                         source = album,
-                        isAlbumSelected = album.uid == selectedAlbumUid
+                        isAlbumSelected = album.uid == selectedAlbumUid,
+                        previewUrlFactory = previewUrlFactory,
                     )
                 }
             ))

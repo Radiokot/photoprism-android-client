@@ -39,7 +39,6 @@ import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -502,7 +501,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                     }
 
                 is GalleryListViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(event.files)
+                    openMediaFilesDialog(event.fileItems)
             }
 
             log.debug {
@@ -672,14 +671,9 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             .show()
     }
 
-    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
         mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = files.map {
-                MediaFileListItem(
-                    source = it,
-                    context = this
-                )
-            }
+            fileItems = fileItems,
         )
     }
 

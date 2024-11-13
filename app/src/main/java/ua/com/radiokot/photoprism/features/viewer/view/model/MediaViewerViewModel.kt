@@ -15,11 +15,14 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
@@ -30,6 +33,8 @@ class MediaViewerViewModel(
     private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
     private val galleryPreferences: GalleryPreferences,
+    private val webUrlFactory: MediaWebUrlFactory,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
     MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
@@ -185,12 +190,13 @@ class MediaViewerViewModel(
             .itemsList
             .map { galleryMedia ->
                 if (galleryMedia in afterAllNotViewableMedia)
-                    MediaViewerPage.unsupported(galleryMedia)
+                    MediaViewerPage.unsupported(galleryMedia, previewUrlFactory)
                 else
                     MediaViewerPage.fromGalleryMedia(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
                         livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
+                        previewUrlFactory = previewUrlFactory,
                     )
             }
             .also {
@@ -295,7 +301,13 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        eventsSubject.onNext(Event.OpenWebViewer(url = item.webViewUrl))
+        eventsSubject.onNext(
+            Event.OpenWebViewer(
+                url = webUrlFactory.getWebViewUrl(
+                    uid = item.uid,
+                )
+            )
+        )
     }
 
     fun onArchiveClicked(position: Int) {
@@ -446,7 +458,14 @@ class MediaViewerViewModel(
                     "\nfiles=$files"
         }
 
-        eventsSubject.onNext(Event.OpenFileSelectionDialog(files))
+        eventsSubject.onNext(Event.OpenFileSelectionDialog(
+            fileItems = files.map { file ->
+                MediaFileListItem(
+                    source = file,
+                    previewUrlFactory = previewUrlFactory,
+                )
+            }
+        ))
     }
 
     fun onFileSelected(file: GalleryMedia.File) {
@@ -630,7 +649,7 @@ class MediaViewerViewModel(
     }
 
     sealed interface Event {
-        class OpenFileSelectionDialog(val files: List<GalleryMedia.File>) : Event
+        class OpenFileSelectionDialog(val fileItems: List<MediaFileListItem>) : Event
 
         object RequestStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event

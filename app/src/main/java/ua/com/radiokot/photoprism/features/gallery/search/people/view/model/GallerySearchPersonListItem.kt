@@ -14,6 +14,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
 
@@ -40,15 +41,20 @@ class GallerySearchPersonListItem(
         source: Person,
         isPersonSelected: Boolean,
         isNameShown: Boolean,
+        previewUrlFactory: MediaPreviewUrlFactory,
     ) : this(
         name = source.name,
-        thumbnailUrl = source.getThumbnailUrl(DEFAULT_THUMBNAIL_SIZE),
+        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+            thumbnailHash = source.thumbnailHash,
+            sizePx = DEFAULT_THUMBNAIL_SIZE,
+        ),
         isPersonSelected = isPersonSelected,
         isNameShown = isNameShown,
         source = source,
     )
 
-    class ViewHolder(itemView: View) : FastAdapter.ViewHolder<GallerySearchPersonListItem>(itemView),
+    class ViewHolder(itemView: View) :
+        FastAdapter.ViewHolder<GallerySearchPersonListItem>(itemView),
         KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)

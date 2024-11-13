@@ -25,9 +25,6 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
 
 /**
@@ -36,9 +33,6 @@ import ua.com.radiokot.photoprism.util.LocalDate
  */
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
-    private val thumbnailUrlFactory: MediaPreviewUrlFactory,
-    private val downloadUrlFactory: MediaFileDownloadUrlFactory,
-    private val webUrlFactory: MediaWebUrlFactory,
     val params: Params,
     pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
@@ -101,14 +95,7 @@ class SimpleGalleryMediaRepository(
                 }
 
                 photoPrismPhotos
-                    .mapSuccessful {
-                        GalleryMedia(
-                            source = it,
-                            previewUrlFactory = thumbnailUrlFactory,
-                            downloadUrlFactory = downloadUrlFactory,
-                            webUrlFactory = webUrlFactory,
-                        )
-                    }
+                    .mapSuccessful(GalleryMedia::fromPhotoPrism)
                     .filter { entry ->
                         // Precise post filter by "before" and "after" dates,
                         // workaround for PhotoPrism filtering.
@@ -326,9 +313,6 @@ class SimpleGalleryMediaRepository(
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
-        private val thumbnailUrlFactory: MediaPreviewUrlFactory,
-        private val downloadUrlFactory: MediaFileDownloadUrlFactory,
-        private val webUrlFactory: MediaWebUrlFactory,
         private val defaultPageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
@@ -350,9 +334,6 @@ class SimpleGalleryMediaRepository(
             pageLimit: Int = defaultPageLimit,
         ) = SimpleGalleryMediaRepository(
             photoPrismPhotosService = photoPrismPhotosService,
-            thumbnailUrlFactory = thumbnailUrlFactory,
-            downloadUrlFactory = downloadUrlFactory,
-            webUrlFactory = webUrlFactory,
             params = params,
             pageLimit = pageLimit,
         )

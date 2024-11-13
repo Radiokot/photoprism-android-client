@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistence
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 
@@ -38,9 +39,12 @@ class UpdateMemoriesWorker(
     override fun createWork(): Single<Result> {
         val updateMemoriesUseCase = sessionScope?.get<UpdateMemoriesUseCase>()
         val memoriesNotificationsManager = sessionScope?.get<MemoriesNotificationsManager>()
+        val previewUrlFactory = sessionScope?.get<MediaPreviewUrlFactory>()
 
         if (updateMemoriesUseCase == null
-            || memoriesNotificationsManager == null) {
+            || memoriesNotificationsManager == null
+            || previewUrlFactory == null
+        ) {
             log.debug {
                 "createWork(): skip_as_missing_session_scope"
             }
@@ -90,8 +94,9 @@ class UpdateMemoriesWorker(
                     }
 
                     memoriesNotificationsManager.notifyNewMemories(
-                        bigPictureUrl = foundMemories.last().getThumbnailUrl(
-                            viewSizePx = 500,
+                        bigPictureUrl = previewUrlFactory.getThumbnailUrl(
+                            thumbnailHash = foundMemories.last().thumbnailHash,
+                            sizePx = 500,
                         )
                     )
                 } else {

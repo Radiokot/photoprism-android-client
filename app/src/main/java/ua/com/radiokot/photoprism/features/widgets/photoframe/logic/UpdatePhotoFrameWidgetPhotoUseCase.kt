@@ -6,6 +6,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.model.PhotoFrameWidgetPhoto
 import ua.com.radiokot.photoprism.features.widgets.photoframe.data.storage.PhotoFrameWidgetsPreferences
 import ua.com.radiokot.photoprism.util.DbscanClustering
@@ -16,6 +17,7 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
     private val allowedMediaTypes: Set<GalleryMedia.TypeName>,
     private val widgetsPreferences: PhotoFrameWidgetsPreferences,
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) {
     private val log = kLogger("UpdatePhotoFrameWidgetPhotoUseCase")
 
@@ -95,7 +97,12 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
                     .sortedWith(PREFERABLE_ITEM_COMPARATOR)
                     .first()
             }
-            .map(::PhotoFrameWidgetPhoto)
+            .map { galleryMedia ->
+                PhotoFrameWidgetPhoto(
+                    photo = galleryMedia,
+                    previewUrlFactory = previewUrlFactory,
+                )
+            }
             .doOnSuccess { pickedPhoto ->
                 log.debug {
                     "invoke(): picked_photo:" +

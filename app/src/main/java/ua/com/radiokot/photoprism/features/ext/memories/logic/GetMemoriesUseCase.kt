@@ -8,7 +8,6 @@ import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.DbscanClustering
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
@@ -20,7 +19,6 @@ import java.util.GregorianCalendar
 class GetMemoriesUseCase(
     private val photoPrismClientConfigService: PhotoPrismClientConfigService,
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) {
     operator fun invoke(): Single<List<Memory>> =
         getPastYears()
@@ -67,8 +65,7 @@ class GetMemoriesUseCase(
                             year = year,
                         ),
                         searchQuery = photoPrismMergedPhotos.searchQuery,
-                        previewHash = photoPrismMergedPhotos.first().hash,
-                        previewUrlFactory = previewUrlFactory,
+                        thumbnailHash = photoPrismMergedPhotos.first().hash,
                     )
                 )
             }

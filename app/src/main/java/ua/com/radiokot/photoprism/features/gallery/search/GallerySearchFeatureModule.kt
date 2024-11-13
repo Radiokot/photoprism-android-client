@@ -15,12 +15,14 @@ import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.INTERNAL_EXPORT_DIRECTORY
 import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.albums.albumsFeatureModule
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
+import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.JsonSearchBookmarksBackup
@@ -31,8 +33,6 @@ import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.Pe
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
-import ua.com.radiokot.photoprism.features.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.albums.albumsFeatureModule
 
 val gallerySearchFeatureModules: List<Module> = listOf(
     // Bookmarks.
@@ -83,6 +83,7 @@ val gallerySearchFeatureModules: List<Module> = listOf(
                         SearchPredicates.generalCondition(query, album.title)
                     },
                     searchPreferences = get(),
+                    previewUrlFactory = get(),
                 )
             }
         }
@@ -100,7 +101,8 @@ val gallerySearchFeatureModules: List<Module> = listOf(
                     peopleRepository = get(),
                     searchPredicate = { person: Person, query: String ->
                         SearchPredicates.generalCondition(query, person.name)
-                    }
+                    },
+                    previewUrlFactory = get(),
                 )
             }
         }

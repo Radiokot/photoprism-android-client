@@ -34,6 +34,7 @@ import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.GalleryListItemDiffCallback
 import ua.com.radiokot.photoprism.util.ItemViewFactory
 import ua.com.radiokot.photoprism.util.ItemViewHolderFactory
@@ -64,18 +65,28 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
             isSelectionViewVisible: Boolean,
             isMediaSelected: Boolean,
             itemScale: GalleryItemScale,
+            previewUrlFactory: MediaPreviewUrlFactory,
         ) : this(
             thumbnailUrl = when (itemScale) {
                 GalleryItemScale.TINY ->
-                    source.getThumbnailUrl(100)
+                    previewUrlFactory.getThumbnailUrl(
+                        thumbnailHash = source.hash,
+                        sizePx = 100,
+                    )
 
                 GalleryItemScale.SMALL,
                 GalleryItemScale.NORMAL ->
-                    source.getThumbnailUrl(250)
+                    previewUrlFactory.getThumbnailUrl(
+                        thumbnailHash = source.hash,
+                        sizePx = 250,
+                    )
 
                 GalleryItemScale.LARGE,
                 GalleryItemScale.HUGE ->
-                    source.getThumbnailUrl(500)
+                    previewUrlFactory.getThumbnailUrl(
+                        thumbnailHash = source.hash,
+                        sizePx = 500,
+                    )
             },
             title = source.title,
             mediaTypeIcon =

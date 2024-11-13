@@ -2,7 +2,7 @@ package ua.com.radiokot.photoprism.features.widgets.photoframe.data.model
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsImage
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
 
 data class PhotoFrameWidgetPhoto
@@ -23,10 +23,14 @@ constructor(
      */
     val takenAtLocal: LocalDate,
 ) {
-    constructor(photo: GalleryMedia) : this(
-        previewUrl = (photo.media as? ViewableAsImage)
-            ?.getImagePreviewUrl(PREVIEW_SIZE_PX)
-            ?: throw IllegalArgumentException("The photo must be ViewableAsImage"),
+    constructor(
+        photo: GalleryMedia,
+        previewUrlFactory: MediaPreviewUrlFactory,
+    ) : this(
+        previewUrl = previewUrlFactory.getImagePreviewUrl(
+            previewHash = photo.hash,
+            sizePx = PREVIEW_SIZE_PX,
+        ),
         uid = photo.uid,
         takenAtLocal = photo.takenAtLocal,
     )

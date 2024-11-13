@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
@@ -21,6 +22,7 @@ class AlbumsViewModel(
     private val albumsRepository: AlbumsRepository,
     private val preferences: AlbumsPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
+    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
@@ -154,7 +156,12 @@ class AlbumsViewModel(
 
         itemsList.value = filteredRepositoryAlbums
             .sortedWith(sort)
-            .map(::AlbumListItem)
+            .map { album ->
+                AlbumListItem(
+                    source = album,
+                    previewUrlFactory = previewUrlFactory,
+                )
+            }
 
         mainError.value =
             when {

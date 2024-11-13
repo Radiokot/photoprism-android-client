@@ -3,9 +3,6 @@ package ua.com.radiokot.photoprism.features.albums.data.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
-import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnail
-import ua.com.radiokot.photoprism.features.gallery.data.model.WithThumbnailFromUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class Album(
     /*
@@ -26,13 +23,11 @@ class Album(
      * Makes no sense for actual albums.
      */
     val ymd: String,
-    previewHash: String,
-    previewUrlFactory: MediaPreviewUrlFactory,
-) : WithThumbnail by WithThumbnailFromUrlFactory(previewHash, previewUrlFactory) {
+    val thumbnailHash: String,
+) {
 
     constructor(
         source: PhotoPrismAlbum,
-        previewUrlFactory: MediaPreviewUrlFactory,
     ) : this(
         type = TypeName.fromPhotoPrismType(source.type),
         title = source.title,
@@ -40,8 +35,7 @@ class Album(
         uid = source.uid,
         isFavorite = source.favorite,
         ymd = "%04d%02d%02d".format(source.year, source.month, source.day),
-        previewHash = source.thumb,
-        previewUrlFactory = previewUrlFactory,
+        thumbnailHash = source.thumb,
     )
 
     override fun equals(other: Any?): Boolean {

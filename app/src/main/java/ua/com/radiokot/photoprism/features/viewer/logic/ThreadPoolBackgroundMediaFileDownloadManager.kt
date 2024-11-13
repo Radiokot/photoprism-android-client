@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -14,6 +15,7 @@ import java.util.concurrent.Executors
  */
 class ThreadPoolBackgroundMediaFileDownloadManager(
     private val downloadFileUseCase: DownloadFileUseCase,
+    private val downloadUrlFactory: MediaFileDownloadUrlFactory,
     poolSize: Int,
 ) : BackgroundMediaFileDownloadManager {
     private val log = kLogger("RxBackgroundMFDownloadManager")
@@ -40,7 +42,7 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                 // which execution may be delayed.
                 downloadFileUseCase
                     .invoke(
-                        url = file.downloadUrl,
+                        url = downloadUrlFactory.getDownloadUrl(file.hash),
                         destination = destination,
                         mimeType = file.mimeType
                     )

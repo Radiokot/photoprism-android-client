@@ -55,7 +55,6 @@ import ua.com.radiokot.photoprism.features.albums.view.AlbumsActivity
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -342,7 +341,7 @@ class GalleryActivity : BaseActivity() {
                     }
 
                 is GalleryListViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(event.files)
+                    openMediaFilesDialog(event.fileItems)
             }
 
             log.debug {
@@ -822,14 +821,9 @@ class GalleryActivity : BaseActivity() {
         }
     }
 
-    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
         mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = files.map {
-                MediaFileListItem(
-                    source = it,
-                    context = this
-                )
-            }
+            fileItems = fileItems,
         )
     }
 

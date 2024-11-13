@@ -12,7 +12,6 @@ import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
@@ -23,7 +22,6 @@ class AlbumsRepository(
     private val types: Set<Album.TypeName>,
     private val defaultSort: AlbumSort,
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
-    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
@@ -67,12 +65,7 @@ class AlbumsRepository(
         return loader
             .loadAll()
             .map { photoPrismAlbums ->
-                photoPrismAlbums.map { photoPrismAlbum ->
-                    Album(
-                        source = photoPrismAlbum,
-                        previewUrlFactory = previewUrlFactory,
-                    )
-                }
+                photoPrismAlbums.map(::Album)
             }
             .subscribeOn(Schedulers.io())
     }
@@ -85,12 +78,7 @@ class AlbumsRepository(
                 title = title,
             )
         )
-            .let { photoPrismAlbum ->
-                Album(
-                    source = photoPrismAlbum,
-                    previewUrlFactory = previewUrlFactory,
-                )
-            }
+            .let(::Album)
             .also { createdAlbum ->
                 mutableItemsList.add(createdAlbum)
                 broadcast()

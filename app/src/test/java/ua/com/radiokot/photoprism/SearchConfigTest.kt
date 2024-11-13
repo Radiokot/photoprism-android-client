@@ -39,7 +39,7 @@ class SearchConfigTest {
     @Test
     fun shouldBuildMinimalQuery_IfConfigIsDefault() {
         Assert.assertEquals(
-            " public:true",
+            "public:true",
             SearchConfig.DEFAULT.getPhotoPrismQuery()
         )
     }

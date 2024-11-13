@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemMemoryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class MemoryListItem(
     val title: MemoryTitle,
@@ -28,9 +29,15 @@ class MemoryListItem(
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
 
-    constructor(source: Memory) : this(
+    constructor(
+        source: Memory,
+        previewUrlFactory: MediaPreviewUrlFactory,
+    ) : this(
         title = MemoryTitle.forMemory(source),
-        thumbnailUrl = source.getThumbnailUrl(500),
+        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+            thumbnailHash = source.thumbnailHash,
+            sizePx = 500,
+        ),
         isSeen = source.isSeen,
         source = source,
     )
@@ -39,7 +46,7 @@ class MemoryListItem(
         ViewHolder(v)
 
     class ViewHolder(
-        itemView: View
+        itemView: View,
     ) : FastAdapter.ViewHolder<MemoryListItem>(itemView), KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)

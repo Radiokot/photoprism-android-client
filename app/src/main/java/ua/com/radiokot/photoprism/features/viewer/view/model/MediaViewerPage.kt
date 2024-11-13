@@ -3,8 +3,8 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.util.Size
 import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
-import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsImage
-import ua.com.radiokot.photoprism.features.gallery.data.model.ViewableAsVideo
+import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
+import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
@@ -28,11 +28,13 @@ sealed class MediaViewerPage(
             400L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val FADE_END_PLAYBACK_DURATION_MS_LONG =
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
+        private const val THUMBNAIL_SIZE_PX = 500
 
         fun fromGalleryMedia(
             source: GalleryMedia,
             imageViewSize: Size,
             livePhotosAsImages: Boolean,
+            previewUrlFactory: MediaPreviewUrlFactory,
         ): MediaViewerPage {
             return when {
                 source.media is GalleryMedia.TypeData.Live
@@ -41,14 +43,18 @@ sealed class MediaViewerPage(
 
                     if (livePhotosAsImages) {
                         return ImageViewerPage(
-                            previewUrl = source.media.getImagePreviewUrl(
-                                max(
+                            previewUrl = previewUrlFactory.getImagePreviewUrl(
+                                previewHash = source.hash,
+                                sizePx = max(
                                     imageViewSize.width,
                                     imageViewSize.height
                                 )
                             ),
                             imageViewSize = imageViewSize,
-                            thumbnailUrl = source.getThumbnailUrl(500),
+                            thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                                thumbnailHash = source.hash,
+                                sizePx = THUMBNAIL_SIZE_PX,
+                            ),
                             source = source,
                         )
                     }
@@ -82,53 +88,74 @@ sealed class MediaViewerPage(
                         }
 
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = source.media.getImagePreviewUrl(
-                            max(
+                        photoPreviewUrl = previewUrlFactory.getImagePreviewUrl(
+                            previewHash = source.hash,
+                            sizePx = max(
                                 imageViewSize.width,
                                 imageViewSize.height
                             )
                         ),
-                        videoPreviewUrl = source.media.videoPreviewUrl,
+                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
+                            galleryMedia = source,
+                        ),
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
-                        thumbnailUrl = source.getThumbnailUrl(500),
+                        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                            thumbnailHash = source.hash,
+                            sizePx = THUMBNAIL_SIZE_PX,
+                        ),
                         source = source,
                     )
                 }
 
-                source.media is ViewableAsVideo ->
+                source.media is Viewable.AsVideo ->
                     VideoViewerPage(
-                        previewUrl = source.media.videoPreviewUrl,
+                        previewUrl = previewUrlFactory.getVideoPreviewUrl(
+                            galleryMedia = source,
+                        ),
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
-                        thumbnailUrl = source.getThumbnailUrl(500),
+                        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                            thumbnailHash = source.hash,
+                            sizePx = THUMBNAIL_SIZE_PX,
+                        ),
                         source = source,
                     )
 
-                source.media is ViewableAsImage ->
+                source.media is Viewable.AsImage ->
                     ImageViewerPage(
-                        previewUrl = source.media.getImagePreviewUrl(
-                            max(
+                        previewUrl = previewUrlFactory.getImagePreviewUrl(
+                            previewHash = source.hash,
+                            sizePx = max(
                                 imageViewSize.width,
                                 imageViewSize.height
                             )
                         ),
                         imageViewSize = imageViewSize,
-                        thumbnailUrl = source.getThumbnailUrl(500),
+                        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                            thumbnailHash = source.hash,
+                            sizePx = THUMBNAIL_SIZE_PX,
+                        ),
                         source = source,
                     )
 
                 else ->
-                    unsupported(source)
+                    unsupported(source, previewUrlFactory)
             }
         }
 
-        fun unsupported(source: GalleryMedia) = UnsupportedNoticePage(
+        fun unsupported(
+            source: GalleryMedia,
+            previewUrlFactory: MediaPreviewUrlFactory,
+        ) = UnsupportedNoticePage(
             mediaTypeIcon = GalleryMediaTypeResources.getIcon(source.media.typeName),
             mediaTypeName = GalleryMediaTypeResources.getName(source.media.typeName),
-            thumbnailUrl = source.getThumbnailUrl(500),
+            thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                thumbnailHash = source.hash,
+                sizePx = THUMBNAIL_SIZE_PX,
+            ),
             source = source,
         )
     }

@@ -9,11 +9,9 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntity
-import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
 class MemoriesRepository(
     private val memoriesDao: MemoriesDbDao,
-    private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : SimpleCollectionRepository<Memory>() {
     private val log = kLogger("MemoriesRepo")
 
@@ -33,9 +31,7 @@ class MemoriesRepository(
 
         memoriesDao
             .getAll()
-            .map { memoryDbEntity ->
-                memoryDbEntity.toMemory(previewUrlFactory)
-            }
+            .map (MemoryDbEntity::toMemory)
             .sortedWith(comparator)
     }.toSingle()
 

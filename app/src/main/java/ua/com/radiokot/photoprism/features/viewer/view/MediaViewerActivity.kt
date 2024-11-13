@@ -57,7 +57,6 @@ import ua.com.radiokot.photoprism.extension.recyclerView
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -853,7 +852,7 @@ class MediaViewerActivity : BaseActivity() {
             when (event) {
                 is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
                     openMediaFilesDialog(
-                        files = event.files,
+                        fileItems = event.fileItems,
                     )
 
                 is MediaViewerViewModel.Event.RequestStoragePermission ->
@@ -900,14 +899,9 @@ class MediaViewerActivity : BaseActivity() {
         }
     }
 
-    private fun openMediaFilesDialog(files: List<GalleryMedia.File>) {
+    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
         mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = files.map {
-                MediaFileListItem(
-                    source = it,
-                    context = this
-                )
-            }
+            fileItems = fileItems,
         )
     }
 
