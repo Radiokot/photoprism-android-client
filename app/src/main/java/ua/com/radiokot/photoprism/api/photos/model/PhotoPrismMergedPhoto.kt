@@ -77,6 +77,8 @@ constructor(
         val mime: String?,
         @JsonProperty("FileType")
         val fileType: String?,
+        @JsonProperty("MediaType")
+        val mediaType: String?,
         @JsonProperty("Size")
         val size: Long?,
         @JsonProperty("Duration")

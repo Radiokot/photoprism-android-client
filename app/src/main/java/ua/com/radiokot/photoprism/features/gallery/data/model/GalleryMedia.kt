@@ -61,7 +61,35 @@ class GalleryMedia(
     var files: List<File> = files
         private set
 
-    val mainFile: File?
+    val originalFile: File
+        // https://github.com/photoprism/photoprism/blob/d6e509678642a4f72cd28b3d33c2aa171621817f/frontend/src/model/photo.js#L575
+        get() {
+            if (files.size < 2) {
+                return files.first()
+            }
+
+            val fileMatchingType: File? = when (media.typeName) {
+                TypeName.ANIMATED ->
+                    files.find { it.mediaType == TypeName.IMAGE && it.root == "/" }
+
+                TypeName.LIVE ->
+                    files.find { it.mediaType == TypeName.VIDEO || it.mediaType == TypeName.LIVE && it.root == "/" }
+
+                TypeName.RAW,
+                TypeName.VIDEO,
+                TypeName.VECTOR ->
+                    files.find { it.mediaType == this.media.typeName && it.root == "/" }
+
+                else ->
+                    null
+            }
+
+            return fileMatchingType
+                ?: files.find { it.isSidecar != true && it.type == "jpg" && it.root == "/" }
+                ?: mainFile
+        }
+
+    private val mainFile: File
         get() = files.mainFile
 
     val videoFile: File?
@@ -92,35 +120,6 @@ class GalleryMedia(
     }
 
     companion object {
-        private val Collection<File>.mainFile: File?
-            get() =
-                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L520
-                find {
-                    it.isPrimary == true
-                } ?: find {
-                    it.type == "jpg" || it.type == "png"
-                } ?: find {
-                    it.isSidecar == false
-                }
-
-        private val Collection<File>.videoFile: File?
-            get() =
-                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L459
-                find {
-                    it.codec == "avc1"
-                } ?: find {
-                    it.type == "mp4"
-                } ?: find {
-                    it.isVideo == true
-                } ?: animatedFile
-
-        private val Collection<File>.animatedFile: File?
-            get() =
-                // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L459
-                find {
-                    it.type == "gif" || it.duration != null || it.frames != null
-                }
-
         fun fromPhotoPrism(source: PhotoPrismMergedPhoto): GalleryMedia {
             val files = source.files.map(::File).toMutableList()
             val typeData = TypeData.fromPhotoPrism(
@@ -171,6 +170,21 @@ class GalleryMedia(
         TEXT("text"),
         OTHER("other"),
         ;
+
+        companion object {
+            fun fromPhotoPrism(type: String?): TypeName = when (type) {
+                IMAGE.value -> IMAGE
+                RAW.value -> RAW
+                ANIMATED.value -> ANIMATED
+                LIVE.value -> LIVE
+                VIDEO.value -> VIDEO
+                VECTOR.value -> VECTOR
+                SIDECAR.value -> SIDECAR
+                TEXT.value -> TEXT
+                OTHER.value -> OTHER
+                else -> UNKNOWN
+            }
+        }
     }
 
     sealed class TypeData(val typeName: TypeName) {
@@ -287,8 +301,7 @@ class GalleryMedia(
                                 // generated from the video file,
                                 // while real live photos have the preview generated
                                 // from the image file (HEIC) or don't have it at all.
-                                mainFile != null
-                                        && videoFile != null
+                                videoFile != null
                                         && videoFile != mainFile
                                         && videoFile.codec != "heic"
                                         && mainFile.name.startsWith(videoFile.name)
@@ -329,6 +342,7 @@ class GalleryMedia(
          */
         val mediaUid: String,
         val mimeType: String,
+        val mediaType: TypeName,
         val sizeBytes: Long?,
         val isPrimary: Boolean?,
         val isSidecar: Boolean?,
@@ -337,6 +351,7 @@ class GalleryMedia(
         val codec: String?,
         val duration: Long?,
         val frames: Long?,
+        val root: String?,
         val hash: String,
     ) : Parcelable {
 
@@ -347,6 +362,7 @@ class GalleryMedia(
             uid = source.uid,
             mediaUid = source.photoUid,
             mimeType = source.mime ?: "application/octet-stream",
+            mediaType = TypeName.fromPhotoPrism(source.mediaType),
             sizeBytes = source.size,
             isPrimary = source.primary,
             isSidecar = source.sidecar,
@@ -355,6 +371,7 @@ class GalleryMedia(
             codec = source.codec,
             duration = source.duration,
             frames = source.frames,
+            root = source.root,
             hash = source.hash,
         )
 
@@ -377,3 +394,30 @@ class GalleryMedia(
     }
 }
 
+private val Collection<GalleryMedia.File>.mainFile: GalleryMedia.File
+    // https://github.com/photoprism/photoprism/blob/d6e509678642a4f72cd28b3d33c2aa171621817f/frontend/src/model/photo.js#L540
+    get() {
+        if (size < 2) {
+            return first()
+        }
+
+        return find { it.isPrimary == true }
+            ?: find { it.type == "jpg" || it.type == "png" }
+            ?: find { it.isSidecar != true }
+            ?: first()
+    }
+
+private val Collection<GalleryMedia.File>.videoFile: GalleryMedia.File?
+    // https://github.com/photoprism/photoprism/blob/d6e509678642a4f72cd28b3d33c2aa171621817f/frontend/src/model/photo.js#L479
+    get() {
+        return find { it.codec == "avc1" }
+            ?: find { it.type == "mp4" }
+            ?: find { it.isVideo == true }
+            ?: animatedFile
+    }
+
+private val Collection<GalleryMedia.File>.animatedFile: GalleryMedia.File?
+    // https://github.com/photoprism/photoprism/blob/d6e509678642a4f72cd28b3d33c2aa171621817f/frontend/src/model/photo.js#L501
+    get() {
+        return find { it.type == "gif" || it.duration != null || it.frames != null }
+    }

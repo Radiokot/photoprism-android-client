@@ -23,7 +23,6 @@ interface GalleryListViewModel {
     fun onGalleryMediaItemClicked(item: GalleryListItem.Media)
     fun onGalleryMediaItemViewClicked(item: GalleryListItem.Media)
     fun onGalleryMediaItemLongClicked(item: GalleryListItem.Media)
-    fun onGalleryMediaFileSelected(file: GalleryMedia.File)
     fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int)
     fun onClearSelectionClicked()
 
@@ -38,13 +37,6 @@ interface GalleryListViewModel {
          * Ensure that the given item of the [itemList] is visible on the screen.
          */
         class EnsureListItemVisible(val listItemIndex: Int) : Event
-
-        /**
-         * Open the media file selection dialog.
-         *
-         * Once selected, the [onGalleryMediaFileSelected] method should be called.
-         */
-        class OpenFileSelectionDialog(val fileItems: List<MediaFileListItem>) : Event
     }
 
     sealed interface State {

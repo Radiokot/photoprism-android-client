@@ -69,7 +69,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFoot
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -98,12 +97,6 @@ class GalleryActivity : BaseActivity() {
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
 
-    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
-        MediaFileSelectionView(
-            fragmentManager = supportFragmentManager,
-            lifecycleOwner = this
-        )
-    }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
             viewModel = viewModel,
@@ -208,7 +201,6 @@ class GalleryActivity : BaseActivity() {
         subscribeToEvents()
         subscribeToState()
 
-        initMediaFileSelection()
         downloadProgressView.init()
         initSearch()
         initNavigation()
@@ -339,9 +331,6 @@ class GalleryActivity : BaseActivity() {
                             itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
                         )
                     }
-
-                is GalleryListViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(event.fileItems)
             }
 
             log.debug {
@@ -707,14 +696,6 @@ class GalleryActivity : BaseActivity() {
         )
     }
 
-    private fun initMediaFileSelection() {
-        mediaFileSelectionView.init { fileItem ->
-            if (fileItem.source != null) {
-                viewModel.onGalleryMediaFileSelected(fileItem.source)
-            }
-        }
-    }
-
     private fun initSearch() {
         searchView.init(
             searchView = view.searchView,
@@ -819,12 +800,6 @@ class GalleryActivity : BaseActivity() {
                 menuItem.isVisible = areUserSelectionItemsVisible
             }
         }
-    }
-
-    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
-        mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = fileItems,
-        )
     }
 
     private fun returnDownloadedFiles(

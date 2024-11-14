@@ -5,7 +5,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
-import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
@@ -272,26 +271,14 @@ class GalleryListViewModelImpl(
         }
 
         if (!currentState.allowMultiple) {
-            if (media.files.size > 1) {
-                openFileSelectionDialog(media.files)
-            } else {
-                onSingleMediaFileSelected?.invoke(media.files.firstOrNull().checkNotNull {
-                    "There must be at least one file in the gallery media object"
-                })
-            }
+            onSingleMediaFileSelected?.invoke(media.originalFile)
         } else {
             if (selectedFilesByMediaUid.containsKey(media.uid)) {
                 // When clicking currently selected media in the multiple selection state,
                 // just unselect it.
                 removeMediaFromSelection(media.uid)
             } else {
-                if (media.files.size > 1) {
-                    openFileSelectionDialog(media.files)
-                } else {
-                    addFileToSelection(media.files.firstOrNull().checkNotNull {
-                        "There must be at least one file in the gallery media object"
-                    })
-                }
+                addFileToSelection(media.originalFile)
             }
         }
     }
@@ -463,38 +450,6 @@ class GalleryListViewModelImpl(
                 "onViewerReturnedLastViewedMediaIndex(): cant_find_media_list_item_index:" +
                         "\nmediaIndex=$lastViewedMediaIndex"
             }
-        }
-    }
-
-    private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
-        log.debug {
-            "openFileSelectionDialog(): posting_open_event:" +
-                    "\nfiles=$files"
-        }
-
-        itemListEvents.onNext(Event.OpenFileSelectionDialog(files.map { file ->
-            MediaFileListItem(
-                source = file,
-                previewUrlFactory = previewUrlFactory,
-            )
-        }))
-    }
-
-    override fun onGalleryMediaFileSelected(file: GalleryMedia.File) {
-        val currentState = this.currentState
-        check(currentState is State.Selecting) {
-            "Media files can only be selected in the selection state"
-        }
-
-        log.debug {
-            "onFileSelected(): file_selected:" +
-                    "\nfile=$file"
-        }
-
-        if (currentState.allowMultiple) {
-            addFileToSelection(file)
-        } else {
-            onSingleMediaFileSelected?.invoke(file)
         }
     }
 }

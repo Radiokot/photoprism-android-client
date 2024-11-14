@@ -22,7 +22,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemote
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
@@ -46,7 +45,6 @@ class MediaViewerViewModel(
     private var isPageIndicatorEnabled = false
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
-    private var fileSelectionIntent: FileSelectionIntent? = null
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -238,14 +236,7 @@ class MediaViewerViewModel(
             return
         }
 
-        if (item.files.size > 1) {
-            fileSelectionIntent = FileSelectionIntent.SHARING
-            openFileSelectionDialog(item.files)
-        } else {
-            downloadAndShareFile(item.files.firstOrNull().checkNotNull {
-                "There must be at least one file in the gallery media object"
-            })
-        }
+        downloadAndShareFile(item.originalFile)
     }
 
     fun onStartSlideshowClicked(position: Int) {
@@ -277,14 +268,7 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        if (item.files.size > 1) {
-            fileSelectionIntent = FileSelectionIntent.OPENING_IN
-            openFileSelectionDialog(item.files)
-        } else {
-            downloadAndOpenFile(item.files.firstOrNull().checkNotNull {
-                "There must be at least one file in the gallery media object"
-            })
-        }
+        downloadAndOpenFile(item.originalFile)
     }
 
     fun onOpenInWebViewerClicked(position: Int) {
@@ -362,14 +346,7 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        if (item.files.size > 1) {
-            fileSelectionIntent = FileSelectionIntent.DOWNLOADING
-            openFileSelectionDialog(item.files)
-        } else {
-            downloadFileToExternalStorageInBackground(item.files.firstOrNull().checkNotNull {
-                "There must be at least one file in the gallery media object"
-            })
-        }
+        downloadFileToExternalStorageInBackground(item.originalFile)
     }
 
     fun onCancelDownloadClicked(position: Int) {
@@ -450,44 +427,6 @@ class MediaViewerViewModel(
             }
 
             this.isFullScreen.value = isFullScreen
-        }
-    }
-
-    private fun openFileSelectionDialog(files: List<GalleryMedia.File>) {
-        log.debug {
-            "openFileSelectionDialog(): posting_open_event:" +
-                    "\nfiles=$files"
-        }
-
-        eventsSubject.onNext(Event.OpenFileSelectionDialog(
-            fileItems = files.map { file ->
-                MediaFileListItem(
-                    source = file,
-                    previewUrlFactory = previewUrlFactory,
-                )
-            }
-        ))
-    }
-
-    fun onFileSelected(file: GalleryMedia.File) {
-        log.debug {
-            "onFileSelected(): file_selected:" +
-                    "\nfile=$file"
-        }
-
-        val intent = fileSelectionIntent.checkNotNull {
-            "File is selected when there's no intent"
-        }
-
-        when (intent) {
-            FileSelectionIntent.SHARING ->
-                downloadAndShareFile(file)
-
-            FileSelectionIntent.OPENING_IN ->
-                downloadAndOpenFile(file)
-
-            FileSelectionIntent.DOWNLOADING ->
-                downloadFileToExternalStorageInBackground(file)
         }
     }
 
@@ -650,8 +589,6 @@ class MediaViewerViewModel(
     }
 
     sealed interface Event {
-        class OpenFileSelectionDialog(val fileItems: List<MediaFileListItem>) : Event
-
         object RequestStoragePermission : Event
         object ShowMissingStoragePermissionMessage : Event
         class ShowStartedDownloadMessage(val destinationFileName: String) : Event
@@ -673,12 +610,5 @@ class MediaViewerViewModel(
         value class ShowFloatingError(
             val error: GalleryContentLoadingError,
         ) : Event
-    }
-
-    private enum class FileSelectionIntent {
-        SHARING,
-        OPENING_IN,
-        DOWNLOADING,
-        ;
     }
 }

@@ -49,7 +49,6 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFoot
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.view.ErrorView
@@ -78,12 +77,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         this::onAddingDestinationAlbumSelectionResult,
     )
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
-    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
-        MediaFileSelectionView(
-            fragmentManager = supportFragmentManager,
-            lifecycleOwner = this
-        )
-    }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
             viewModel = viewModel,
@@ -122,7 +115,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         initToolbar()
         initSwipeRefresh()
         initErrorView()
-        initMediaFileSelection()
         initMultipleSelection()
         downloadProgressView.init()
 
@@ -175,14 +167,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             view.errorView.showError(errorToShow)
-        }
-    }
-
-    private fun initMediaFileSelection() {
-        mediaFileSelectionView.init { fileItem ->
-            if (fileItem.source != null) {
-                viewModel.onGalleryMediaFileSelected(fileItem.source)
-            }
         }
     }
 
@@ -499,9 +483,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                             itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
                         )
                     }
-
-                is GalleryListViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(event.fileItems)
             }
 
             log.debug {
@@ -669,12 +650,6 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
-    }
-
-    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
-        mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = fileItems,
-        )
     }
 
     private fun returnDownloadedFiles(

@@ -61,12 +61,10 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
-import ua.com.radiokot.photoprism.features.gallery.view.MediaFileSelectionView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileListItem
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
@@ -93,12 +91,6 @@ class MediaViewerActivity : BaseActivity() {
 
     private val viewerPagesAdapter = ItemAdapter<MediaViewerPage>()
     private lateinit var toolbarBackButton: ImageButton
-    private val mediaFileSelectionView: MediaFileSelectionView by lazy {
-        MediaFileSelectionView(
-            fragmentManager = supportFragmentManager,
-            lifecycleOwner = this
-        )
-    }
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
             viewModel = viewModel,
@@ -195,7 +187,6 @@ class MediaViewerActivity : BaseActivity() {
         subscribeToEvents()
 
         initButtons()
-        initMediaFileSelection()
         downloadProgressView.init()
         initFullScreenToggle()
         initKeyboardNavigation()
@@ -850,11 +841,6 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             when (event) {
-                is MediaViewerViewModel.Event.OpenFileSelectionDialog ->
-                    openMediaFilesDialog(
-                        fileItems = event.fileItems,
-                    )
-
                 is MediaViewerViewModel.Event.RequestStoragePermission ->
                     requestStoragePermission()
 
@@ -889,20 +875,6 @@ class MediaViewerActivity : BaseActivity() {
                         "\nevent=$event"
             }
         }
-    }
-
-    private fun initMediaFileSelection() {
-        mediaFileSelectionView.init { fileItem ->
-            if (fileItem.source != null) {
-                viewModel.onFileSelected(fileItem.source)
-            }
-        }
-    }
-
-    private fun openMediaFilesDialog(fileItems: List<MediaFileListItem>) {
-        mediaFileSelectionView.openMediaFileSelectionDialog(
-            fileItems = fileItems,
-        )
     }
 
     private fun shareDownloadedFiles(
