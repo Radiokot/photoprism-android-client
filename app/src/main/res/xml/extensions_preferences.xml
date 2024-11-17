@@ -35,6 +35,14 @@
 
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="@string/pk_ext_memories_enabled"
+            app:persistent="false"
+            app:title="@string/preference_enabled"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+        <SwitchPreferenceCompat
+            app:dependency="@string/pk_ext_memories_enabled"
+            app:iconSpaceReserved="false"
             app:key="@string/pk_ext_memories_notifications"
             app:persistent="false"
             app:summary="@string/extension_memories_notification_preference_summary"

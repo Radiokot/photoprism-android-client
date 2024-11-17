@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit
 class GalleryMemoriesListViewModel(
     private val memoriesRepository: MemoriesRepository,
     private val memoriesNotificationsManager: MemoriesNotificationsManager,
+    private val preferences: MemoriesPreferences,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel() {
     private val log = kLogger("GalleryMemoriesListVM")
@@ -50,6 +52,7 @@ class GalleryMemoriesListViewModel(
         }
 
         subscribeToRepository()
+        subscribeToPreferences()
 
         itemsList.observeForever {
             updateListVisibility()
@@ -87,8 +90,17 @@ class GalleryMemoriesListViewModel(
             .autoDispose(this)
     }
 
+    private fun subscribeToPreferences() {
+        preferences.isEnabled
+            .observeOnMain()
+            .subscribe { updateListVisibility() }
+            .autoDispose(this)
+    }
+
     private fun updateListVisibility() {
-        val shouldBeVisible = !itemsList.value.isNullOrEmpty() && isViewRequired
+        val shouldBeVisible = !itemsList.value.isNullOrEmpty()
+                && (preferences.isEnabled.value == true)
+                && isViewRequired
         if (shouldBeVisible != isViewVisible.value) {
             isViewVisible.value = shouldBeVisible
         }

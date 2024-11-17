@@ -263,5 +263,6 @@
     <string name="add_to_album">Přidat do alba</string>
     <string name="template_selected_added_to_album">Přidáno do %1$s</string>
     <string name="favorites">Oblíbené</string>
+    <string name="preference_enabled">Povoleno</string>
 
 </resources>

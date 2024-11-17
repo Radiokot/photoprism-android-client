@@ -262,5 +262,6 @@
     <string name="add_to_album">Aggiungi all\'album</string>
     <string name="template_selected_added_to_album">Aggiunto a %1$s</string>
     <string name="favorites">Preferiti</string>
+    <string name="preference_enabled">Abilitato</string>
 
 </resources>

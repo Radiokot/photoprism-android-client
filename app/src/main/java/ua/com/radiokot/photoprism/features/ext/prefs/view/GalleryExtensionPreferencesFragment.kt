@@ -28,6 +28,7 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivation
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
+import ua.com.radiokot.photoprism.features.prefs.extension.bindToSubject
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
 
@@ -130,6 +131,11 @@ class GalleryExtensionPreferencesFragment :
         }
 
         if (featureFlags.hasMemoriesExtension) {
+            with(requirePreference(R.string.pk_ext_memories_enabled)) {
+                this as SwitchPreferenceCompat
+                bindToSubject(memoriesPreferences.isEnabled, viewLifecycleOwner)
+            }
+
             with(requirePreference(R.string.pk_ext_memories_notifications)) {
                 setOnPreferenceChangeListener { _, newValue ->
                     if (!memoriesNotificationsManager.areNotificationsEnabled

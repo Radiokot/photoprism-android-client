@@ -34,7 +34,7 @@ class GalleryPreferencesOnPrefs(
             },
         )
 
-    override var livePhotosAsImages: BehaviorSubject<Boolean> =
+    override val livePhotosAsImages: BehaviorSubject<Boolean> =
         booleanPreferenceSubject(
             preferences = preferences,
             key = "${keyPrefix}_lp_as_images",

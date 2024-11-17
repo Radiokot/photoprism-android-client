@@ -262,5 +262,6 @@
     <string name="add_to_album">Добавить в альбом</string>
     <string name="template_selected_added_to_album">Добавлено в альбом %1$s</string>
     <string name="favorites">Избранное</string>
+    <string name="preference_enabled">Включено</string>
 
 </resources>

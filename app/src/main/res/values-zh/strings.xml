@@ -262,5 +262,6 @@
     <string name="add_to_album">添加到相册</string>
     <string name="template_selected_added_to_album">已添加到 %1$s</string>
     <string name="favorites">收藏</string>
+    <string name="preference_enabled">已启用</string>
 
 </resources>

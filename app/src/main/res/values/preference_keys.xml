@@ -21,5 +21,6 @@
     <string name="pk_ext_activate_key" translatable="false">ext_activate_key</string>
     <string name="pk_ext_activated_keys" translatable="false">ext_activated_keys</string>
     <string name="pk_ext_memories" translatable="false">ext_memories</string>
+    <string name="pk_ext_memories_enabled" translatable="false">ext_memories_enabled</string>
     <string name="pk_ext_memories_notifications" translatable="false">ext_memories_notifications</string>
 </resources>

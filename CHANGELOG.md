@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to disable Memories
+
 ### Removed
 
 - File selection step when interacting with videos, animations, RAWs 
