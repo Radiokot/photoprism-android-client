@@ -33,7 +33,6 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
@@ -48,8 +47,6 @@ import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
-import ua.com.radiokot.photoprism.featureflags.extension.hasMemoriesExtension
-import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.AlbumsActivity
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
@@ -298,16 +295,6 @@ class GalleryActivity : BaseActivity() {
                 }
             }
         }
-
-        viewModel.extensionsState
-            .skip(1)
-            .distinctUntilChanged()
-            .subscribe {
-                lifecycleScope.launchWhenResumed {
-                    recreate()
-                }
-            }
-            .autoDispose(this)
     }
 
     private fun subscribeToEvents() {
@@ -510,17 +497,11 @@ class GalleryActivity : BaseActivity() {
 
     private fun initList(savedInstanceState: Bundle?) {
         val galleryAdapter = FastAdapter.with(
-            if (get<FeatureFlags>().hasMemoriesExtension)
-                listOf(
-                    memoriesListView.recyclerAdapter,
-                    galleryItemsAdapter,
-                    galleryProgressFooterAdapter
-                )
-            else
-                listOf(
-                    galleryItemsAdapter,
-                    galleryProgressFooterAdapter
-                )
+            listOf(
+                memoriesListView.recyclerAdapter,
+                galleryItemsAdapter,
+                galleryProgressFooterAdapter
+            )
         ).apply {
             stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
