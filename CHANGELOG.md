@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ability to disable Memories
 
+### Changed
+
+- Improved randomness and speed of the Photo frame widget
+
 ### Removed
 
 - File selection step when interacting with videos, animations, RAWs 

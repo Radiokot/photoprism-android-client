@@ -55,6 +55,7 @@ val photoFrameWidgetFeatureModule = module {
                 allowedMediaTypes = get(named(ALLOWED_MEDIA_TYPES)),
                 widgetsPreferences = get(),
                 galleryMediaRepositoryFactory = get(),
+                photoPrismPhotosService = get(),
                 previewUrlFactory = get(),
             )
         } bind UpdatePhotoFrameWidgetPhotoUseCase::class
