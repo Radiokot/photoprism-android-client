@@ -3,9 +3,12 @@ package ua.com.radiokot.photoprism.features.ext.prefs.view
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputType
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
@@ -134,6 +137,28 @@ class GalleryExtensionPreferencesFragment :
             with(requirePreference(R.string.pk_ext_memories_enabled)) {
                 this as SwitchPreferenceCompat
                 bindToSubject(memoriesPreferences.isEnabled, viewLifecycleOwner)
+            }
+
+            with(requirePreference(R.string.pk_ext_memories_max_entry_count)) {
+                this as EditTextPreference
+                text = memoriesPreferences.maxEntriesInMemory.toString()
+                summary = text
+                setOnBindEditTextListener { editText ->
+                    editText.inputType = InputType.TYPE_CLASS_NUMBER
+                    editText.filters = arrayOf(InputFilter.LengthFilter(2))
+                    editText.setSelection(editText.text.length)
+                }
+                setOnPreferenceChangeListener { _, newValue ->
+                    val newCount = newValue.toString().toIntOrNull() ?: 0
+                    if (newCount > 0) {
+                        memoriesPreferences.maxEntriesInMemory = newCount
+                        text = newCount.toString()
+                        summary = text
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
 
             with(requirePreference(R.string.pk_ext_memories_notifications)) {

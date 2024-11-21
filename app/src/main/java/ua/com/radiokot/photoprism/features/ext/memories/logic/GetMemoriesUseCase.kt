@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
+import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -19,6 +20,7 @@ import java.util.GregorianCalendar
 class GetMemoriesUseCase(
     private val photoPrismClientConfigService: PhotoPrismClientConfigService,
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
+    private val memoriesPreferences: MemoriesPreferences,
 ) {
     operator fun invoke(): Single<List<Memory>> =
         getPastYears()
@@ -100,7 +102,7 @@ class GetMemoriesUseCase(
                             .take(1)
                     }
                     // Limit total number of items in the memory.
-                    .take(MAX_MEMORY_SIZE)
+                    .take(memoriesPreferences.maxEntriesInMemory)
             }
     }
 
@@ -116,12 +118,14 @@ class GetMemoriesUseCase(
             GalleryMedia.TypeName.VIDEO,
             GalleryMedia.TypeName.LIVE,
         )
-        private const val MAX_MEMORY_SIZE = 6
         private const val MAX_ITEMS_TO_LOAD = 150
         private const val TIME_CLUSTERING_DISTANCE_MS = 15_000L
-        private val GARBAGE_ITEM_PREDICATE = { item: GalleryMedia ->
-            item.title.lowercase().contains("screenshot")
-        }
+        private val GARBAGE_ITEM_PREDICATE = "screen(shot|_?record)".toRegex()
+            .let { screenCaptureRegex ->
+                fun (item: GalleryMedia) =
+                    item.title.lowercase().contains(screenCaptureRegex)
+            }
+
         private val PREFERABLE_ITEM_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
             .thenByDescending { it.media.typeName == GalleryMedia.TypeName.VIDEO }
     }

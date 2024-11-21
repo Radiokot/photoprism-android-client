@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 interface MemoriesPreferences {
     val isEnabled: BehaviorSubject<Boolean>
+    var maxEntriesInMemory: Int
     /**
      * Preference for devices with SDK < 26
      * where notification channels are not available.

@@ -263,5 +263,6 @@
     <string name="template_selected_added_to_album">Добавлено в альбом %1$s</string>
     <string name="favorites">Избранное</string>
     <string name="preference_enabled">Включено</string>
+    <string name="extension_memories_max_entry_count_preference">Максимальное количество элементов</string>
 
 </resources>

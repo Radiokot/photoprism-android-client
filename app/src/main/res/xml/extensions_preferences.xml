@@ -40,6 +40,13 @@
             app:title="@string/preference_enabled"
             app:widgetLayout="@layout/preference_material_switch" />
 
+        <EditTextPreference
+            app:dependency="@string/pk_ext_memories_enabled"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_ext_memories_max_entry_count"
+            app:persistent="false"
+            app:title="@string/extension_memories_max_entry_count_preference" />
+
         <SwitchPreferenceCompat
             app:dependency="@string/pk_ext_memories_enabled"
             app:iconSpaceReserved="false"

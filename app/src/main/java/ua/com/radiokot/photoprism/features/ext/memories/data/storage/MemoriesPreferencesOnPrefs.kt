@@ -25,6 +25,23 @@ class MemoriesPreferencesOnPrefs(
             }
         )
 
+    private val maxEntriesInMemoryKey = "${keyPrefix}_memory_max_entries"
+    override var maxEntriesInMemory: Int
+        get() = preferences.getInt(maxEntriesInMemoryKey, 6)
+        set(value) {
+            require(value > 0) {
+                "The number be positive"
+            }
+
+            preferences.edit { putInt(maxEntriesInMemoryKey, value) }
+                .also {
+                    log.debug {
+                        "maxEntriesInMemory::set(): set_value:" +
+                                "\nvalue=$value"
+                    }
+                }
+        }
+
     private val notificationsEnabledKey = "${keyPrefix}_notifications_enabled"
     override var areNotificationsEnabled: Boolean
         // Set enabled by default to match the behavior of notification channels.

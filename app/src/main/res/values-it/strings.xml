@@ -263,5 +263,6 @@
     <string name="template_selected_added_to_album">Aggiunto a %1$s</string>
     <string name="favorites">Preferiti</string>
     <string name="preference_enabled">Abilitato</string>
+    <string name="extension_memories_max_entry_count_preference">Numero massimo di elementi</string>
 
 </resources>

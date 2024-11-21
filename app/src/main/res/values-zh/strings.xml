@@ -263,5 +263,6 @@
     <string name="template_selected_added_to_album">已添加到 %1$s</string>
     <string name="favorites">收藏</string>
     <string name="preference_enabled">已启用</string>
+    <string name="extension_memories_max_entry_count_preference">最大项目数</string>
 
 </resources>
