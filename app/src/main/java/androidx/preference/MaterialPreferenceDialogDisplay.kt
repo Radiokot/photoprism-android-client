@@ -21,6 +21,14 @@ class MaterialPreferenceDialogDisplay : OnPreferenceDisplayDialogCallback {
             true
         }
 
+        is EditTextPreference -> {
+            showDialog(
+                caller,
+                MaterialEditTextPreferenceDialogFragmentCompat.newInstance(preference.key),
+            )
+            true
+        }
+
         // Another dialog types to be added when needed.
         else -> false
     }

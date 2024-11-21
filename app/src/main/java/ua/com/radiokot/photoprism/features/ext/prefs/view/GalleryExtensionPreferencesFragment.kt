@@ -9,7 +9,9 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.preference.EditTextPreference
+import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -39,7 +41,8 @@ import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 // make sure to manually update the preference "fragment" value in preferences.xml.
 class GalleryExtensionPreferencesFragment :
     PreferenceFragmentCompat(),
-    AndroidScopeComponent {
+    AndroidScopeComponent,
+    OnPreferenceDisplayDialogCallback by MaterialPreferenceDialogDisplay() {
 
     override val scope: Scope by lazy {
         getKoin().getScope(DI_SCOPE_SESSION)
