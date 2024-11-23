@@ -23,7 +23,11 @@ interface GalleryListViewModel {
     fun onGalleryMediaItemClicked(item: GalleryListItem.Media)
     fun onGalleryMediaItemViewClicked(item: GalleryListItem.Media)
     fun onGalleryMediaItemLongClicked(item: GalleryListItem.Media)
-    fun onGalleryMediaItemDragSelectionChanged(item: GalleryListItem.Media, isSelected: Boolean)
+    fun onGalleryMediaItemsDragSelectionChanged(
+        items: Sequence<GalleryListItem.Media>,
+        areSelected: Boolean,
+    )
+
     fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int)
     fun onClearSelectionClicked()
 

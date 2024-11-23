@@ -477,7 +477,7 @@ class GalleryActivity : BaseActivity() {
 
         // The FAB is only used when selecting for other app,
         // as selecting for user allows more than 1 action.
-        if (state is GalleryViewModel.State.Selecting.ForOtherApp) {
+        if (state is GalleryViewModel.State.Selecting.ForOtherApp && state.allowMultiple) {
             viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                 if (count > 0) {
                     view.doneSelectingFab.show()
@@ -681,13 +681,12 @@ class GalleryActivity : BaseActivity() {
             dragSelectTouchListener = DragSelectTouchListener.create(
                 context,
                 object : DragSelectReceiver {
-                    override fun setSelected(index: Int, selected: Boolean) {
-                        val mediaListItem =
-                            (galleryAdapter.getItem(index) as? GalleryListItem.Media)
-                                ?: return
-                        viewModel.onGalleryMediaItemDragSelectionChanged(
-                            item = mediaListItem,
-                            isSelected = selected,
+                    override fun setSelected(indices: Sequence<Int>, selected: Boolean) {
+                        viewModel.onGalleryMediaItemsDragSelectionChanged(
+                            items = indices
+                                .map(galleryAdapter::getItem)
+                                .filterIsInstance<GalleryListItem.Media>(),
+                            areSelected = selected,
                         )
                     }
 

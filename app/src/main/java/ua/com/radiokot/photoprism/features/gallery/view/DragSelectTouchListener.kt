@@ -158,7 +158,7 @@ class DragSelectTouchListener private constructor(
         }
 
         receiver.setSelected(
-            index = initialSelection,
+            indices = sequenceOf(initialSelection),
             selected = true
         )
         this.dragSelectActive = true
@@ -267,7 +267,7 @@ class DragSelectTouchListener private constructor(
                     }
                     lastDraggedIndex = itemPosition
                     receiver.setSelected(
-                        index = lastDraggedIndex,
+                        indices = sequenceOf(lastDraggedIndex),
                         selected = !receiver.isSelected(lastDraggedIndex)
                     )
                     return
@@ -325,56 +325,52 @@ class DragSelectTouchListener private constructor(
     ) {
         if (from == to) {
             // Finger is back on the initial item, unselect everything else
-            for (i in min..max) {
-                if (i == from) {
-                    continue
-                }
-                unselectItem(i)
-            }
+            receiver.setSelected(
+                indices = (min..max).asSequence().filter { it != from },
+                selected = false,
+            )
             return
         }
 
         if (to < from) {
             // When selecting from one to previous items
-            for (i in to..from) {
-                selectItem(i)
-            }
+            receiver.setSelected(
+                indices = (to..from).asSequence(),
+                selected = true,
+            )
             if (min > -1 && min < to) {
                 // Unselect items that were selected during this drag but no longer are
-                for (i in min until to) {
-                    unselectItem(i)
-                }
+                receiver.setSelected(
+                    indices = (min until to).asSequence(),
+                    selected = false,
+                )
             }
             if (max > -1) {
-                for (i in from + 1..max) {
-                    selectItem(i)
-                }
+                receiver.setSelected(
+                    indices = ((from + 1)..max).asSequence(),
+                    selected = true,
+                )
             }
         } else {
             // When selecting from one to next items
-            for (i in from..to) {
-                selectItem(i)
-            }
+            receiver.setSelected(
+                indices = (from..to).asSequence(),
+                selected = true,
+            )
             if (max > -1 && max > to) {
                 // Unselect items that were selected during this drag but no longer are
-                for (i in to + 1..max) {
-                    unselectItem(i)
-                }
+                receiver.setSelected(
+                    indices = ((to + 1)..max).asSequence(),
+                    selected = false,
+                )
             }
             if (min > -1) {
-                for (i in min until from) {
-                    selectItem(i)
-                }
+                receiver.setSelected(
+                    indices = (min until from).asSequence(),
+                    selected = true,
+                )
             }
         }
-    }
-
-    private fun selectItem(index: Int) {
-        receiver.setSelected(index, true)
-    }
-
-    private fun unselectItem(index: Int) {
-        receiver.setSelected(index, false)
     }
 
     enum class Mode {

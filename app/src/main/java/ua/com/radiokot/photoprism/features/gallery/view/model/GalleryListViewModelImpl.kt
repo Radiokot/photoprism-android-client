@@ -261,17 +261,39 @@ class GalleryListViewModelImpl(
         }
     }
 
-    override fun onGalleryMediaItemDragSelectionChanged(
-        item: GalleryListItem.Media,
-        isSelected: Boolean,
+    override fun onGalleryMediaItemsDragSelectionChanged(
+        items: Sequence<GalleryListItem.Media>,
+        areSelected: Boolean,
     ) {
-        val media = item.source
-            ?: return
+        val currentState = this.currentState
+        check(currentState is State.Selecting && currentState.allowMultiple) {
+            "Media selection by drag can only be done in the corresponding state"
+        }
 
-        if (isSelected) {
-            addFileToSelection(media.originalFile)
-        } else {
-            removeMediaFromSelection(media.uid)
+        var changedCount = 0
+
+        items.forEach { item ->
+            val media = item.source
+                ?: return@forEach
+
+            if (areSelected && !selectedFilesByMediaUid.containsKey(media.uid)) {
+                selectedFilesByMediaUid[media.uid] = media.originalFile
+                changedCount++
+            } else if (!areSelected && selectedFilesByMediaUid.containsKey(media.uid)) {
+                selectedFilesByMediaUid.remove(media.uid)
+                changedCount++
+            }
+        }
+
+        if (changedCount > 0) {
+            log.debug {
+                "onGalleryMediaItemsDragSelectionChanged(): selection_changed:" +
+                        "\nchanged=$changedCount," +
+                        "\nareSelected=$areSelected"
+            }
+
+            postGalleryItemsAsync(currentMediaRepository)
+            postSelectedItemsCount()
         }
     }
 
