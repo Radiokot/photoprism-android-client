@@ -496,6 +496,8 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initList(savedInstanceState: Bundle?) {
+        lateinit var dragSelectTouchListener: DragSelectTouchListener
+
         val galleryAdapter = FastAdapter.with(
             listOf(
                 memoriesListView.recyclerAdapter,
@@ -541,12 +543,17 @@ class GalleryActivity : BaseActivity() {
                     (viewHolder as? GalleryListItem.Media.ViewHolder)
                         ?.itemView
                 },
-                onLongClick = { _, _, _, item ->
+                onLongClick = { _, position, _, item ->
                     if (item !is GalleryListItem.Media) {
                         return@addLongClickListener false
                     }
 
                     viewModel.onGalleryMediaItemLongClicked(item)
+                    dragSelectTouchListener.setIsActive(
+                        active = true,
+                        initialSelection = position,
+                    )
+
                     true
                 }
             )
@@ -670,6 +677,33 @@ class GalleryActivity : BaseActivity() {
             // It looks wierd when switching to Selecting from Viewing
             // and vice-versa.
             (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+
+            dragSelectTouchListener = DragSelectTouchListener.create(
+                context,
+                object : DragSelectReceiver {
+                    override fun setSelected(index: Int, selected: Boolean) {
+                        val mediaListItem =
+                            (galleryAdapter.getItem(index) as? GalleryListItem.Media)
+                                ?: return
+                        viewModel.onGalleryMediaItemDragSelectionChanged(
+                            item = mediaListItem,
+                            isSelected = selected,
+                        )
+                    }
+
+                    override fun isSelected(index: Int): Boolean =
+                        (galleryAdapter.getItem(index) as? GalleryListItem.Media)
+                            ?.isMediaSelected == true
+                })
+            viewModel.state.subscribe(this@GalleryActivity) { state ->
+                if (state is GalleryViewModel.State.Viewing) {
+                    dragSelectTouchListener.setIsActive(
+                        active = false,
+                        initialSelection = -1,
+                    )
+                }
+            }
+            addOnItemTouchListener(dragSelectTouchListener)
         }
 
         fastScrollView.init(

@@ -29,6 +29,6 @@ interface DragSelectReceiver {
     @CheckResult
     fun isSelected(index: Int): Boolean
 
-    @CheckResult
-    fun isSelectable(index: Int): Boolean
+//    @CheckResult
+//    fun isSelectable(index: Int): Boolean
 }

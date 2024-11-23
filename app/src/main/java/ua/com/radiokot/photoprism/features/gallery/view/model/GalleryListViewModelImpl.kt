@@ -247,20 +247,31 @@ class GalleryListViewModelImpl(
                     "\nitem=$item"
         }
 
-        val media = item.source
-            ?: return
-
         when (currentState) {
             State.Viewing -> {
                 log.debug { "onGalleryMediaItemLongClicked(): switching_to_selecting" }
 
-                switchFromViewingToSelecting(media)
+                switchFromViewingToSelecting()
             }
 
             else -> {
                 // Long click does nothing in other states.
                 log.debug { "onGalleryMediaItemLongClicked(): ignored" }
             }
+        }
+    }
+
+    override fun onGalleryMediaItemDragSelectionChanged(
+        item: GalleryListItem.Media,
+        isSelected: Boolean,
+    ) {
+        val media = item.source
+            ?: return
+
+        if (isSelected) {
+            addFileToSelection(media.originalFile)
+        } else {
+            removeMediaFromSelection(media.uid)
         }
     }
 
@@ -339,7 +350,7 @@ class GalleryListViewModelImpl(
         onSwitchedFromSelectingToViewing?.invoke()
     }
 
-    private fun switchFromViewingToSelecting(startWith: GalleryMedia) {
+    private fun switchFromViewingToSelecting() {
         check(currentState is State.Viewing) {
             "Switching to selecting is only possible while viewing"
         }
@@ -349,8 +360,6 @@ class GalleryListViewModelImpl(
                 allowMultiple = true,
             )
         )
-
-        toggleMediaSelection(startWith)
 
         // Post items with the new state.
         postGalleryItemsAsync(currentMediaRepository)

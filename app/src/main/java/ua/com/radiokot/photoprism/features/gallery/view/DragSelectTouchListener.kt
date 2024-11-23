@@ -157,13 +157,6 @@ class DragSelectTouchListener private constructor(
             return false
         }
 
-        if (!receiver.isSelectable(initialSelection)) {
-            this.dragSelectActive = false
-            this.initialSelection = -1
-            log("Index $initialSelection is not selectable.")
-            return false
-        }
-
         receiver.setSelected(
             index = initialSelection,
             selected = true
@@ -344,9 +337,7 @@ class DragSelectTouchListener private constructor(
         if (to < from) {
             // When selecting from one to previous items
             for (i in to..from) {
-                if (!selectItem(i)) {
-                    break
-                }
+                selectItem(i)
             }
             if (min > -1 && min < to) {
                 // Unselect items that were selected during this drag but no longer are
@@ -356,17 +347,13 @@ class DragSelectTouchListener private constructor(
             }
             if (max > -1) {
                 for (i in from + 1..max) {
-                    if (!selectItem(i)) {
-                        break
-                    }
+                    selectItem(i)
                 }
             }
         } else {
             // When selecting from one to next items
             for (i in from..to) {
-                if (!selectItem(i)) {
-                    break
-                }
+                selectItem(i)
             }
             if (max > -1 && max > to) {
                 // Unselect items that were selected during this drag but no longer are
@@ -376,22 +363,15 @@ class DragSelectTouchListener private constructor(
             }
             if (min > -1) {
                 for (i in min until from) {
-                    if (!selectItem(i)) {
-                        break
-                    }
+                    selectItem(i)
                 }
             }
         }
     }
 
-    private fun selectItem(index: Int): Boolean =
-        if (receiver.isSelectable(index)) {
-            receiver.setSelected(index, true)
-            true
-        } else {
-            onDragSelectionStop()
-            false
-        }
+    private fun selectItem(index: Int) {
+        receiver.setSelected(index, true)
+    }
 
     private fun unselectItem(index: Int) {
         receiver.setSelected(index, false)
