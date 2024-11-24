@@ -93,7 +93,6 @@ class GalleryActivity : BaseActivity() {
     }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
-    private lateinit var dragSelectTouchListener: DragSelectTouchListener
 
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
@@ -127,6 +126,12 @@ class GalleryActivity : BaseActivity() {
         GalleryMemoriesListView(
             viewModel = viewModel.memoriesListViewModel,
             activity = this,
+        )
+    }
+    private val dragSelectionView: GalleryDragSelectionView by lazy {
+        GalleryDragSelectionView(
+            viewModel = viewModel,
+            lifecycleOwner = this,
         )
     }
     private val viewerLauncher = registerForActivityResult(
@@ -321,16 +326,7 @@ class GalleryActivity : BaseActivity() {
                     }
 
                 is GalleryListViewModel.Event.ActivateDragSelection -> {
-                    // A workaround to prevent swipe refresh from intercepting the drag
-                    // when the list is at the top.
-                    if (!view.galleryRecyclerView.canScrollVertically(-1)) {
-                        view.galleryRecyclerView.scrollBy(0, 1)
-                    }
-
-                    dragSelectTouchListener.setIsActive(
-                        active = true,
-                        initialSelection = event.startGlobalPosition,
-                    )
+                    // Handled by GalleryDragSelectionView.
                 }
             }
 
@@ -689,23 +685,10 @@ class GalleryActivity : BaseActivity() {
             // and vice-versa.
             (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-            dragSelectTouchListener = DragSelectTouchListener.create(
-                context,
-                object : DragSelectReceiver {
-                    override fun setSelected(indices: Sequence<Int>, selected: Boolean) {
-                        viewModel.onGalleryMediaItemsDragSelectionChanged(
-                            items = indices
-                                .map(galleryAdapter::getItem)
-                                .filterIsInstance<GalleryListItem.Media>(),
-                            areSelected = selected,
-                        )
-                    }
-
-                    override fun isSelected(index: Int): Boolean =
-                        (galleryAdapter.getItem(index) as? GalleryListItem.Media)
-                            ?.isMediaSelected == true
-                })
-            addOnItemTouchListener(dragSelectTouchListener)
+            dragSelectionView.init(
+                globalListAdapter = galleryAdapter,
+                recyclerView = this,
+            )
         }
 
         fastScrollView.init(

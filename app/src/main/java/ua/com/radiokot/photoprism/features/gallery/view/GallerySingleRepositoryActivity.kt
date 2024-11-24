@@ -85,6 +85,12 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             lifecycleOwner = this
         )
     }
+    private val dragSelectionView: GalleryDragSelectionView by lazy {
+        GalleryDragSelectionView(
+            viewModel = viewModel,
+            lifecycleOwner = this,
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -452,6 +458,11 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             // It looks wierd when switching to Selecting from Viewing
             // and vice-versa.
             (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+
+            dragSelectionView.init(
+                globalListAdapter = galleryAdapter,
+                recyclerView = this,
+            )
         }
 
         val diffCallback = GalleryListItemDiffCallback()
@@ -490,7 +501,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                     }
 
                 is GalleryListViewModel.Event.ActivateDragSelection -> {
-                    // TODO Add drag selection
+                    // Handled by GalleryDragSelectionView.
                 }
             }
 
