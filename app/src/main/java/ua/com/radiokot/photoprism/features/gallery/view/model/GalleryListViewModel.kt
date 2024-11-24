@@ -27,11 +27,7 @@ interface GalleryListViewModel {
         globalPosition: Int,
     )
 
-    fun onGalleryMediaItemsDragSelectionChanged(
-        items: Sequence<GalleryListItem.Media>,
-        areSelected: Boolean,
-    )
-
+    fun onGalleryMediaItemsDragSelectionChanged(itemSelection: Sequence<Pair<GalleryListItem.Media, Boolean>>)
     fun onViewerReturnedLastViewedMediaIndex(lastViewedMediaIndex: Int)
     fun onClearSelectionClicked()
 

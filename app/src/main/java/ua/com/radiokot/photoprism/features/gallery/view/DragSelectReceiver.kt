@@ -21,19 +21,8 @@ import androidx.annotation.CheckResult
 
 interface DragSelectReceiver {
 
-//    fun setSelected(
-//        index: Int,
-//        selected: Boolean
-//    )
-
-    fun setSelected(
-        indices: Sequence<Int>,
-        selected: Boolean,
-    )
+    fun setSelected(indexSelection: Sequence<Pair<Int, Boolean>>)
 
     @CheckResult
     fun isSelected(index: Int): Boolean
-
-//    @CheckResult
-//    fun isSelectable(index: Int): Boolean
 }

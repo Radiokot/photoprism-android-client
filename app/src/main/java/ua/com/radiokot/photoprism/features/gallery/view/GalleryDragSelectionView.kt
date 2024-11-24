@@ -19,12 +19,14 @@ class GalleryDragSelectionView(
         recyclerView: RecyclerView,
     ) {
         val receiver = object : DragSelectReceiver {
-            override fun setSelected(indices: Sequence<Int>, selected: Boolean) {
+
+            override fun setSelected(indexSelection: Sequence<Pair<Int, Boolean>>) {
                 viewModel.onGalleryMediaItemsDragSelectionChanged(
-                    items = indices
-                        .map(globalListAdapter::getItem)
-                        .filterIsInstance<GalleryListItem.Media>(),
-                    areSelected = selected,
+                    itemSelection = indexSelection
+                        .mapNotNull { (index, isSelected) ->
+                            (globalListAdapter.getItem(index) as? GalleryListItem.Media)
+                                ?.let { it to isSelected }
+                        }
                 )
             }
 

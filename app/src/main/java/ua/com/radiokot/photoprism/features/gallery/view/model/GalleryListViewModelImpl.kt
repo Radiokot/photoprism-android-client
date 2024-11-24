@@ -297,8 +297,7 @@ class GalleryListViewModelImpl(
     }
 
     override fun onGalleryMediaItemsDragSelectionChanged(
-        items: Sequence<GalleryListItem.Media>,
-        areSelected: Boolean,
+        itemSelection: Sequence<Pair<GalleryListItem.Media, Boolean>>,
     ) {
         val currentState = this.currentState
         check(currentState is State.Selecting && currentState.allowMultiple) {
@@ -307,14 +306,14 @@ class GalleryListViewModelImpl(
 
         var changedCount = 0
 
-        items.forEach { item ->
+        itemSelection.forEach { (item, isSelected) ->
             val media = item.source
                 ?: return@forEach
 
-            if (areSelected && !selectedFilesByMediaUid.containsKey(media.uid)) {
+            if (isSelected && !selectedFilesByMediaUid.containsKey(media.uid)) {
                 selectedFilesByMediaUid[media.uid] = media.originalFile
                 changedCount++
-            } else if (!areSelected && selectedFilesByMediaUid.containsKey(media.uid)) {
+            } else if (!isSelected && selectedFilesByMediaUid.containsKey(media.uid)) {
                 selectedFilesByMediaUid.remove(media.uid)
                 changedCount++
             }
@@ -323,8 +322,7 @@ class GalleryListViewModelImpl(
         if (changedCount > 0) {
             log.debug {
                 "onGalleryMediaItemsDragSelectionChanged(): selection_changed:" +
-                        "\nchanged=$changedCount," +
-                        "\nareSelected=$areSelected"
+                        "\nchanged=$changedCount"
             }
 
             postGalleryItemsAsync(currentMediaRepository)

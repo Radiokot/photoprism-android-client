@@ -30,6 +30,8 @@ import androidx.annotation.RestrictTo.Scope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import ua.com.radiokot.photoprism.R
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.properties.Delegates
 
 typealias AutoScrollListener = (scrolling: Boolean) -> Unit
@@ -157,12 +159,13 @@ class DragSelectTouchListener private constructor(
         }
 
         receiver.setSelected(
-            indices = sequenceOf(initialSelection),
-            selected = true
+            indexSelection = sequenceOf(initialSelection to true),
         )
         this.dragSelectActive = true
         this.initialSelection = initialSelection
         this.lastDraggedIndex = initialSelection
+        this.minReached = initialSelection
+        this.maxReached = initialSelection
 
         log("Drag selection initialized, starting at index $initialSelection.")
         return true
@@ -260,8 +263,11 @@ class DragSelectTouchListener private constructor(
                     }
                     lastDraggedIndex = itemPosition
                     receiver.setSelected(
-                        indices = sequenceOf(lastDraggedIndex),
-                        selected = !receiver.isSelected(lastDraggedIndex)
+                        indexSelection = sequenceOf(
+                            lastDraggedIndex to !receiver.isSelected(
+                                lastDraggedIndex
+                            )
+                        ),
                     )
                     return
                 }
@@ -271,24 +277,23 @@ class DragSelectTouchListener private constructor(
                     lastDraggedIndex != itemPosition
                 ) {
                     lastDraggedIndex = itemPosition
-                    if (minReached == -1) {
+                    if (lastDraggedIndex < minReached || minReached == -1) {
                         minReached = lastDraggedIndex
                     }
-                    if (maxReached == -1) {
+                    if (lastDraggedIndex > maxReached || maxReached == -1) {
                         maxReached = lastDraggedIndex
                     }
-                    if (lastDraggedIndex > maxReached) {
-                        maxReached = lastDraggedIndex
-                    }
-                    if (lastDraggedIndex < minReached) {
-                        minReached = lastDraggedIndex
-                    }
-                    selectRange(
-                        from = initialSelection,
-                        to = lastDraggedIndex,
-                        min = minReached,
-                        max = maxReached
+
+                    val selectionRange = IntRange(
+                        min(initialSelection, lastDraggedIndex),
+                        max(initialSelection, lastDraggedIndex),
                     )
+                    receiver.setSelected(
+                        indexSelection = (minReached..maxReached)
+                            .asSequence()
+                            .map { it to (it in selectionRange) }
+                    )
+
                     if (initialSelection == lastDraggedIndex) {
                         minReached = lastDraggedIndex
                         maxReached = lastDraggedIndex
@@ -309,62 +314,6 @@ class DragSelectTouchListener private constructor(
 
     @RestrictTo(Scope.LIBRARY_GROUP)
     override fun onRequestDisallowInterceptTouchEvent(disallow: Boolean) = Unit
-
-    private fun selectRange(
-        from: Int,
-        to: Int,
-        min: Int,
-        max: Int
-    ) {
-        if (from == to) {
-            // Finger is back on the initial item, unselect everything else
-            receiver.setSelected(
-                indices = (min..max).asSequence().filter { it != from },
-                selected = false,
-            )
-            return
-        }
-
-        if (to < from) {
-            // When selecting from one to previous items
-            receiver.setSelected(
-                indices = (to..from).asSequence(),
-                selected = true,
-            )
-            if (min > -1 && min < to) {
-                // Unselect items that were selected during this drag but no longer are
-                receiver.setSelected(
-                    indices = (min until to).asSequence(),
-                    selected = false,
-                )
-            }
-            if (max > -1) {
-                receiver.setSelected(
-                    indices = ((from + 1)..max).asSequence(),
-                    selected = true,
-                )
-            }
-        } else {
-            // When selecting from one to next items
-            receiver.setSelected(
-                indices = (from..to).asSequence(),
-                selected = true,
-            )
-            if (max > -1 && max > to) {
-                // Unselect items that were selected during this drag but no longer are
-                receiver.setSelected(
-                    indices = ((to + 1)..max).asSequence(),
-                    selected = false,
-                )
-            }
-            if (min > -1) {
-                receiver.setSelected(
-                    indices = (min until from).asSequence(),
-                    selected = true,
-                )
-            }
-        }
-    }
 
     enum class Mode {
         RANGE,
