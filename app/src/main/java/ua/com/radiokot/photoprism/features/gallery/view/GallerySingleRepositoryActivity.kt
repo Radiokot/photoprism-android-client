@@ -325,12 +325,16 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                     (viewHolder as? GalleryListItem.Media.ViewHolder)
                         ?.itemView
                 },
-                onLongClick = { _, _, _, item ->
+                onLongClick = { _, position, _, item ->
                     if (item !is GalleryListItem.Media) {
                         return@addLongClickListener false
                     }
 
-                    viewModel.onGalleryMediaItemLongClicked(item)
+                    viewModel.onGalleryMediaItemLongClicked(
+                        item = item,
+                        globalPosition = position,
+                    )
+
                     true
                 }
             )
@@ -451,15 +455,16 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.observeOnMain().subscribe(this@GallerySingleRepositoryActivity) { newItems ->
-            FastAdapterDiffUtil.setBetter(
-                recyclerView = view.galleryRecyclerView,
-                adapter = galleryItemsAdapter,
-                items = newItems,
-                callback = diffCallback,
-                detectMoves = false,
-            )
-        }
+        viewModel.itemList.observeOnMain()
+            .subscribe(this@GallerySingleRepositoryActivity) { newItems ->
+                FastAdapterDiffUtil.setBetter(
+                    recyclerView = view.galleryRecyclerView,
+                    adapter = galleryItemsAdapter,
+                    items = newItems,
+                    callback = diffCallback,
+                    detectMoves = false,
+                )
+            }
     }
 
     private fun subscribeToEvents() {
@@ -483,6 +488,10 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                             itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
                         )
                     }
+
+                is GalleryListViewModel.Event.ActivateDragSelection -> {
+                    // TODO Add drag selection
+                }
             }
 
             log.debug {

@@ -93,6 +93,7 @@ class GalleryActivity : BaseActivity() {
     }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
+    private lateinit var dragSelectTouchListener: DragSelectTouchListener
 
     private val downloadProgressView: DownloadProgressView by lazy {
         DownloadProgressView(
@@ -318,6 +319,12 @@ class GalleryActivity : BaseActivity() {
                             itemGlobalPosition = galleryItemsAdapter.getGlobalPosition(event.listItemIndex)
                         )
                     }
+
+                is GalleryListViewModel.Event.ActivateDragSelection ->
+                    dragSelectTouchListener.setIsActive(
+                        active = true,
+                        initialSelection = event.startGlobalPosition,
+                    )
             }
 
             log.debug {
@@ -496,8 +503,6 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initList(savedInstanceState: Bundle?) {
-        lateinit var dragSelectTouchListener: DragSelectTouchListener
-
         val galleryAdapter = FastAdapter.with(
             listOf(
                 memoriesListView.recyclerAdapter,
@@ -548,10 +553,9 @@ class GalleryActivity : BaseActivity() {
                         return@addLongClickListener false
                     }
 
-                    viewModel.onGalleryMediaItemLongClicked(item)
-                    dragSelectTouchListener.setIsActive(
-                        active = true,
-                        initialSelection = position,
+                    viewModel.onGalleryMediaItemLongClicked(
+                        item = item,
+                        globalPosition = position,
                     )
 
                     true
@@ -694,14 +698,6 @@ class GalleryActivity : BaseActivity() {
                         (galleryAdapter.getItem(index) as? GalleryListItem.Media)
                             ?.isMediaSelected == true
                 })
-            viewModel.state.subscribe(this@GalleryActivity) { state ->
-                if (state is GalleryViewModel.State.Viewing) {
-                    dragSelectTouchListener.setIsActive(
-                        active = false,
-                        initialSelection = -1,
-                    )
-                }
-            }
             addOnItemTouchListener(dragSelectTouchListener)
         }
 

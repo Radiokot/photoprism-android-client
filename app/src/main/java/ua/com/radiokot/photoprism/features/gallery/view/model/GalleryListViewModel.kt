@@ -22,7 +22,11 @@ interface GalleryListViewModel {
 
     fun onGalleryMediaItemClicked(item: GalleryListItem.Media)
     fun onGalleryMediaItemViewClicked(item: GalleryListItem.Media)
-    fun onGalleryMediaItemLongClicked(item: GalleryListItem.Media)
+    fun onGalleryMediaItemLongClicked(
+        item: GalleryListItem.Media,
+        globalPosition: Int,
+    )
+
     fun onGalleryMediaItemsDragSelectionChanged(
         items: Sequence<GalleryListItem.Media>,
         areSelected: Boolean,
@@ -42,6 +46,8 @@ interface GalleryListViewModel {
          * Ensure that the given item of the [itemList] is visible on the screen.
          */
         class EnsureListItemVisible(val listItemIndex: Int) : Event
+
+        class ActivateDragSelection(val startGlobalPosition: Int) : Event
     }
 
     sealed interface State {

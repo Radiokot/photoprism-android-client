@@ -227,9 +227,19 @@ class GalleryListViewModelImpl(
         val media = item.source
             ?: return
 
-        when (currentState) {
+        when (val currentState = this.currentState) {
             is State.Selecting -> {
-                toggleMediaSelection(media)
+                if (!currentState.allowMultiple) {
+                    onSingleMediaFileSelected?.invoke(media.originalFile)
+                } else {
+                    if (selectedFilesByMediaUid.containsKey(media.uid)) {
+                        // When clicking currently selected media in the multiple selection state,
+                        // just unselect it.
+                        removeMediaFromSelection(media.uid)
+                    } else {
+                        addFileToSelection(media.originalFile)
+                    }
+                }
             }
 
             is State.Viewing -> {
@@ -241,17 +251,31 @@ class GalleryListViewModelImpl(
         }
     }
 
-    override fun onGalleryMediaItemLongClicked(item: GalleryListItem.Media) {
+    override fun onGalleryMediaItemLongClicked(
+        item: GalleryListItem.Media,
+        globalPosition: Int,
+    ) {
         log.debug {
             "onGalleryMediaItemLongClicked(): gallery_media_item_long_clicked:" +
-                    "\nitem=$item"
+                    "\nitem=$item," +
+                    "\nglobalPosition=$globalPosition"
         }
 
-        when (currentState) {
-            State.Viewing -> {
+        val currentState = this.currentState
+        when {
+            currentState is State.Viewing -> {
                 log.debug { "onGalleryMediaItemLongClicked(): switching_to_selecting" }
 
                 switchFromViewingToSelecting()
+                activateDragSelection(
+                    startGlobalPosition = globalPosition,
+                )
+            }
+
+            currentState is State.Selecting && currentState.allowMultiple -> {
+                activateDragSelection(
+                    startGlobalPosition = globalPosition,
+                )
             }
 
             else -> {
@@ -259,6 +283,17 @@ class GalleryListViewModelImpl(
                 log.debug { "onGalleryMediaItemLongClicked(): ignored" }
             }
         }
+    }
+
+    private fun activateDragSelection(startGlobalPosition: Int) {
+        log.debug {
+            "beginDragSelection(): activating:" +
+                    "\nstartGlobalPosition=$startGlobalPosition"
+        }
+
+        itemListEvents.onNext(
+            Event.ActivateDragSelection(startGlobalPosition)
+        )
     }
 
     override fun onGalleryMediaItemsDragSelectionChanged(
@@ -294,25 +329,6 @@ class GalleryListViewModelImpl(
 
             postGalleryItemsAsync(currentMediaRepository)
             postSelectedItemsCount()
-        }
-    }
-
-    private fun toggleMediaSelection(media: GalleryMedia) {
-        val currentState = this.currentState
-        check(currentState is State.Selecting) {
-            "Media selection can only be toggled in the corresponding state"
-        }
-
-        if (!currentState.allowMultiple) {
-            onSingleMediaFileSelected?.invoke(media.originalFile)
-        } else {
-            if (selectedFilesByMediaUid.containsKey(media.uid)) {
-                // When clicking currently selected media in the multiple selection state,
-                // just unselect it.
-                removeMediaFromSelection(media.uid)
-            } else {
-                addFileToSelection(media.originalFile)
-            }
         }
     }
 
