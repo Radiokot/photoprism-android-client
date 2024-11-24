@@ -18,8 +18,7 @@ class GalleryDragSelectionView(
         globalListAdapter: FastAdapter<*>,
         recyclerView: RecyclerView,
     ) {
-        val receiver = object : DragSelectReceiver {
-
+        val receiver = object : DragSelectTouchListener.Receiver {
             override fun setSelected(indexSelection: Sequence<Pair<Int, Boolean>>) {
                 viewModel.onGalleryMediaItemsDragSelectionChanged(
                     itemSelection = indexSelection

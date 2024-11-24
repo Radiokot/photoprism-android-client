@@ -25,6 +25,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_MOVE
 import android.view.MotionEvent.ACTION_UP
+import androidx.annotation.CheckResult
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +40,7 @@ typealias DragToSelectListener = (active: Boolean) -> Unit
 
 class DragSelectTouchListener private constructor(
     context: Context,
-    private val receiver: DragSelectReceiver
+    private val receiver: Receiver
 ) : RecyclerView.OnItemTouchListener {
 
     private val autoScrollHandler = Handler(context.mainLooper)
@@ -103,7 +104,7 @@ class DragSelectTouchListener private constructor(
 
         fun create(
             context: Context,
-            receiver: DragSelectReceiver,
+            receiver: Receiver,
             config: (DragSelectTouchListener.() -> Unit)? = null
         ): DragSelectTouchListener {
             val listener = DragSelectTouchListener(
@@ -318,5 +319,12 @@ class DragSelectTouchListener private constructor(
     enum class Mode {
         RANGE,
         PATH
+    }
+
+    interface Receiver {
+        fun setSelected(indexSelection: Sequence<Pair<Int, Boolean>>)
+
+        @CheckResult
+        fun isSelected(index: Int): Boolean
     }
 }
