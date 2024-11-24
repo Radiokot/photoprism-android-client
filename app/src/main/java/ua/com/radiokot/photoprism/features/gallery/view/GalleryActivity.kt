@@ -320,11 +320,18 @@ class GalleryActivity : BaseActivity() {
                         )
                     }
 
-                is GalleryListViewModel.Event.ActivateDragSelection ->
+                is GalleryListViewModel.Event.ActivateDragSelection -> {
+                    // A workaround to prevent swipe refresh from intercepting the drag
+                    // when the list is at the top.
+                    if (!view.galleryRecyclerView.canScrollVertically(-1)) {
+                        view.galleryRecyclerView.scrollBy(0, 1)
+                    }
+
                     dragSelectTouchListener.setIsActive(
                         active = true,
                         initialSelection = event.startGlobalPosition,
                     )
+                }
             }
 
             log.debug {
