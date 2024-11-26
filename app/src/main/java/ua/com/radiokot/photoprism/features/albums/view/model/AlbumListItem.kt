@@ -8,16 +8,22 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.util.LocalDate
+import java.text.DateFormat
 
 class AlbumListItem(
     private val title: String,
+    private val monthTitleDate: LocalDate?,
     private val description: String?,
     private val thumbnailUrl: String,
     val source: Album?,
@@ -28,6 +34,11 @@ class AlbumListItem(
         previewUrlFactory: MediaPreviewUrlFactory,
     ) : this(
         title = source.title,
+        monthTitleDate =
+        if (source.type == Album.TypeName.MONTH)
+            source.ymdLocalDate
+        else
+            null,
         description = source.path?.let { "/$it" },
         thumbnailUrl = previewUrlFactory.getThumbnailUrl(
             thumbnailHash = source.thumbnailHash,
@@ -55,6 +66,7 @@ class AlbumListItem(
 
         private val view = ListItemAlbumBinding.bind(itemView)
         private val picasso: Picasso by inject()
+        private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
 
         override fun bindView(item: AlbumListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.title
@@ -67,7 +79,11 @@ class AlbumListItem(
                 .centerCrop()
                 .into(view.imageView)
 
-            view.titleTextView.text = item.title
+            view.titleTextView.text =
+                if (item.monthTitleDate != null)
+                    monthYearDateFormat.format(item.monthTitleDate).capitalized()
+                else
+                    item.title
             view.titleTextView.isSelected = true
 
             view.descriptionTextView.isVisible = item.description != null

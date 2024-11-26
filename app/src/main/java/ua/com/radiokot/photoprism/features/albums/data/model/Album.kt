@@ -3,6 +3,9 @@ package ua.com.radiokot.photoprism.features.albums.data.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.albums.model.PhotoPrismAlbum
+import ua.com.radiokot.photoprism.extension.getUtcCalendar
+import ua.com.radiokot.photoprism.util.LocalDate
+import java.util.Calendar
 
 class Album(
     /*
@@ -25,6 +28,14 @@ class Album(
     val ymd: String,
     val thumbnailHash: String,
 ) {
+    val ymdLocalDate: LocalDate
+        get() =
+            getUtcCalendar().let {
+                it[Calendar.DAY_OF_MONTH] = ymd.substring(6..7).toInt().coerceAtLeast(1)
+                it[Calendar.YEAR] = ymd.substring(0..3).toInt()
+                it[Calendar.MONTH] = ymd.substring(4..5).toInt() - 1
+                LocalDate(it.time)
+            }
 
     constructor(
         source: PhotoPrismAlbum,
