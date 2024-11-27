@@ -34,19 +34,18 @@ val albumsFeatureModule = module {
 
     scope<EnvSession> {
         scoped {
-            AlbumsRepository(
-                types = setOf(
-                    Album.TypeName.ALBUM,
-                    Album.TypeName.FOLDER,
-                ),
-                defaultSort = get(),
+            AlbumsRepository.Factory(
                 photoPrismAlbumsService = get(),
             )
+        } bind AlbumsRepository.Factory::class
+
+        factory {
+            get<AlbumsRepository.Factory>().albums
         } bind AlbumsRepository::class
 
         viewModel {
             AlbumsViewModel(
-                albumsRepository = get(),
+                albumsRepositoryFactory = get(),
                 preferences = get(),
                 searchPredicate = { album: Album, query: String ->
                     val fields = buildList {

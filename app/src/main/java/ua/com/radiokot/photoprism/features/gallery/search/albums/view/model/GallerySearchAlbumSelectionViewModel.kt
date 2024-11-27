@@ -4,19 +4,22 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
 class GallerySearchAlbumSelectionViewModel(
-    private val albumsRepository: AlbumsRepository,
+    albumsRepositoryFactory: AlbumsRepository.Factory,
+    private val defaultSort: AlbumSort,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
     private val searchPreferences: SearchPreferences,
     private val previewUrlFactory: MediaPreviewUrlFactory,
@@ -25,6 +28,8 @@ class GallerySearchAlbumSelectionViewModel(
 
     private val log = kLogger("GallerySearchAlbumSelectionVM")
 
+    private val albumsRepository = albumsRepositoryFactory.albums
+    private val foldersRepository = albumsRepositoryFactory.folders
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
     val selectedAlbumUid = MutableLiveData<String?>()
@@ -34,6 +39,8 @@ class GallerySearchAlbumSelectionViewModel(
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
+    private val includeFolders: Boolean
+        get() = searchPreferences.showAlbumFolders.value == true
 
     init {
         subscribeToRepository()
@@ -51,19 +58,34 @@ class GallerySearchAlbumSelectionViewModel(
 
         if (force) {
             albumsRepository.update()
+            if (includeFolders) {
+                foldersRepository.update()
+            }
         } else {
             albumsRepository.updateIfNotFresh()
+            if (includeFolders) {
+                foldersRepository.updateIfNotFresh()
+            }
         }
     }
 
     private fun subscribeToRepository() {
-        albumsRepository.items
-            .filter { !albumsRepository.isNeverUpdated }
+        Observable.merge(
+            albumsRepository.items,
+            foldersRepository.items.filter { includeFolders },
+        )
+            .observeOn(AndroidSchedulers.mainThread())
+            .filter {
+                !(albumsRepository.isNeverUpdated || (includeFolders && foldersRepository.isNeverUpdated))
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { postAlbumItems() }
             .autoDispose(this)
 
-        albumsRepository.errors
+        Observable.merge(
+            albumsRepository.errors,
+            foldersRepository.errors.filter { includeFolders },
+        )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { error ->
                 log.error(error) {
@@ -78,8 +100,15 @@ class GallerySearchAlbumSelectionViewModel(
             }
             .autoDispose(this)
 
-        albumsRepository.loading
-            .subscribe(isLoading::postValue)
+        Observable.merge(
+            albumsRepository.loading,
+            foldersRepository.loading.filter { includeFolders },
+        )
+            .subscribe {
+                val areAlbumsLoading = albumsRepository.isLoading
+                val areFoldersLoading = foldersRepository.isLoading
+                isLoading.postValue(areAlbumsLoading || (includeFolders && areFoldersLoading))
+            }
             .autoDispose(this)
     }
 
@@ -101,12 +130,12 @@ class GallerySearchAlbumSelectionViewModel(
     }
 
     private fun postAlbumItems() {
-        val includeFolders = searchPreferences.showAlbumFolders.value == true
-        val repositoryAlbums = albumsRepository.itemsList
-            .filter { album ->
-                album.type == Album.TypeName.ALBUM
-                        || (includeFolders && album.type == Album.TypeName.FOLDER)
+        val repositoryAlbums = buildList {
+            addAll(albumsRepository.itemsList)
+            if (includeFolders) {
+                addAll(foldersRepository.itemsList)
             }
+        }.sortedWith(defaultSort)
         val searchQuery = currentSearchInput
         val filteredRepositoryAlbums =
             if (searchQuery != null)

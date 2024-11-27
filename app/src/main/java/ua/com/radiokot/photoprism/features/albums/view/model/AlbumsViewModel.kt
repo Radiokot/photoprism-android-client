@@ -19,7 +19,7 @@ import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewVi
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
 class AlbumsViewModel(
-    private val albumsRepository: AlbumsRepository,
+    private val albumsRepositoryFactory: AlbumsRepository.Factory,
     private val preferences: AlbumsPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
     private val previewUrlFactory: MediaPreviewUrlFactory,
@@ -35,6 +35,7 @@ class AlbumsViewModel(
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
+    private lateinit var albumsRepository: AlbumsRepository
     private var isInitialized = false
     lateinit var albumType: Album.TypeName
         private set
@@ -50,6 +51,7 @@ class AlbumsViewModel(
         }
 
         this.albumType = albumType
+        this.albumsRepository = albumsRepositoryFactory.forType(albumType)
         this.defaultSearchConfig = defaultSearchConfig
 
         this.sortPreferenceSubject = when (albumType) {
@@ -133,9 +135,6 @@ class AlbumsViewModel(
 
     private fun postAlbumItems() {
         val repositoryAlbums = albumsRepository.itemsList
-            .filter { album ->
-                album.type == albumType
-            }
         val searchQuery = currentSearchInput
         val filteredRepositoryAlbums =
             if (searchQuery != null)

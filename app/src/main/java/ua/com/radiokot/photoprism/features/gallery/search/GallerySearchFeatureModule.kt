@@ -78,7 +78,8 @@ val gallerySearchFeatureModules: List<Module> = listOf(
 
             viewModel {
                 GallerySearchAlbumSelectionViewModel(
-                    albumsRepository = get(),
+                    albumsRepositoryFactory = get(),
+                    defaultSort = get(),
                     searchPredicate = { album: Album, query: String ->
                         SearchPredicates.generalCondition(query, album.title)
                     },

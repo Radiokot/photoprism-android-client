@@ -69,11 +69,10 @@ class Album(
     }
 
     @Parcelize
-    enum class TypeName(val value: String) : Parcelable { //all types of Album
-        ALBUM("album"), //order by favorites
-        FOLDER("folder"), //order by name
-        MOMENT("moment"), //order by newest
-        MONTH("month"), //order by newest
+    enum class TypeName(val value: String) : Parcelable {
+        ALBUM("album"),
+        FOLDER("folder"),
+        MONTH("month"),
         ;
 
         companion object {
@@ -81,7 +80,6 @@ class Album(
                 return when (type) {
                     ALBUM.value -> ALBUM
                     FOLDER.value -> FOLDER
-                    MOMENT.value -> MOMENT
                     MONTH.value -> MONTH
                     else -> error("Unsupported PhotoPrism media type '$type'")
                 }

@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
@@ -123,7 +122,6 @@ class DestinationAlbumSelectionViewModel(
         val albumSort = preferences.albumSort.value!!
         val allAlbums = albumsToCreate +
                 albumsRepository.itemsList
-                    .filter { it.type == Album.TypeName.ALBUM }
                     .sortedWith(albumSort)
                     .map(DestinationAlbum::Existing)
         val searchQuery = currentSearchInput

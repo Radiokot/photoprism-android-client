@@ -11,16 +11,14 @@ import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
-import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 
 /**
  * A repository for albums, which can be folders, actual albums, months, etc.
- * Combines albums of multiple [types] sorting them with [defaultSort].
+ * Combines albums of multiple [types].
  */
 class AlbumsRepository(
     private val types: Set<Album.TypeName>,
-    private val defaultSort: AlbumSort,
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
@@ -28,11 +26,7 @@ class AlbumsRepository(
             .collectInto(mutableListOf<Album>()) { collectedAlbums, albums ->
                 collectedAlbums.addAll(albums)
             }
-            .map { collectedAlbums ->
-                // Collected (concat) albums must be sorted locally,
-                // as PhotoPrism order is applied per collection.
-                collectedAlbums.sortedWith(defaultSort)
-            }
+            .map(MutableList<Album>::toList)
 
     /**
      * @return [Album] found by [uid] in the [itemsList]
@@ -98,6 +92,42 @@ class AlbumsRepository(
         // but unfortunately it is not updated instantly.
         invalidate()
     }.toCompletable().subscribeOn(Schedulers.io())
+
+    class Factory(
+        private val photoPrismAlbumsService: PhotoPrismAlbumsService,
+    ) {
+        val albums: AlbumsRepository by lazy {
+            AlbumsRepository(
+                types = setOf(Album.TypeName.ALBUM),
+                photoPrismAlbumsService = photoPrismAlbumsService,
+            )
+        }
+
+        val folders: AlbumsRepository by lazy {
+            AlbumsRepository(
+                types = setOf(Album.TypeName.FOLDER),
+                photoPrismAlbumsService = photoPrismAlbumsService,
+            )
+        }
+
+        val months: AlbumsRepository by lazy {
+            AlbumsRepository(
+                types = setOf(Album.TypeName.MONTH),
+                photoPrismAlbumsService = photoPrismAlbumsService,
+            )
+        }
+
+        fun forType(type: Album.TypeName): AlbumsRepository = when (type) {
+            Album.TypeName.ALBUM ->
+                albums
+
+            Album.TypeName.FOLDER ->
+                folders
+
+            Album.TypeName.MONTH ->
+                months
+        }
+    }
 
     private companion object {
         private const val PAGE_LIMIT = 30
