@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
+import ua.com.radiokot.photoprism.util.LocalDate
 
 class AlbumsViewModel(
     private val albumsRepositoryFactory: AlbumsRepository.Factory,
@@ -58,8 +59,11 @@ class AlbumsViewModel(
             Album.TypeName.FOLDER ->
                 preferences.folderSort
 
-            else ->
+            Album.TypeName.ALBUM ->
                 preferences.albumSort
+
+            Album.TypeName.MONTH ->
+                preferences.monthSort
         }
 
         subscribeToRepository()
@@ -195,26 +199,30 @@ class AlbumsViewModel(
                     "\nitem=$item"
         }
 
-        if (item.source != null) {
-            val uid = item.source.uid
+        val album = item.source
+            ?: return
 
-            log.debug {
-                "onAlbumItemClicked(): opening_album:" +
-                        "\nuid=$uid"
-            }
+        log.debug {
+            "onAlbumItemClicked(): opening_album:" +
+                    "\nuid=${album.uid}"
+        }
 
-            eventsSubject.onNext(
-                Event.OpenAlbum(
-                    title = item.source.title,
-                    repositoryParams = SimpleGalleryMediaRepository.Params(
-                        searchConfig = defaultSearchConfig.copy(
-                            includePrivate = true,
-                            albumUid = uid,
-                        )
+        eventsSubject.onNext(
+            Event.OpenAlbum(
+                title = album.title,
+                monthTitle =
+                if (album.type == Album.TypeName.MONTH)
+                    album.ymdLocalDate
+                else
+                    null,
+                repositoryParams = SimpleGalleryMediaRepository.Params(
+                    searchConfig = defaultSearchConfig.copy(
+                        includePrivate = true,
+                        albumUid = album.uid,
                     )
                 )
             )
-        }
+        )
     }
 
     fun onSortClicked() {
@@ -271,6 +279,7 @@ class AlbumsViewModel(
 
         class OpenAlbum(
             val title: String,
+            val monthTitle: LocalDate?,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
         ) : Event
 

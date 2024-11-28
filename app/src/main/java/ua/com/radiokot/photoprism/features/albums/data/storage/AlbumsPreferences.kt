@@ -6,4 +6,5 @@ import ua.com.radiokot.photoprism.features.albums.view.model.AlbumSort
 interface AlbumsPreferences {
     val folderSort: BehaviorSubject<AlbumSort>
     val albumSort: BehaviorSubject<AlbumSort>
+    val monthSort: BehaviorSubject<AlbumSort>
 }

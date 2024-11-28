@@ -28,10 +28,13 @@ import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.qualifier.named
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGallerySingleRepositoryBinding
+import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
@@ -51,7 +54,9 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepos
 import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
+import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.view.ErrorView
+import java.text.DateFormat
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -60,6 +65,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
     private val log = kLogger("GallerySingleRepositoryActivity")
     private lateinit var view: ActivityGallerySingleRepositoryBinding
     private val viewModel: GallerySingleRepositoryViewModel by viewModel()
+    private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private val viewerLauncher = registerForActivityResult(
@@ -134,6 +140,9 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.getStringExtra(TITLE_EXTRA)?.also(::setTitle)
+        (intent.getSerializableExtra(MONTH_TITLE_EXTRA) as? LocalDate)?.also {
+            setTitle(monthYearDateFormat.format(it).capitalized())
+        }
     }
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
@@ -743,7 +752,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
     private val GallerySingleRepositoryViewModel.Error.localizedMessage: String
         get() = when (this) {
             GallerySingleRepositoryViewModel.Error.NoMediaFound ->
-                getString(R.string.no_media_found)
+                getString(R.string.nothing_found)
 
             is GallerySingleRepositoryViewModel.Error.ContentLoadingError ->
                 GalleryContentLoadingErrorResources.getMessage(
@@ -755,13 +764,16 @@ class GallerySingleRepositoryActivity : BaseActivity() {
     companion object {
         private const val FALLBACK_LIST_SIZE = 100
         private const val TITLE_EXTRA = "title"
+        private const val MONTH_TITLE_EXTRA = "month-title"
         private const val REPO_PARAMS_EXTRA = "repo-params"
 
         fun getBundle(
-            title: String,
             repositoryParams: SimpleGalleryMediaRepository.Params,
+            title: String? = null,
+            monthTitle: LocalDate? = null,
         ) = Bundle().apply {
             putString(TITLE_EXTRA, title)
+            putSerializable(MONTH_TITLE_EXTRA, monthTitle)
             putParcelable(REPO_PARAMS_EXTRA, repositoryParams)
         }
     }

@@ -18,6 +18,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtensionsState
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
@@ -499,7 +500,8 @@ class GalleryViewModel(
 
     fun onFoldersClicked() {
         eventsSubject.onNext(
-            Event.OpenFolders(
+            Event.OpenAlbums(
+                albumType = Album.TypeName.FOLDER,
                 defaultSearchConfig = getStateDefaultSearchConfig(),
             )
         )
@@ -508,6 +510,16 @@ class GalleryViewModel(
     fun onAlbumsClicked() {
         eventsSubject.onNext(
             Event.OpenAlbums(
+                albumType = Album.TypeName.ALBUM,
+                defaultSearchConfig = getStateDefaultSearchConfig(),
+            )
+        )
+    }
+
+    fun onCalendarClicked() {
+        eventsSubject.onNext(
+            Event.OpenAlbums(
+                albumType = Album.TypeName.MONTH,
                 defaultSearchConfig = getStateDefaultSearchConfig(),
             )
         )
@@ -764,11 +776,8 @@ class GalleryViewModel(
 
         object OpenPreferences : Event
 
-        class OpenFolders(
-            val defaultSearchConfig: SearchConfig,
-        ) : Event
-
         class OpenAlbums(
+            val albumType: Album.TypeName,
             val defaultSearchConfig: SearchConfig,
         ) : Event
 

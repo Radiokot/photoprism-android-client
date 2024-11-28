@@ -27,6 +27,10 @@ val albumsFeatureModule = module {
     single {
         AlbumsPreferencesOnPrefs(
             defaultSort = get(),
+            defaultMonthSort = AlbumSort(
+                order = AlbumSort.Order.NEWEST_FIRST,
+                areFavoritesFirst = false,
+            ),
             preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
             jsonObjectMapper = get(),
         )

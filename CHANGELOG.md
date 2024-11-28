@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to disable Memories
 - Ability to configure the max number of entries in a memory
 - Ability to select items by dragging after a long press
+- Ability to browse months (calendar) from the main menu
 
 ### Changed
 

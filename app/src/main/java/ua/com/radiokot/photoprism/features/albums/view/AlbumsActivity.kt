@@ -32,6 +32,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewMo
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
 import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
+import ua.com.radiokot.photoprism.util.LocalDate
 import ua.com.radiokot.photoprism.view.ErrorView
 
 class AlbumsActivity : BaseActivity() {
@@ -86,7 +87,10 @@ class AlbumsActivity : BaseActivity() {
             Album.TypeName.FOLDER ->
                 getString(R.string.folders)
 
-            else ->
+            Album.TypeName.MONTH ->
+                getString(R.string.calendar)
+
+            Album.TypeName.ALBUM ->
                 getString(R.string.albums)
         }
     }
@@ -181,8 +185,11 @@ class AlbumsActivity : BaseActivity() {
                                 Album.TypeName.FOLDER ->
                                     R.string.failed_to_load_folders
 
-                                else ->
+                                Album.TypeName.ALBUM ->
                                     R.string.failed_to_load_albums
+
+                                Album.TypeName.MONTH ->
+                                    R.string.failed_to_load_calendar
                             },
                             retryButtonTextRes = R.string.try_again,
                             retryButtonClickListener = viewModel::onRetryClicked
@@ -198,8 +205,11 @@ class AlbumsActivity : BaseActivity() {
                                 Album.TypeName.FOLDER ->
                                     R.string.no_folders_found
 
-                                else ->
+                                Album.TypeName.ALBUM ->
                                     R.string.no_albums_found
+
+                                Album.TypeName.MONTH ->
+                                    R.string.nothing_found
                             },
                         )
                     )
@@ -226,6 +236,7 @@ class AlbumsActivity : BaseActivity() {
             is AlbumsViewModel.Event.OpenAlbum ->
                 openAlbum(
                     title = event.title,
+                    monthTitle = event.monthTitle,
                     repositoryParams = event.repositoryParams,
                 )
 
@@ -248,8 +259,11 @@ class AlbumsActivity : BaseActivity() {
                 Album.TypeName.FOLDER ->
                     R.string.failed_to_load_folders
 
-                else ->
+                Album.TypeName.ALBUM ->
                     R.string.failed_to_load_albums
+
+                Album.TypeName.MONTH ->
+                    R.string.failed_to_load_calendar
             },
             Snackbar.LENGTH_SHORT
         )
@@ -259,6 +273,7 @@ class AlbumsActivity : BaseActivity() {
 
     private fun openAlbum(
         title: String,
+        monthTitle: LocalDate?,
         repositoryParams: SimpleGalleryMediaRepository.Params,
     ) = folderLauncher.launch(
         Intent(this, GallerySingleRepositoryActivity::class.java)
@@ -267,6 +282,7 @@ class AlbumsActivity : BaseActivity() {
             .putExtras(
                 GallerySingleRepositoryActivity.getBundle(
                     title = title,
+                    monthTitle = monthTitle,
                     repositoryParams = repositoryParams,
                 )
             )

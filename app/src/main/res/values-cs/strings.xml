@@ -13,7 +13,6 @@
     <string name="media_type_text">Text</string>
     <string name="media_type_other">Jiný typ souboru</string>
     <string name="media_type_unknown">Neznámy typ souboru</string>
-    <string name="select_media_file">Vyberte soubor</string>
     <string name="file_thumbnail">Miniatura</string>
     <string name="downloading_progress">Stahování…</string>
     <string name="cancel">Zrušit</string>
@@ -92,7 +91,6 @@
     <string name="disconnect_from_library">Odhlásit se</string>
     <string name="disconnect_from_library_confirmation">Odpojit se z knihovny? Vaše záložky budou zachovány</string>
     <string name="template_error_failed_to_disconnect">Nepodařilo se odpojit: %1$s</string>
-    <string name="no_media_found">Nebyla nalezena žádná média</string>
     <string name="view_media">Zobrazit</string>
     <string name="open_in_web_viewer">Otevřít ve webovém prohlížeči</string>
     <string name="albums">Alba</string>
@@ -265,5 +263,8 @@
     <string name="favorites">Oblíbené</string>
     <string name="preference_enabled">Povoleno</string>
     <string name="extension_memories_max_entry_count_preference">Maximální počet položek</string>
+    <string name="calendar">Kalendář</string>
+    <string name="failed_to_load_calendar">Nepodařilo se načíst kalendář</string>
+    <string name="nothing_found">Nic nenalezeno</string>
 
 </resources>

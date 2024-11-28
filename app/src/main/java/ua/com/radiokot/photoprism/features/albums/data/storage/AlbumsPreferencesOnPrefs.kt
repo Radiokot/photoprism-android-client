@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.util.objectPersistenceSubject
 
 class AlbumsPreferencesOnPrefs(
     defaultSort: AlbumSort,
+    defaultMonthSort: AlbumSort,
     preferences: SharedPreferences,
     keyPrefix: String = "albums",
     jsonObjectMapper: JsonObjectMapper,
@@ -42,5 +43,15 @@ class AlbumsPreferencesOnPrefs(
                 jsonObjectMapper = jsonObjectMapper,
             ),
             defaultValue = defaultSort,
+        )
+
+    override val monthSort: BehaviorSubject<AlbumSort> =
+        objectPersistenceSubject(
+            persistence = AlbumSortPersistenceOnPrefs(
+                key = "${keyPrefix}_month_sort",
+                preferences = preferences,
+                jsonObjectMapper = jsonObjectMapper,
+            ),
+            defaultValue = defaultMonthSort,
         )
 }

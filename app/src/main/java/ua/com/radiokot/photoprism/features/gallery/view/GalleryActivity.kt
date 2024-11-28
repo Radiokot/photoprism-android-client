@@ -415,16 +415,9 @@ class GalleryActivity : BaseActivity() {
                     openPreferences()
                 }
 
-                is GalleryViewModel.Event.OpenFolders -> {
-                    openAlbums(
-                        albumType = Album.TypeName.FOLDER,
-                        defaultSearchConfig = event.defaultSearchConfig,
-                    )
-                }
-
                 is GalleryViewModel.Event.OpenAlbums -> {
                     openAlbums(
-                        albumType = Album.TypeName.ALBUM,
+                        albumType = event.albumType,
                         defaultSearchConfig = event.defaultSearchConfig,
                     )
                 }
@@ -1068,7 +1061,7 @@ class GalleryActivity : BaseActivity() {
     private val GalleryViewModel.Error.localizedMessage: String
         get() = when (this) {
             GalleryViewModel.Error.NoMediaFound ->
-                getString(R.string.no_media_found)
+                getString(R.string.nothing_found)
 
             GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)

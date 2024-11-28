@@ -51,6 +51,9 @@ class GalleryNavigationView(
         navigationMenu.findItem(R.id.favorites)
             .setOnMenuItemClickListener(getClickListener(viewModel::onFavoritesClicked))
 
+        navigationMenu.findItem(R.id.calendar)
+            .setOnMenuItemClickListener(getClickListener(viewModel::onCalendarClicked))
+
         navigationMenu.findItem(R.id.folders)
             .setOnMenuItemClickListener(getClickListener(viewModel::onFoldersClicked))
 

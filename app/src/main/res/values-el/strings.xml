@@ -12,7 +12,6 @@
     <string name="media_type_text">κείμενο</string>
     <string name="media_type_other">λοιπά αρχεία</string>
     <string name="media_type_unknown">άγνωστος τύπος αρχείου</string>
-    <string name="select_media_file">επιλογή τύπου αρχείου</string>
     <string name="file_thumbnail">εικονίδιο αρχείου</string>
     <string name="downloading_progress">λήψη…</string>
     <string name="cancel">ακύρωση</string>
@@ -91,7 +90,6 @@
     <string name="disconnect_from_library">αποσύνδεση</string>
     <string name="disconnect_from_library_confirmation">Αποσύνδεση από τη βιβλιοθήκη; Οι σελιδοδείκτες σας θα παραμείνουν</string>
     <string name="template_error_failed_to_disconnect">αποτυχία αποσύνδεσης: %1$s</string>
-    <string name="no_media_found">δε βρέθηκαν πολυμέσα</string>
     <string name="view_media">προβολή</string>
     <string name="open_in_web_viewer">άνοιγμα σε περιηγητή</string>
     <string name="albums">άλμπουμ</string>
@@ -264,5 +262,8 @@
     <string name="favorites">Αγαπημένα</string>
     <string name="preference_enabled">Ενεργοποιημένο</string>
     <string name="extension_memories_max_entry_count_preference">Μέγιστος αριθμός αντικειμένων</string>
+    <string name="calendar">Ημερολόγιο</string>
+    <string name="failed_to_load_calendar">Αποτυχία φόρτωσης ημερολογίου</string>
+    <string name="nothing_found">Δεν βρέθηκε τίποτα</string>
 
 </resources>

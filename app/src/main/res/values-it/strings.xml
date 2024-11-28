@@ -12,7 +12,6 @@
     <string name="media_type_text">Testo</string>
     <string name="media_type_other">Altro file</string>
     <string name="media_type_unknown">Tipo di file sconosciuto</string>
-    <string name="select_media_file">Seleziona file multimediale</string>
     <string name="file_thumbnail">Miniatura file</string>
     <string name="downloading_progress">Scaricando…</string>
     <string name="cancel">Cancella</string>
@@ -91,7 +90,6 @@
     <string name="disconnect_from_library">Disconnetti</string>
     <string name="disconnect_from_library_confirmation">Disconnetti dalla libreria? I tuoi segnalibri saranno conservati</string>
     <string name="template_error_failed_to_disconnect">Disconnessione fallita: %1$s</string>
-    <string name="no_media_found">Nessun media trovato</string>
     <string name="view_media">Visualizza</string>
     <string name="open_in_web_viewer">Apri nel visualizzatore web</string>
     <string name="albums">Album</string>
@@ -264,5 +262,8 @@
     <string name="favorites">Preferiti</string>
     <string name="preference_enabled">Abilitato</string>
     <string name="extension_memories_max_entry_count_preference">Numero massimo di elementi</string>
+    <string name="calendar">Calendario</string>
+    <string name="failed_to_load_calendar">Caricamento del calendario non riuscito</string>
+    <string name="nothing_found">Nessun risultato</string>
 
 </resources>

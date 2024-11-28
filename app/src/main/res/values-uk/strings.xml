@@ -12,7 +12,6 @@
     <string name="media_type_text">Текст</string>
     <string name="media_type_other">Інший файл</string>
     <string name="media_type_unknown">Невідомий тип</string>
-    <string name="select_media_file">Оберіть файл</string>
     <string name="file_thumbnail">Мініатюра</string>
     <string name="downloading_progress">Завантаження…</string>
     <string name="cancel">Скасувати</string>
@@ -91,7 +90,6 @@
     <string name="disconnect_from_library">Відключитися</string>
     <string name="disconnect_from_library_confirmation">Відключитися від бібліотеки? Ваші закладки не пропадуть</string>
     <string name="template_error_failed_to_disconnect">Не вдалося відключитися: %1$s</string>
-    <string name="no_media_found">Нічого не знайдено</string>
     <string name="view_media">Перегляд</string>
     <string name="open_in_web_viewer">Відкрити у веб-застосунку</string>
     <string name="albums">Альбоми</string>
@@ -264,5 +262,8 @@
     <string name="favorites">Вибране</string>
     <string name="preference_enabled">Увімкнено</string>
     <string name="extension_memories_max_entry_count_preference">Максимальна кількість елементів</string>
+    <string name="calendar">Календар</string>
+    <string name="failed_to_load_calendar">Не вдалося завантажити календар</string>
+    <string name="nothing_found">Нічого не знайдено</string>
 
 </resources>

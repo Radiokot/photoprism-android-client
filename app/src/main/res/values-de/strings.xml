@@ -13,7 +13,6 @@
     <string name="media_type_text">Text</string>
     <string name="media_type_other">Andere</string>
     <string name="media_type_unknown">Unbekannt</string>
-    <string name="select_media_file">Datei auswählen</string>
     <string name="file_thumbnail">Miniaturansicht</string>
     <string name="downloading_progress">Herunterladen…</string>
     <string name="cancel">Abbrechen</string>
@@ -89,7 +88,6 @@
     <string name="disconnect_from_library">Trennen</string>
     <string name="disconnect_from_library_confirmation">Von der Sammlung trennen? Lesezeichen bleiben erhalten</string>
     <string name="template_error_failed_to_disconnect">Konnte nicht trennen: %1$s</string>
-    <string name="no_media_found">Keine Medien gefunden</string>
     <string name="view_media">Ansehen</string>
     <string name="open_in_web_viewer">Im Web Viewer öffnen</string>
     <string name="albums">Alben</string>
@@ -262,5 +260,8 @@
     <string name="favorites">Favoriten</string>
     <string name="preference_enabled">Aktiviert</string>
     <string name="extension_memories_max_entry_count_preference">Maximale Anzahl von Elementen</string>
+    <string name="calendar">Kalender</string>
+    <string name="failed_to_load_calendar">Kalender konnte nicht geladen werden</string>
+    <string name="nothing_found">Nichts gefunden</string>
 
 </resources>
