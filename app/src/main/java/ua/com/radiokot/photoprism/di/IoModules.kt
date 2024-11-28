@@ -116,34 +116,27 @@ val ioModules: List<Module> = listOf(
 
     // Directories
     module {
-        fun File.createIfNotExists() = apply(File::mkdirs)
-
         single(named(EXTERNAL_DOWNLOADS_DIRECTORY)) {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .createIfNotExists()
         } bind File::class
 
         single(named(INTERNAL_DOWNLOADS_DIRECTORY)) {
             // See R.xml.file_provider_paths.
-            File(androidApplication().filesDir.absolutePath + "/downloads")
-                .createIfNotExists()
+            File(androidApplication().cacheDir.absolutePath + "/downloads")
         } bind File::class
 
         single(named(INTERNAL_EXPORT_DIRECTORY)) {
             // See R.xml.file_provider_paths.
             File(androidApplication().filesDir.absolutePath + "/export")
-                .createIfNotExists()
         } bind File::class
 
         single(named(VIDEO_CACHE_DIRECTORY)) {
             File(androidApplication().cacheDir, "video-cache")
-                .createIfNotExists()
         } bind File::class
 
         single(named(IMAGE_CACHE_DIRECTORY)) {
             // Directory name matches Picasso default cache for backward compatibility.
             File(androidApplication().cacheDir, "picasso-cache")
-                .createIfNotExists()
         } bind File::class
     },
 

@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Improved randomness and speed of the Photo frame widget
+- Files downloaded for sharing or opening in another app
+  are now stored in "Cache" instead of "Data"
 
 ### Removed
 

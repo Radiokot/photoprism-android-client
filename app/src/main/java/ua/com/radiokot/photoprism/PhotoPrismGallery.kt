@@ -178,8 +178,15 @@ class PhotoPrismGallery : Application() {
     private fun clearInternalDownloads() {
         thread {
             try {
+                // Used to be the internal downloads directory.
+                File(filesDir.absolutePath + "/downloads")
+                    .takeIf(File::exists)
+                    ?.listFiles()
+                    ?.forEach(File::deleteRecursively)
+
                 get<File>(named(INTERNAL_DOWNLOADS_DIRECTORY))
-                    .listFiles()
+                    .takeIf(File::exists)
+                    ?.listFiles()
                     ?.forEach(File::deleteRecursively)
             } catch (e: Throwable) {
                 log.error(e) { "clearInternalDownloads(): error_occurred" }

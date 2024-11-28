@@ -220,7 +220,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
         downloadDisposable?.dispose()
         downloadDisposable = filesAndDestinations
             .mapIndexed { currentDownloadIndex, (file, destination) ->
-                val downloadUrl =  downloadUrlFactory.getDownloadUrl(
+                val downloadUrl = downloadUrlFactory.getDownloadUrl(
                     hash = file.hash,
                 )
 
@@ -315,7 +315,10 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
     private fun getExternalDownloadDestination(
         file: GalleryMedia.File,
     ): File {
-        val fileByExactName = File(externalDownloadsDir, File(file.name).name)
+        val fileByExactName = File(
+            externalDownloadsDir.also(File::mkdirs),
+            File(file.name).name
+        )
 
         return if (!fileByExactName.exists() || fileByExactName.canRead() && fileByExactName.canWrite())
         // Return a file with the exact name (as is) if it doesn't exist or accessible if it does.
@@ -343,5 +346,8 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
     private fun getInternalDownloadDestination(
         file: GalleryMedia.File,
     ) =
-        File(internalDownloadsDir, "download_${file.uid}")
+        File(
+            internalDownloadsDir.also(File::mkdirs),
+            "download_${file.uid}"
+        )
 }

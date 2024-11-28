@@ -47,7 +47,7 @@ class ExportSearchBookmarksUseCase(
 
     private fun getOutputFile(): Single<File> = {
         File(
-            exportDir,
+            exportDir.also(File::mkdirs),
             "bookmarks_backup",
         )
     }.toSingle().subscribeOn(Schedulers.io())
