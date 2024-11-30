@@ -158,5 +158,14 @@ data class SearchConfig(
         )
 
         private const val DAY_MS = 86400000L
+
+        fun forAlbum(
+            albumUid: String,
+            base: SearchConfig = DEFAULT,
+        ): SearchConfig =
+            base.copy(
+                albumUid = albumUid,
+                includePrivate = true,
+            )
     }
 }

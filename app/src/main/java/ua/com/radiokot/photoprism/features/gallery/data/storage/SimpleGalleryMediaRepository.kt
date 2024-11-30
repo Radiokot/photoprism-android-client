@@ -321,13 +321,15 @@ class SimpleGalleryMediaRepository(
             get(Params(searchConfig))
 
         fun get(params: Params = Params()): SimpleGalleryMediaRepository {
-            val key = params.toString()
-
+            val key = params.asKey()
             return cache[key]
                 ?: create(params).also {
                     cache.put(key, it)
                 }
         }
+
+        fun getCreated(params: Params): SimpleGalleryMediaRepository? =
+            cache[params.asKey()]
 
         fun create(
             params: Params = Params(),
@@ -344,5 +346,8 @@ class SimpleGalleryMediaRepository(
         fun invalidateAllCached() {
             cache.snapshot().values.onEach(Repository::invalidate)
         }
+
+        private fun Params.asKey(): String =
+            toString()
     }
 }

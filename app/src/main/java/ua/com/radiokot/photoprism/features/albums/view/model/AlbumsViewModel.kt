@@ -216,9 +216,9 @@ class AlbumsViewModel(
                 else
                     null,
                 repositoryParams = SimpleGalleryMediaRepository.Params(
-                    searchConfig = defaultSearchConfig.copy(
-                        includePrivate = true,
+                    searchConfig = SearchConfig.forAlbum(
                         albumUid = album.uid,
+                        base = defaultSearchConfig,
                     )
                 )
             )
