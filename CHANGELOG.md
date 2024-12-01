@@ -5,18 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.33.0] - 2024-12-01
 
 ### Added
 
-- Ability to disable Memories
-- Ability to configure the max number of entries in a memory
 - Ability to select items by dragging after a long press
+- Ability to disable [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
+- Ability to configure the max number of entries in a memory
 - Ability to browse months (calendar) from the main menu
 
 ### Changed
 
-- Improved randomness and speed of the Photo frame widget
+- Improved randomness and speed of the [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
 - Files downloaded for sharing or opening in another app
   are now stored in "Cache" instead of "Data"
 
@@ -717,7 +717,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the
   `PHOTOPRISM_SITE_URL` server config value
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.32.0(48)...HEAD
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.33.0(49)...HEAD
+
+[1.33.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.32.0(48)...1.33.0(49)
 
 [1.32.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.31.1(47)...1.32.0(48)
 
