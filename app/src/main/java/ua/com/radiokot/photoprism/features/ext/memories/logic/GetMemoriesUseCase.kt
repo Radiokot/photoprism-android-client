@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.util.DbscanClustering
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.Calendar
 import java.util.GregorianCalendar
+import kotlin.random.Random
 
 /**
  * Fetches memories relevant at the moment.
@@ -48,17 +49,26 @@ class GetMemoriesUseCase(
 
     private fun getThisDayInThePastMemories(year: Int): Maybe<Memory> {
         val localCalendar = LocalDate().getCalendar()
+        val userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
+                "month:${localCalendar[Calendar.MONTH] + 1} " +
+                "year:$year"
 
         return getItemsForMemories(
             searchConfig = SearchConfig.DEFAULT.copy(
                 mediaTypes = MEDIA_TYPES,
-                userQuery = "day:${localCalendar[Calendar.DAY_OF_MONTH]} " +
-                        "month:${localCalendar[Calendar.MONTH] + 1} " +
-                        "year:$year",
-            )
+                userQuery = userQuery,
+            ),
+            // Shuffle seed is the same for subsequent launches,
+            // yet different each year.
+            shuffleSeed = userQuery.hashCode() xor localCalendar[Calendar.YEAR].hashCode()
         )
-            .flatMapMaybe { photoPrismMergedPhotos ->
-                if (photoPrismMergedPhotos.isEmpty())
+            .map { pickedMedia ->
+                // Apply the same sort as when displaying a memory
+                // to have a matching thumbnail.
+                pickedMedia.sortedByDescending(GalleryMedia::takenAtLocal)
+            }
+            .flatMapMaybe { sortedPickedMedia ->
+                if (sortedPickedMedia.isEmpty())
                     return@flatMapMaybe Maybe.empty()
 
                 Maybe.just(
@@ -66,14 +76,17 @@ class GetMemoriesUseCase(
                         typeData = Memory.TypeData.ThisDayInThePast(
                             year = year,
                         ),
-                        searchQuery = photoPrismMergedPhotos.searchQuery,
-                        thumbnailHash = photoPrismMergedPhotos.first().hash,
+                        searchQuery = sortedPickedMedia.searchQuery,
+                        thumbnailHash = sortedPickedMedia.first().hash,
                     )
                 )
             }
     }
 
-    private fun getItemsForMemories(searchConfig: SearchConfig): Single<List<GalleryMedia>> {
+    private fun getItemsForMemories(
+        searchConfig: SearchConfig,
+        shuffleSeed: Int,
+    ): Single<List<GalleryMedia>> {
         val repository = galleryMediaRepositoryFactory.create(
             params = SimpleGalleryMediaRepository.Params(searchConfig),
             pageLimit = MAX_ITEMS_TO_LOAD,
@@ -94,15 +107,16 @@ class GetMemoriesUseCase(
                                 minClusterSize = 1,
                             )
                     }
+                    // Deterministically shuffle the groups.
+                    .shuffled(Random(shuffleSeed))
+                    // Limit total number of groups in the memory.
+                    .take(memoriesPreferences.maxEntriesInMemory)
+                    // From each selected group, pick a single most preferred item.
                     .flatMap { clusterItems ->
-                        // From items taken at around the same time,
-                        // pick the most preferred one.
                         clusterItems
                             .sortedWith(PREFERABLE_ITEM_COMPARATOR)
                             .take(1)
                     }
-                    // Limit total number of items in the memory.
-                    .take(memoriesPreferences.maxEntriesInMemory)
             }
     }
 
@@ -122,7 +136,7 @@ class GetMemoriesUseCase(
         private const val TIME_CLUSTERING_DISTANCE_MS = 15_000L
         private val GARBAGE_ITEM_PREDICATE = "screen(shot|_?record)".toRegex()
             .let { screenCaptureRegex ->
-                fun (item: GalleryMedia) =
+                fun(item: GalleryMedia) =
                     item.title.lowercase().contains(screenCaptureRegex)
             }
 
