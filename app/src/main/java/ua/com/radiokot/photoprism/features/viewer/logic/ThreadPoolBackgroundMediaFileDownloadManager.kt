@@ -27,7 +27,8 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
 
     override fun enqueue(
         file: GalleryMedia.File,
-        destination: File
+        destination: File,
+        notifyMediaScanner: Boolean,
     ): Observable<out BackgroundMediaFileDownloadManager.Status> {
         val key = file.mediaUid
 
@@ -44,7 +45,8 @@ class ThreadPoolBackgroundMediaFileDownloadManager(
                     .invoke(
                         url = downloadUrlFactory.getDownloadUrl(file.hash),
                         destination = destination,
-                        mimeType = file.mimeType
+                        mimeType = file.mimeType,
+                        notifyMediaScanner = notifyMediaScanner,
                     )
                     .subscribeOn(scheduler)
                     .map { progress ->

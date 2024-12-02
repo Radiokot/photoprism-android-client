@@ -55,6 +55,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
                 filesAndDestinations = files.map { mediaFile ->
                     mediaFile to getExternalDownloadDestination(mediaFile)
                 },
+                notifyMediaScanner = true,
                 onSuccess = { sendableFiles ->
                     mediaFileDownloadActionsEvents.onNext(Event.ShowFilesDownloadedMessage)
                     onDownloadFinished(sendableFiles)
@@ -91,6 +92,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
             backgroundMediaFileDownloadManager.enqueue(
                 file = file,
                 destination = destination,
+                notifyMediaScanner = true,
             )
 
             onDownloadEnqueued(SendableFile(file to destination))
@@ -131,6 +133,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
             filesAndDestinations = listOf(
                 file to getInternalDownloadDestination(file)
             ),
+            notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
                 mediaFileDownloadActionsEvents.onNext(
                     Event.OpenDownloadedFile(sendableFiles.first())
@@ -151,6 +154,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
             filesAndDestinations = files.map { mediaFile ->
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
+            notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
                 mediaFileDownloadActionsEvents.onNext(
                     Event.ShareDownloadedFiles(sendableFiles)
@@ -168,6 +172,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
             filesAndDestinations = files.map { mediaFile ->
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
+            notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
                 mediaFileDownloadActionsEvents.onNext(
                     Event.ReturnDownloadedFiles(
@@ -208,6 +213,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
 
     private fun downloadFiles(
         filesAndDestinations: List<Pair<GalleryMedia.File, File>>,
+        notifyMediaScanner: Boolean,
         onSuccess: (sendableFiles: List<SendableFile>) -> Unit,
     ) {
         log.debug {
@@ -239,6 +245,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
                         url = downloadUrl,
                         destination = destination,
                         mimeType = file.mimeType,
+                        notifyMediaScanner = notifyMediaScanner,
                     )
                     .subscribeOn(Schedulers.io())
                     .throttleLatest(500, TimeUnit.MILLISECONDS)

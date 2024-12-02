@@ -15,6 +15,7 @@ interface BackgroundMediaFileDownloadManager {
     fun enqueue(
         file: GalleryMedia.File,
         destination: File,
+        notifyMediaScanner: Boolean,
     ): Observable<out Status>
 
     /**

@@ -19,12 +19,14 @@ class DownloadFileUseCase(
      * Downloads the remote file at [url] to the give [destination].
      * In case of error or cancellation, safely deletes the [destination].
      *
-     * If [mimeType] and [context] are set, notifies MediaScanner on completion.
+     * @param notifyMediaScanner if set along with [mimeType] and [context] are set,
+     * notifies MediaScanner on completion.
      */
     operator fun invoke(
         url: String,
         destination: File,
         mimeType: String?,
+        notifyMediaScanner: Boolean,
     ): Observable<ObservableDownloader.Progress> {
         return observableDownloader
             .download(
@@ -47,7 +49,11 @@ class DownloadFileUseCase(
             }
             .doOnComplete {
                 // Notify MediaScanner for the content to immediately appear in galleries.
-                if (mimeType != null && context != null && destination.exists()) {
+                if (notifyMediaScanner
+                    && mimeType != null
+                    && context != null
+                    && destination.exists()
+                ) {
                     if (mimeType == MimeTypes.IMAGE_JPEG) {
                         // MediaScanner uses buggy ExifInterface implementation
                         // to determine JPEGs orientation, which fails.
