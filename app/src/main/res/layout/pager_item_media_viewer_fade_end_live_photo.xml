@@ -14,6 +14,7 @@
         app:hide_on_touch="false"
         app:show_buffering="when_playing"
         app:show_timeout="0"
+        app:surface_type="texture_view"
         app:touch_target_height="0dp"
         app:use_controller="false" />
 

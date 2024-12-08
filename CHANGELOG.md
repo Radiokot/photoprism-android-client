@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Improved [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension) selection randomness
+- Switched to the the alternative video rendering method,
+  which should fix stretching and orientation issues on TVs
 
 ## [1.33.0] - 2024-12-01
 
