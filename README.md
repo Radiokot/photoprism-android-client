@@ -72,7 +72,7 @@ Compatibility with older PhotoPrism versions may be partial.
 [<img src="https://avatars.githubusercontent.com/u/6351543?s=100" alt="Tobias Fiechter" title="Tobias Fiechter" height=70 />](https://github.com/tobiasfiechter)
 [<img src="https://avatars.githubusercontent.com/u/52239579?s=100" alt="ippocratis" title="ippocratis" height=70 />](https://github.com/ippocratis)
 <br>
-…and 6 anonymous sponsors.
+…and 7 anonymous sponsors.
 
 *I am very grateful to everyone [supporting this project](https://radiokot.com.ua/tip) ❤️ To join this public list, email me the transaction reference once it is complete. By the way, sponsors get [extensions](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions) for free.*
 
