@@ -37,7 +37,7 @@ class ShapeMaskImageTransformation(
         val resultBitmap = Bitmap.createBitmap(
             shapeMaskRect.width(),
             shapeMaskRect.height(),
-            source.config
+            source.config!!
         )
         val resultCanvas = Canvas(resultBitmap)
 

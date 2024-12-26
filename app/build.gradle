@@ -16,7 +16,7 @@ def fileProviderAuthority = ""
 
 android {
     namespace "ua.com.radiokot.photoprism"
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdk 21
@@ -94,18 +94,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
         languageVersion = kotlin_version
         apiVersion = kotlin_version
     }
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 
     packagingOptions {
@@ -172,9 +173,9 @@ dependencies {
     // Must be 4.3 for Java 8 compatibility.
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
 
-    implementation 'androidx.media3:media3-exoplayer:1.4.1'
-    implementation 'androidx.media3:media3-ui:1.4.1'
-    implementation 'androidx.media3:media3-datasource-okhttp:1.4.1'
+    implementation 'androidx.media3:media3-exoplayer:1.5.1'
+    implementation 'androidx.media3:media3-ui:1.5.1'
+    implementation 'androidx.media3:media3-datasource-okhttp:1.5.1'
 
     testImplementation 'junit:junit:4.13.2'
 
