@@ -295,6 +295,21 @@ class MediaViewerViewModel(
         )
     }
 
+    fun onAddToAlbumClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onAddToAlbumClicked(): position_out_of_range"
+            }
+            return
+        }
+
+        galleryMediaRemoteActionsViewModel.addGalleryMediaToAlbum(
+            mediaUids = setOf(item.uid),
+        )
+    }
+
     fun onArchiveClicked(position: Int) {
         val item = galleryMediaRepository.itemsList.getOrNull(position)
 

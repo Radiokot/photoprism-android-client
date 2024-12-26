@@ -57,6 +57,7 @@ import ua.com.radiokot.photoprism.extension.recyclerView
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -108,6 +109,10 @@ class MediaViewerActivity : BaseActivity() {
     private val slideshowLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onSlideshowResult,
+    )
+    private val addDestinationAlbumSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onAddingDestinationAlbumSelectionResult,
     )
     private val swipeToDismissHandler: SwipeToDismissHandler by lazy {
         SwipeToDismissHandler(
@@ -538,6 +543,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         val actionItems = listOf(
+            menu.findItem(R.id.add_to_album),
             menu.findItem(R.id.archive),
             menu.findItem(R.id.delete),
             menu.findItem(R.id.is_private),
@@ -572,6 +578,13 @@ class MediaViewerActivity : BaseActivity() {
 
         R.id.open_in_web_viewer -> {
             viewModel.onOpenInWebViewerClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        R.id.add_to_album -> {
+            viewModel.onAddToAlbumClicked(
                 position = view.viewPager.currentItem
             )
             true
@@ -819,13 +832,18 @@ class MediaViewerActivity : BaseActivity() {
 
             when (event) {
                 GalleryMediaRemoteActionsViewModel.Event.OpenAlbumForAddingSelection ->
-                    error("Unsupported event")
+                    openAddingDestinationAlbumSelection()
 
                 GalleryMediaRemoteActionsViewModel.Event.OpenDeletingConfirmationDialog ->
                     openDeletingConfirmationDialog()
 
                 is GalleryMediaRemoteActionsViewModel.Event.ShowFloatingAddedToAlbumMessage ->
-                    error("Unsupported event")
+                    showFloatingMessage(
+                        getString(
+                            R.string.template_selected_added_to_album,
+                            event.albumTitle,
+                        )
+                    )
             }
 
             log.debug {
@@ -921,21 +939,27 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     private fun showStartedDownloadMessage(destinationFileName: String) {
-        Snackbar.make(
-            view.snackbarArea,
-            getString(
+        showFloatingMessage(
+            message =  getString(
                 R.string.template_started_download_file,
                 destinationFileName
             ),
-            1000,
-        ).show()
+            duration = 1000,
+        )
     }
 
     private fun showMissingStoragePermissionMessage() {
+        showFloatingMessage(getString(R.string.error_storage_permission_is_required))
+    }
+
+    private fun showFloatingMessage(
+        message: String,
+        duration: Int = Snackbar.LENGTH_SHORT,
+    ) {
         Snackbar.make(
             view.snackbarArea,
-            getString(R.string.error_storage_permission_is_required),
-            Snackbar.LENGTH_SHORT,
+            message,
+            duration,
         ).show()
     }
 
@@ -991,6 +1015,29 @@ class MediaViewerActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun openAddingDestinationAlbumSelection() {
+        addDestinationAlbumSelectionLauncher.launch(
+            Intent(this, DestinationAlbumSelectionActivity::class.java)
+                .putExtras(
+                    DestinationAlbumSelectionActivity.getBundle(
+                        selectedAlbums = emptySet(),
+                        isSingleSelection = true,
+                    )
+                )
+        )
+    }
+
+    private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            viewModel.onAlbumForAddingGalleryMediaSelected(
+                selectedAlbum = DestinationAlbumSelectionActivity
+                    .getSelectedAlbums(bundle)
+                    .first()
+            )
+        }
     }
 
     // Swipe to dismiss happens here.

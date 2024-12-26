@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to add the entry to an album from the media viewer screen
+
 ### Changed
 
 - Improved [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension) selection randomness
