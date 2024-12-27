@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
@@ -76,9 +77,9 @@ class GallerySingleRepositoryViewModel(
 
         if (!allowMultiple) {
             listViewModel.initSelectingSingle(
-                onSingleMediaFileSelected = { file ->
+                onSingleMediaSelected = { media ->
                     mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-                        files = listOf(file),
+                        files = listOf(media.originalFile),
                     )
                 },
                 shouldPostItemsNow = { true },
@@ -222,12 +223,12 @@ class GallerySingleRepositoryViewModel(
             "Done multiple selection button is only clickable when selecting multiple for other app"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Done multiple selection button is only clickable when something is selected"
         }
 
         mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-            files = selectedFilesByMediaUid.values,
+            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
         )
     }
 
@@ -236,12 +237,12 @@ class GallerySingleRepositoryViewModel(
             "Share multiple selection button is only clickable when selecting"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Share multiple selection button is only clickable when something is selected"
         }
 
         mediaFilesActionsViewModel.downloadAndShareMediaFiles(
-            files = selectedFilesByMediaUid.values,
+            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
             onShared = {
                 switchToViewing()
             }
@@ -253,12 +254,12 @@ class GallerySingleRepositoryViewModel(
             "Download multiple selection button is only clickable when selecting"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Download multiple selection button is only clickable when something is selected"
         }
 
         mediaFilesActionsViewModel.downloadMediaFilesToExternalStorage(
-            files = selectedFilesByMediaUid.values,
+            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
             onDownloadFinished = {
                 switchToViewing()
             }
@@ -270,12 +271,12 @@ class GallerySingleRepositoryViewModel(
             "Adding multiple selection to album button is only clickable when selecting"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Adding multiple selection to album button is only clickable when something is selected"
         }
 
         galleryMediaRemoteActionsViewModel.addGalleryMediaToAlbum(
-            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            mediaUids = selectedMediaByUid.keys.toList(),
             onStarted = ::switchToViewing,
         )
     }
@@ -285,12 +286,12 @@ class GallerySingleRepositoryViewModel(
             "Archive multiple selection button is only clickable when selecting"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Archive multiple selection button is only clickable when something is selected"
         }
 
         galleryMediaRemoteActionsViewModel.archiveGalleryMedia(
-            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            mediaUids = selectedMediaByUid.keys.toList(),
             currentMediaRepository = currentMediaRepository,
             onStarted = ::switchToViewing,
         )
@@ -301,12 +302,12 @@ class GallerySingleRepositoryViewModel(
             "Delete multiple selection button is only clickable when selecting"
         }
 
-        check(selectedFilesByMediaUid.isNotEmpty()) {
+        check(selectedMediaByUid.isNotEmpty()) {
             "Delete multiple selection button is only clickable when something is selected"
         }
 
         galleryMediaRemoteActionsViewModel.deleteGalleryMedia(
-            mediaUids = selectedFilesByMediaUid.keys.toList(),
+            mediaUids = selectedMediaByUid.keys.toList(),
             currentMediaRepository = currentMediaRepository,
             onStarted = ::switchToViewing,
         )

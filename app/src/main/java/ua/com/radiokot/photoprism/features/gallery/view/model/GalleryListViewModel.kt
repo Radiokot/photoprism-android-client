@@ -13,7 +13,7 @@ interface GalleryListViewModel {
     val itemList: BehaviorSubject<List<GalleryListItem>>
     val itemScale: BehaviorSubject<GalleryItemScale>
     val selectedItemsCount: BehaviorSubject<Int>
-    val selectedFilesByMediaUid: LinkedHashMap<String, GalleryMedia.File>
+    val selectedMediaByUid: LinkedHashMap<String, GalleryMedia>
 
     fun postGalleryItemsAsync(repository: SimpleGalleryMediaRepository)
     fun postGalleryItems(repository: SimpleGalleryMediaRepository)

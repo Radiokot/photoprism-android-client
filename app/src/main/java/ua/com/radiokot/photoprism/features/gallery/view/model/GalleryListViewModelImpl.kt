@@ -35,8 +35,8 @@ class GalleryListViewModelImpl(
         galleryPreferences.itemScale
     override val selectedItemsCount: BehaviorSubject<Int> =
         BehaviorSubject.createDefault(0)
-    override val selectedFilesByMediaUid =
-        linkedMapOf<String, GalleryMedia.File>()
+    override val selectedMediaByUid =
+        linkedMapOf<String, GalleryMedia>()
 
     private val currentState: State
         get() = itemListState.value!!
@@ -44,17 +44,17 @@ class GalleryListViewModelImpl(
     private val itemPostingSubject: PublishSubject<SimpleGalleryMediaRepository> =
         PublishSubject.create()
     private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
-    private var onSingleMediaFileSelected: ((GalleryMedia.File) -> Unit)? = null
+    private var onSingleMediaSelected: ((GalleryMedia) -> Unit)? = null
     private var onSwitchedFromViewingToSelecting: (() -> Unit)? = null
     private var onSwitchedFromSelectingToViewing: (() -> Unit)? = null
     private var canSwitchFromSelectingToViewing = true
     var addDateHeaders = true
 
     fun initSelectingSingle(
-        onSingleMediaFileSelected: (GalleryMedia.File) -> Unit,
+        onSingleMediaSelected: (GalleryMedia) -> Unit,
         shouldPostItemsNow: (SimpleGalleryMediaRepository) -> Boolean,
     ) {
-        this.onSingleMediaFileSelected = onSingleMediaFileSelected
+        this.onSingleMediaSelected = onSingleMediaSelected
         canSwitchFromSelectingToViewing = false
 
         initAsyncItemPosting(shouldPostItemsNow)
@@ -207,7 +207,7 @@ class GalleryListViewModelImpl(
                         source = galleryMedia,
                         isViewButtonVisible = areViewButtonsVisible,
                         isSelectionViewVisible = areSelectionViewsVisible,
-                        isMediaSelected = selectedFilesByMediaUid.containsKey(galleryMedia.uid),
+                        isMediaSelected = galleryMedia.uid in selectedMediaByUid,
                         itemScale = itemScale,
                         previewUrlFactory = previewUrlFactory,
                     )
@@ -230,14 +230,14 @@ class GalleryListViewModelImpl(
         when (val currentState = this.currentState) {
             is State.Selecting -> {
                 if (!currentState.allowMultiple) {
-                    onSingleMediaFileSelected?.invoke(media.originalFile)
+                    onSingleMediaSelected?.invoke(media)
                 } else {
-                    if (selectedFilesByMediaUid.containsKey(media.uid)) {
+                    if (media.uid in selectedMediaByUid) {
                         // When clicking currently selected media in the multiple selection state,
                         // just unselect it.
                         removeMediaFromSelection(media.uid)
                     } else {
-                        addFileToSelection(media.originalFile)
+                        addMediaToSelection(media)
                     }
                 }
             }
@@ -310,11 +310,11 @@ class GalleryListViewModelImpl(
             val media = item.source
                 ?: return@forEach
 
-            if (isSelected && !selectedFilesByMediaUid.containsKey(media.uid)) {
-                selectedFilesByMediaUid[media.uid] = media.originalFile
+            if (isSelected && media.uid !in selectedMediaByUid) {
+                selectedMediaByUid[media.uid] = media
                 changedCount++
-            } else if (!isSelected && selectedFilesByMediaUid.containsKey(media.uid)) {
-                selectedFilesByMediaUid.remove(media.uid)
+            } else if (!isSelected && media.uid in selectedMediaByUid) {
+                selectedMediaByUid.remove(media.uid)
                 changedCount++
             }
         }
@@ -330,18 +330,17 @@ class GalleryListViewModelImpl(
         }
     }
 
-    private fun addFileToSelection(file: GalleryMedia.File) {
+    private fun addMediaToSelection(media: GalleryMedia) {
         val currentState = this.currentState
         check(currentState is State.Selecting && currentState.allowMultiple) {
-            "Media file can only be added to the multiple selection in the corresponding state"
+            "Media can only be added to the multiple selection in the corresponding state"
         }
 
-        selectedFilesByMediaUid[file.mediaUid] = file
+        selectedMediaByUid[media.uid] = media
 
         log.debug {
-            "addFileToSelection(): file_added:" +
-                    "\nfile=$file," +
-                    "\nmediaUid=${file.mediaUid}"
+            "addMediaToSelection(): media_added:" +
+                    "\nmediaUid=${media.uid}"
         }
 
         postGalleryItemsAsync(currentMediaRepository)
@@ -354,14 +353,14 @@ class GalleryListViewModelImpl(
             "Media can only be removed from the multiple selection in the corresponding state"
         }
 
-        selectedFilesByMediaUid.remove(mediaUid)
+        selectedMediaByUid.remove(mediaUid)
 
         log.debug {
             "removeMediaFromSelection(): media_removed:" +
                     "\nmediaUid=$mediaUid"
         }
 
-        if (selectedFilesByMediaUid.isEmpty() && canSwitchFromSelectingToViewing) {
+        if (selectedMediaByUid.isEmpty() && canSwitchFromSelectingToViewing) {
             log.debug { "removeMediaFromSelection(): unselected_last_switching_to_viewing" }
 
             switchFromSelectingToViewing()
@@ -372,7 +371,7 @@ class GalleryListViewModelImpl(
     }
 
     private fun postSelectedItemsCount() {
-        selectedItemsCount.onNext(selectedFilesByMediaUid.keys.size)
+        selectedItemsCount.onNext(selectedMediaByUid.keys.size)
     }
 
     override fun switchFromSelectingToViewing() {
@@ -418,7 +417,7 @@ class GalleryListViewModelImpl(
     }
 
     override fun clearSelection() {
-        selectedFilesByMediaUid.clear()
+        selectedMediaByUid.clear()
         postGalleryItemsAsync(currentMediaRepository)
         postSelectedItemsCount()
     }
