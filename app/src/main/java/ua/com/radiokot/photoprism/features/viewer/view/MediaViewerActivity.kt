@@ -65,12 +65,12 @@ import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.SwipeDirection
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
@@ -84,7 +84,7 @@ import kotlin.math.roundToInt
 class MediaViewerActivity : BaseActivity() {
     private val log = kLogger("MMediaViewerActivity")
     private lateinit var view: ActivityMediaViewerBinding
-    private val viewModel: MediaViewerViewModel by viewModel()
+    private val viewModel: GalleryMediaViewerViewModel by viewModel()
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
     private val dateTimeDateFormat: DateFormat by inject(named(UTC_DATE_TIME_DATE_FORMAT))
@@ -752,13 +752,13 @@ class MediaViewerActivity : BaseActivity() {
 
         viewModel.subtitle.observe(this) { subtitle ->
             view.toolbar.subtitle = when (subtitle) {
-                is MediaViewerViewModel.SubtitleValue.DateTime ->
+                is GalleryMediaViewerViewModel.SubtitleValue.DateTime ->
                     if (subtitle.withYear)
                         dateTimeYearDateFormat.format(subtitle.localDate).capitalized()
                     else
                         dateTimeDateFormat.format(subtitle.localDate).capitalized()
 
-                is MediaViewerViewModel.SubtitleValue.Static ->
+                is GalleryMediaViewerViewModel.SubtitleValue.Static ->
                     subtitle.value
             }
         }
@@ -792,29 +792,29 @@ class MediaViewerActivity : BaseActivity() {
         windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
 
     private fun subscribeToEvents() {
-        viewModel.mediaFileDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
+        viewModel.galleryMediaDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_media_files_actions_event:" +
                         "\nevent=$event"
             }
 
             when (event) {
-                is MediaFileDownloadActionsViewModel.Event.OpenDownloadedFile ->
+                is GalleryMediaDownloadActionsViewModel.Event.OpenDownloadedFile ->
                     openDownloadedFile(event.file)
 
-                MediaFileDownloadActionsViewModel.Event.RequestStoragePermission ->
+                GalleryMediaDownloadActionsViewModel.Event.RequestStoragePermission ->
                     requestStoragePermission()
 
-                is MediaFileDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
+                is GalleryMediaDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
                     error("Unsupported event")
 
-                is MediaFileDownloadActionsViewModel.Event.ShareDownloadedFiles ->
+                is GalleryMediaDownloadActionsViewModel.Event.ShareDownloadedFiles ->
                     shareDownloadedFiles(event.files)
 
-                MediaFileDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
+                GalleryMediaDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
                     error("Unsupported event")
 
-                MediaFileDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
+                GalleryMediaDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showMissingStoragePermissionMessage()
             }
 
@@ -859,32 +859,32 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             when (event) {
-                is MediaViewerViewModel.Event.RequestStoragePermission ->
+                is GalleryMediaViewerViewModel.Event.RequestStoragePermission ->
                     requestStoragePermission()
 
-                is MediaViewerViewModel.Event.ShowStartedDownloadMessage ->
+                is GalleryMediaViewerViewModel.Event.ShowStartedDownloadMessage ->
                     showStartedDownloadMessage(
                         destinationFileName = event.destinationFileName,
                     )
 
-                is MediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
+                is GalleryMediaViewerViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showMissingStoragePermissionMessage()
 
-                is MediaViewerViewModel.Event.OpenWebViewer ->
+                is GalleryMediaViewerViewModel.Event.OpenWebViewer ->
                     openWebViewer(
                         url = event.url,
                     )
 
-                is MediaViewerViewModel.Event.OpenSlideshow ->
+                is GalleryMediaViewerViewModel.Event.OpenSlideshow ->
                     openSlideshow(
                         mediaIndex = event.mediaIndex,
                         repositoryParams = event.repositoryParams,
                     )
 
-                MediaViewerViewModel.Event.Finish ->
+                GalleryMediaViewerViewModel.Event.Finish ->
                     finish()
 
-                is MediaViewerViewModel.Event.ShowFloatingError ->
+                is GalleryMediaViewerViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
             }
 

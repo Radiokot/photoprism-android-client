@@ -7,10 +7,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigationrail.NavigationRailView
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
 
 class GalleryNavigationView(
-    private val viewModel: GalleryViewModel,
+    private val viewModel: GalleryViewModelGallery,
 ) {
     fun initWithDrawer(
         drawerLayout: DrawerLayout,

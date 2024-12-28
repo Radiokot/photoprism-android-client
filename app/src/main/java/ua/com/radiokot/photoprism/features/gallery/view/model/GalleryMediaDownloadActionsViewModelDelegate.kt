@@ -5,39 +5,39 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 
-interface MediaFileDownloadActionsViewModelDelegate : MediaFileDownloadActionsViewModel {
+interface GalleryMediaDownloadActionsViewModelDelegate : GalleryMediaDownloadActionsViewModel {
 
-    fun downloadMediaFilesToExternalStorage(
-        files: Collection<GalleryMedia.File>,
+    fun downloadGalleryMediaToExternalStorage(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit = { _ -> },
     )
 
-    fun downloadMediaFileToExternalStorageInBackground(
-        file: GalleryMedia.File,
+    fun downloadGalleryMediaToExternalStorageInBackground(
+        media: GalleryMedia,
         onDownloadEnqueued: (SendableFile) -> Unit = { _ -> },
     )
 
-    fun getMediaFileBackgroundDownloadStatus(
+    fun getGalleryMediaBackgroundDownloadStatus(
         mediaUid: String,
     ): Observable<out BackgroundMediaFileDownloadManager.Status>
 
-    fun cancelMediaFileBackgroundDownload(
+    fun cancelGalleryMediaBackgroundDownload(
         mediaUid: String,
     )
 
-    fun downloadAndOpenMediaFile(
-        file: GalleryMedia.File,
+    fun downloadAndOpenGalleryMedia(
+        media: GalleryMedia,
         onDownloadFinished: (SendableFile) -> Unit = { _ -> },
     )
 
-    fun downloadAndShareMediaFiles(
-        files: Collection<GalleryMedia.File>,
+    fun downloadAndShareGalleryMedia(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit = { _ -> },
         onShared: () -> Unit = {},
     )
 
-    fun downloadAndReturnMediaFiles(
-        files: Collection<GalleryMedia.File>,
+    fun downloadAndReturnGalleryMedia(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit = { _ -> },
     )
 }

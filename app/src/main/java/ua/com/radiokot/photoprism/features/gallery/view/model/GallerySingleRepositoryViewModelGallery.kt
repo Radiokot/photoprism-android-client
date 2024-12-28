@@ -10,18 +10,17 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
-class GallerySingleRepositoryViewModel(
+class GallerySingleRepositoryViewModelGallery(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val listViewModel: GalleryListViewModelImpl,
-    private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
+    private val mediaFilesActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
-    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaDownloadActionsViewModel by mediaFilesActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("GallerySingleRepositoryVM")
@@ -78,8 +77,8 @@ class GallerySingleRepositoryViewModel(
         if (!allowMultiple) {
             listViewModel.initSelectingSingle(
                 onSingleMediaSelected = { media ->
-                    mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-                        files = listOf(media.originalFile),
+                    mediaFilesActionsViewModel.downloadAndReturnGalleryMedia(
+                        media = listOf(media),
                     )
                 },
                 shouldPostItemsNow = { true },
@@ -227,8 +226,8 @@ class GallerySingleRepositoryViewModel(
             "Done multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        mediaFilesActionsViewModel.downloadAndReturnGalleryMedia(
+            media = selectedMediaByUid.values,
         )
     }
 
@@ -241,8 +240,8 @@ class GallerySingleRepositoryViewModel(
             "Share multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndShareMediaFiles(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        mediaFilesActionsViewModel.downloadAndShareGalleryMedia(
+            media = selectedMediaByUid.values,
             onShared = {
                 switchToViewing()
             }
@@ -258,8 +257,8 @@ class GallerySingleRepositoryViewModel(
             "Download multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadMediaFilesToExternalStorage(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        mediaFilesActionsViewModel.downloadGalleryMediaToExternalStorage(
+            media = selectedMediaByUid.values,
             onDownloadFinished = {
                 switchToViewing()
             }

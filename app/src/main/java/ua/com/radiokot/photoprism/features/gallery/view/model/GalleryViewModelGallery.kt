@@ -20,7 +20,6 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
-import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMonth
@@ -29,7 +28,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
-class GalleryViewModel(
+class GalleryViewModelGallery(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,
@@ -37,11 +36,11 @@ class GalleryViewModel(
     val fastScrollViewModel: GalleryFastScrollViewModel,
     val memoriesListViewModel: GalleryMemoriesListViewModel,
     private val listViewModel: GalleryListViewModelImpl,
-    private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
+    private val galleryMediaDownloadActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
-    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaDownloadActionsViewModel by galleryMediaDownloadActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("GalleryVM")
@@ -134,8 +133,8 @@ class GalleryViewModel(
         if (!allowMultiple) {
             listViewModel.initSelectingSingle(
                 onSingleMediaSelected = { media ->
-                    mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-                        files = listOf(media.originalFile),
+                    galleryMediaDownloadActionsViewModel.downloadAndReturnGalleryMedia(
+                        media = listOf(media),
                     )
                 },
                 shouldPostItemsNow = { repositoryToPostFrom ->
@@ -542,8 +541,8 @@ class GalleryViewModel(
             "Done multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndReturnMediaFiles(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        galleryMediaDownloadActionsViewModel.downloadAndReturnGalleryMedia(
+            media = selectedMediaByUid.values,
         )
     }
 
@@ -556,8 +555,8 @@ class GalleryViewModel(
             "Share multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndShareMediaFiles(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        galleryMediaDownloadActionsViewModel.downloadAndShareGalleryMedia(
+            media = selectedMediaByUid.values,
             onShared = {
                 switchToViewing()
             }
@@ -573,8 +572,8 @@ class GalleryViewModel(
             "Download multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadMediaFilesToExternalStorage(
-            files = selectedMediaByUid.values.map(GalleryMedia::originalFile),
+        galleryMediaDownloadActionsViewModel.downloadGalleryMediaToExternalStorage(
+            media = selectedMediaByUid.values,
             onDownloadFinished = {
                 switchToViewing()
             }

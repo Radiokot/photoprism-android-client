@@ -40,10 +40,10 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewMod
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegateImpl
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegateImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader
@@ -133,19 +133,19 @@ val galleryFeatureModule = module {
         viewModelOf(::GalleryListViewModelImpl) bind GalleryListViewModel::class
 
         viewModel {
-            MediaFileDownloadActionsViewModelDelegateImpl(
+            GalleryMediaDownloadActionsViewModelDelegateImpl(
                 internalDownloadsDir = get(named(INTERNAL_DOWNLOADS_DIRECTORY)),
                 externalDownloadsDir = get(named(EXTERNAL_DOWNLOADS_DIRECTORY)),
                 backgroundMediaFileDownloadManager = get(),
                 downloadFileUseCase = get(),
                 downloadUrlFactory = get(),
             )
-        } bind MediaFileDownloadActionsViewModelDelegate::class
+        } bind GalleryMediaDownloadActionsViewModelDelegate::class
 
         viewModelOf(::GalleryMediaRemoteActionsViewModelDelegateImpl) bind GalleryMediaRemoteActionsViewModelDelegate::class
 
         viewModel {
-            GalleryViewModel(
+            GalleryViewModelGallery(
                 galleryMediaRepositoryFactory = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
                 searchViewModel = get(),
@@ -153,12 +153,12 @@ val galleryFeatureModule = module {
                 disconnectFromEnvUseCase = get(),
                 memoriesListViewModel = get(),
                 listViewModel = get(),
-                mediaFilesActionsViewModel = get(),
+                galleryMediaDownloadActionsViewModel = get(),
                 galleryMediaRemoteActionsViewModel = get(),
             )
         }
 
-        viewModelOf(::GallerySingleRepositoryViewModel)
+        viewModelOf(::GallerySingleRepositoryViewModelGallery)
 
         scopedOf(::ArchiveGalleryMediaUseCase)
         scopedOf(::DeleteGalleryMediaUseCase)

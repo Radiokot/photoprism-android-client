@@ -50,8 +50,8 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -64,7 +64,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
     private val log = kLogger("GallerySingleRepositoryActivity")
     private lateinit var view: ActivityGallerySingleRepositoryBinding
-    private val viewModel: GallerySingleRepositoryViewModel by viewModel()
+    private val viewModel: GallerySingleRepositoryViewModelGallery by viewModel()
     private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
@@ -168,7 +168,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             val errorToShow: ErrorView.Error = when (error) {
-                GallerySingleRepositoryViewModel.Error.NoMediaFound ->
+                GallerySingleRepositoryViewModelGallery.Error.NoMediaFound ->
                     ErrorView.Error.EmptyView(
                         message = error.localizedMessage,
                     )
@@ -219,10 +219,10 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                 // because Gone for an unknown reason causes FAB misplacement
                 // when switching from Viewing to Selecting 🤷🏻
                 isInvisible =
-                    state is GallerySingleRepositoryViewModel.State.Viewing
+                    state is GallerySingleRepositoryViewModelGallery.State.Viewing
 
                 navigationIcon =
-                    if (state is GallerySingleRepositoryViewModel.State.Selecting && state.allowMultiple)
+                    if (state is GallerySingleRepositoryViewModelGallery.State.Selecting && state.allowMultiple)
                         ContextCompat.getDrawable(
                             this@GallerySingleRepositoryActivity,
                             R.drawable.ic_close
@@ -257,7 +257,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         viewModel.state.subscribeBy { state ->
             // The FAB is only used when selecting for other app,
             // as selecting for user allows more than 1 action.
-            if (state is GallerySingleRepositoryViewModel.State.Selecting.ForOtherApp) {
+            if (state is GallerySingleRepositoryViewModelGallery.State.Selecting.ForOtherApp) {
                 viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                     if (count > 0) {
                         view.doneSelectingFab.show()
@@ -275,7 +275,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         val multipleSelectionItemsCount = viewModel.selectedItemsCount.value ?: 0
         val state = viewModel.currentState
         val areUserSelectionItemsVisible =
-            multipleSelectionItemsCount > 0 && state is GallerySingleRepositoryViewModel.State.Selecting.ForUser
+            multipleSelectionItemsCount > 0 && state is GallerySingleRepositoryViewModelGallery.State.Selecting.ForUser
 
         with(view.selectionBottomAppBar.menu) {
             forEach { menuItem ->
@@ -520,29 +520,29 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
         }
 
-        viewModel.mediaFileDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
+        viewModel.galleryMediaDownloadActionsEvents.observeOnMain().subscribe(this) { event ->
             log.debug {
                 "subscribeToEvents(): received_media_files_actions_event:" +
                         "\nevent=$event"
             }
 
             when (event) {
-                is MediaFileDownloadActionsViewModel.Event.OpenDownloadedFile ->
+                is GalleryMediaDownloadActionsViewModel.Event.OpenDownloadedFile ->
                     error("Unsupported event")
 
-                MediaFileDownloadActionsViewModel.Event.RequestStoragePermission ->
+                GalleryMediaDownloadActionsViewModel.Event.RequestStoragePermission ->
                     requestStoragePermission()
 
-                is MediaFileDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
+                is GalleryMediaDownloadActionsViewModel.Event.ReturnDownloadedFiles ->
                     returnDownloadedFiles(event.files)
 
-                is MediaFileDownloadActionsViewModel.Event.ShareDownloadedFiles ->
+                is GalleryMediaDownloadActionsViewModel.Event.ShareDownloadedFiles ->
                     shareDownloadedFiles(event.files)
 
-                MediaFileDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
+                GalleryMediaDownloadActionsViewModel.Event.ShowFilesDownloadedMessage ->
                     showFloatingMessage(getString(R.string.files_saved_to_downloads))
 
-                MediaFileDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
+                GalleryMediaDownloadActionsViewModel.Event.ShowMissingStoragePermissionMessage ->
                     showFloatingMessage(getString(R.string.error_storage_permission_is_required))
             }
 
@@ -587,11 +587,11 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GallerySingleRepositoryViewModel.Event.ResetScroll -> {
+                is GallerySingleRepositoryViewModelGallery.Event.ResetScroll -> {
                     resetScroll()
                 }
 
-                is GallerySingleRepositoryViewModel.Event.ShowFloatingError ->
+                is GallerySingleRepositoryViewModelGallery.Event.ShowFloatingError ->
                     showFloatingError(event.error)
             }
 
@@ -613,7 +613,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingError(error: GallerySingleRepositoryViewModel.Error) {
+    private fun showFloatingError(error: GallerySingleRepositoryViewModelGallery.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
@@ -749,12 +749,12 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private val GallerySingleRepositoryViewModel.Error.localizedMessage: String
+    private val GallerySingleRepositoryViewModelGallery.Error.localizedMessage: String
         get() = when (this) {
-            GallerySingleRepositoryViewModel.Error.NoMediaFound ->
+            GallerySingleRepositoryViewModelGallery.Error.NoMediaFound ->
                 getString(R.string.nothing_found)
 
-            is GallerySingleRepositoryViewModel.Error.ContentLoadingError ->
+            is GallerySingleRepositoryViewModelGallery.Error.ContentLoadingError ->
                 GalleryContentLoadingErrorResources.getMessage(
                     error = contentLoadingError,
                     context = this@GallerySingleRepositoryActivity,

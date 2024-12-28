@@ -18,24 +18,24 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-class MediaViewerViewModel(
+class GalleryMediaViewerViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
-    private val mediaFilesActionsViewModel: MediaFileDownloadActionsViewModelDelegate,
+    private val galleryMediaDownloadActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
     private val galleryPreferences: GalleryPreferences,
     private val webUrlFactory: MediaWebUrlFactory,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
-    MediaFileDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaDownloadActionsViewModel by galleryMediaDownloadActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("MediaViewerVM")
@@ -236,7 +236,9 @@ class MediaViewerViewModel(
             return
         }
 
-        downloadAndShareFile(item.originalFile)
+        galleryMediaDownloadActionsViewModel.downloadAndShareGalleryMedia(
+            media = listOf(item),
+        )
     }
 
     fun onStartSlideshowClicked(position: Int) {
@@ -268,7 +270,9 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        downloadAndOpenFile(item.originalFile)
+        galleryMediaDownloadActionsViewModel.downloadAndOpenGalleryMedia(
+            media = item,
+        )
     }
 
     fun onOpenInWebViewerClicked(position: Int) {
@@ -361,7 +365,7 @@ class MediaViewerViewModel(
                     "\nitem=$item"
         }
 
-        downloadFileToExternalStorageInBackground(item.originalFile)
+        downloadGalleryMediaToExternalStorageInBackground(item)
     }
 
     fun onCancelDownloadClicked(position: Int) {
@@ -378,7 +382,7 @@ class MediaViewerViewModel(
             "onCancelDownloadClicked(): canceling_download"
         }
 
-        mediaFilesActionsViewModel.cancelMediaFileBackgroundDownload(item.uid)
+        galleryMediaDownloadActionsViewModel.cancelGalleryMediaBackgroundDownload(item.uid)
         unsubscribeFromDownloadProgress()
     }
 
@@ -463,30 +467,18 @@ class MediaViewerViewModel(
         }
     }
 
-    private fun downloadAndShareFile(file: GalleryMedia.File) {
-        mediaFilesActionsViewModel.downloadAndShareMediaFiles(
-            files = listOf(file),
-        )
-    }
-
-    private fun downloadAndOpenFile(file: GalleryMedia.File) {
-        mediaFilesActionsViewModel.downloadAndOpenMediaFile(
-            file = file,
-        )
-    }
-
-    private fun downloadFileToExternalStorageInBackground(file: GalleryMedia.File) {
-        mediaFilesActionsViewModel.downloadMediaFileToExternalStorageInBackground(
-            file = file,
+    private fun downloadGalleryMediaToExternalStorageInBackground(media: GalleryMedia) {
+        galleryMediaDownloadActionsViewModel.downloadGalleryMediaToExternalStorageInBackground(
+            media = media,
             onDownloadEnqueued = { sendableFile ->
                 log.debug {
-                    "downloadFileToExternalStorageInBackground(): enqueued_download:" +
-                            "\nfile=$file," +
+                    "downloadGalleryMediaToExternalStorageInBackground(): enqueued_download:" +
+                            "\nmedia=$media," +
                             "\ndestination=${sendableFile.file}"
                 }
                 val progressObservable =
-                    mediaFilesActionsViewModel.getMediaFileBackgroundDownloadStatus(
-                        mediaUid = file.mediaUid,
+                    galleryMediaDownloadActionsViewModel.getGalleryMediaBackgroundDownloadStatus(
+                        mediaUid = media.uid,
                     )
 
                 subscribeToMediaBackgroundDownloadStatus(progressObservable)
@@ -517,7 +509,7 @@ class MediaViewerViewModel(
         }
 
         subscribeToMediaBackgroundDownloadStatus(
-            statusObservable = mediaFilesActionsViewModel.getMediaFileBackgroundDownloadStatus(
+            statusObservable = galleryMediaDownloadActionsViewModel.getGalleryMediaBackgroundDownloadStatus(
                 mediaUid = item.uid,
             )
         )

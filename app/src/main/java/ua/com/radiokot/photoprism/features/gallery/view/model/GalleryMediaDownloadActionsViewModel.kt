@@ -5,9 +5,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 
-interface MediaFileDownloadActionsViewModel : DownloadProgressViewModel {
+interface GalleryMediaDownloadActionsViewModel : DownloadProgressViewModel {
 
-    val mediaFileDownloadActionsEvents: PublishSubject<Event>
+    val galleryMediaDownloadActionsEvents: PublishSubject<Event>
 
     fun onStoragePermissionResult(isGranted: Boolean)
     fun onDownloadedMediaFilesShared()

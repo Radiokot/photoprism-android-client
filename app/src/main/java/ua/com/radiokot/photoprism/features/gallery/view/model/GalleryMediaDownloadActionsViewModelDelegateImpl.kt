@@ -16,24 +16,24 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.view.model.MediaFileDownloadActionsViewModel.Event
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel.Event
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-class MediaFileDownloadActionsViewModelDelegateImpl(
+class GalleryMediaDownloadActionsViewModelDelegateImpl(
     private val internalDownloadsDir: File,
     private val externalDownloadsDir: File,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
 ) : ViewModel(),
-    MediaFileDownloadActionsViewModelDelegate {
+    GalleryMediaDownloadActionsViewModelDelegate {
 
-    private val log = kLogger("MediaFileDownloadActionsVMDI")
+    private val log = kLogger("GalleryMediaDownloadActionsVMDI")
 
-    override val mediaFileDownloadActionsEvents: PublishSubject<Event> =
+    override val galleryMediaDownloadActionsEvents: PublishSubject<Event> =
         PublishSubject.create()
     override val downloadProgressState: BehaviorSubject<DownloadProgressViewModel.State> =
         BehaviorSubject.create()
@@ -46,18 +46,19 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
     private val isExternalDownloadStoragePermissionRequired: Boolean
         get() = Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q)
 
-    override fun downloadMediaFilesToExternalStorage(
-        files: Collection<GalleryMedia.File>,
+    override fun downloadGalleryMediaToExternalStorage(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit,
     ) {
         fun doDownload() {
             downloadFiles(
-                filesAndDestinations = files.map { mediaFile ->
+                filesAndDestinations = media.map {
+                    val mediaFile = it.originalFile
                     mediaFile to getExternalDownloadDestination(mediaFile)
                 },
                 notifyMediaScanner = true,
                 onSuccess = { sendableFiles ->
-                    mediaFileDownloadActionsEvents.onNext(Event.ShowFilesDownloadedMessage)
+                    galleryMediaDownloadActionsEvents.onNext(Event.ShowFilesDownloadedMessage)
                     onDownloadFinished(sendableFiles)
                 }
             )
@@ -65,28 +66,29 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
 
         if (isExternalDownloadStoragePermissionRequired) {
             log.debug {
-                "downloadGalleryMediaFilesToExternalStorage(): must_request_storage_permission"
+                "downloadGalleryMediaToExternalStorage(): must_request_storage_permission"
             }
 
             doOnStoragePermissionGranted = ::doDownload
 
-            mediaFileDownloadActionsEvents.onNext(
+            galleryMediaDownloadActionsEvents.onNext(
                 Event.RequestStoragePermission
             )
         } else {
             log.debug {
-                "downloadGalleryMediaFilesToExternalStorage(): no_need_to_check_storage_permission"
+                "downloadGalleryMediaToExternalStorage(): no_need_to_check_storage_permission"
             }
 
             doDownload()
         }
     }
 
-    override fun downloadMediaFileToExternalStorageInBackground(
-        file: GalleryMedia.File,
+    override fun downloadGalleryMediaToExternalStorageInBackground(
+        media: GalleryMedia,
         onDownloadEnqueued: (SendableFile) -> Unit
     ) {
         fun doEnqueue() {
+            val file = media.originalFile
             val destination = getExternalDownloadDestination(file)
 
             backgroundMediaFileDownloadManager.enqueue(
@@ -100,42 +102,44 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
 
         if (isExternalDownloadStoragePermissionRequired) {
             log.debug {
-                "downloadGalleryMediaFileToExternalStorageInBackground(): must_request_storage_permission"
+                "downloadGalleryMediaToExternalStorageInBackground(): must_request_storage_permission"
             }
 
             doOnStoragePermissionGranted = ::doEnqueue
 
-            mediaFileDownloadActionsEvents.onNext(
+            galleryMediaDownloadActionsEvents.onNext(
                 Event.RequestStoragePermission
             )
         } else {
             log.debug {
-                "downloadGalleryMediaFileToExternalStorageInBackground(): no_need_to_check_storage_permission"
+                "downloadGalleryMediaToExternalStorageInBackground(): no_need_to_check_storage_permission"
             }
 
             doEnqueue()
         }
     }
 
-    override fun getMediaFileBackgroundDownloadStatus(
+    override fun getGalleryMediaBackgroundDownloadStatus(
         mediaUid: String,
     ): Observable<out BackgroundMediaFileDownloadManager.Status> =
         backgroundMediaFileDownloadManager.getStatus(mediaUid)
 
-    override fun cancelMediaFileBackgroundDownload(mediaUid: String) =
+    override fun cancelGalleryMediaBackgroundDownload(mediaUid: String) =
         backgroundMediaFileDownloadManager.cancel(mediaUid)
 
-    override fun downloadAndOpenMediaFile(
-        file: GalleryMedia.File,
+    override fun downloadAndOpenGalleryMedia(
+        media: GalleryMedia,
         onDownloadFinished: (SendableFile) -> Unit,
     ) {
+        val file = media.originalFile
+
         downloadFiles(
             filesAndDestinations = listOf(
                 file to getInternalDownloadDestination(file)
             ),
             notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
-                mediaFileDownloadActionsEvents.onNext(
+                galleryMediaDownloadActionsEvents.onNext(
                     Event.OpenDownloadedFile(sendableFiles.first())
                 )
                 onDownloadFinished(sendableFiles.first())
@@ -143,20 +147,22 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
         )
     }
 
-    override fun downloadAndShareMediaFiles(
-        files: Collection<GalleryMedia.File>,
+    override fun downloadAndShareGalleryMedia(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit,
         onShared: () -> Unit,
     ) {
         doOnFilesShared = onShared
 
         downloadFiles(
-            filesAndDestinations = files.map { mediaFile ->
+            filesAndDestinations = media.map {
+                // TODO Compatible RAW sharing
+                val mediaFile = it.originalFile
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
             notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
-                mediaFileDownloadActionsEvents.onNext(
+                galleryMediaDownloadActionsEvents.onNext(
                     Event.ShareDownloadedFiles(sendableFiles)
                 )
                 onDownloadFinished(sendableFiles)
@@ -164,17 +170,18 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
         )
     }
 
-    override fun downloadAndReturnMediaFiles(
-        files: Collection<GalleryMedia.File>,
+    override fun downloadAndReturnGalleryMedia(
+        media: Collection<GalleryMedia>,
         onDownloadFinished: (List<SendableFile>) -> Unit,
     ) {
         downloadFiles(
-            filesAndDestinations = files.map { mediaFile ->
+            filesAndDestinations = media.map {
+                val mediaFile = it.originalFile
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
             notifyMediaScanner = false,
             onSuccess = { sendableFiles ->
-                mediaFileDownloadActionsEvents.onNext(
+                galleryMediaDownloadActionsEvents.onNext(
                     Event.ReturnDownloadedFiles(
                         sendableFiles
                     )
@@ -193,7 +200,7 @@ class MediaFileDownloadActionsViewModelDelegateImpl(
         if (isGranted) {
             doOnStoragePermissionGranted()
         } else {
-            mediaFileDownloadActionsEvents.onNext(
+            galleryMediaDownloadActionsEvents.onNext(
                 Event.ShowMissingStoragePermissionMessage
             )
         }

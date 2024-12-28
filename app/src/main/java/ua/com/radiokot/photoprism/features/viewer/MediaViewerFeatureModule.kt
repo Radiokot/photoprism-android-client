@@ -20,7 +20,7 @@ import ua.com.radiokot.photoprism.features.gallery.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
-import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.util.CacheConstraints
 import java.io.File
@@ -43,7 +43,7 @@ val mediaViewerFeatureModule = module {
     } bind Cache::class
 
     scope<EnvSession> {
-        viewModelOf(::MediaViewerViewModel)
+        viewModelOf(::GalleryMediaViewerViewModel)
 
         scoped {
             val session = get<EnvSession>()
