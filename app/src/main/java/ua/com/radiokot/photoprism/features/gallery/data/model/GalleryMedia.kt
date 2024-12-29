@@ -89,7 +89,7 @@ class GalleryMedia(
                 ?: mainFile
         }
 
-    private val mainFile: File
+    val mainFile: File
         get() = files.mainFile
 
     val videoFile: File?

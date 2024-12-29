@@ -266,5 +266,11 @@
     <string name="calendar">Kalendář</string>
     <string name="failed_to_load_calendar">Nepodařilo se načíst kalendář</string>
     <string name="nothing_found">Nic nenalezeno</string>
+    <string name="raw_sharing_preference">Sdílet RAW jako</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>Kompatibilní JPEG, pokud je přítomen</item>
+        <item>Původní</item>
+    </string-array>
 
 </resources>

@@ -265,5 +265,11 @@
     <string name="calendar">日曆</string>
     <string name="failed_to_load_calendar">日曆加載失敗</string>
     <string name="nothing_found">找不到任何內容</string>
+    <string name="raw_sharing_preference">分享 RAW 作為</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>兼容 JPEG（如有）</item>
+        <item>原始</item>
+    </string-array>
 
 </resources>

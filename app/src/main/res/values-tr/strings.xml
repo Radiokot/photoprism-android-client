@@ -265,5 +265,11 @@
     <string name="calendar">Takvim</string>
     <string name="failed_to_load_calendar">Takvim yüklenemedi</string>
     <string name="nothing_found">Hiçbir şey bulunamadı</string>
+    <string name="raw_sharing_preference">RAW olarak paylaşmak</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>Mevcutsa uyumlu JPEG</item>
+        <item>Orijinal</item>
+    </string-array>
 
 </resources>

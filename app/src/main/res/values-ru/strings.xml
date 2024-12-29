@@ -265,5 +265,11 @@
     <string name="calendar">Календарь</string>
     <string name="failed_to_load_calendar">Не удалось загрузить календарь</string>
     <string name="nothing_found">Ничего не найдено</string>
+    <string name="raw_sharing_preference">Отправлять RAW как</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>Совместимый JPEG, если есть</item>
+        <item>Оригинал</item>
+    </string-array>
 
 </resources>

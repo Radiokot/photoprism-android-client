@@ -13,7 +13,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel.Event
@@ -28,6 +30,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
     private val downloadFileUseCase: DownloadFileUseCase,
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
+    private val galleryPreferences: GalleryPreferences,
 ) : ViewModel(),
     GalleryMediaDownloadActionsViewModelDelegate {
 
@@ -156,8 +159,20 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
 
         downloadFiles(
             filesAndDestinations = media.map {
-                // TODO Compatible RAW sharing
-                val mediaFile = it.originalFile
+                val mediaFile = when (it.media) {
+                    is GalleryMedia.TypeData.Raw ->
+                        when (galleryPreferences.rawSharingMode.value!!) {
+                            RawSharingMode.ORIGINAL ->
+                                it.originalFile
+
+                            RawSharingMode.COMPATIBLE_JPEG ->
+                                it.mainFile
+                        }
+
+                    else ->
+                        it.originalFile
+                }
+
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
             notifyMediaScanner = false,

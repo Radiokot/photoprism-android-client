@@ -48,9 +48,10 @@ import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnv
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
 import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPreferencesFragment
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
-import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
@@ -209,9 +210,20 @@ class PreferencesFragment :
             }
         }
 
-        with(requirePreference(R.string.pk_live_photos_as_images)){
+        with(requirePreference(R.string.pk_live_photos_as_images)) {
             this as SwitchPreferenceCompat
             bindToSubject(galleryPreferences.livePhotosAsImages, viewLifecycleOwner)
+        }
+
+        with(requirePreference(R.string.pk_raw_sharing_mode)) {
+            this as ListPreference
+            entries = resources.getStringArray(R.array.raw_sharing_mode_array)
+            entryValues = RawSharingMode.values().map(RawSharingMode::name).toTypedArray()
+            value = galleryPreferences.rawSharingMode.value!!.name
+            setOnPreferenceChangeListener { _, newValue ->
+                galleryPreferences.rawSharingMode.onNext(RawSharingMode.valueOf(newValue as String))
+                true
+            }
         }
 
         with(requirePreference(R.string.pk_show_people)) {

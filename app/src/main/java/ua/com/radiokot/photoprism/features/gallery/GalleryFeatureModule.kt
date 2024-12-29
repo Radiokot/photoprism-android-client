@@ -139,6 +139,7 @@ val galleryFeatureModule = module {
                 backgroundMediaFileDownloadManager = get(),
                 downloadFileUseCase = get(),
                 downloadUrlFactory = get(),
+                galleryPreferences = get(),
             )
         } bind GalleryMediaDownloadActionsViewModelDelegate::class
 

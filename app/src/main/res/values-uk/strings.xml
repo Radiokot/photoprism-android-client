@@ -265,5 +265,11 @@
     <string name="calendar">Календар</string>
     <string name="failed_to_load_calendar">Не вдалося завантажити календар</string>
     <string name="nothing_found">Нічого не знайдено</string>
+    <string name="raw_sharing_preference">Відправляти RAW як</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>Сумісний JPEG, якщо є</item>
+        <item>Оригінал</item>
+    </string-array>
 
 </resources>

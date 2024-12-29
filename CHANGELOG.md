@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Ability to add the entry to an album from the media viewer screen
+- Ability to change the sharing behavior for RAWs in the preferences:
+  you can choose between sharing the original file or a compatible JPEG, if available
 
 ### Changed
 

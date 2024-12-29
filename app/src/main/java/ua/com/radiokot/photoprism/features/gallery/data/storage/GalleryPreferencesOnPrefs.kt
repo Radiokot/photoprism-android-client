@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.util.booleanPreferenceSubject
 import ua.com.radiokot.photoprism.util.stringifyPreferenceSubject
 
@@ -45,5 +46,14 @@ class GalleryPreferencesOnPrefs(
                             "\nvalue=$newValue"
                 }
             }
+        )
+
+    override val rawSharingMode: BehaviorSubject<RawSharingMode> =
+        stringifyPreferenceSubject(
+            preferences = preferences,
+            key = "${keyPrefix}_raw_sharing",
+            defaultValue = RawSharingMode.COMPATIBLE_JPEG,
+            stringSerializer = RawSharingMode::name,
+            stringDeserializer = RawSharingMode::valueOf,
         )
 }

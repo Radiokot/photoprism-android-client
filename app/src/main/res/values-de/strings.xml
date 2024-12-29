@@ -263,5 +263,11 @@
     <string name="calendar">Kalender</string>
     <string name="failed_to_load_calendar">Kalender konnte nicht geladen werden</string>
     <string name="nothing_found">Nichts gefunden</string>
+    <string name="raw_sharing_preference">RAW teilen als</string>
+    <string-array name="raw_sharing_mode_array">
+        <!-- Must be aligned with RawSharingMode enum -->
+        <item>Kompatibles JPEG, wenn vorhanden</item>
+        <item>Original</item>
+    </string-array>
 
 </resources>

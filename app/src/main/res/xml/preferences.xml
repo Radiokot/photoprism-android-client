@@ -49,6 +49,13 @@
             app:summary="%1$s"
             app:title="@string/slideshow_speed_preference" />
 
+        <ListPreference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_raw_sharing_mode"
+            app:persistent="false"
+            app:summary="%1$s"
+            app:title="@string/raw_sharing_preference" />
+
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="@string/pk_live_photos_as_images"
