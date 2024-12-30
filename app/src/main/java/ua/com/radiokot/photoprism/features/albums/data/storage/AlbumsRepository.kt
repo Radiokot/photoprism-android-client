@@ -93,6 +93,20 @@ class AlbumsRepository(
         invalidate()
     }.toCompletable().subscribeOn(Schedulers.io())
 
+    fun removeItemsFromAlbum(
+        albumUid: String,
+        itemUids: Collection<String>,
+    ): Completable = {
+        photoPrismAlbumsService.deletePhotos(
+            albumUid = albumUid,
+            batchPhotoUids = PhotoPrismBatchPhotoUids(itemUids),
+        )
+
+        // Invalidate as removing items may change the album thumb,
+        // but unfortunately it is not updated instantly.
+        invalidate()
+    }.toCompletable().subscribeOn(Schedulers.io())
+
     class Factory(
         private val photoPrismAlbumsService: PhotoPrismAlbumsService,
     ) {

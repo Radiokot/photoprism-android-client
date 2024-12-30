@@ -31,6 +31,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaFileDownloadUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaWebUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.logic.RemoveGalleryMediaFromAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.gallerySearchFeatureModules
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetectorImpl
@@ -164,5 +165,6 @@ val galleryFeatureModule = module {
         scopedOf(::ArchiveGalleryMediaUseCase)
         scopedOf(::DeleteGalleryMediaUseCase)
         scopedOf(::AddGalleryMediaToAlbumUseCase)
+        scopedOf(::RemoveGalleryMediaFromAlbumUseCase)
     }
 }

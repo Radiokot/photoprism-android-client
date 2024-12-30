@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.api.albums.service
 
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -38,6 +39,17 @@ interface PhotoPrismAlbumsService {
     @Headers("Accept: application/json")
     @POST("v1/albums/{albumUid}/photos")
     fun addPhotos(
+        @Path("albumUid")
+        albumUid: String,
+        @Body
+        batchPhotoUids: PhotoPrismBatchPhotoUids,
+    ): Any
+
+
+    @kotlin.jvm.Throws(IOException::class)
+    @Headers("Accept: application/json")
+    @DELETE("v1/albums/{albumUid}/photos")
+    fun deletePhotos(
         @Path("albumUid")
         albumUid: String,
         @Body

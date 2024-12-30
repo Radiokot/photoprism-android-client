@@ -251,28 +251,27 @@ class SimpleGalleryMediaRepository(
         itemUids: Collection<String>
     ): Completable = {
         photoPrismPhotosService.batchArchive(PhotoPrismBatchPhotoUids(itemUids))
-        removeItems(itemUids.toSet())
     }
         .toCompletable()
         .subscribeOn(Schedulers.io())
         .doOnComplete {
-            broadcast()
+            removeLocally(itemUids.toSet())
         }
 
     fun delete(
         itemUids: Collection<String>
     ): Completable = {
         photoPrismPhotosService.batchDelete(PhotoPrismBatchPhotoUids(itemUids))
-        removeItems(itemUids.toSet())
     }
         .toCompletable()
         .subscribeOn(Schedulers.io())
         .doOnComplete {
-            broadcast()
+            removeLocally(itemUids.toSet())
         }
 
-    private fun removeItems(itemUids: Set<String>) = synchronized(this) {
+    fun removeLocally(itemUids: Set<String>) = synchronized(this) {
         mutableItemsList.removeAll { it.uid in itemUids }
+        broadcast()
     }
 
     override fun update(): Completable {
