@@ -21,6 +21,12 @@ interface GalleryMediaRemoteActionsViewModelDelegate : GalleryMediaRemoteActions
         onStarted: () -> Unit = {},
     )
 
+    fun removeGalleryMediaFromAlbum(
+        mediaUids: Collection<String>,
+        albumUid: String,
+        onStarted: () -> Unit = {},
+    )
+
     fun updateGalleryMediaAttributes(
         mediaUid: String,
         currentMediaRepository: SimpleGalleryMediaRepository,

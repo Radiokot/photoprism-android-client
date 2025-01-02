@@ -13,14 +13,14 @@ import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
-class GallerySingleRepositoryViewModelGallery(
+class GallerySingleRepositoryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val listViewModel: GalleryListViewModelImpl,
-    private val mediaFilesActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
+    private val galleryMediaDownloadActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
-    GalleryMediaDownloadActionsViewModel by mediaFilesActionsViewModel,
+    GalleryMediaDownloadActionsViewModel by galleryMediaDownloadActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
 
     private val log = kLogger("GallerySingleRepositoryVM")
@@ -36,6 +36,7 @@ class GallerySingleRepositoryViewModelGallery(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
+    private var albumUid: String? = null
 
     private val backPressActionsStack = BackPressActionsStack()
     val backPressedCallback: OnBackPressedCallback =
@@ -77,7 +78,7 @@ class GallerySingleRepositoryViewModelGallery(
         if (!allowMultiple) {
             listViewModel.initSelectingSingle(
                 onSingleMediaSelected = { media ->
-                    mediaFilesActionsViewModel.downloadAndReturnGalleryMedia(
+                    galleryMediaDownloadActionsViewModel.downloadAndReturnGalleryMedia(
                         media = listOf(media),
                     )
                 },
@@ -95,6 +96,7 @@ class GallerySingleRepositoryViewModelGallery(
 
     fun initViewingOnce(
         repositoryParams: SimpleGalleryMediaRepository.Params,
+        albumUid: String?,
     ) {
         if (isInitialized) {
             log.debug {
@@ -105,16 +107,22 @@ class GallerySingleRepositoryViewModelGallery(
         }
 
         currentMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
+        this.albumUid = albumUid
 
         log.debug {
-            "initViewingOnce(): initialized_viewing"
+            "initViewingOnce(): initialized_viewing:" +
+                    "\nalbumUid=$albumUid"
         }
 
         stateSubject.onNext(State.Viewing)
 
         listViewModel.initViewing(
             onSwitchedFromViewingToSelecting = {
-                stateSubject.onNext(State.Selecting.ForUser)
+                stateSubject.onNext(
+                    State.Selecting.ForUser(
+                        canRemoveFromAlbum = albumUid != null,
+                    )
+                )
                 backPressActionsStack.pushUniqueAction(switchBackToViewingOnBackPress)
             },
             onSwitchedFromSelectingToViewing = {
@@ -226,7 +234,7 @@ class GallerySingleRepositoryViewModelGallery(
             "Done multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndReturnGalleryMedia(
+        galleryMediaDownloadActionsViewModel.downloadAndReturnGalleryMedia(
             media = selectedMediaByUid.values,
         )
     }
@@ -240,7 +248,7 @@ class GallerySingleRepositoryViewModelGallery(
             "Share multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadAndShareGalleryMedia(
+        galleryMediaDownloadActionsViewModel.downloadAndShareGalleryMedia(
             media = selectedMediaByUid.values,
             onShared = {
                 switchToViewing()
@@ -257,7 +265,7 @@ class GallerySingleRepositoryViewModelGallery(
             "Download multiple selection button is only clickable when something is selected"
         }
 
-        mediaFilesActionsViewModel.downloadGalleryMediaToExternalStorage(
+        galleryMediaDownloadActionsViewModel.downloadGalleryMediaToExternalStorage(
             media = selectedMediaByUid.values,
             onDownloadFinished = {
                 switchToViewing()
@@ -276,6 +284,26 @@ class GallerySingleRepositoryViewModelGallery(
 
         galleryMediaRemoteActionsViewModel.addGalleryMediaToAlbum(
             mediaUids = selectedMediaByUid.keys.toList(),
+            onStarted = ::switchToViewing,
+        )
+    }
+
+    fun onRemoveFromAlbumMultipleSelectionClicked() {
+        val currentState = this.currentState
+        val albumUid = this.albumUid
+
+        check(currentState is State.Selecting.ForUser && currentState.canRemoveFromAlbum) {
+            "Removing multiple selection from album button is only clickable when selecting " +
+                    "and it is allowed"
+        }
+
+        checkNotNull(albumUid) {
+            "Removing multiple selection from album is only possible when there is the album UID"
+        }
+
+        galleryMediaRemoteActionsViewModel.removeGalleryMediaFromAlbum(
+            mediaUids = selectedMediaByUid.keys.toList(),
+            albumUid = albumUid,
             onStarted = ::switchToViewing,
         )
     }
@@ -356,7 +384,9 @@ class GallerySingleRepositoryViewModelGallery(
             /**
              * Selecting to share the files with any app of the user's choice.
              */
-            object ForUser : Selecting(
+            class ForUser(
+                val canRemoveFromAlbum: Boolean,
+            ) : Selecting(
                 allowMultiple = true,
             )
         }

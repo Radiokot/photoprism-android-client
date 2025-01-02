@@ -49,9 +49,9 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoad
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModelGallery
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.AsyncRecycledViewPoolInitializer
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -64,7 +64,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
     private val log = kLogger("GallerySingleRepositoryActivity")
     private lateinit var view: ActivityGallerySingleRepositoryBinding
-    private val viewModel: GallerySingleRepositoryViewModelGallery by viewModel()
+    private val viewModel: GallerySingleRepositoryViewModel by viewModel()
     private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
@@ -117,6 +117,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         } else {
             viewModel.initViewingOnce(
                 repositoryParams = repositoryParams,
+                albumUid = intent.getStringExtra(ALBUM_UID_EXTRA),
             )
         }
 
@@ -140,6 +141,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.getStringExtra(TITLE_EXTRA)?.also(::setTitle)
+        @Suppress("DEPRECATION")
         (intent.getSerializableExtra(MONTH_TITLE_EXTRA) as? LocalDate)?.also {
             setTitle(monthYearDateFormat.format(it).capitalized())
         }
@@ -168,7 +170,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             val errorToShow: ErrorView.Error = when (error) {
-                GallerySingleRepositoryViewModelGallery.Error.NoMediaFound ->
+                GallerySingleRepositoryViewModel.Error.NoMediaFound ->
                     ErrorView.Error.EmptyView(
                         message = error.localizedMessage,
                     )
@@ -204,6 +206,9 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                     R.id.add_to_album ->
                         viewModel.onAddToAlbumMultipleSelectionClicked()
 
+                    R.id.remove_from_album ->
+                        viewModel.onRemoveFromAlbumMultipleSelectionClicked()
+
                     R.id.archive ->
                         viewModel.onArchiveMultipleSelectionClicked()
 
@@ -219,10 +224,10 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                 // because Gone for an unknown reason causes FAB misplacement
                 // when switching from Viewing to Selecting 🤷🏻
                 isInvisible =
-                    state is GallerySingleRepositoryViewModelGallery.State.Viewing
+                    state is GallerySingleRepositoryViewModel.State.Viewing
 
                 navigationIcon =
-                    if (state is GallerySingleRepositoryViewModelGallery.State.Selecting && state.allowMultiple)
+                    if (state is GallerySingleRepositoryViewModel.State.Selecting && state.allowMultiple)
                         ContextCompat.getDrawable(
                             this@GallerySingleRepositoryActivity,
                             R.drawable.ic_close
@@ -257,7 +262,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         viewModel.state.subscribeBy { state ->
             // The FAB is only used when selecting for other app,
             // as selecting for user allows more than 1 action.
-            if (state is GallerySingleRepositoryViewModelGallery.State.Selecting.ForOtherApp) {
+            if (state is GallerySingleRepositoryViewModel.State.Selecting.ForOtherApp) {
                 viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                     if (count > 0) {
                         view.doneSelectingFab.show()
@@ -275,12 +280,15 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         val multipleSelectionItemsCount = viewModel.selectedItemsCount.value ?: 0
         val state = viewModel.currentState
         val areUserSelectionItemsVisible =
-            multipleSelectionItemsCount > 0 && state is GallerySingleRepositoryViewModelGallery.State.Selecting.ForUser
+            multipleSelectionItemsCount > 0 && state is GallerySingleRepositoryViewModel.State.Selecting.ForUser
 
         with(view.selectionBottomAppBar.menu) {
             forEach { menuItem ->
                 menuItem.isVisible = areUserSelectionItemsVisible
             }
+            findItem(R.id.remove_from_album).isVisible =
+                areUserSelectionItemsVisible
+                        && (state as GallerySingleRepositoryViewModel.State.Selecting.ForUser).canRemoveFromAlbum
         }
     }
 
@@ -587,11 +595,11 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GallerySingleRepositoryViewModelGallery.Event.ResetScroll -> {
+                is GallerySingleRepositoryViewModel.Event.ResetScroll -> {
                     resetScroll()
                 }
 
-                is GallerySingleRepositoryViewModelGallery.Event.ShowFloatingError ->
+                is GallerySingleRepositoryViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
             }
 
@@ -613,7 +621,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingError(error: GallerySingleRepositoryViewModelGallery.Error) {
+    private fun showFloatingError(error: GallerySingleRepositoryViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
@@ -749,12 +757,12 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         viewModel.onStoragePermissionResult(isGranted)
     }
 
-    private val GallerySingleRepositoryViewModelGallery.Error.localizedMessage: String
+    private val GallerySingleRepositoryViewModel.Error.localizedMessage: String
         get() = when (this) {
-            GallerySingleRepositoryViewModelGallery.Error.NoMediaFound ->
+            GallerySingleRepositoryViewModel.Error.NoMediaFound ->
                 getString(R.string.nothing_found)
 
-            is GallerySingleRepositoryViewModelGallery.Error.ContentLoadingError ->
+            is GallerySingleRepositoryViewModel.Error.ContentLoadingError ->
                 GalleryContentLoadingErrorResources.getMessage(
                     error = contentLoadingError,
                     context = this@GallerySingleRepositoryActivity,
@@ -765,15 +773,18 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         private const val FALLBACK_LIST_SIZE = 100
         private const val TITLE_EXTRA = "title"
         private const val MONTH_TITLE_EXTRA = "month-title"
+        private const val ALBUM_UID_EXTRA = "album-uid"
         private const val REPO_PARAMS_EXTRA = "repo-params"
 
         fun getBundle(
             repositoryParams: SimpleGalleryMediaRepository.Params,
             title: String? = null,
             monthTitle: LocalDate? = null,
+            albumUid: String? = null,
         ) = Bundle().apply {
             putString(TITLE_EXTRA, title)
             putSerializable(MONTH_TITLE_EXTRA, monthTitle)
+            putString(ALBUM_UID_EXTRA, albumUid)
             putParcelable(REPO_PARAMS_EXTRA, repositoryParams)
         }
     }

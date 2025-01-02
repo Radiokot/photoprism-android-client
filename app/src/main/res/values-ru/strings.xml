@@ -271,5 +271,6 @@
         <item>Совместимый JPEG, если есть</item>
         <item>Оригинал</item>
     </string-array>
+    <string name="remove_from_album">Удалить из альбома</string>
 
 </resources>

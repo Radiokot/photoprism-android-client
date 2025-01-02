@@ -12,6 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.DeleteGalleryMediaUseCase
+import ua.com.radiokot.photoprism.features.gallery.logic.RemoveGalleryMediaFromAlbumUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 
 class GalleryMediaRemoteActionsViewModelDelegateImpl(
@@ -19,6 +20,7 @@ class GalleryMediaRemoteActionsViewModelDelegateImpl(
     private val deleteGalleryMediaUseCase: DeleteGalleryMediaUseCase,
     private val updateGalleryMediaAttributesUseCase: UpdateGalleryMediaAttributesUseCase,
     private val addGalleryMediaToAlbumUseCase: AddGalleryMediaToAlbumUseCase,
+    private val removeGalleryMediaFromAlbumUseCase: RemoveGalleryMediaFromAlbumUseCase,
 ) : ViewModel(),
     GalleryMediaRemoteActionsViewModelDelegate {
 
@@ -155,6 +157,42 @@ class GalleryMediaRemoteActionsViewModelDelegateImpl(
         galleryMediaRemoteActionsEvents.onNext(
             GalleryMediaRemoteActionsViewModel.Event.OpenAlbumForAddingSelection
         )
+    }
+
+    override fun removeGalleryMediaFromAlbum(
+        mediaUids: Collection<String>,
+        albumUid: String,
+        onStarted: () -> Unit,
+    ) {
+        removeGalleryMediaFromAlbumUseCase
+            .invoke(
+                mediaUids = mediaUids,
+                albumUid = albumUid,
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "removeGalleryMediaFromAlbum(): start_removing:" +
+                            "\nitems=${mediaUids.size}," +
+                            "\nalbumUid=$albumUid"
+                }
+
+                onStarted()
+            }
+            .subscribeBy(
+                onError = { error ->
+                    log.error(error) {
+                        "removeGalleryMediaFromAlbum(): failed_removing"
+                    }
+                },
+                onComplete = {
+                    log.debug {
+                        "removeGalleryMediaFromAlbum(): physically_removed"
+                    }
+                }
+            )
+            .autoDispose(this)
     }
 
     override fun updateGalleryMediaAttributes(

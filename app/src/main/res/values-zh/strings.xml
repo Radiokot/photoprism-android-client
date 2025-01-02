@@ -271,5 +271,6 @@
         <item>兼容 JPEG（如有）</item>
         <item>原始</item>
     </string-array>
+    <string name="remove_from_album">从相册中移除</string>
 
 </resources>

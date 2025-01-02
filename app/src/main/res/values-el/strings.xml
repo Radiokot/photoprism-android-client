@@ -271,5 +271,6 @@
         <item>Συμβατό JPEG, εάν υπάρχει</item>
         <item>Πρωτότυπο</item>
     </string-array>
+    <string name="remove_from_album">Αφαίρεση από το άλμπουμ</string>
 
 </resources>

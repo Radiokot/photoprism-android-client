@@ -1,8 +1,8 @@
 package ua.com.radiokot.photoprism.api.albums.service
 
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -48,7 +48,12 @@ interface PhotoPrismAlbumsService {
 
     @kotlin.jvm.Throws(IOException::class)
     @Headers("Accept: application/json")
-    @DELETE("v1/albums/{albumUid}/photos")
+    // This annotation is used instead of DELETE to allow body.
+    @HTTP(
+        method = "DELETE",
+        path = "v1/albums/{albumUid}/photos",
+        hasBody = true,
+    )
     fun deletePhotos(
         @Path("albumUid")
         albumUid: String,

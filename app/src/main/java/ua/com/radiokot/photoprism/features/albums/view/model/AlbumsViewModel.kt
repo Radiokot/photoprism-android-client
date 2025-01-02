@@ -215,6 +215,11 @@ class AlbumsViewModel(
                     album.ymdLocalDate
                 else
                     null,
+                albumUid =
+                if (album.type == Album.TypeName.ALBUM)
+                    album.uid
+                else
+                    null,
                 repositoryParams = SimpleGalleryMediaRepository.Params(
                     searchConfig = SearchConfig.forAlbum(
                         albumUid = album.uid,
@@ -280,6 +285,7 @@ class AlbumsViewModel(
         class OpenAlbum(
             val title: String,
             val monthTitle: LocalDate?,
+            val albumUid: String?,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
         ) : Event
 

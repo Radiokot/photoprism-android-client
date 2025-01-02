@@ -41,7 +41,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewMod
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegateImpl
-import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegateImpl
@@ -160,7 +160,7 @@ val galleryFeatureModule = module {
             )
         }
 
-        viewModelOf(::GallerySingleRepositoryViewModelGallery)
+        viewModelOf(::GallerySingleRepositoryViewModel)
 
         scopedOf(::ArchiveGalleryMediaUseCase)
         scopedOf(::DeleteGalleryMediaUseCase)

@@ -272,5 +272,6 @@
         <item>Kompatibilní JPEG, pokud je přítomen</item>
         <item>Původní</item>
     </string-array>
+    <string name="remove_from_album">Odstranit z alba</string>
 
 </resources>

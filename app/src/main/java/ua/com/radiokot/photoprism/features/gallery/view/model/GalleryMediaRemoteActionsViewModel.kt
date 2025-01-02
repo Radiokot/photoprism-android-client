@@ -11,7 +11,7 @@ interface GalleryMediaRemoteActionsViewModel {
     fun onAlbumForAddingGalleryMediaSelected(selectedAlbum: DestinationAlbum)
 
     sealed interface Event {
-         /**
+        /**
          * Show items deletion confirmation, reporting the choice
          * to the [onDeletingGalleryMediaConfirmed] method.
          */
@@ -25,6 +25,6 @@ interface GalleryMediaRemoteActionsViewModel {
 
         class ShowFloatingAddedToAlbumMessage(
             val albumTitle: String,
-        ): Event
+        ) : Event
     }
 }

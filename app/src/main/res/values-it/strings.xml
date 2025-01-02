@@ -271,5 +271,6 @@
         <item>JPEG compatibile, se presente</item>
         <item>Originale</item>
     </string-array>
+    <string name="remove_from_album">Rimuovi dall\'album</string>
 
 </resources>

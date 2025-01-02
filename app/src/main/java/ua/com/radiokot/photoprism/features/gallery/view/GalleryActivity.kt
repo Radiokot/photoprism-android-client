@@ -63,9 +63,9 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoad
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -792,6 +792,7 @@ class GalleryActivity : BaseActivity() {
             forEach { menuItem ->
                 menuItem.isVisible = areUserSelectionItemsVisible
             }
+            findItem(R.id.remove_from_album).isVisible = false
         }
     }
 

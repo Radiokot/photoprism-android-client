@@ -277,4 +277,5 @@
         <item>Compatible JPEG, if present</item>
         <item>Original</item>
     </string-array>
+    <string name="remove_from_album">Remove from the album</string>
 </resources>

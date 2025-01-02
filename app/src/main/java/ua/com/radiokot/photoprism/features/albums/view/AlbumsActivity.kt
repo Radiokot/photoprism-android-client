@@ -237,6 +237,7 @@ class AlbumsActivity : BaseActivity() {
                 openAlbum(
                     title = event.title,
                     monthTitle = event.monthTitle,
+                    albumUid = event.albumUid,
                     repositoryParams = event.repositoryParams,
                 )
 
@@ -274,6 +275,7 @@ class AlbumsActivity : BaseActivity() {
     private fun openAlbum(
         title: String,
         monthTitle: LocalDate?,
+        albumUid: String?,
         repositoryParams: SimpleGalleryMediaRepository.Params,
     ) = folderLauncher.launch(
         Intent(this, GallerySingleRepositoryActivity::class.java)
@@ -283,6 +285,7 @@ class AlbumsActivity : BaseActivity() {
                 GallerySingleRepositoryActivity.getBundle(
                     title = title,
                     monthTitle = monthTitle,
+                    albumUid = albumUid,
                     repositoryParams = repositoryParams,
                 )
             )

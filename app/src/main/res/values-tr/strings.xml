@@ -271,5 +271,6 @@
         <item>Mevcutsa uyumlu JPEG</item>
         <item>Orijinal</item>
     </string-array>
+    <string name="remove_from_album">Albümden kaldır</string>
 
 </resources>
