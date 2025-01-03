@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: Report a bug
 about: Describe the bug you've faced to help make the gallery better
 
 ---
