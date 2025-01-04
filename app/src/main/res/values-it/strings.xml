@@ -272,5 +272,8 @@
         <item>Originale</item>
     </string-array>
     <string name="remove_from_album">Rimuovi dall\'album</string>
-
+    <string name="download_folder_en_summary">I file scaricati saranno salvati in Download/Tua_Cartella</string>
+    <string name="download_folder_en">Directory di download</string>
+    <string name="download_folder_name_summary">Nome sottodirectory di download (modificabile)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 </resources>

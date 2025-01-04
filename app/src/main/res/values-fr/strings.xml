@@ -273,5 +273,9 @@
         <item>Original</item>
     </string-array>
     <string name="remove_from_album">Supprimer de l\'album</string>
+    <string name="download_folder_en_summary">Les fichiers téléchargés seront stockés dans Téléchargements/Votre_Dossier</string>
+    <string name="download_folder_en">Répertoire de téléchargement</string>
+    <string name="download_folder_name_summary">Nom du sous-dossier de téléchargement (modifiable)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>

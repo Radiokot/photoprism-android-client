@@ -272,5 +272,9 @@
         <item>Πρωτότυπο</item>
     </string-array>
     <string name="remove_from_album">Αφαίρεση από το άλμπουμ</string>
+    <string name="download_folder_en_summary">Τα ληφθέντα αρχεία θα αποθηκευτούν στο Λήψεις/Ο_Φάκελός_σας</string>
+    <string name="download_folder_en">Κατάλογος λήψεων</string>
+    <string name="download_folder_name_summary">Όνομα υποκαταλόγου λήψης (επεξεργάσιμο)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>

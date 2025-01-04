@@ -272,5 +272,9 @@
         <item>Оригинал</item>
     </string-array>
     <string name="remove_from_album">Удалить из альбома</string>
+    <string name="download_folder_en_summary">Скачанные файлы будут сохранены в Загрузки/Ваша_Папка</string>
+    <string name="download_folder_en">Каталог загрузок</string>
+    <string name="download_folder_name_summary">Имя подпапки загрузки (можно редактировать)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>

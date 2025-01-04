@@ -272,5 +272,9 @@
         <item>Оригінал</item>
     </string-array>
     <string name="remove_from_album">Видалити з альбому</string>
+    <string name="download_folder_en_summary">Завантажені файли будуть збережені в Завантаження/Ваша_Папка</string>
+    <string name="download_folder_en">Каталог завантажень</string>
+    <string name="download_folder_name_summary">Назва підкаталогу завантажень (можна змінити)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>

@@ -272,5 +272,9 @@
         <item>原始</item>
     </string-array>
     <string name="remove_from_album">從相簿中移除</string>
+    <string name="download_folder_en_summary">下載的檔案將存儲在 下載/您的文件夾</string>
+    <string name="download_folder_en">下載目錄</string>
+    <string name="download_folder_name_summary">下載子目錄名稱（可編輯）</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>

@@ -272,5 +272,9 @@
         <item>Orijinal</item>
     </string-array>
     <string name="remove_from_album">Albümden kaldır</string>
+    <string name="download_folder_en_summary">İndirilen dosyalar İndirilenler/Klasör_Adınız'a kaydedilecek</string>
+    <string name="download_folder_en">İndirilenler Dizini</string>
+    <string name="download_folder_name_summary">İndirilenler Alt Klasör Adı (düzenlenebilir)</string>
+    <string name="download_folder_name">PhotoprismDL</string>
 
 </resources>
