@@ -56,6 +56,30 @@ fun booleanPreferenceSubject(
     )
 
 /**
+ * @return a [preferenceSubject] for a string value
+ *
+ * @param preferences preferences to read and write the values to
+ * @param key preference key to read and write the values by
+ * @param defaultValue value to be held if missing one in the preferences
+ * @param onValuePut optional callback executed once a value is put to the preferences
+ */
+fun stringPreferenceSubject(
+    preferences: SharedPreferences,
+    key: String,
+    defaultValue: String,
+    onValuePut: ((key: String, newValue: String) -> Unit)? = null,
+): BehaviorSubject<String> =
+    preferenceSubject(
+        preferences = preferences,
+        key = key,
+        readValue = { preferences.getString(key, defaultValue).toString() },
+        writeValue = { _, newValue ->
+            putString(key, newValue)
+            onValuePut?.invoke(key, newValue)
+        },
+    )
+
+/**
  * @return a [preferenceSubject] for a value which can be (de-)serialized from/to string.
  *
  * @param preferences preferences to read and write the values to
