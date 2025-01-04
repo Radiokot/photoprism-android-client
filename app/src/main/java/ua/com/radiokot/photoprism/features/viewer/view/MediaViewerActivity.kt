@@ -64,13 +64,13 @@ import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
 import ua.com.radiokot.photoprism.features.gallery.view.DownloadProgressView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
-import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.SwipeDirection
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
@@ -166,6 +166,7 @@ class MediaViewerActivity : BaseActivity() {
             }
         val areActionsEnabled = intent.getBooleanExtra(ACTIONS_ENABLED_KEY, true)
         val staticSubtitle = intent.getStringExtra(STATIC_SUBTITLE_KEY)
+        val albumUid = intent.getStringExtra(ALBUM_UID_KEY)
 
         log.debug {
             "onCreate(): creating:" +
@@ -174,6 +175,7 @@ class MediaViewerActivity : BaseActivity() {
                     "\nareActionsEnabled=$areActionsEnabled," +
                     "\nisPageIndicatorEnabled=$isPageIndicatorEnabled" +
                     "\nstaticSubtitle=$staticSubtitle," +
+                    "\nalbumUid=$albumUid," +
                     "\nsavedInstanceState=$savedInstanceState"
         }
 
@@ -182,6 +184,7 @@ class MediaViewerActivity : BaseActivity() {
             areActionsEnabled = areActionsEnabled,
             isPageIndicatorEnabled = isPageIndicatorEnabled,
             staticSubtitle = staticSubtitle,
+            albumUid = albumUid,
         )
 
         // Init before the subscription.
@@ -544,12 +547,15 @@ class MediaViewerActivity : BaseActivity() {
 
         val actionItems = listOf(
             menu.findItem(R.id.add_to_album),
+            menu.findItem(R.id.remove_from_album),
             menu.findItem(R.id.archive),
             menu.findItem(R.id.delete),
             menu.findItem(R.id.is_private),
         )
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
             actionItems.forEach { it.isVisible = areActionsVisible }
+            menu.findItem(R.id.remove_from_album).isVisible =
+                areActionsVisible && viewModel.canRemoveFromAlbum
         }
 
         with(menu.findItem(R.id.is_private)) {
@@ -585,6 +591,13 @@ class MediaViewerActivity : BaseActivity() {
 
         R.id.add_to_album -> {
             viewModel.onAddToAlbumClicked(
+                position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        R.id.remove_from_album -> {
+            viewModel.onRemoveFromAlbumClicked(
                 position = view.viewPager.currentItem
             )
             true
@@ -940,7 +953,7 @@ class MediaViewerActivity : BaseActivity() {
 
     private fun showStartedDownloadMessage(destinationFileName: String) {
         showFloatingMessage(
-            message =  getString(
+            message = getString(
                 R.string.template_started_download_file,
                 destinationFileName
             ),
@@ -1108,6 +1121,7 @@ class MediaViewerActivity : BaseActivity() {
         private const val REPO_PARAMS_KEY = "repo-params"
         private const val ACTIONS_ENABLED_KEY = "actions-enabled"
         private const val STATIC_SUBTITLE_KEY = "static-subtitle"
+        private const val ALBUM_UID_KEY = "album-uid"
         private const val IS_PAGE_INDICATOR_ENABLED_KEY = "is-page-indicator-enabled"
 
         private val SWIPE_TO_DISMISS_DIRECTIONS = setOf(
@@ -1121,6 +1135,7 @@ class MediaViewerActivity : BaseActivity() {
          * @param areActionsEnabled whether such actions as download, share, etc. are enabled or not
          * @param isPageIndicatorEnabled whether the dot page indicator is visible or not
          * @param staticSubtitle if set, will be shown in subtitle
+         * @param albumUid if set, remove from album action will be available
          */
         fun getBundle(
             mediaIndex: Int,
@@ -1128,12 +1143,14 @@ class MediaViewerActivity : BaseActivity() {
             areActionsEnabled: Boolean = true,
             isPageIndicatorEnabled: Boolean = false,
             staticSubtitle: String? = null,
+            albumUid: String? = null,
         ) = Bundle().apply {
             putInt(MEDIA_INDEX_KEY, mediaIndex)
             putParcelable(REPO_PARAMS_KEY, repositoryParams)
             putBoolean(ACTIONS_ENABLED_KEY, areActionsEnabled)
             putBoolean(IS_PAGE_INDICATOR_ENABLED_KEY, isPageIndicatorEnabled)
             putString(STATIC_SUBTITLE_KEY, staticSubtitle)
+            putString(ALBUM_UID_KEY, albumUid)
         }
 
         /**

@@ -8,8 +8,10 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
@@ -139,6 +141,20 @@ class GallerySingleRepositoryViewModel(
     private fun initCommon() {
         subscribeToRepository()
 
+        // Replace list VM viewer opening event with the custom one
+        // which may contain album UID.
+        listViewModel.itemListEvents
+            .filterIsInstance<GalleryListViewModel.Event.OpenViewer>()
+            .map { originalEvent ->
+                Event.OpenViewer(
+                    mediaIndex = originalEvent.mediaIndex,
+                    repositoryParams = originalEvent.repositoryParams,
+                    areActionsEnabled = originalEvent.areActionsEnabled,
+                    albumUid = albumUid,
+                )
+            }
+            .subscribe(this, eventsSubject::onNext)
+
         update()
     }
 
@@ -200,7 +216,6 @@ class GallerySingleRepositoryViewModel(
         } else {
             currentMediaRepository.update()
             eventsSubject.onNext(Event.ResetScroll)
-
         }
     }
 
@@ -406,6 +421,13 @@ class GallerySingleRepositoryViewModel(
          */
         @JvmInline
         value class ShowFloatingError(val error: Error) : Event
+
+        class OpenViewer(
+            val mediaIndex: Int,
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+            val areActionsEnabled: Boolean,
+            val albumUid: String?,
+        ) : Event
     }
 
     sealed interface Error {
