@@ -18,6 +18,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
+import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
@@ -74,6 +76,12 @@ val galleryFeatureModule = module {
             keyPrefix = "gallery"
         )
     } bind GalleryPreferences::class
+
+    single {
+        DownloadPreferencesOnPrefs(
+            preferences = get(named(APP_NO_BACKUP_PREFERENCES)),
+        )
+    } bind DownloadPreferences::class
 
     scope<EnvSession> {
         scoped {
@@ -141,6 +149,7 @@ val galleryFeatureModule = module {
                 downloadFileUseCase = get(),
                 downloadUrlFactory = get(),
                 galleryPreferences = get(),
+                downloadPreferences = get(),
             )
         } bind GalleryMediaDownloadActionsViewModelDelegate::class
 
