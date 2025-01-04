@@ -36,6 +36,8 @@
         app:title="@string/viewing_preferences">
 
         <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:iconSpaceReserved="false"
             app:key="@string/pk_gallery_item_scale"
             app:persistent="false"
@@ -93,6 +95,29 @@
             app:persistent="false"
             app:summary="@string/show_album_folders_explanation"
             app:widgetLayout="@layout/preference_material_switch" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/download_preferences">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_download_folder_en"
+            app:persistent="false"
+            app:summary="@string/download_folder_en_summary"
+            app:title="@string/download_folder_en"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            app:dependency="@string/pk_download_folder_en"
+            app:key="@string/pk_download_folder_name"
+            app:defaultValue="PhotoprismDL"
+            app:persistent="false"
+            app:summary="@string/download_folder_name_summary"
+            app:title="@string/download_folder_name"/>
 
     </PreferenceCategory>
 
