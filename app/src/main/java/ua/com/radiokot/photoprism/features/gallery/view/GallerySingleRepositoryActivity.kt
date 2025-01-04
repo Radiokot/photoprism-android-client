@@ -503,12 +503,9 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GalleryListViewModel.Event.OpenViewer ->
-                    openViewer(
-                        mediaIndex = event.mediaIndex,
-                        repositoryParams = event.repositoryParams,
-                        areActionsEnabled = event.areActionsEnabled,
-                    )
+                is GalleryListViewModel.Event.OpenViewer ->{
+                    // Replaced with the extended event from VM.
+                }
 
                 is GalleryListViewModel.Event.EnsureListItemVisible ->
                     view.galleryRecyclerView.post {
@@ -601,6 +598,14 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
                 is GallerySingleRepositoryViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
+
+                is GallerySingleRepositoryViewModel.Event.OpenViewer ->
+                    openViewer(
+                        mediaIndex = event.mediaIndex,
+                        repositoryParams = event.repositoryParams,
+                        areActionsEnabled = event.areActionsEnabled,
+                        albumUid = event.albumUid,
+                    )
             }
 
             log.debug {
@@ -636,6 +641,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         mediaIndex: Int,
         repositoryParams: SimpleGalleryMediaRepository.Params,
         areActionsEnabled: Boolean,
+        albumUid: String?,
     ) {
         viewerLauncher.launch(
             Intent(this, MediaViewerActivity::class.java)
@@ -644,6 +650,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                         mediaIndex = mediaIndex,
                         repositoryParams = repositoryParams,
                         areActionsEnabled = areActionsEnabled,
+                        albumUid = albumUid,
                     )
                 )
         )

@@ -35,6 +35,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/remove_from_album"
+        android:icon="@drawable/ic_remove_from_album"
+        android:title="@string/remove_from_album"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/archive"
         android:icon="@drawable/ic_archive"
         android:title="@string/archive_action"

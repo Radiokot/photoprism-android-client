@@ -18,8 +18,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaWebUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
@@ -45,6 +45,7 @@ class GalleryMediaViewerViewModel(
     private var isPageIndicatorEnabled = false
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
+    private var albumUid: String? = null
 
     // Media that turned to be not viewable.
     private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
@@ -64,6 +65,8 @@ class GalleryMediaViewerViewModel(
     val subtitle: MutableLiveData<SubtitleValue> = MutableLiveData()
     val isFavorite: MutableLiveData<Boolean> = MutableLiveData()
     val isPrivate: MutableLiveData<Boolean> = MutableLiveData()
+    val canRemoveFromAlbum: Boolean
+        get() = albumUid != null
 
     /**
      * Size of the image viewing area in px.
@@ -101,6 +104,7 @@ class GalleryMediaViewerViewModel(
         areActionsEnabled: Boolean,
         isPageIndicatorEnabled: Boolean,
         staticSubtitle: String?,
+        albumUid: String?,
     ) {
         if (isInitialized) {
             return
@@ -115,6 +119,7 @@ class GalleryMediaViewerViewModel(
         this.areActionsEnabled = areActionsEnabled
         this.isPageIndicatorEnabled = isPageIndicatorEnabled
         this.staticSubtitle = staticSubtitle
+        this.albumUid = albumUid
 
         initControlsVisibility()
 
@@ -125,7 +130,8 @@ class GalleryMediaViewerViewModel(
                     "\nrepositoryParam=$repositoryParams," +
                     "\nareActionsEnabled=$areActionsEnabled," +
                     "\nisPageIndicatorEnabled=$isPageIndicatorEnabled," +
-                    "\nstaticSubtitle=$staticSubtitle"
+                    "\nstaticSubtitle=$staticSubtitle," +
+                    "\nalbumUid=$albumUid"
         }
 
         update()
@@ -311,6 +317,27 @@ class GalleryMediaViewerViewModel(
 
         galleryMediaRemoteActionsViewModel.addGalleryMediaToAlbum(
             mediaUids = setOf(item.uid),
+        )
+    }
+
+    fun onRemoveFromAlbumClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+        val albumUid = this.albumUid
+
+        checkNotNull(albumUid) {
+            "Removing from the album is only possible when its UID is set"
+        }
+
+        if (item == null) {
+            log.warn {
+                "onRemoveFromAlbumClicked(): position_out_of_range"
+            }
+            return
+        }
+
+        galleryMediaRemoteActionsViewModel.removeGalleryMediaFromAlbum(
+            mediaUids = setOf(item.uid),
+            albumUid = albumUid,
         )
     }
 
