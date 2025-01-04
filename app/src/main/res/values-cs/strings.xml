@@ -275,7 +275,7 @@
     <string name="remove_from_album">Odstranit z alba</string>
     <string name="download_folder_en_summary">Stažené soubory budou uloženy do Soubory ke stažení/Váš_Složka</string>
     <string name="download_folder_en">Adresář stahování</string>
-    <string name="download_folder_name_summary">Název podsložky pro stahování (upravitelný)</string>
-    <string name="download_folder_name">PhotoprismDL</string>
+    <string name="download_folder_name">Název podsložky pro stahování (upravitelný)</string>
+    <string name="download_folder_name_summary">PhotoprismDL</string>
 
 </resources>

@@ -272,7 +272,7 @@
     <string name="remove_from_album">Aus dem Album entfernen</string>
     <string name="download_folder_en_summary">Die heruntergeladenen Dateien werden in Downloads/Ihr_Ordner gespeichert</string>
     <string name="download_folder_en">Download-Verzeichnis</string>
-    <string name="download_folder_name_summary">Name des Download-Unterverzeichnisses (bearbeitbar)</string>
-    <string name="download_folder_name">PhotoprismDL</string>
+    <string name="download_folder_name">Name des Download-Unterverzeichnisses (bearbeitbar)</string>
+    <string name="download_folder_name_summary">PhotoprismDL</string>
 
 </resources>

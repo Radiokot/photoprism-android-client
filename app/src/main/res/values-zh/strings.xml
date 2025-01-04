@@ -274,7 +274,7 @@
     <string name="remove_from_album">从相册中移除</string>
     <string name="download_folder_en_summary">下载的文件将存储在 下载/您的文件夹</string>
     <string name="download_folder_en">下载目录</string>
-    <string name="download_folder_name_summary">下载子目录名称（可编辑）</string>
-    <string name="download_folder_name">PhotoprismDL</string>
+    <string name="download_folder_name">下载子目录名称（可编辑）</string>
+    <string name="download_folder_name_summary">PhotoprismDL</string>
 
 </resources>

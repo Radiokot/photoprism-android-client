@@ -4,10 +4,6 @@
     <string name="app_name">PhotoPrism Gallery</string> <!-- "Gallery" must be translated to your language -->
     <string name="build_year" translatable="false">2024</string>  <!-- Skip non-translatable entries such as this -->
     <string name="uri_scheme" translatable="false">photoprismgallery</string>
-    <string name="download_folder_en_summary">The downloaded files will be stored in Downloads/Your_Folder</string>
-    <string name="download_folder_en">Download Directory</string>
-    <string name="download_folder_name_summary">Download Subdirectory Name (editable)</string>
-    <string name="download_folder_name">PhotoprismDL</string>
     <string name="media_type_image">Image</string>
     <string name="media_type_raw" translatable="false">RAW</string>
     <string name="media_type_animated">Animation</string>
@@ -282,4 +278,9 @@
         <item>Original</item>
     </string-array>
     <string name="remove_from_album">Remove from the album</string>
+    <string name="download_folder_en_summary">The downloaded files will be stored in Downloads/Your_Folder</string>
+    <string name="download_folder_en">Download Directory</string>
+    <string name="download_folder_name">Download Subdirectory Name (editable)</string>
+    <string name="download_folder_name_summary">PhotoprismDL</string>
+
 </resources>
