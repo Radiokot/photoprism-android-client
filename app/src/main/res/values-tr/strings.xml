@@ -272,5 +272,9 @@
         <item>Orijinal</item>
     </string-array>
     <string name="remove_from_album">Albümden kaldır</string>
+    <string name="download_preferences">İndirilenler</string>
+    <string name="download_use_separate_folder_preference">Ayrı bir klasör kullan</string>
+    <string name="download_use_separate_folder_preference_summary">Dosyaları İndirilenler içinde ayrı bir klasöre kaydetmek</string>
+    <string name="download_separate_folder_name_preference">Klasör adı</string>
 
 </resources>

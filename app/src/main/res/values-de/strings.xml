@@ -270,5 +270,9 @@
         <item>Original</item>
     </string-array>
     <string name="remove_from_album">Aus dem Album entfernen</string>
+    <string name="download_preferences">Downloads</string>
+    <string name="download_use_separate_folder_preference">Einen separaten Ordner verwenden</string>
+    <string name="download_use_separate_folder_preference_summary">Dateien in einem separaten Ordner in Downloads speichern</string>
+    <string name="download_separate_folder_name_preference">Ordnername</string>
 
 </resources>

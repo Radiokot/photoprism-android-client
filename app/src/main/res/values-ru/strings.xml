@@ -272,5 +272,9 @@
         <item>Оригинал</item>
     </string-array>
     <string name="remove_from_album">Удалить из альбома</string>
+    <string name="download_preferences">Загрузки</string>
+    <string name="download_use_separate_folder_preference">Использовать отдельную папку</string>
+    <string name="download_use_separate_folder_preference_summary">Сохранять файлы в отдельной папке в Загрузках</string>
+    <string name="download_separate_folder_name_preference">Имя папки</string>
 
 </resources>

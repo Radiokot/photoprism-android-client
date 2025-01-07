@@ -271,6 +271,9 @@
         <item>JPEG compatibile, se presente</item>
         <item>Originale</item>
     </string-array>
-    <string name="remove_from_album">Rimuovi dall\'album</string>
+    <string name="remove_from_album">Rimuovi dall\'album</string>    <string name="download_preferences">Download</string>
+    <string name="download_use_separate_folder_preference">Utilizzare una cartella separata</string>
+    <string name="download_use_separate_folder_preference_summary">Salvare i file in una cartella separata sotto Download</string>
+    <string name="download_separate_folder_name_preference">Nome della cartella</string>
 
 </resources>

@@ -272,5 +272,9 @@
         <item>原始</item>
     </string-array>
     <string name="remove_from_album">从相册中移除</string>
+    <string name="download_preferences">下载</string>
+    <string name="download_use_separate_folder_preference">使用单独文件夹</string>
+    <string name="download_use_separate_folder_preference_summary">将文件保存到下载文件夹下的单独文件夹中</string>
+    <string name="download_separate_folder_name_preference">文件夹名称</string>
 
 </resources>

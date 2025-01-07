@@ -10,6 +10,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.PreferenceFragmentCompat
@@ -51,6 +52,7 @@ import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreA
 import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
+import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
@@ -77,6 +79,7 @@ class PreferencesFragment :
 
     private val log = kLogger("PreferencesFragment")
     private val galleryPreferences: GalleryPreferences by inject()
+    private val downloadPreferences: DownloadPreferences by inject()
     private val slideshowPreferences: SlideshowPreferences by inject()
     private val bookmarksBackup: SearchBookmarksBackup by inject()
     private val bookmarksBackupFileOpeningLauncher =
@@ -239,6 +242,30 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_show_album_folders)) {
             this as SwitchPreferenceCompat
             bindToSubject(searchPreferences.showAlbumFolders, viewLifecycleOwner)
+        }
+
+        with(requirePreference(R.string.pk_download_use_separate_folder)) {
+            this as SwitchPreferenceCompat
+            bindToSubject(downloadPreferences.useSeparateFolder, viewLifecycleOwner)
+        }
+
+        with(requirePreference(R.string.pk_download_separate_folder_name)) {
+            this as EditTextPreference
+            summary = downloadPreferences.separateFolderName.value!!
+            setOnBindEditTextListener { editText ->
+                editText.setText(summary)
+                editText.setSelection(editText.text.length)
+            }
+            setOnPreferenceChangeListener { _, newValue ->
+                val newFolderName = newValue.toString().trim()
+                if (newFolderName.isNotEmpty()) {
+                    downloadPreferences.separateFolderName.onNext(newFolderName)
+                    summary = newFolderName
+                    true
+                } else {
+                    false
+                }
+            }
         }
 
         with(requirePreference(R.string.pk_import_bookmarks)) {

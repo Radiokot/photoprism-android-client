@@ -273,5 +273,9 @@
         <item>Původní</item>
     </string-array>
     <string name="remove_from_album">Odstranit z alba</string>
+    <string name="download_preferences">Stažené soubory</string>
+    <string name="download_use_separate_folder_preference">Použít samostatnou složku</string>
+    <string name="download_use_separate_folder_preference_summary">Ukládat soubory do samostatné složky ve Stažené</string>
+    <string name="download_separate_folder_name_preference">Název složky</string>
 
 </resources>

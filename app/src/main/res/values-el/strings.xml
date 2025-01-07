@@ -272,5 +272,9 @@
         <item>Πρωτότυπο</item>
     </string-array>
     <string name="remove_from_album">Αφαίρεση από το άλμπουμ</string>
+    <string name="download_preferences">Λήψεις</string>
+    <string name="download_use_separate_folder_preference">Χρησιμοποιήστε ξεχωριστό φάκελο</string>
+    <string name="download_use_separate_folder_preference_summary">Αποθηκεύει αρχεία σε ξεχωριστό φάκελο στις Λήψεις</string>
+    <string name="download_separate_folder_name_preference">Όνομα φακέλου</string>
 
 </resources>

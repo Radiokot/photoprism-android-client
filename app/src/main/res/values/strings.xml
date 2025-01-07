@@ -4,7 +4,6 @@
     <string name="app_name">PhotoPrism Gallery</string> <!-- "Gallery" must be translated to your language -->
     <string name="build_year" translatable="false">2025</string>  <!-- Skip non-translatable entries such as this -->
     <string name="uri_scheme" translatable="false">photoprismgallery</string>
-
     <string name="media_type_image">Image</string>
     <string name="media_type_raw" translatable="false">RAW</string>
     <string name="media_type_animated">Animation</string>
@@ -278,4 +277,8 @@
         <item>Original</item>
     </string-array>
     <string name="remove_from_album">Remove from the album</string>
+    <string name="download_preferences">Downloads</string>
+    <string name="download_use_separate_folder_preference">Use a separate folder</string>
+    <string name="download_use_separate_folder_preference_summary">Save files into a separate folder in Downloads</string>
+    <string name="download_separate_folder_name_preference">Folder name</string>
 </resources>

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to change the sharing behavior for RAWs in the preferences:
   you can choose between sharing the original file or a compatible JPEG, if available
 - Ability to remove selected items from the album being viewed
+- Ability to use a separate folder for downloads
 
 ### Changed
 

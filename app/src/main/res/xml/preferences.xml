@@ -67,6 +67,28 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/download_preferences">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_download_use_separate_folder"
+            app:persistent="false"
+            app:summary="@string/download_use_separate_folder_preference_summary"
+            app:title="@string/download_use_separate_folder_preference"
+            app:widgetLayout="@layout/preference_material_switch" />
+
+        <EditTextPreference
+            app:dependency="@string/pk_download_use_separate_folder"
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_download_separate_folder_name"
+            app:persistent="false"
+            app:summary="***"
+            app:title="@string/download_separate_folder_name_preference" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/search_preferences">
 
         <SwitchPreferenceCompat

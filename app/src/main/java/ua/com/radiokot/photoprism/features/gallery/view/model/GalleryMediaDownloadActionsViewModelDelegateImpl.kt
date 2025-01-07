@@ -15,6 +15,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
+import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.logic.DownloadFileUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaFileDownloadUrlFactory
@@ -31,6 +32,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
     private val backgroundMediaFileDownloadManager: BackgroundMediaFileDownloadManager,
     private val downloadUrlFactory: MediaFileDownloadUrlFactory,
     private val galleryPreferences: GalleryPreferences,
+    private val downloadPreferences: DownloadPreferences,
 ) : ViewModel(),
     GalleryMediaDownloadActionsViewModelDelegate {
 
@@ -344,8 +346,20 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
     private fun getExternalDownloadDestination(
         file: GalleryMedia.File,
     ): File {
+        val directory =
+            if (downloadPreferences.useSeparateFolder.value == true) {
+                File(
+                    externalDownloadsDir,
+                    checkNotNull(downloadPreferences.separateFolderName.value) {
+                        "There must be the separate download folder name if it is enabled"
+                    }
+                )
+            } else{
+                externalDownloadsDir
+            }
+
         val fileByExactName = File(
-            externalDownloadsDir.also(File::mkdirs),
+            directory.also(File::mkdirs),
             File(file.name).name
         )
 
@@ -355,7 +369,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
         else
         // Otherwise return a file with a random unique name suffix.
             File(
-                externalDownloadsDir,
+                directory,
                 File(file.name)
                     .let {
                         it.nameWithoutExtension +
