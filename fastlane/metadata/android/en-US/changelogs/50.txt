@@ -1,0 +1,11 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to add the entry to an album from the media viewer screen
+- Ability to change the sharing behavior for RAWs in the preferences: you can choose between sharing the original file or a compatible JPEG, if available
+- Ability to remove selected items from the album being viewed
+- Ability to use a separate folder for downloads
+
+Changed:
+- Improved Memories selection randomness
+- Switched to the the alternative video rendering method, which should fix stretching and orientation issues on TVs
