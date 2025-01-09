@@ -28,7 +28,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMed
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
-class GalleryViewModelGallery(
+class GalleryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
     private val disconnectFromEnvUseCase: DisconnectFromEnvUseCase,
     private val connectionParams: EnvConnectionParams,

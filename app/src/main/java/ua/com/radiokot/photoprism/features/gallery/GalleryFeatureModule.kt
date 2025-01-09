@@ -44,7 +44,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewMod
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
@@ -156,7 +156,7 @@ val galleryFeatureModule = module {
         viewModelOf(::GalleryMediaRemoteActionsViewModelDelegateImpl) bind GalleryMediaRemoteActionsViewModelDelegate::class
 
         viewModel {
-            GalleryViewModelGallery(
+            GalleryViewModel(
                 galleryMediaRepositoryFactory = get(),
                 connectionParams = get<EnvSession>().envConnectionParams,
                 searchViewModel = get(),

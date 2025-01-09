@@ -65,7 +65,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewMod
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModelGallery
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -80,7 +80,7 @@ import kotlin.math.roundToInt
 class GalleryActivity : BaseActivity() {
     private lateinit var rootView: ActivityGalleryBinding
     private lateinit var view: IncludeActivityGalleryContentBinding
-    private val viewModel: GalleryViewModelGallery by viewModel()
+    private val viewModel: GalleryViewModel by viewModel()
     private val log = kLogger("GGalleryActivity")
     private var isBackButtonJustPressed = false
     private var isMovedBackByBackButton = false
@@ -254,13 +254,13 @@ class GalleryActivity : BaseActivity() {
             }
 
             val errorToShow: ErrorView.Error = when (error) {
-                GalleryViewModelGallery.Error.NoMediaFound,
-                GalleryViewModelGallery.Error.SearchDoesNotFitAllowedTypes ->
+                GalleryViewModel.Error.NoMediaFound,
+                GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                     ErrorView.Error.EmptyView(
                         message = error.localizedMessage,
                     )
 
-                is GalleryViewModelGallery.Error.ContentLoadingError ->
+                is GalleryViewModel.Error.ContentLoadingError ->
                     when (error.contentLoadingError) {
                         GalleryContentLoadingError.CredentialsHaveBeenChanged,
                         GalleryContentLoadingError.SessionHasBeenExpired ->
@@ -403,38 +403,38 @@ class GalleryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GalleryViewModelGallery.Event.ResetScroll -> {
+                is GalleryViewModel.Event.ResetScroll -> {
                     resetScroll()
                 }
 
-                is GalleryViewModelGallery.Event.ShowFloatingError -> {
+                is GalleryViewModel.Event.ShowFloatingError -> {
                     showFloatingError(event.error)
                 }
 
-                is GalleryViewModelGallery.Event.OpenPreferences -> {
+                is GalleryViewModel.Event.OpenPreferences -> {
                     openPreferences()
                 }
 
-                is GalleryViewModelGallery.Event.OpenAlbums -> {
+                is GalleryViewModel.Event.OpenAlbums -> {
                     openAlbums(
                         albumType = event.albumType,
                         defaultSearchConfig = event.defaultSearchConfig,
                     )
                 }
 
-                is GalleryViewModelGallery.Event.OpenFavorites -> {
+                is GalleryViewModel.Event.OpenFavorites -> {
                     openFavorites(
                         repositoryParams = event.repositoryParams,
                     )
                 }
 
-                is GalleryViewModelGallery.Event.GoToEnvConnection -> {
+                is GalleryViewModel.Event.GoToEnvConnection -> {
                     goToEnvConnection(
                         rootUrl = event.rootUrl,
                     )
                 }
 
-                is GalleryViewModelGallery.Event.OpenWebViewerForRedirectHandling -> {
+                is GalleryViewModel.Event.OpenWebViewerForRedirectHandling -> {
                     openWebViewerForRedirectHandling(
                         url = event.url,
                     )
@@ -455,10 +455,10 @@ class GalleryActivity : BaseActivity() {
         }
 
         title = when (state) {
-            is GalleryViewModelGallery.State.Selecting ->
+            is GalleryViewModel.State.Selecting ->
                 getString(R.string.select_content)
 
-            GalleryViewModelGallery.State.Viewing ->
+            GalleryViewModel.State.Viewing ->
                 getString(R.string.library)
         }
 
@@ -467,10 +467,10 @@ class GalleryActivity : BaseActivity() {
             // because Gone for an unknown reason causes FAB misplacement
             // when switching from Viewing to Selecting 🤷🏻
             isInvisible =
-                state is GalleryViewModelGallery.State.Viewing
+                state is GalleryViewModel.State.Viewing
 
             navigationIcon =
-                if (state is GalleryViewModelGallery.State.Selecting && state.allowMultiple)
+                if (state is GalleryViewModel.State.Selecting && state.allowMultiple)
                     ContextCompat.getDrawable(this@GalleryActivity, R.drawable.ic_close)
                 else
                     null
@@ -480,7 +480,7 @@ class GalleryActivity : BaseActivity() {
 
         // The FAB is only used when selecting for other app,
         // as selecting for user allows more than 1 action.
-        if (state is GalleryViewModelGallery.State.Selecting.ForOtherApp && state.allowMultiple) {
+        if (state is GalleryViewModel.State.Selecting.ForOtherApp && state.allowMultiple) {
             viewModel.selectedItemsCount.observeOnMain().subscribe(this) { count ->
                 if (count > 0) {
                     view.doneSelectingFab.show()
@@ -786,7 +786,7 @@ class GalleryActivity : BaseActivity() {
         val multipleSelectionItemsCount = viewModel.selectedItemsCount.value ?: 0
         val state = viewModel.currentState
         val areUserSelectionItemsVisible =
-            multipleSelectionItemsCount > 0 && state is GalleryViewModelGallery.State.Selecting.ForUser
+            multipleSelectionItemsCount > 0 && state is GalleryViewModel.State.Selecting.ForUser
 
         with(view.selectionBottomAppBar.menu) {
             forEach { menuItem ->
@@ -928,7 +928,7 @@ class GalleryActivity : BaseActivity() {
         }
     }
 
-    private fun showFloatingError(error: GalleryViewModelGallery.Error) {
+    private fun showFloatingError(error: GalleryViewModel.Error) {
         Snackbar.make(view.galleryRecyclerView, error.localizedMessage, Snackbar.LENGTH_SHORT)
             .setAction(R.string.try_again) { viewModel.onFloatingErrorRetryClicked() }
             .show()
@@ -1059,15 +1059,15 @@ class GalleryActivity : BaseActivity() {
             super.onKeyDown(keyCode, event)
     }
 
-    private val GalleryViewModelGallery.Error.localizedMessage: String
+    private val GalleryViewModel.Error.localizedMessage: String
         get() = when (this) {
-            GalleryViewModelGallery.Error.NoMediaFound ->
+            GalleryViewModel.Error.NoMediaFound ->
                 getString(R.string.nothing_found)
 
-            GalleryViewModelGallery.Error.SearchDoesNotFitAllowedTypes ->
+            GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
                 getString(R.string.search_doesnt_fit_allowed_types)
 
-            is GalleryViewModelGallery.Error.ContentLoadingError ->
+            is GalleryViewModel.Error.ContentLoadingError ->
                 GalleryContentLoadingErrorResources.getMessage(
                     error = contentLoadingError,
                     context = this@GalleryActivity,
