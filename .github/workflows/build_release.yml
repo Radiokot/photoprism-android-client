@@ -1,0 +1,46 @@
+name: Build release packages
+
+on:
+  workflow_dispatch:
+
+env:
+  java_version: "17"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Releases
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create the signing keystore
+        run: |
+          echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > app/ci-signing.jks
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "${{env.java_version}}"
+          distribution: temurin
+
+      - name: Build the main APK
+        run: ./gradlew app:assembleRelease --stacktrace
+
+      - name: Build the main APK clone
+        run: ./gradlew app:assembleReleaseClone --stacktrace
+
+      - name: Build the bundle for Google Play
+        run: ./gradlew app:bundleReleasePlay --stacktrace
+
+      - name: Upload the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: APKs and bundles
+          path: |
+            app/build/outputs/**/*.apk
+            app/build/outputs/**/*.aab
+          compression-level: 0

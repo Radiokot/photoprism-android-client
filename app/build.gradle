@@ -6,11 +6,7 @@ plugins {
     id 'com.jaredsburrows.license'
 }
 
-def keystorePropertiesFile = rootProject.file("app/keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
+def ciSigningKeystoreFile = project.file("ci-signing.jks")
 
 def fileProviderAuthority = ""
 
@@ -43,6 +39,15 @@ android {
         }
     }
 
+    signingConfigs {
+        ci {
+            storeFile ciSigningKeystoreFile
+            storePassword "ci"
+            keyAlias "ci"
+            keyPassword "ci"
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
@@ -57,7 +62,11 @@ android {
             shrinkResources false
             debuggable false
 
-            signingConfig signingConfigs.debug
+            if (ciSigningKeystoreFile.exists()) {
+                signingConfig signingConfigs.ci
+            } else {
+                signingConfig signingConfigs.debug
+            }
 
             manifestPlaceholders.fileProviderAuthority = fileProviderAuthority
             buildConfigField 'String', 'FILE_PROVIDER_AUTHORITY', "\"" + fileProviderAuthority + "\""
