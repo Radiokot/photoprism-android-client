@@ -16,8 +16,9 @@ import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsStateRepository
-import ua.com.radiokot.photoprism.features.ext.key.activation.di.keyActivationFeatureModule
+import ua.com.radiokot.photoprism.features.ext.key.activation.keyActivationFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
+import ua.com.radiokot.photoprism.features.ext.key.renewal.keyRenewalFeatureModule
 import ua.com.radiokot.photoprism.features.ext.store.api.FeatureStoreService
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferences
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferencesOnPrefs
@@ -32,6 +33,7 @@ val galleryExtensionStoreModule = module {
         retrofitApiModule,
         localeModule,
         keyActivationFeatureModule,
+        keyRenewalFeatureModule,
     )
 
     single {

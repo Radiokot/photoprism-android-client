@@ -14,8 +14,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.features.ext.data.model.ActivatedGalleryExtension
 import ua.com.radiokot.photoprism.features.ext.data.model.GalleryExtension
 import ua.com.radiokot.photoprism.features.ext.key.activation.data.model.ParsedKey
@@ -250,6 +250,18 @@ class KeyActivationViewModel(
         )
     }
 
+    fun onKeyActivationErrorRenewClicked() {
+        log.debug {
+            "onKeyActivationErrorRenewClicked(): opening_renewal"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenRenewal(
+                key = this.key.value!!,
+            )
+        )
+    }
+
     sealed interface Error {
         sealed interface KeyError : Error {
             object Invalid : KeyError
@@ -275,5 +287,8 @@ class KeyActivationViewModel(
         object Finish : Event
         class ShowFloatingError(val error: Error) : Event
         class LaunchHelpEmailIntent(val intent: Intent) : Event
+        class OpenRenewal(
+            val key: String,
+        ) : Event
     }
 }

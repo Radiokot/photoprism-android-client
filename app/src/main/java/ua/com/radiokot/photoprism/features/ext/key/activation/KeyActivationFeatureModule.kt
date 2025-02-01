@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.ext.key.activation.di
+package ua.com.radiokot.photoprism.features.ext.key.activation
 
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf

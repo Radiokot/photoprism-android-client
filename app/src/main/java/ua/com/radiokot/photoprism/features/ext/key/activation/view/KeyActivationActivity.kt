@@ -16,10 +16,11 @@ import ua.com.radiokot.photoprism.databinding.ActivityKeyActivationBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.model.KeyActivationViewModel
+import ua.com.radiokot.photoprism.features.ext.key.renewal.view.KeyRenewalActivity
 import ua.com.radiokot.photoprism.util.SoftInputVisibility
 
 class KeyActivationActivity : BaseActivity() {
-    private val log = kLogger("KeyInputActivity")
+    private val log = kLogger("KeyActivationActivity")
 
     private lateinit var view: ActivityKeyActivationBinding
     val viewModel: KeyActivationViewModel by viewModel()
@@ -90,6 +91,16 @@ class KeyActivationActivity : BaseActivity() {
 
             is KeyActivationViewModel.Event.LaunchHelpEmailIntent ->
                 startActivity(Intent.createChooser(event.intent, getString(R.string.learn_more)))
+
+            is KeyActivationViewModel.Event.OpenRenewal ->
+                startActivity(
+                    Intent(this, KeyRenewalActivity::class.java)
+                        .putExtras(
+                            KeyRenewalActivity.getBundle(
+                                key = event.key,
+                            )
+                        )
+                )
         }
 
         log.debug {
@@ -139,6 +150,13 @@ class KeyActivationActivity : BaseActivity() {
 
     private fun showFloatingError(error: KeyActivationViewModel.Error) {
         Snackbar.make(view.fragmentContainer, error.localizedMessage, Snackbar.LENGTH_SHORT)
+            .apply {
+                if (error is KeyActivationViewModel.Error.KeyError.DeviceMismatch) {
+                    setAction(R.string.key_activation_renew) {
+                        viewModel.onKeyActivationErrorRenewClicked()
+                    }
+                }
+            }
             .show()
     }
 

@@ -281,4 +281,10 @@
     <string name="download_use_separate_folder_preference">Use a separate folder</string>
     <string name="download_use_separate_folder_preference_summary">Save files into a separate folder in Downloads</string>
     <string name="download_separate_folder_name_preference">Folder name</string>
+    <string name="key_activation_renew">Renew</string>
+    <string name="key_renewal_title">Renew the key</string>
+    <string name="key_renewal_subtitle">If you have a key for another device, you can get a copy for this one. Renewal can be done once per day</string>
+    <string name="key_renewal_current_key_title">Current key</string>
+    <string name="key_renewal_new_key_title">New key</string>
+    <string name="key_renewal_activate_new_key">Activate</string>
 </resources>
