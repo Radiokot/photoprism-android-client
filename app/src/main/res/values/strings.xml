@@ -287,4 +287,6 @@
     <string name="key_renewal_current_key_title">Current key</string>
     <string name="key_renewal_new_key_title">New key</string>
     <string name="key_renewal_activate_new_key">Activate</string>
+    <string name="key_renewal_error_failed">Failed to renew the key</string>
+    <string name="key_renewal_error_not_available">Renewal is currently unavailable. Try again the next day</string>
 </resources>

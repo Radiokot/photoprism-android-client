@@ -5,14 +5,20 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.features.ext.key.renewal.logic.RenewEnteredKeyUseCase
 
 class KeyRenewalViewModel(
     private val application: Application,
+    private val renewEnteredKeyUseCase: RenewEnteredKeyUseCase,
 ) : ViewModel() {
 
     private val log = kLogger("KeyRenewalVM")
@@ -60,13 +66,51 @@ class KeyRenewalViewModel(
         }
     }
 
+    private var renewalDisposable: Disposable? = null
     private fun renew(key: String) {
-        // TODO renew key
-        stateSubject.onNext(
-            State.Done(
-                newKey = "new key $key new key",
+        renewalDisposable?.dispose()
+        renewalDisposable = renewEnteredKeyUseCase(key)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                log.debug {
+                    "renew(): starting_renewal:" +
+                            "\nkey=$key"
+                }
+            }
+            .subscribeBy(
+                onSuccess = { newKey ->
+                    log.debug {
+                        "renew(): successfully_renewed:" +
+                                "\nnewKey=$newKey"
+                    }
+
+                    stateSubject.onNext(
+                        State.Done(
+                            newKey = newKey,
+                        )
+                    )
+                },
+                onError = { error ->
+                    when (error) {
+                        is RenewEnteredKeyUseCase.RenewalNotAvailableException -> {
+                            log.debug {
+                                "renew(): renewal_not_available"
+                            }
+
+                            eventSubject.onNext(Event.ShowFloatingError(Error.NotAvailable))
+                        }
+
+                        else -> {
+                            log.error(error) {
+                                "renew(): renewal_failed"
+                            }
+
+                            eventSubject.onNext(Event.ShowFloatingError(Error.Failed))
+                        }
+                    }
+                }
             )
-        )
+            .autoDispose(this)
     }
 
     fun onCopyKeyClicked() {
@@ -97,5 +141,21 @@ class KeyRenewalViewModel(
         class GoToActivation(
             val key: String,
         ) : Event
+
+        class ShowFloatingError(
+            val error: Error,
+        ) : Event
+    }
+
+    sealed interface Error {
+        /**
+         * Renewal failed and could be retried.
+         */
+        object Failed : Error
+
+        /**
+         * Renewal is not available as already used recently.
+         */
+        object NotAvailable : Error
     }
 }

@@ -257,7 +257,9 @@ class KeyActivationViewModel(
 
         eventsSubject.onNext(
             Event.OpenRenewal(
-                key = this.key.value!!,
+                key = key.value?.trim().checkNotNull {
+                    "The key must be entered at this point"
+                },
             )
         )
     }

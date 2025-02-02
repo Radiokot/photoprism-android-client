@@ -17,7 +17,7 @@ import java.security.spec.X509EncodedKeySpec
 
 class ParseEnteredKeyUseCase(
     private val extensionsStateRepository: GalleryExtensionsStateRepository,
-    private val hardwareIdentifier: HardwareIdentifier?,
+    private val hardwareIdentifier: HardwareIdentifier,
 ) {
     private val log = kLogger("ParseEnteredKeyUseCase")
 
@@ -25,7 +25,7 @@ class ParseEnteredKeyUseCase(
         keyInput: String,
     ): Single<Result> {
         val primarySubject = extensionsStateRepository.currentState.primarySubject
-        val hardware = hardwareIdentifier?.getHardwareIdentifier()
+        val hardware = hardwareIdentifier.getHardwareIdentifier()
 
         return getIssuerPublicKey()
             .flatMap { issuerPublicKey ->
@@ -104,7 +104,7 @@ class ParseEnteredKeyUseCase(
         issuerPublicKey: RSAPublicKey,
         keyInput: String,
         primarySubject: String?,
-        hardware: String?,
+        hardware: String,
     ): Single<OfflineLicenseKey> = {
         log.debug {
             "readAndVerifyKey(): reading_the_key:" +

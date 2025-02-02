@@ -1,29 +1,25 @@
-package ua.com.radiokot.photoprism.features.ext.store.api.model
+package ua.com.radiokot.photoprism.features.ext.api.model
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class FeaturesOnSaleResponse
+class KeyRenewalResponse
 @JsonCreator
 constructor(
     @JsonProperty("data")
-    val data: List<FeatureOnSale>,
+    val data: Data,
 ) {
-    class FeatureOnSale
+    class Data
     @JsonCreator
     constructor(
-        @JsonProperty("id")
-        val id: String,
         @JsonProperty("attributes")
         val attributes: Attributes,
     ) {
         class Attributes
         @JsonCreator
         constructor(
-            @JsonProperty("price")
-            val price: String,
-            @JsonProperty("page")
-            val page: String,
+            @JsonProperty("key")
+            val key: String,
         )
     }
 }

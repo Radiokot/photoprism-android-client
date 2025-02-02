@@ -4,13 +4,10 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import retrofit2.Retrofit
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
-import ua.com.radiokot.photoprism.di.EnvRetrofitParams
 import ua.com.radiokot.photoprism.di.localeModule
 import ua.com.radiokot.photoprism.di.retrofitApiModule
 import ua.com.radiokot.photoprism.extension.checkNotNull
@@ -19,7 +16,6 @@ import ua.com.radiokot.photoprism.features.ext.data.storage.GalleryExtensionsSta
 import ua.com.radiokot.photoprism.features.ext.key.activation.keyActivationFeatureModule
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
 import ua.com.radiokot.photoprism.features.ext.key.renewal.keyRenewalFeatureModule
-import ua.com.radiokot.photoprism.features.ext.store.api.FeatureStoreService
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferences
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionStorePreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.ext.store.data.storage.GalleryExtensionsOnSaleRepository
@@ -35,17 +31,6 @@ val galleryExtensionStoreModule = module {
         keyActivationFeatureModule,
         keyRenewalFeatureModule,
     )
-
-    single {
-        get<Retrofit>(_q<EnvRetrofitParams>()) {
-            EnvRetrofitParams(
-                apiUrl = getProperty<String>("featureStoreRootUrl")
-                    .checkNotNull { "Missing feature store root URL" }
-                    .toHttpUrl(),
-                httpClient = get(),
-            )
-        }.create(FeatureStoreService::class.java)
-    } bind FeatureStoreService::class
 
     singleOf(::GalleryExtensionsOnSaleRepository)
 
@@ -63,7 +48,7 @@ val galleryExtensionStoreModule = module {
     viewModel {
         val galleryExtensionsStateRepository: GalleryExtensionsStateRepository = get()
         val hardwareIdentifier: HardwareIdentifier = get()
-        val featureStoreRootUrl: HttpUrl = getProperty<String>("featureStoreRootUrl")
+        val featureStoreRootUrl: HttpUrl = getProperty<String>("offlineLicenseKeySvcRootUrl")
             .checkNotNull { "Missing feature store root URL" }
             .toHttpUrl()
 

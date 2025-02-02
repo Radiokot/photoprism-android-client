@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -108,19 +109,48 @@ class KeyRenewalActivity : BaseActivity() {
 
         when (event) {
             is KeyRenewalViewModel.Event.GoToActivation -> {
-                startActivity(
-                    Intent(this, KeyActivationActivity::class.java)
-                        .setData(
-                            Uri.Builder()
-                                .scheme(getString(R.string.uri_scheme))
-                                .appendQueryParameter("key", event.key)
-                                .build()
-                        )
+                goToActivation(
+                    key = event.key,
                 )
-                finish()
+            }
+
+            is KeyRenewalViewModel.Event.ShowFloatingError -> {
+                showFloatingError(event.error)
             }
         }
     }
+
+    private fun goToActivation(key: String) {
+        startActivity(
+            Intent(this, KeyActivationActivity::class.java)
+                .setData(
+                    Uri.Builder()
+                        .scheme(getString(R.string.uri_scheme))
+                        .appendQueryParameter("key", key)
+                        .build()
+                )
+        )
+        finish()
+    }
+
+    private fun showFloatingError(error: KeyRenewalViewModel.Error) {
+        Snackbar.make(view.root, error.localizedMessage, Snackbar.LENGTH_SHORT)
+            .apply {
+                if (error is KeyRenewalViewModel.Error.NotAvailable) {
+                    duration = Snackbar.LENGTH_LONG
+                }
+            }
+            .show()
+    }
+
+    private val KeyRenewalViewModel.Error.localizedMessage: String
+        get() = when (this) {
+            KeyRenewalViewModel.Error.NotAvailable ->
+                getString(R.string.key_renewal_error_not_available)
+
+            KeyRenewalViewModel.Error.Failed ->
+                getString(R.string.key_renewal_error_failed)
+        }
 
     companion object {
         private const val KEY_EXTRA = "key"
