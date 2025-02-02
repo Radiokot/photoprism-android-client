@@ -276,5 +276,13 @@
     <string name="download_use_separate_folder_preference">Χρησιμοποιήστε ξεχωριστό φάκελο</string>
     <string name="download_use_separate_folder_preference_summary">Αποθηκεύει αρχεία σε ξεχωριστό φάκελο στις Λήψεις</string>
     <string name="download_separate_folder_name_preference">Όνομα φακέλου</string>
+    <string name="key_activation_renew">Ανανέωση</string>
+    <string name="key_renewal_subtitle">Εάν έχετε κλειδί για άλλη συσκευή, μπορείτε να λάβετε ένα αντίγραφο για αυτήν. Η ανανέωση μπορεί να γίνει μία φορά την ημέρα</string>
+    <string name="key_renewal_current_key_title">Τρέχον κλειδί</string>
+    <string name="key_renewal_new_key_title">Νέο κλειδί</string>
+    <string name="key_renewal_activate_new_key">Ενεργοποίηση</string>
+    <string name="key_renewal_error_failed">Αποτυχία ανανέωσης του κλειδιού</string>
+    <string name="key_renewal_error_not_available">Η ανανέωση μπορεί να γίνει μία φορά την ημέρα. Προσπαθήστε ξανά την επόμενη ημέρα</string>
+    <string name="key_renewal_title">Ανανέωση του κλειδιού</string>
 
 </resources>

@@ -277,5 +277,13 @@
     <string name="download_use_separate_folder_preference">Utiliser un dossier séparé</string>
     <string name="download_use_separate_folder_preference_summary">Enregistrer des fichiers dans un dossier séparé sous Téléchargements</string>
     <string name="download_separate_folder_name_preference">Nom du dossier</string>
+    <string name="key_activation_renew">Renouveler</string>
+    <string name="key_renewal_subtitle">Si vous avez une clé pour un autre appareil, vous pouvez en obtenir une copie pour celui-ci. Le renouvellement peut se faire une fois par jour</string>
+    <string name="key_renewal_current_key_title">Clé actuelle</string>
+    <string name="key_renewal_new_key_title">Nouvelle clé</string>
+    <string name="key_renewal_activate_new_key">Activer</string>
+    <string name="key_renewal_error_failed">Échec du renouvellement de la clé</string>
+    <string name="key_renewal_error_not_available">Le renouvellement peut se faire une fois par jour. Réessayez le jour suivant</string>
+    <string name="key_renewal_title">Renouvellement de la clé</string>
 
 </resources>

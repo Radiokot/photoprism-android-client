@@ -276,5 +276,13 @@
     <string name="download_use_separate_folder_preference">Ayrı bir klasör kullan</string>
     <string name="download_use_separate_folder_preference_summary">Dosyaları İndirilenler içinde ayrı bir klasöre kaydetmek</string>
     <string name="download_separate_folder_name_preference">Klasör adı</string>
+    <string name="key_activation_renew">Yenile</string>
+    <string name="key_renewal_subtitle">Başka bir cihaz için bir anahtarınız varsa, bu cihaz için bir kopyasını alabilirsiniz. Yenileme günde bir kez yapılabilir</string>
+    <string name="key_renewal_current_key_title">Geçerli anahtar</string>
+    <string name="key_renewal_new_key_title">Yeni anahtar</string>
+    <string name="key_renewal_activate_new_key">Etkinleştir</string>
+    <string name="key_renewal_error_failed">Anahtarı yenileme başarısız oldu</string>
+    <string name="key_renewal_error_not_available">Yenileme günde bir kez yapılabilir. Ertesi gün tekrar deneyin</string>
+    <string name="key_renewal_title">Anahtarın yenilenmesi</string>
 
 </resources>

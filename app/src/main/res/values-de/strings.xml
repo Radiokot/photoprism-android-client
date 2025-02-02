@@ -274,5 +274,13 @@
     <string name="download_use_separate_folder_preference">Einen separaten Ordner verwenden</string>
     <string name="download_use_separate_folder_preference_summary">Dateien in einem separaten Ordner in Downloads speichern</string>
     <string name="download_separate_folder_name_preference">Ordnername</string>
+    <string name="key_activation_renew">Erneuern</string>
+    <string name="key_renewal_subtitle">Wenn Sie einen Schlüssel für ein anderes Gerät haben, können Sie eine Kopie für dieses Gerät erhalten. Die Erneuerung kann einmal täglich durchgeführt werden</string>
+    <string name="key_renewal_current_key_title">Aktueller Schlüssel</string>
+    <string name="key_renewal_new_key_title">Neuer Schlüssel</string>
+    <string name="key_renewal_activate_new_key">Aktivieren</string>
+    <string name="key_renewal_error_failed">Fehler beim Erneuern des Schlüssels</string>
+    <string name="key_renewal_error_not_available">Die Erneuerung kann einmal täglich durchgeführt werden. Versuchen Sie es am nächsten Tag erneut</string>
+    <string name="key_renewal_title">Schlüssel erneuern</string>
 
 </resources>

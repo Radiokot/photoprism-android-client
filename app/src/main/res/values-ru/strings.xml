@@ -276,5 +276,13 @@
     <string name="download_use_separate_folder_preference">Использовать отдельную папку</string>
     <string name="download_use_separate_folder_preference_summary">Сохранять файлы в отдельной папке в Загрузках</string>
     <string name="download_separate_folder_name_preference">Имя папки</string>
+    <string name="key_activation_renew">Обновить</string>
+    <string name="key_renewal_subtitle">Если у вас есть ключ для другого устройства, вы можете получить копию для этого. Обновлять ключ можно раз в день</string>
+    <string name="key_renewal_current_key_title">Текущий ключ</string>
+    <string name="key_renewal_new_key_title">Новый ключ</string>
+    <string name="key_renewal_activate_new_key">Активировать</string>
+    <string name="key_renewal_error_failed">Не удалось обновить ключ</string>
+    <string name="key_renewal_error_not_available">Обновлять ключ можно раз в день. Попробуйте снова на следующий день</string>
+    <string name="key_renewal_title">Обновление ключа</string>
 
 </resources>

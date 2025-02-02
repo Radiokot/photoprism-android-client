@@ -52,7 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:hint="@string/key_activation_input_field_title"
+                    android:hint="@string/key_renewal_current_key_title"
                     app:endIconContentDescription="@string/copy"
                     app:endIconDrawable="@drawable/ic_content_copy"
                     app:endIconMode="custom"
@@ -87,6 +87,17 @@
                 app:layout_constraintVertical_bias="1"
                 app:layout_constraintWidth_max="340dp" />
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/content_layout"
+                app:layout_constraintVertical_bias="1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

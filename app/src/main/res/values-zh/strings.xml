@@ -276,5 +276,13 @@
     <string name="download_use_separate_folder_preference">使用单独文件夹</string>
     <string name="download_use_separate_folder_preference_summary">将文件保存到下载文件夹下的单独文件夹中</string>
     <string name="download_separate_folder_name_preference">文件夹名称</string>
+    <string name="key_activation_renew">续订</string>
+    <string name="key_renewal_subtitle">如果您有另一台设备的密钥，可以为这台设备获取一份副本。续订每天可以进行一次</string>
+    <string name="key_renewal_current_key_title">当前密钥</string>
+    <string name="key_renewal_new_key_title">新密钥</string>
+    <string name="key_renewal_activate_new_key">激活</string>
+    <string name="key_renewal_error_failed">未能续订密钥</string>
+    <string name="key_renewal_error_not_available">续订每天可以进行一次。请在第二天重试</string>
+    <string name="key_renewal_title">续订密钥</string>
 
 </resources>

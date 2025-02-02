@@ -275,5 +275,13 @@
     <string name="download_use_separate_folder_preference">Utilizzare una cartella separata</string>
     <string name="download_use_separate_folder_preference_summary">Salvare i file in una cartella separata sotto Download</string>
     <string name="download_separate_folder_name_preference">Nome della cartella</string>
+    <string name="key_activation_renew">Rinnovare</string>
+    <string name="key_renewal_subtitle">Se hai una chiave per un altro dispositivo, puoi ottenere una copia per questo. Il rinnovo può essere effettuato una volta al giorno</string>
+    <string name="key_renewal_current_key_title">Chiave attuale</string>
+    <string name="key_renewal_new_key_title">Nuova chiave</string>
+    <string name="key_renewal_activate_new_key">Attivare</string>
+    <string name="key_renewal_error_failed">Impossibile rinnovare la chiave</string>
+    <string name="key_renewal_error_not_available">Il rinnovo può essere effettuato una volta al giorno. Riprovare il giorno successivo</string>
+    <string name="key_renewal_title">Rinnovo della chiave</string>
 
 </resources>

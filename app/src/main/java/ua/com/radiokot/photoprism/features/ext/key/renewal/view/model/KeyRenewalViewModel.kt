@@ -4,17 +4,21 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.core.content.getSystemService
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.ext.key.renewal.logic.RenewEnteredKeyUseCase
+import java.util.concurrent.TimeUnit
 
 class KeyRenewalViewModel(
     private val application: Application,
@@ -26,10 +30,16 @@ class KeyRenewalViewModel(
     val state: Observable<State> = stateSubject.observeOnMain()
     private val eventSubject: PublishSubject<Event> = PublishSubject.create()
     val events: Observable<Event> = eventSubject.observeOnMain()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var isInitialized = false
 
-    fun init(
+    fun initOnce(
         key: String,
     ) {
+        if (isInitialized) {
+            return
+        }
+
         stateSubject.onNext(
             State.Preparing(
                 key = key,
@@ -40,6 +50,8 @@ class KeyRenewalViewModel(
             "init(): initialized:" +
                     "\nkey=$key"
         }
+
+        isInitialized = true
     }
 
     fun onContinueClicked() = when (val state = stateSubject.value!!) {
@@ -69,13 +81,22 @@ class KeyRenewalViewModel(
     private var renewalDisposable: Disposable? = null
     private fun renew(key: String) {
         renewalDisposable?.dispose()
-        renewalDisposable = renewEnteredKeyUseCase(key)
+        renewalDisposable = Single.zip(
+            renewEnteredKeyUseCase.invoke(key),
+            // Delay for better visual.
+            Single.timer(1, TimeUnit.SECONDS, Schedulers.io())
+        ) { newKey, _ -> newKey }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 log.debug {
                     "renew(): starting_renewal:" +
                             "\nkey=$key"
                 }
+
+                isLoading.postValue(true)
+            }
+            .doOnTerminate {
+                isLoading.postValue(false)
             }
             .subscribeBy(
                 onSuccess = { newKey ->

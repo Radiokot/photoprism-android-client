@@ -277,5 +277,13 @@
     <string name="download_use_separate_folder_preference">Použít samostatnou složku</string>
     <string name="download_use_separate_folder_preference_summary">Ukládat soubory do samostatné složky ve Stažené</string>
     <string name="download_separate_folder_name_preference">Název složky</string>
+    <string name="key_activation_renew">Obnovit</string>
+    <string name="key_renewal_subtitle">Pokud máte klíč pro jiné zařízení, můžete získat kopii pro toto zařízení. Obnovu lze provést jednou denně</string>
+    <string name="key_renewal_current_key_title">Aktuální klíč</string>
+    <string name="key_renewal_new_key_title">Nový klíč</string>
+    <string name="key_renewal_activate_new_key">Aktivovat</string>
+    <string name="key_renewal_error_failed">Nepodařilo se obnovit klíč</string>
+    <string name="key_renewal_error_not_available">Obnova může být provedena jednou denně. Zkuste to znovu následující den</string>
+    <string name="key_renewal_title">Obnovení klíče</string>
 
 </resources>
