@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.35.0] - 2025-02-04
 
 ### Added
 
@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improved [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension) selection randomness
+- Improved [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
+  selection randomness
 - Switched to the the alternative video rendering method,
   which should fix stretching and orientation issues on TVs
 
@@ -32,19 +33,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Ability to select items by dragging after a long press
-- Ability to disable [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
+- Ability to
+  disable [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
 - Ability to configure the max number of entries in a memory
 - Ability to browse months (calendar) from the main menu
 
 ### Changed
 
-- Improved randomness and speed of the [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
+- Improved randomness and speed of
+  the [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
 - Files downloaded for sharing or opening in another app
   are now stored in "Cache" instead of "Data"
 
 ### Removed
 
-- File selection step when interacting with videos, animations, RAWs 
+- File selection step when interacting with videos, animations, RAWs
   and other entries with multiple files. Now the original file is selected automatically
 
 ## [1.32.0] - 2024-11-11
@@ -739,102 +742,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Library is not accessible" during the connection, when the entered root URL doesn't match the
   `PHOTOPRISM_SITE_URL` server config value
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.34.0(50)...HEAD
-
-[1.33.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.33.0(49)...1.34.0(50)
-
-[1.33.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.32.0(48)...1.33.0(49)
-
-[1.32.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.31.1(47)...1.32.0(48)
-
-[1.31.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.31.0(46)...1.31.1(47)
-
-[1.31.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.30.0(45)...1.31.0(46)
-
-[1.30.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.29.0(44)...1.30.0(45)
-
-[1.29.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.1(43)...1.29.0(44)
-
-[1.28.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.0(42)...1.28.1(43)
-
-[1.28.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.27.0(41)...1.28.0(42)
-
-[1.27.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.26.0(40)...1.27.0(41)
-
-[1.26.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.25.0(39)...1.26.0(40)
-
-[1.25.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.1(38)...1.25.0(39)
-
-[1.24.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.0(37)...1.24.1(38)
-
-[1.24.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...1.24.0(37)
-
-[1.23.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.22.0(35)...1.23.0(36)
-
-[1.22.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.21.0(34)...1.22.0(35)
-
-[1.21.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.3(33)...1.21.0(34)
-
-[1.20.3]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.2(32)...1.20.3(33)
-
-[1.20.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.1(31)...1.20.2(32)
-
-[1.20.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.0(30)...1.20.1(31)
-
-[1.20.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...1.20.0(30)
-
-[1.19.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.18.0(28)...1.19.0(29)
-
-[1.18.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.17.0(27)...1.18.0(28)
-
-[1.17.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.1(26)...1.17.0(27)
-
-[1.16.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.0(25)...1.16.1(26)
-
-[1.16.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.15.1(24)...1.16.0(25)
-
-[1.15.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.15.0(23)...1.15.1(24)
-
-[1.15.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.14.0(22)...1.15.0(23)
-
-[1.14.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...1.14.0(22)
-
-[1.13.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...1.13.0(21)
-
-[1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
-
-[1.11.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.10.0(18)...1.11.0(19)
-
-[1.10.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.9.0(17)...1.10.0(18)
-
-[1.9.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.1(16)...1.9.0(17)
-
-[1.8.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.0(15)...1.8.1(16)
-
-[1.8.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...1.8.0(15)
-
-[1.7.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...1.7.1(14)
-
-[1.7.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.6.0(12)...1.7.0(13)
-
-[1.6.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2(11)...1.6.0(12)
-
-[1.5.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2-rc1(10)...1.5.2(11)
-
-[1.5.2-rc1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.1(9)...1.5.2-rc1(10)
-
-[1.5.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.0(8)...1.5.1(9)
-
-[1.5.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.4.0(7)...1.5.0(8)
-
-[1.4.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.3.0(6)...1.4.0(7)
-
-[1.3.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.2.0(5)...1.3.0(6)
-
-[1.2.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.1.0(4)...1.2.0(5)
-
-[1.1.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.2(3)...1.1.0(4)
+[1.0.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.0(1)...1.0.1(2)
 
 [1.0.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.1(2)...1.0.2(3)
 
-[1.0.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.0(1)...1.0.1(2)
+[1.1.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.0.2(3)...1.1.0(4)
+
+[1.2.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.1.0(4)...1.2.0(5)
+
+[1.3.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.2.0(5)...1.3.0(6)
+
+[1.4.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.3.0(6)...1.4.0(7)
+
+[1.5.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.4.0(7)...1.5.0(8)
+
+[1.5.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.0(8)...1.5.1(9)
+
+[1.5.2-rc1]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.1(9)...1.5.2-rc1(10)
+
+[1.5.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2-rc1(10)...1.5.2(11)
+
+[1.6.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.5.2(11)...1.6.0(12)
+
+[1.7.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.6.0(12)...1.7.0(13)
+
+[1.7.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.0(13)...1.7.1(14)
+
+[1.8.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.7.1(14)...1.8.0(15)
+
+[1.8.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.0(15)...1.8.1(16)
+
+[1.9.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.8.1(16)...1.9.0(17)
+
+[1.10.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.9.0(17)...1.10.0(18)
+
+[1.11.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.10.0(18)...1.11.0(19)
+
+[1.12.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.11.0(19)...1.12.0(20)
+
+[1.13.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.12.0(20)...1.13.0(21)
+
+[1.14.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.13.0(21)...1.14.0(22)
+
+[1.15.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.14.0(22)...1.15.0(23)
+
+[1.15.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.15.0(23)...1.15.1(24)
+
+[1.16.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.15.1(24)...1.16.0(25)
+
+[1.16.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.0(25)...1.16.1(26)
+
+[1.17.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.16.1(26)...1.17.0(27)
+
+[1.18.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.17.0(27)...1.18.0(28)
+
+[1.19.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.18.0(28)...1.19.0(29)
+
+[1.20.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.19.0(29)...1.20.0(30)
+
+[1.20.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.0(30)...1.20.1(31)
+
+[1.20.2]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.1(31)...1.20.2(32)
+
+[1.20.3]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.2(32)...1.20.3(33)
+
+[1.21.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.20.3(33)...1.21.0(34)
+
+[1.22.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.21.0(34)...1.22.0(35)
+
+[1.23.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.22.0(35)...1.23.0(36)
+
+[1.24.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.23.0(36)...1.24.0(37)
+
+[1.24.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.0(37)...1.24.1(38)
+
+[1.25.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.24.1(38)...1.25.0(39)
+
+[1.26.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.25.0(39)...1.26.0(40)
+
+[1.27.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.26.0(40)...1.27.0(41)
+
+[1.28.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.27.0(41)...1.28.0(42)
+
+[1.28.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.0(42)...1.28.1(43)
+
+[1.29.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.28.1(43)...1.29.0(44)
+
+[1.30.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.29.0(44)...1.30.0(45)
+
+[1.31.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.30.0(45)...1.31.0(46)
+
+[1.31.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.31.0(46)...1.31.1(47)
+
+[1.32.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.31.1(47)...1.32.0(48)
+
+[1.33.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.32.0(48)...1.33.0(49)
+
+[1.34.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.33.0(49)...1.34.0(50)
+
+[1.35.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.34.0(50)...1.35.0(51)
+
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.35.0(51)...HEAD
