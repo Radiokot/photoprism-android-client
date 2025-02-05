@@ -118,6 +118,12 @@ android {
         buildConfig true
     }
 
+    // F-Droid policy: https://gitlab.com/fdroid/admin/-/issues/367
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
+
     packagingOptions {
         doNotStrip '**/*.so'
     }
