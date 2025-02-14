@@ -15,9 +15,6 @@ class MemoriesRepository(
 ) : SimpleCollectionRepository<Memory>() {
     private val log = kLogger("MemoriesRepo")
 
-    private val comparator = compareBy(Memory::isSeen)
-        .thenByDescending(Memory::createdAt)
-
     override fun getCollection(): Single<List<Memory>> = {
         val maxCreatedAtMs = System.currentTimeMillis() - KEEP_MEMORIES_FOR_DAYS * 24 * 3600000L
         val deletedCount = memoriesDao.deleteExpired(maxCreatedAtMs)
@@ -32,7 +29,6 @@ class MemoriesRepository(
         memoriesDao
             .getAll()
             .map (MemoryDbEntity::toMemory)
-            .sortedWith(comparator)
     }.toSingle()
 
     fun add(newMemories: List<Memory>): Completable = {
@@ -61,7 +57,6 @@ class MemoriesRepository(
         .subscribeOn(Schedulers.io())
         .doOnComplete {
             memory.isSeen = true
-            mutableItemsList.sortWith(comparator)
 
             log.debug {
                 "markAsSeen(): marked_memory_as_seen:" +

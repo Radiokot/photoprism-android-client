@@ -25,8 +25,8 @@ class GalleryMemoriesListViewModel(
     private val preferences: MemoriesPreferences,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel() {
-    private val log = kLogger("GalleryMemoriesListVM")
 
+    private val log = kLogger("GalleryMemoriesListVM")
     val itemsList = MutableLiveData<List<MemoryListItem>>()
     val isViewVisible = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
@@ -72,12 +72,25 @@ class GalleryMemoriesListViewModel(
         memoriesRepository.items
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { memories ->
-                itemsList.value = memories.map { memory ->
-                    MemoryListItem(
-                        source = memory,
-                        previewUrlFactory = previewUrlFactory,
+                fun Memory.existingPosition(): Int? =
+                    itemsList.value?.indexOfFirst { it.source == this }
+
+                itemsList.value = memories
+                    .sortedWith(
+                        // Memories are sorted by date prioritizing the unseen ones,
+                        // yet they keep the existing order if already shown.
+                        // This way they behave like Instagram stories:
+                        // they do not move around immediately after being seen.
+                        compareBy(Memory::existingPosition)
+                            .thenBy(Memory::isSeen)
+                            .thenByDescending(Memory::createdAt)
                     )
-                }
+                    .map { memory ->
+                        MemoryListItem(
+                            source = memory,
+                            previewUrlFactory = previewUrlFactory,
+                        )
+                    }
             }
             .autoDispose(this)
 
