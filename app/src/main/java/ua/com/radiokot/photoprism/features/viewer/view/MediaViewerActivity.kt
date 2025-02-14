@@ -495,7 +495,12 @@ class MediaViewerActivity : BaseActivity() {
     private fun initToolbar() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = ""
+
+        // It is important to have something meaningful in the title at the start.
+        // This value is shown before the content title is available.
+        // It must not be empty so the Toolbar actually creates the damn TextView,
+        // otherwise, if the content title is empty, the subtitle is not shown 🤦🏻
+        title = getString(R.string.loading_data_progress)
     }
 
     private fun focusToolbarBackButton() = with(toolbarBackButton) {

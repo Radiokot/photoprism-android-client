@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Not showing the date in the media viewer if the opened entry has no title
+
 ### Changed
 
 - [Memory cards](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
