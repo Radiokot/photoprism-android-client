@@ -28,7 +28,7 @@ import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -373,6 +373,8 @@ class MediaViewerActivity : BaseActivity() {
 
     @Suppress("DEPRECATION")
     private fun initFullScreenToggle() {
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         window.decorView.setOnSystemUiVisibilityChangeListener { flags ->
             val isFullScreen =
                 flags and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -738,7 +740,8 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        Transformations.distinctUntilChanged(viewModel.isCancelDownloadButtonVisible)
+        viewModel.isCancelDownloadButtonVisible
+            .distinctUntilChanged()
             .observe(this) { isVisible ->
                 if (isVisible) {
                     view.cancelDownloadButtonLayout.isVisible = true
@@ -802,7 +805,6 @@ class MediaViewerActivity : BaseActivity() {
     }
 
     private fun hideSystemUI() = with(windowInsetsController) {
-        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
         hide(WindowInsetsCompat.Type.systemBars())
     }
 

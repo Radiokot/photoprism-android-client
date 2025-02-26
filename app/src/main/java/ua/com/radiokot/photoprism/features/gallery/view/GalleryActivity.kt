@@ -296,6 +296,7 @@ class GalleryActivity : BaseActivity() {
         viewModel.itemScale.observeOnMain().subscribe(this) { itemScale ->
             if (currentListItemScale != null && itemScale != currentListItemScale) {
                 // Will not do for pinch gesture.
+                @Suppress("DEPRECATION")
                 lifecycleScope.launchWhenResumed {
                     recreate()
                 }

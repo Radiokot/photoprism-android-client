@@ -137,14 +137,18 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+
+    // If there is a need to update Material, check and fix colors, resource IDs,
+    // searchbar, bottom nav, nav rail, chips behavior.
+    implementation 'com.google.android.material:material:1.8.0!!'
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.work:work-runtime:2.9.0'
-    implementation 'androidx.work:work-rxjava3:2.9.0'
+    implementation 'androidx.work:work-runtime:2.10.0'
+    implementation 'androidx.work:work-rxjava3:2.10.0'
 
     // If there is a need to update the preferences library,
     // the Material- overrides in androidx.preference and MaterialPreferenceDialogDisplay
@@ -165,11 +169,11 @@ dependencies {
     implementation('com.gitlab.mvysny.slf4j:slf4j-handroid:2.0.13') {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
-    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
 
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.11.0'
 
     implementation 'com.mikepenz:fastadapter:5.7.0'
     implementation 'com.mikepenz:fastadapter-extensions-scroll:5.7.0'
@@ -179,10 +183,11 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
+    //noinspection KaptUsageInsteadOfKsp
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation 'androidx.security:security-crypto:1.1.0-alpha05'
-    implementation 'androidx.browser:browser:1.5.0'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    implementation 'androidx.browser:browser:1.8.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
     implementation 'ua.com.radiokot:offline-license-key:1.0.0'
     // Must be 4.3 for Java 8 compatibility.

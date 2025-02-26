@@ -37,9 +37,7 @@ class MemoriesListListItem(
 
         private val memoriesRecyclerView = itemView as RecyclerView
         private val adapter = ItemAdapter<MemoryListItem>()
-        private val itemsListObserver = Observer<List<MemoryListItem>> { memoryListItems ->
-            memoryListItems?.let(adapter::setNewList)
-        }
+        private val itemsListObserver = Observer(adapter::setNewList)
 
         init {
             memoriesRecyclerView.adapter = FastAdapter.with(adapter).apply {
