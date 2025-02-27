@@ -189,7 +189,7 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'androidx.browser:browser:1.8.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
-    implementation 'ua.com.radiokot:offline-license-key:1.0.0'
+    implementation 'com.github.Radiokot:offline-license-key:1.0.0'
     // Must be 4.3 for Java 8 compatibility.
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
 

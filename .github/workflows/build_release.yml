@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  java_version: "17"
+  java_version: 17
 
 jobs:
   build:
@@ -12,6 +12,23 @@ jobs:
 
     environment:
       name: Releases
+
+    strategy:
+      matrix:
+        include:
+          - name: Main APK
+            gradle-command: app:assembleRelease
+            result: app/build/outputs/apk/release/*.apk
+
+          - name: Main APK clone
+            gradle-command: app:assembleReleaseClone
+            result: app/build/outputs/apk/releaseClone/*.apk
+
+          - name: Bundle for Google Play
+            gradle-command: app:bundleReleasePlay
+            result: app/build/outputs/bundle/releasePlay/*.aab
+
+    name: ${{ matrix.name }}
 
     steps:
       - name: Checkout
@@ -24,23 +41,15 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: "${{env.java_version}}"
+          java-version: ${{env.java_version}}
           distribution: temurin
 
-      - name: Build the main APK
-        run: ./gradlew app:assembleRelease --stacktrace
-
-      - name: Build the main APK clone
-        run: ./gradlew app:assembleReleaseClone --stacktrace
-
-      - name: Build the bundle for Google Play
-        run: ./gradlew app:bundleReleasePlay --stacktrace
+      - name: Build ${{ matrix.name }}
+        run: ./gradlew ${{ matrix.gradle-command }} --stacktrace
 
       - name: Upload the packages
         uses: actions/upload-artifact@v4
         with:
-          name: APKs and bundles
-          path: |
-            app/build/outputs/**/*.apk
-            app/build/outputs/**/*.aab
-          compression-level: 0
+          name: ${{ matrix.name }}
+          path: ${{ matrix.result }}
+          if-no-files-found: error
