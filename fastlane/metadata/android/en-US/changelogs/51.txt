@@ -1,4 +1,0 @@
-Full: https://radiokot.com.ua/pp-changes
-
-Added:
-- Ability to renew an extension activation key issued for another device
