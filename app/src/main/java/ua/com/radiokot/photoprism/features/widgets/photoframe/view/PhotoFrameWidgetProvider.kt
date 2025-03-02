@@ -5,6 +5,8 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.res.Configuration
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.util.Size
 import androidx.work.Constraints
@@ -160,7 +162,12 @@ class PhotoFrameWidgetProvider : AppWidgetProvider(), KoinComponent {
             .setConstraints(
                 Constraints.Builder()
                     .setRequiresBatteryNotLow(true)
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .setRequiredNetworkRequest(
+                        networkRequest = NetworkRequest.Builder()
+                            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                            .build(),
+                        networkType = NetworkType.CONNECTED,
+                    )
                     .build()
             )
             .addTag(UpdatePhotoFrameWidgetWorker.TAG)
