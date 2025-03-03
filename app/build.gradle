@@ -19,8 +19,8 @@ android {
         targetSdk 34
 
         applicationId "ua.com.radiokot.photoprism"
-        versionCode 53
-        versionName "1.35.1"
+        versionCode 54
+        versionName "1.35.2"
 
         // Must be aligned with @xml/locale_config and values-*.
         resConfigs "en", "cs", "de", "el", "es", "fr", "it", "ru", "tr", "uk", "zh", "zh-rTW"
@@ -269,7 +269,7 @@ project.afterEvaluate {
         // Remove the "Notice for packages" header.
         lines[6] = ""
         // Reduce the font size.
-        lines[2] = lines[2].replace("body {", "body { font-size: 75%;")
+        lines[2] = lines[2].replace("body {", "ul { padding-inline-start: 22px; } body { font-size: 75%;")
         Files.write(report.toPath(), lines, StandardCharsets.UTF_8)
     }
 }

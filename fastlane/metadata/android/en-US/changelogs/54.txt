@@ -1,0 +1,4 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed:
+- Periodic Photo frame widget update, which became unstable in 1.35.1

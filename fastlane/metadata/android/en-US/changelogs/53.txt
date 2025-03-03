@@ -1,7 +1,0 @@
-Full: https://radiokot.com.ua/pp-changes
-
-Fixed:
-- Not showing the date in the media viewer if the opened entry has no title
-
-Changed:
-- Memory cards no longer move around immediately after being seen, so they behave more like Instagram stories
