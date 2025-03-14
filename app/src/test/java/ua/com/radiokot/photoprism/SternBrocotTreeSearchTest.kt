@@ -84,7 +84,7 @@ class SternBrocotTreeSearchTest {
             }
 
         SternBrocotTreeSearch()
-            .goBetween(0.0, 15.0/16)
+            .goBetween(0.0, 15.0 / 16)
             .apply {
                 Assert.assertEquals(1, numerator)
                 Assert.assertEquals(2, denominator)
@@ -95,6 +95,26 @@ class SternBrocotTreeSearchTest {
             .apply {
                 Assert.assertEquals(1, numerator)
                 Assert.assertEquals(1, denominator)
+            }
+
+        SternBrocotTreeSearch()
+            .goBetween(0.001, 0.0011)
+            .apply {
+                Assert.assertEquals(1, numerator)
+                Assert.assertEquals(910, denominator)
+            }
+
+        SternBrocotTreeSearch()
+            .goBetween(99.99, 100.01)
+            .apply {
+                Assert.assertEquals(100, numerator)
+                Assert.assertEquals(1, denominator)
+            }
+
+        SternBrocotTreeSearch()
+            .goBetween(1.0 / 3, 0.333334, maxDepth = 20000)
+            .apply {
+                Assert.assertEquals(20000, depth)
             }
     }
 }
