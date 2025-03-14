@@ -13,18 +13,20 @@ class SternBrocotTreeSearch {
     /**
      * Current fraction numerator.
      */
-    var numerator = 1
+    var numerator = 1L
+        private set
 
     /**
      * Current fraction denominator.
      */
-    var denominator = 1
+    var denominator = 1L
+        private set
 
-    private var closestRightN = 1
-    private var closestRightD = 0
+    private var closestRightN = 1L
+    private var closestRightD = 0L
 
-    private var closestLeftN = 0
-    private var closestLeftD = 1
+    private var closestLeftN = 0L
+    private var closestLeftD = 1L
 
     /**
      * Current fraction decimal value.
