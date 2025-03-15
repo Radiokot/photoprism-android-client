@@ -117,4 +117,99 @@ class SternBrocotTreeSearchTest {
                 Assert.assertEquals(20000, depth)
             }
     }
+
+    @Test
+    fun extensiveTest() {
+        data class Item(
+            val name: String,
+            val position: Double,
+        )
+
+        val originalList: List<Item> = buildList {
+            val sbt = SternBrocotTreeSearch()
+            repeat(100) {
+                add(
+                    Item(
+                        name = "Item #${it.toString().padStart(3, '0')}",
+                        position = sbt.goRight().value,
+                    )
+                )
+            }
+        }
+        val shuffleList = originalList.toMutableList()
+        val sbtList = originalList.toMutableList()
+
+        // The double-based SBT implementation allows around 1000-7000 movements
+        // before positions get messed up.
+        repeat(50000) { i ->
+            var itemToMoveIndex: Int
+            var itemToInsertBeforeIndex: Int
+            do {
+                itemToMoveIndex = originalList.indices.random()
+                itemToInsertBeforeIndex = originalList.indices.random()
+            } while (itemToMoveIndex == itemToInsertBeforeIndex)
+
+            val itemToMoveName = shuffleList[itemToMoveIndex].name
+            val itemToInsertBeforeName = shuffleList[itemToInsertBeforeIndex].name
+
+            println("$i Place $itemToMoveName before $itemToInsertBeforeName")
+
+            // Straightforward.
+            shuffleList.removeAll { it.name == itemToMoveName }
+            shuffleList.add(
+                shuffleList.indexOfFirst { it.name == itemToInsertBeforeName },
+                originalList.first { it.name == itemToMoveName },
+            )
+
+            // SBT.
+            if (itemToMoveIndex == itemToInsertBeforeIndex - 2
+                || itemToMoveIndex == itemToInsertBeforeIndex + 1
+            ) {
+                // Special case for swap.
+                val swapAIndex = itemToMoveIndex
+                val swapA = sbtList[swapAIndex]
+                val swapBIndex =
+                    if (itemToInsertBeforeIndex > itemToMoveIndex)
+                        itemToMoveIndex + 1
+                    else
+                        itemToMoveIndex - 1
+                val swapB = sbtList[swapBIndex]
+                sbtList[swapAIndex] = swapB.copy(
+                    position = swapA.position
+                )
+                sbtList[swapBIndex] = swapA.copy(
+                    position = swapB.position
+                )
+            } else {
+                val sbtItemToMove = sbtList[itemToMoveIndex]
+                val sbtItemToInsertBefore = sbtList[itemToInsertBeforeIndex]
+
+                val prevToDestinationPosition = sbtList
+                    .filter { it.position < sbtItemToInsertBefore.position }
+                    .maxOfOrNull(Item::position)
+                    ?: 0.0
+                val targetPosition = SternBrocotTreeSearch()
+                    .goBetween(
+                        lowerBound = prevToDestinationPosition,
+                        upperBound = sbtItemToInsertBefore.position,
+                    )
+                    .apply {
+                        Assert.assertTrue("SBT numerator must not overflow", numerator >= 0)
+                        Assert.assertTrue("SBT denominator must not overflow", denominator > 0)
+                    }
+                    .value
+                sbtList[itemToMoveIndex] =
+                    sbtItemToMove.copy(
+                        position = targetPosition
+                    )
+            }
+
+            sbtList.sortBy(Item::position)
+
+            Assert.assertEquals(
+                shuffleList.map(Item::name),
+                sbtList.map(Item::name)
+            )
+        }
+    }
 }
