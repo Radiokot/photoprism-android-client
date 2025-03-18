@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=33&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=34&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -50,6 +50,7 @@ Compatibility with older PhotoPrism versions may be partial.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension store](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/14095706?s=100" alt="Jans Rautenbach" title="Jans Rautenbach" height=70 />](https://github.com/J4NS-R)
 [<img src="https://avatars.githubusercontent.com/u/58886740?s=100" alt="james856" title="james856" height=70 />](https://github.com/james856)
 [<img src="https://avatars.githubusercontent.com/u/38279393?s=100" alt="Beet4" title="Beet4" height=70 />](https://github.com/Beet4)
 [<img src="https://avatars.githubusercontent.com/u/31888202?s=100" alt="bleepblub" title="bleepblub" height=70 />](https://github.com/bleepblub)
