@@ -140,8 +140,7 @@ class DragSelectTouchListener private constructor(
             dragToSelectListener?.invoke(active)
         }
 
-        if (active && dragSelectActive) {
-            log("Drag selection is already active.")
+        if (active == dragSelectActive) {
             return false
         }
 
@@ -152,17 +151,18 @@ class DragSelectTouchListener private constructor(
         this.notifyAutoScrollListener(false)
         this.inTopHotspot = false
         this.inBottomHotspot = false
+        this.dragSelectActive = active
 
         if (!active) {
             // Don't do any of the initialization below since we are terminating
             this.initialSelection = -1
+            onDragSelectionStop()
             return false
         }
 
         receiver.setSelected(
             indexSelection = sequenceOf(initialSelection to true),
         )
-        this.dragSelectActive = true
         this.initialSelection = initialSelection
         this.lastDraggedIndex = initialSelection
         this.minReached = initialSelection
@@ -205,6 +205,10 @@ class DragSelectTouchListener private constructor(
         view: RecyclerView,
         event: MotionEvent
     ) {
+        if (!dragSelectActive) {
+            return
+        }
+
         val action = event.action
         val itemPosition = view.findChildViewUnder(event.x, event.y)
             ?.let(view::getChildAdapterPosition)

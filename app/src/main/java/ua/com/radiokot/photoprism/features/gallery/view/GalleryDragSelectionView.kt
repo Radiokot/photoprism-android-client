@@ -54,6 +54,15 @@ class GalleryDragSelectionView(
                 )
             }
 
+        viewModel.itemListState.observeOnMain().subscribe(this) { state ->
+            if (state is GalleryListViewModel.State.Viewing) {
+                listener.setIsActive(
+                    active = false,
+                    initialSelection = -1,
+                )
+            }
+        }
+
         recyclerView.addOnItemTouchListener(listener)
     }
 }

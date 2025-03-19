@@ -379,6 +379,10 @@ class GalleryListViewModelImpl(
             "Switching is not allowed"
         }
 
+        log.debug {
+            "switchFromSelectingToViewing(): switching"
+        }
+
         itemListState.onNext(State.Viewing)
         clearSelection()
 
@@ -388,6 +392,10 @@ class GalleryListViewModelImpl(
     private fun switchFromViewingToSelecting() {
         check(currentState is State.Viewing) {
             "Switching to selecting is only possible while viewing"
+        }
+
+        log.debug {
+            "switchFromViewingToSelecting(): switching"
         }
 
         itemListState.onNext(
