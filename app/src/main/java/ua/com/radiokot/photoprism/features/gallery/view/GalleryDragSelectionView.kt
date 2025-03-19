@@ -17,6 +17,7 @@ class GalleryDragSelectionView(
     fun init(
         globalListAdapter: FastAdapter<*>,
         recyclerView: RecyclerView,
+        dragToSelectListener: DragToSelectListener,
     ) {
         val receiver = object : DragSelectTouchListener.Receiver {
             override fun setSelected(indexSelection: Sequence<Pair<Int, Boolean>>) {
@@ -38,16 +39,11 @@ class GalleryDragSelectionView(
             context = recyclerView.context,
             receiver = receiver,
         )
+        listener.dragToSelectListener = dragToSelectListener
 
         viewModel.itemListEvents.observeOnMain()
             .filterIsInstance<GalleryListViewModel.Event.ActivateDragSelection>()
             .subscribe(this) { activationEvent ->
-                // A workaround to prevent swipe refresh from intercepting the drag
-                // when the list is at the top.
-                if (!recyclerView.canScrollVertically(-1)) {
-                    recyclerView.scrollBy(0, 1)
-                }
-
                 listener.setIsActive(
                     active = true,
                     initialSelection = activationEvent.startGlobalPosition,

@@ -682,6 +682,9 @@ class GalleryActivity : BaseActivity() {
             dragSelectionView.init(
                 globalListAdapter = galleryAdapter,
                 recyclerView = this,
+                dragToSelectListener = { isActive ->
+                    view.swipeRefreshLayout.isEnabled = !isActive
+                },
             )
         }
 

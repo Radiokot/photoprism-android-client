@@ -311,6 +311,7 @@ class DragSelectTouchListener private constructor(
 
     private fun onDragSelectionStop() {
         dragSelectActive = false
+        dragToSelectListener?.invoke(false)
         inTopHotspot = false
         inBottomHotspot = false
         autoScrollHandler.removeCallbacks(autoScrollRunnable)

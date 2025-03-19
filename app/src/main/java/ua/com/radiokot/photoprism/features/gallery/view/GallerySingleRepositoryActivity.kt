@@ -479,6 +479,9 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             dragSelectionView.init(
                 globalListAdapter = galleryAdapter,
                 recyclerView = this,
+                dragToSelectListener = { isActive ->
+                    view.swipeRefreshLayout.isEnabled = !isActive
+                },
             )
         }
 
@@ -503,7 +506,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             }
 
             when (event) {
-                is GalleryListViewModel.Event.OpenViewer ->{
+                is GalleryListViewModel.Event.OpenViewer -> {
                     // Replaced with the extended event from VM.
                 }
 
