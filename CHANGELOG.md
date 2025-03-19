@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Crash when hitting "Back" or "X" while selecting items by drag
+- Triggering swipe refresh while selecting items by drag 
+  if there are not many of them on the screen
+
 ## [1.35.2] - 2025-03-03
 
 ### Fixed
