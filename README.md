@@ -36,7 +36,7 @@ For this, I recommend [Autosync](https://play.google.com/store/apps/details?id=c
 
 ## Compatibility
 The gallery runs on Android 5.0+ and it is confirmed to work with the PhotoPrism release of 
-[February 24, 2025](https://github.com/photoprism/photoprism/releases/tag/250224-834c16bc7).
+[March 21, 2025](https://github.com/photoprism/photoprism/releases/tag/250321-57590c48b).
 Compatibility with older PhotoPrism versions may be partial.
 
 ## Download
