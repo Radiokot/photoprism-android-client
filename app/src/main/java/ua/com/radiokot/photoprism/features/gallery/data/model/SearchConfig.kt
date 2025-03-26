@@ -127,13 +127,13 @@ data class SearchConfig(
 
         if (personIds.isNotEmpty()) {
             val subjectUids = personIds
-                .filter { Person.isSubjectUid(it) }
+                .filter(Person::isSubjectUid)
             if (subjectUids.isNotEmpty()) {
                 queryBuilder.append(" subject:${subjectUids.joinToString("&")}")
             }
 
             val faceIds = personIds
-                .filter { Person.isFaceId(it) }
+                .filter(Person::isFaceId)
             if (faceIds.isNotEmpty()) {
                 queryBuilder.append(" face:${faceIds.joinToString("&")}")
             }

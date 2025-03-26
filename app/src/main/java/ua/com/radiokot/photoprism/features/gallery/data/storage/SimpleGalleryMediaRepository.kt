@@ -25,6 +25,7 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
+import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
 
 /**
@@ -81,7 +82,7 @@ class SimpleGalleryMediaRepository(
                     PagingOrder.DESC -> PhotoPrismOrder.NEWEST
                     PagingOrder.ASC -> PhotoPrismOrder.OLDEST
                 }
-            )
+            ).asSequence()
         }
             .toSingle()
             .map { photoPrismPhotos ->
@@ -90,18 +91,38 @@ class SimpleGalleryMediaRepository(
 
                 log.debug {
                     "getPage(): raw_page_loaded:" +
-                            "\nfilesCount=${photoPrismPhotos.sumOf { it.files.size }}," +
+                            "\nfilesCount=$filesCount," +
                             "\npageIsLast=$pageIsLast"
                 }
 
                 photoPrismPhotos
+                    .run {
+                        // Filter by excluded persons before mapping
+                        // as markers aren't needed for anything else.
+                        val excludePersonIds = params.postFilterExcludePersonIds
+                        if (excludePersonIds.isNotEmpty())
+                            filterNot { photoPrismMergedPhoto ->
+                                photoPrismMergedPhoto.files.any { file ->
+                                    val markers = file.markers
+                                        ?: return@any false
+                                    markers.any { marker ->
+                                        marker.faceId in excludePersonIds
+                                                || marker.subjectUid in excludePersonIds
+                                    }
+                                }
+                            }
+                        else
+                            this
+                    }
                     .mapSuccessful(GalleryMedia::fromPhotoPrism)
                     .filter { entry ->
                         // Precise post filter by "before" and "after" dates,
                         // workaround for PhotoPrism filtering.
+                        // Only filter dates after successfully parsing them above.
                         (params.postFilterBefore == null || entry.takenAtLocal < params.postFilterBefore)
                                 && (params.postFilterAfter == null || entry.takenAtLocal > params.postFilterAfter)
                     }
+                    .toList()
             }
             .doOnSuccess { successfullyLoadedItems ->
                 collectedGalleryMediaItems.addAll(successfullyLoadedItems)
@@ -295,12 +316,15 @@ class SimpleGalleryMediaRepository(
      * as PhotoPrism is incapable of precise local time filtering.
      * @param postFilterAfter local time to apply post filtering of the items,
      * as PhotoPrism is incapable of precise local time filtering.
+     * @param postFilterExcludePersonIds a set of [Person.id] which may be subjects or faces,
+     * to filter out items with any of them.
      */
     @Parcelize
     data class Params(
         val query: String? = null,
         val postFilterBefore: LocalDate? = null,
         val postFilterAfter: LocalDate? = null,
+        val postFilterExcludePersonIds: Set<String> = emptySet(),
     ) : Parcelable {
 
         constructor(searchConfig: SearchConfig) : this(

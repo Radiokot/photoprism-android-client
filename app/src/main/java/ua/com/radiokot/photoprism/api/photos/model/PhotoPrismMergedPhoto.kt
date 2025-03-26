@@ -95,5 +95,18 @@ constructor(
         val codec: String?,
         @JsonProperty("Sidecar")
         val sidecar: Boolean?,
-    )
+        @JsonProperty("Markers")
+        val markers: List<Marker>?,
+    ) {
+
+        /**
+         * [marker.go](https://github.com/photoprism/photoprism/blob/9e95c7e71ccdc155862d7e86b0cb071872ef4469/internal/entity/marker.go#L27)
+         */
+        class Marker(
+            @JsonProperty("FaceID")
+            val faceId: String?,
+            @JsonProperty("SubjUID")
+            val subjectUid: String?,
+        )
+    }
 }

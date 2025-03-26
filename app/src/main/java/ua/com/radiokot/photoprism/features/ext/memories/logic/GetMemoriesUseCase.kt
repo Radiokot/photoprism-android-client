@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.ext.memories.logic
 
+import com.google.common.base.Predicate
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
@@ -98,7 +99,7 @@ class GetMemoriesUseCase(
                 repository
                     .itemsList
                     // Filter out garbage.
-                    .filterNot(GARBAGE_ITEM_PREDICATE)
+                    .filterNot(GARBAGE_ITEM_PREDICATE::apply)
                     .let { filteredItems ->
                         // Group items by time taken.
                         DbscanClustering(filteredItems) { it.takenAtLocal.time }
@@ -134,11 +135,12 @@ class GetMemoriesUseCase(
         )
         private const val MAX_ITEMS_TO_LOAD = 150
         private const val TIME_CLUSTERING_DISTANCE_MS = 15_000L
-        private val GARBAGE_ITEM_PREDICATE = "screen(shot|_?record)".toRegex()
-            .let { screenCaptureRegex ->
-                fun(item: GalleryMedia) =
-                    item.title.lowercase().contains(screenCaptureRegex)
-            }
+        private val GARBAGE_ITEM_PREDICATE = object : Predicate<GalleryMedia> {
+            private val screenCaptureRegex = "screen(shot|_?record)".toRegex()
+
+            override fun apply(item: GalleryMedia): Boolean =
+                item.title.lowercase().contains(screenCaptureRegex)
+        }
 
         private val PREFERABLE_ITEM_COMPARATOR = compareByDescending(GalleryMedia::isFavorite)
             .thenByDescending { it.media.typeName == GalleryMedia.TypeName.VIDEO }
