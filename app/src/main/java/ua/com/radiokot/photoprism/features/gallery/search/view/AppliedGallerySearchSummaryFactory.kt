@@ -13,7 +13,7 @@ import androidx.core.text.toSpannable
 import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
+import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
@@ -76,7 +76,7 @@ class AppliedGallerySearchSummaryFactory(
                         // although it is too big for such a tiny view.
                         // The is most certainly already cached by the people list,
                         // hence can be displayed instantly.
-                        viewSizePx = GallerySearchPersonListItem.DEFAULT_THUMBNAIL_SIZE,
+                        viewSizePx = SelectablePersonListItem.DEFAULT_THUMBNAIL_SIZE,
                     )
                         ?: "missing:/"
                     appendCircleImage(thumbnailUrl)

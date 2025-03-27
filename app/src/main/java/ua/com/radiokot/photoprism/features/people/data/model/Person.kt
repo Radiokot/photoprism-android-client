@@ -1,9 +1,9 @@
-package ua.com.radiokot.photoprism.features.gallery.search.people.data.model
+package ua.com.radiokot.photoprism.features.people.data.model
 
 import ua.com.radiokot.photoprism.api.faces.model.PhotoPrismFace
 import ua.com.radiokot.photoprism.api.subjects.model.PhotoPrismSubject
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isFaceId
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person.Companion.isSubjectUid
+import ua.com.radiokot.photoprism.features.people.data.model.Person.Companion.isFaceId
+import ua.com.radiokot.photoprism.features.people.data.model.Person.Companion.isSubjectUid
 
 /**
  * A person recognized by the library.

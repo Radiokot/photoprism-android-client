@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.search.people.view
+package ua.com.radiokot.photoprism.features.people.view
 
 import android.app.Activity
 import android.content.Context
@@ -18,26 +18,26 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityPeopleOverviewBinding
+import ua.com.radiokot.photoprism.databinding.ActivityPeopleSelectionBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.extension.bindToViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.extension.fixCloseButtonColor
 import ua.com.radiokot.photoprism.features.gallery.search.extension.hideUnderline
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
+import ua.com.radiokot.photoprism.features.people.view.model.PeopleSelectionViewModel
+import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 import ua.com.radiokot.photoprism.view.ErrorView
 
-class GallerySearchPeopleSelectionActivity : BaseActivity() {
-    private val log = kLogger("GallerySearchPeopleSelectionActivity")
+class PeopleSelectionActivity : BaseActivity() {
 
-    private lateinit var view: ActivityPeopleOverviewBinding
-    private val viewModel: GallerySearchPeopleSelectionViewModel by viewModel()
-    private val adapter = ItemAdapter<GallerySearchPersonListItem>()
+    private val log = kLogger("PeopleSelectionActivity")
+    private lateinit var view: ActivityPeopleSelectionBinding
+    private val viewModel: PeopleSelectionViewModel by viewModel()
+    private val adapter = ItemAdapter<SelectablePersonListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view = ActivityPeopleOverviewBinding.inflate(layoutInflater)
+        view = ActivityPeopleSelectionBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         setSupportActionBar(view.toolbar)
@@ -69,7 +69,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
         val peopleAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: GallerySearchPersonListItem, _ ->
+            onClickListener = { _, _, item: SelectablePersonListItem, _ ->
                 viewModel.onPersonItemClicked(item)
                 true
             }
@@ -155,7 +155,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
 
         viewModel.mainError.observe(this) { mainError ->
             when (mainError) {
-                GallerySearchPeopleSelectionViewModel.Error.LoadingFailed ->
+                PeopleSelectionViewModel.Error.LoadingFailed ->
                     view.errorView.showError(
                         ErrorView.Error.General(
                             context = view.errorView.context,
@@ -165,7 +165,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
                         )
                     )
 
-                GallerySearchPeopleSelectionViewModel.Error.NothingFound ->
+                PeopleSelectionViewModel.Error.NothingFound ->
                     view.errorView.showError(
                         ErrorView.Error.EmptyView(
                             context = view.errorView.context,
@@ -194,13 +194,13 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
         }
 
         when (event) {
-            GallerySearchPeopleSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
+            PeopleSelectionViewModel.Event.ShowFloatingLoadingFailedError ->
                 showFloatingLoadingFailedError()
 
-            is GallerySearchPeopleSelectionViewModel.Event.FinishWithResult ->
+            is PeopleSelectionViewModel.Event.FinishWithResult ->
                 finishWithResult(event.selectedPersonIds)
 
-            is GallerySearchPeopleSelectionViewModel.Event.Finish ->
+            is PeopleSelectionViewModel.Event.Finish ->
                 finish()
         }
 
@@ -243,7 +243,7 @@ class GallerySearchPeopleSelectionActivity : BaseActivity() {
             queryHint = getString(R.string.enter_the_query)
             fixCloseButtonColor()
             hideUnderline()
-            bindToViewModel(viewModel, this@GallerySearchPeopleSelectionActivity)
+            bindToViewModel(viewModel, this@PeopleSelectionActivity)
         }
 
         return super.onCreateOptionsMenu(menu)

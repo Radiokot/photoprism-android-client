@@ -25,7 +25,7 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
+import ua.com.radiokot.photoprism.features.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
 
 /**

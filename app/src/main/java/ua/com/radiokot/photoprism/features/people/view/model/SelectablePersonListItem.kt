@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.search.people.view.model
+package ua.com.radiokot.photoprism.features.people.view.model
 
 import android.graphics.Color
 import android.view.View
@@ -15,16 +15,16 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemGallerySearchPersonBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
+import ua.com.radiokot.photoprism.features.people.data.model.Person
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
 
-class GallerySearchPersonListItem(
+class SelectablePersonListItem(
     val name: String?,
     val thumbnailUrl: String,
     val isPersonSelected: Boolean,
     val isNameShown: Boolean,
     val source: Person?,
-) : AbstractItem<GallerySearchPersonListItem.ViewHolder>() {
+) : AbstractItem<SelectablePersonListItem.ViewHolder>() {
     override val type: Int =
         R.layout.list_item_gallery_search_person
 
@@ -54,7 +54,7 @@ class GallerySearchPersonListItem(
     )
 
     class ViewHolder(itemView: View) :
-        FastAdapter.ViewHolder<GallerySearchPersonListItem>(itemView),
+        FastAdapter.ViewHolder<SelectablePersonListItem>(itemView),
         KoinScopeComponent {
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
@@ -67,7 +67,7 @@ class GallerySearchPersonListItem(
         private val unselectedCardBackgroundColor = Color.TRANSPARENT
         private val picasso: Picasso by inject()
 
-        override fun bindView(item: GallerySearchPersonListItem, payloads: List<Any>) {
+        override fun bindView(item: SelectablePersonListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.name
 
             picasso
@@ -95,7 +95,7 @@ class GallerySearchPersonListItem(
             }
         }
 
-        override fun unbindView(item: GallerySearchPersonListItem) {
+        override fun unbindView(item: SelectablePersonListItem) {
             picasso.cancelRequest(view.imageView)
         }
     }

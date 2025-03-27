@@ -10,8 +10,9 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
+import ua.com.radiokot.photoprism.features.people.data.model.Person
+import ua.com.radiokot.photoprism.features.people.data.storage.PeopleRepository
+import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 
 class GallerySearchPeopleViewModel(
     private val peopleRepository: PeopleRepository,
@@ -88,7 +89,7 @@ class GallerySearchPeopleViewModel(
         stateSubject.onNext(
             State.Ready(
                 people = repositoryPeople.map { person ->
-                    GallerySearchPersonListItem(
+                    SelectablePersonListItem(
                         source = person,
                         isPersonSelected = person.id in selectedPersonIds,
                         isNameShown = hasAnyNames,
@@ -108,7 +109,7 @@ class GallerySearchPeopleViewModel(
         }
     }
 
-    fun onPersonItemClicked(item: GallerySearchPersonListItem) {
+    fun onPersonItemClicked(item: SelectablePersonListItem) {
         val currentState = stateSubject.value
         check(currentState is State.Ready) {
             "People are clickable only in the ready state"
@@ -200,7 +201,7 @@ class GallerySearchPeopleViewModel(
     sealed interface State {
         object Loading : State
         class Ready(
-            val people: List<GallerySearchPersonListItem>,
+            val people: List<SelectablePersonListItem>,
         ) : State
 
         object LoadingFailed : State

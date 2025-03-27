@@ -4,7 +4,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
@@ -28,11 +27,9 @@ import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBook
 import ua.com.radiokot.photoprism.features.gallery.search.logic.JsonSearchBookmarksBackup
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleSelectionViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.SearchBookmarkDialogViewModel
+import ua.com.radiokot.photoprism.features.people.peopleFeatureModule
 
 val gallerySearchFeatureModules: List<Module> = listOf(
     // Bookmarks.
@@ -92,20 +89,10 @@ val gallerySearchFeatureModules: List<Module> = listOf(
 
     // People.
     module {
+        includes(peopleFeatureModule)
+
         scope<EnvSession> {
-            scopedOf(::PeopleRepository)
-
             viewModelOf(::GallerySearchPeopleViewModel)
-
-            viewModel {
-                GallerySearchPeopleSelectionViewModel(
-                    peopleRepository = get(),
-                    searchPredicate = { person: Person, query: String ->
-                        SearchPredicates.generalCondition(query, person.name)
-                    },
-                    previewUrlFactory = get(),
-                )
-            }
         }
     },
 

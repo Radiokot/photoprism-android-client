@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.search.people.view.model
+package ua.com.radiokot.photoprism.features.people.view.model
 
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
@@ -9,19 +9,19 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.model.Person
-import ua.com.radiokot.photoprism.features.gallery.search.people.data.storage.PeopleRepository
+import ua.com.radiokot.photoprism.features.people.data.model.Person
+import ua.com.radiokot.photoprism.features.people.data.storage.PeopleRepository
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
 
-class GallerySearchPeopleSelectionViewModel(
+class PeopleSelectionViewModel(
     private val peopleRepository: PeopleRepository,
     private val searchPredicate: (person: Person, query: String) -> Boolean,
     private val previewUrlFactory: MediaPreviewUrlFactory,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
-    private val log = kLogger("GallerySearchPeopleSelectionVM")
+    private val log = kLogger("PeopleSelectionVM")
     private var isInitialized: Boolean = false
 
     private val eventsSubject = PublishSubject.create<Event>()
@@ -34,7 +34,7 @@ class GallerySearchPeopleSelectionViewModel(
     private var initialSelectedPersonIds: Set<String>? = null
 
     val isLoading = MutableLiveData(false)
-    val itemsList = MutableLiveData<List<GallerySearchPersonListItem>>()
+    val itemsList = MutableLiveData<List<SelectablePersonListItem>>()
     val mainError = MutableLiveData<Error?>(null)
     val isDoneButtonVisible = MutableLiveData(false)
     val backPressedCallback = object : OnBackPressedCallback(true) {
@@ -148,7 +148,7 @@ class GallerySearchPeopleSelectionViewModel(
 
         itemsList.value =
             filteredRepositoryPeople.map { person ->
-                GallerySearchPersonListItem(
+                SelectablePersonListItem(
                     source = person,
                     isPersonSelected = person.id in selectedPersonIds,
                     isNameShown = hasAnyNames,
@@ -167,7 +167,7 @@ class GallerySearchPeopleSelectionViewModel(
             }
     }
 
-    fun onPersonItemClicked(item: GallerySearchPersonListItem) {
+    fun onPersonItemClicked(item: SelectablePersonListItem) {
         log.debug {
             "onPersonItemClicked(): person_item_clicked:" +
                     "\nitem=$item"

@@ -15,7 +15,8 @@ import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
-import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPersonListItem
+import ua.com.radiokot.photoprism.features.people.view.PeopleSelectionActivity
+import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 
 class GallerySearchConfigPeopleView(
     private val view: ViewGallerySearchConfigPeopleBinding,
@@ -26,7 +27,7 @@ class GallerySearchConfigPeopleView(
 
     private val log = kLogger("GallerySearchConfigPeopleView")
 
-    private val adapter = ItemAdapter<GallerySearchPersonListItem>()
+    private val adapter = ItemAdapter<SelectablePersonListItem>()
     private val peopleSelectionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onPeopleSelectionResult
@@ -41,7 +42,7 @@ class GallerySearchConfigPeopleView(
         val listAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-            onClickListener = { _, _, item: GallerySearchPersonListItem, _ ->
+            onClickListener = { _, _, item: SelectablePersonListItem, _ ->
                 viewModel.onPersonItemClicked(item)
                 true
             }
@@ -132,9 +133,9 @@ class GallerySearchConfigPeopleView(
         }
 
         peopleSelectionLauncher.launch(
-            Intent(view.root.context, GallerySearchPeopleSelectionActivity::class.java)
+            Intent(view.root.context, PeopleSelectionActivity::class.java)
                 .putExtras(
-                    GallerySearchPeopleSelectionActivity.getBundle(
+                    PeopleSelectionActivity.getBundle(
                         selectedPersonIds = selectedPersonIds,
                     )
                 )
@@ -145,7 +146,9 @@ class GallerySearchConfigPeopleView(
         val bundle = result.data?.extras
         if (result.resultCode == Activity.RESULT_OK && bundle != null) {
             viewModel.onPeopleSelectionResult(
-                newSelectedPersonIds = GallerySearchPeopleSelectionActivity.getSelectedPersonIds(bundle)
+                newSelectedPersonIds = PeopleSelectionActivity.getSelectedPersonIds(
+                    bundle
+                )
             )
         }
     }
