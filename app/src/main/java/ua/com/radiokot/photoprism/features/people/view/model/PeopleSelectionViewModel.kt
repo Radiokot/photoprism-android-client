@@ -27,11 +27,19 @@ class PeopleSelectionViewModel(
     private val eventsSubject = PublishSubject.create<Event>()
     val events = eventsSubject.observeOnMain()
 
+    private var allPersonIds: Set<String> = emptySet()
+
     /**
-     * Non-null set of the selected person IDs, **empty** if nothing is selected.
+     * Set of the selected person IDs.
+     * **empty** if nothing is selected,
+     * **null** if selection is not yet initialized.
+     * Initialized in repo subscription.
      */
-    private val selectedPersonIds = MutableLiveData<Set<String>>(emptySet())
+    private val selectedPersonIds = MutableLiveData<Set<String>>()
+    private val notSelectedPersonIds: Set<String>
+        get() = allPersonIds - selectedPersonIds.value!!
     private var initialSelectedPersonIds: Set<String>? = null
+    private var initialNotSelectedPersonIds: Set<String>? = null
 
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<SelectablePersonListItem>>()
@@ -49,20 +57,23 @@ class PeopleSelectionViewModel(
         update()
     }
 
-    fun initOnce(currentlySelectedPersonIds: Set<String>) {
+    fun initOnce(
+        currentlySelectedPersonIds: Set<String>?,
+        currentlyNotSelectedPersonIds: Set<String>?,
+    ) {
         if (isInitialized) {
             return
         }
 
-        val initialSelection = currentlySelectedPersonIds.toSet()
-        initialSelectedPersonIds = initialSelection
-        selectedPersonIds.value = initialSelection
+        initialSelectedPersonIds = currentlySelectedPersonIds?.toSet()
+        initialNotSelectedPersonIds = currentlyNotSelectedPersonIds?.toSet()
 
         isInitialized = true
 
         log.debug {
             "initOnce(): initialized:" +
-                    "\ncurrentlySelectedPeopleCount=${initialSelection.size}"
+                    "\ncurrentlySelectedPeopleCount=${initialSelectedPersonIds?.size}," +
+                    "\ncurrentlyNotSelectedPeopleCount=${initialNotSelectedPersonIds?.size}"
         }
     }
 
@@ -83,7 +94,24 @@ class PeopleSelectionViewModel(
         peopleRepository.items
             .filter { !peopleRepository.isNeverUpdated }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { postPeopleItems() }
+            .subscribe { people ->
+
+                allPersonIds = people.mapTo(mutableSetOf(), Person::id)
+
+                if (selectedPersonIds.value == null) {
+                    // Select requested IDs, if any.
+                    initialSelectedPersonIds?.also { personIdsToSelect ->
+                        selectedPersonIds.value = personIdsToSelect
+                    }
+
+                    // Select everything except requested IDs, if any.
+                    initialNotSelectedPersonIds?.also { personIdsToNotSelect ->
+                        selectedPersonIds.value = allPersonIds - personIdsToNotSelect
+                    }
+                }
+
+                postPeopleItems()
+            }
             .autoDispose(this)
 
         peopleRepository.errors
@@ -121,11 +149,27 @@ class PeopleSelectionViewModel(
                 postPeopleItems()
             }
 
-            isDoneButtonVisible.value = selectedPersonIds != initialSelectedPersonIds
+            isDoneButtonVisible.value = when {
+                initialSelectedPersonIds != null ->
+                    selectedPersonIds != initialSelectedPersonIds
+
+                initialNotSelectedPersonIds != null ->
+                    notSelectedPersonIds != initialNotSelectedPersonIds
+
+                else ->
+                    true
+            }
         }
     }
 
     private fun postPeopleItems() {
+        val selectedPersonIds = selectedPersonIds.value
+        if (selectedPersonIds == null) {
+            log.warn {
+                "postPeopleItems(): skipping_as_selection_not_yet_set_up"
+            }
+            return
+        }
         val repositoryPeople = peopleRepository.itemsList
         val searchQuery = currentSearchInput
         val filteredRepositoryPeople =
@@ -135,7 +179,6 @@ class PeopleSelectionViewModel(
                 }
             else
                 repositoryPeople
-        val selectedPersonIds = selectedPersonIds.value!!
         val hasAnyNames = repositoryPeople.any(Person::hasName)
 
         log.debug {
@@ -234,7 +277,12 @@ class PeopleSelectionViewModel(
             "onDoneClicked(): finishing_with_result"
         }
 
-        eventsSubject.onNext(Event.FinishWithResult(selectedPersonIds.value!!))
+        eventsSubject.onNext(
+            Event.FinishWithResult(
+                selectedPersonIds = selectedPersonIds.value!!,
+                notSelectedPersonIds = notSelectedPersonIds,
+            )
+        )
     }
 
     sealed interface Event {
@@ -245,10 +293,11 @@ class PeopleSelectionViewModel(
         object ShowFloatingLoadingFailedError : Event
 
         /**
-         * Set an OK result with the [selectedPersonIds] and finish.
+         * Set an OK result with the given ID sets and finish.
          */
         class FinishWithResult(
             val selectedPersonIds: Set<String>,
+            val notSelectedPersonIds: Set<String>,
         ) : Event
 
         /**

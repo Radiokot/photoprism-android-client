@@ -45,9 +45,9 @@ class PeopleSelectionActivity : BaseActivity() {
 
         viewModel.initOnce(
             currentlySelectedPersonIds =
-            requireNotNull(intent.getStringArrayExtra(SELECTED_PERSON_IDS_EXTRA)?.toSet()) {
-                "No $SELECTED_PERSON_IDS_EXTRA specified"
-            }
+            intent.getStringArrayExtra(SELECTED_PERSON_IDS_EXTRA)?.toSet(),
+            currentlyNotSelectedPersonIds =
+            intent.getStringArrayExtra(NOT_SELECTED_PERSON_IDS_EXTRA)?.toSet(),
         )
 
         // Init the list once it is laid out.
@@ -198,7 +198,10 @@ class PeopleSelectionActivity : BaseActivity() {
                 showFloatingLoadingFailedError()
 
             is PeopleSelectionViewModel.Event.FinishWithResult ->
-                finishWithResult(event.selectedPersonIds)
+                finishWithResult(
+                    selectedPersonIds = event.selectedPersonIds,
+                    notSelectedPersonIds = event.notSelectedPersonIds,
+                )
 
             is PeopleSelectionViewModel.Event.Finish ->
                 finish()
@@ -220,16 +223,23 @@ class PeopleSelectionActivity : BaseActivity() {
             .show()
     }
 
-    private fun finishWithResult(selectedPersonIds: Set<String>) {
+    private fun finishWithResult(
+        selectedPersonIds: Set<String>,
+        notSelectedPersonIds: Set<String>,
+    ) {
         log.debug {
             "finishWithResult(): finishing:" +
-                    "\nselectedPeopleCount=${selectedPersonIds.size}"
+                    "\nselectedPeopleCount=${selectedPersonIds.size}," +
+                    "\nnotSelectedPeopleCount=${notSelectedPersonIds.size}"
         }
 
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(
-                createResult(selectedPersonIds)
+                createResult(
+                    selectedPersonIds = selectedPersonIds,
+                    notSelectedPersonIds = notSelectedPersonIds,
+                )
             )
         )
         finish()
@@ -252,13 +262,34 @@ class PeopleSelectionActivity : BaseActivity() {
     companion object {
         private const val FALLBACK_LIST_SIZE = 100
         private const val SELECTED_PERSON_IDS_EXTRA = "selected_person_ids"
+        private const val NOT_SELECTED_PERSON_IDS_EXTRA = "not_selected_person_ids"
 
-        fun getBundle(selectedPersonIds: Set<String>) = Bundle().apply {
-            putStringArray(SELECTED_PERSON_IDS_EXTRA, selectedPersonIds.toTypedArray())
+        /**
+         * @param selectedPersonIds if set, the initial selection will only contain given IDs
+         * @param notSelectedPersonIds if set, the initial selection will contain all the IDs except given
+         */
+        fun getBundle(
+            selectedPersonIds: Set<String>? = null,
+            notSelectedPersonIds: Set<String>? = null,
+        ) = Bundle().apply {
+            require((selectedPersonIds == null) != (notSelectedPersonIds == null)) {
+                "Either selected or not selected set of IDs must be set"
+            }
+
+            selectedPersonIds?.toTypedArray()?.also {
+                putStringArray(SELECTED_PERSON_IDS_EXTRA, it)
+            }
+            notSelectedPersonIds?.toTypedArray()?.also {
+                putStringArray(NOT_SELECTED_PERSON_IDS_EXTRA, it)
+            }
         }
 
-        private fun createResult(selectedPersonIds: Set<String>) = Bundle().apply {
+        private fun createResult(
+            selectedPersonIds: Set<String>,
+            notSelectedPersonIds: Set<String>,
+        ) = Bundle().apply {
             putStringArray(SELECTED_PERSON_IDS_EXTRA, selectedPersonIds.toTypedArray())
+            putStringArray(NOT_SELECTED_PERSON_IDS_EXTRA, notSelectedPersonIds.toTypedArray())
         }
 
         fun getSelectedPersonIds(bundle: Bundle): Set<String> =
