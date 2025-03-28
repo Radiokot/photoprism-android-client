@@ -289,4 +289,6 @@
     <string name="key_renewal_activate_new_key">Activate</string>
     <string name="key_renewal_error_failed">Failed to renew the key</string>
     <string name="key_renewal_error_not_available">Renewal can be done once per day. Try again the next day</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Who should be shown in the memories and who shouldn\'t</string>
 </resources>

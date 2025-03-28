@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.ext.prefs.view
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.text.InputType
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.EditTextPreference
 import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.PreferenceFragmentCompat
@@ -33,6 +36,7 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivation
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesPreferences
 import ua.com.radiokot.photoprism.features.ext.memories.view.MemoriesNotificationsManager
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
+import ua.com.radiokot.photoprism.features.people.view.PeopleSelectionActivity
 import ua.com.radiokot.photoprism.features.prefs.extension.bindToSubject
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 
@@ -53,6 +57,10 @@ class GalleryExtensionPreferencesFragment :
     private val memoriesNotificationsManager: MemoriesNotificationsManager by inject()
     private val memoriesPreferences: MemoriesPreferences by inject()
     private val galleryExtensionsStateRepository: GalleryExtensionsStateRepository by inject()
+    private val peopleToForgetSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        this::onPeopleToForgetSelectionResult
+    )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.extensions_preferences, rootKey)
@@ -164,6 +172,13 @@ class GalleryExtensionPreferencesFragment :
                 }
             }
 
+            with(requirePreference(R.string.pk_ext_memories_people_to_forget)) {
+                setOnPreferenceClickListener {
+                    openPeopleToForgetSelection()
+                    true
+                }
+            }
+
             with(requirePreference(R.string.pk_ext_memories_notifications)) {
                 setOnPreferenceChangeListener { _, newValue ->
                     if (!memoriesNotificationsManager.areNotificationsEnabled
@@ -210,6 +225,25 @@ class GalleryExtensionPreferencesFragment :
                     setTextIsSelectable(true)
                 }
             }
+    }
+
+    private fun openPeopleToForgetSelection() {
+        peopleToForgetSelectionLauncher.launch(
+            Intent(requireActivity(), PeopleSelectionActivity::class.java)
+                .putExtras(
+                    PeopleSelectionActivity.getBundle(
+                        notSelectedPersonIds = memoriesPreferences.personIdsToForget,
+                    )
+                )
+        )
+    }
+
+    private fun onPeopleToForgetSelectionResult(result: ActivityResult) {
+        val bundle = result.data?.extras
+        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+            memoriesPreferences.personIdsToForget =
+                PeopleSelectionActivity.getNotSelectedPersonIds(bundle)
+        }
     }
 
     override fun onResume() {

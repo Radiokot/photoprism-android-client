@@ -284,5 +284,7 @@
     <string name="key_renewal_error_failed">Αποτυχία ανανέωσης του κλειδιού</string>
     <string name="key_renewal_error_not_available">Η ανανέωση μπορεί να γίνει μία φορά την ημέρα. Προσπαθήστε ξανά την επόμενη ημέρα</string>
     <string name="key_renewal_title">Ανανέωση του κλειδιού</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Ποιον να εμφανίζετε στις αναμνήσεις και ποιον – όχι</string>
 
 </resources>

@@ -284,5 +284,7 @@
     <string name="key_renewal_error_failed">未能續訂密鑰</string>
     <string name="key_renewal_error_not_available">續訂每天可以進行一次。請在第二天重試</string>
     <string name="key_renewal_title">續訂密鑰</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">記憶中該顯示誰，不該顯示誰</string>
 
 </resources>

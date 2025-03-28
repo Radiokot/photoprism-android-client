@@ -47,6 +47,13 @@
             app:persistent="false"
             app:title="@string/extension_memories_max_entry_count_preference" />
 
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_ext_memories_people_to_forget"
+            app:persistent="false"
+            app:summary="@string/extension_memories_people_to_forget_preference_summary"
+            app:title="@string/extension_memories_people_to_forget_preference" />
+
         <SwitchPreferenceCompat
             app:dependency="@string/pk_ext_memories_enabled"
             app:iconSpaceReserved="false"

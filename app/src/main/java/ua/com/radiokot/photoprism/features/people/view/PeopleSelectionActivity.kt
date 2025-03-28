@@ -296,5 +296,10 @@ class PeopleSelectionActivity : BaseActivity() {
             requireNotNull(bundle.getStringArray(SELECTED_PERSON_IDS_EXTRA)?.toSet()) {
                 "No $SELECTED_PERSON_IDS_EXTRA specified"
             }
+
+        fun getNotSelectedPersonIds(bundle: Bundle): Set<String> =
+            requireNotNull(bundle.getStringArray(NOT_SELECTED_PERSON_IDS_EXTRA)?.toSet()) {
+                "No $NOT_SELECTED_PERSON_IDS_EXTRA specified"
+            }
     }
 }

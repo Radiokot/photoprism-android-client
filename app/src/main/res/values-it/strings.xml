@@ -283,5 +283,7 @@
     <string name="key_renewal_error_failed">Impossibile rinnovare la chiave</string>
     <string name="key_renewal_error_not_available">Il rinnovo può essere effettuato una volta al giorno. Riprovare il giorno successivo</string>
     <string name="key_renewal_title">Rinnovo della chiave</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Chi mostrare nei ricordi e chi – no</string>
 
 </resources>

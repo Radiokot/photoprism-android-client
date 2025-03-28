@@ -285,5 +285,7 @@
     <string name="key_renewal_error_failed">Nepodařilo se obnovit klíč</string>
     <string name="key_renewal_error_not_available">Obnova může být provedena jednou denně. Zkuste to znovu následující den</string>
     <string name="key_renewal_title">Obnovení klíče</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Koho zobrazovat ve vzpomínkách a koho ne</string>
 
 </resources>

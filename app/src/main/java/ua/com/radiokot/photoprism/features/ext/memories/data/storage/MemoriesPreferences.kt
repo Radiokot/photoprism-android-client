@@ -17,5 +17,5 @@ interface MemoriesPreferences {
      * A set of [Person.id] the user preferred to forget,
      * therefore not to see in memories 😟.
      */
-    val personIdsToForget: Set<String>
+    var personIdsToForget: Set<String>
 }

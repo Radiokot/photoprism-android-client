@@ -284,5 +284,7 @@
     <string name="key_renewal_error_failed">Не вдалося оновити ключ</string>
     <string name="key_renewal_error_not_available">Оновлювати ключ можна раз на день. Спробуйте знову наступного дня</string>
     <string name="key_renewal_title">Оновлення ключа</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Кого показувати у спогадах, а кого – ні</string>
 
 </resources>

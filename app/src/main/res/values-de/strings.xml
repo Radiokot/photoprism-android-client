@@ -282,5 +282,7 @@
     <string name="key_renewal_error_failed">Fehler beim Erneuern des Schlüssels</string>
     <string name="key_renewal_error_not_available">Die Erneuerung kann einmal täglich durchgeführt werden. Versuchen Sie es am nächsten Tag erneut</string>
     <string name="key_renewal_title">Schlüssel erneuern</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Wen man in den Erinnerungen anzeigen sollte und wen nicht</string>
 
 </resources>

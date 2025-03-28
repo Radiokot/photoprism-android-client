@@ -284,5 +284,7 @@
     <string name="key_renewal_error_failed">Не удалось обновить ключ</string>
     <string name="key_renewal_error_not_available">Обновлять ключ можно раз в день. Попробуйте снова на следующий день</string>
     <string name="key_renewal_title">Обновление ключа</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Кого показывать в воспоминаниях, а кого – нет</string>
 
 </resources>

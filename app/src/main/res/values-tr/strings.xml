@@ -284,5 +284,7 @@
     <string name="key_renewal_error_failed">Anahtarı yenileme başarısız oldu</string>
     <string name="key_renewal_error_not_available">Yenileme günde bir kez yapılabilir. Ertesi gün tekrar deneyin</string>
     <string name="key_renewal_title">Anahtarın yenilenmesi</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Anıları kim göstermeli ve kim – göstermemeli</string>
 
 </resources>

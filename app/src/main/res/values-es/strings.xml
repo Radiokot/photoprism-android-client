@@ -285,5 +285,7 @@
     <string name="key_renewal_error_failed">No se pudo renovar la clave</string>
     <string name="key_renewal_error_not_available">La renovación se puede realizar una vez al día. Inténtalo de nuevo al día siguiente</string>
     <string name="key_renewal_title">Renovación de la clave</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">A quién mostrar en los recuerdos y a quién – no</string>
 
 </resources>

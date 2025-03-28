@@ -27,4 +27,5 @@
     <string name="pk_ext_memories_enabled" translatable="false">ext_memories_enabled</string>
     <string name="pk_ext_memories_max_entry_count" translatable="false">ext_memories_max_entry_count</string>
     <string name="pk_ext_memories_notifications" translatable="false">ext_memories_notifications</string>
+    <string name="pk_ext_memories_people_to_forget" translatable="false">ext_memories_people_to_forget</string>
 </resources>

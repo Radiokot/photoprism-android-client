@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to select who should be shown in the memories and who shouldn't.
+  By default, everyone is shown, as it used to be
+
 ### Fixed
 
 - Crash when hitting "Back" or "X" while selecting items by drag
-- Triggering swipe refresh while selecting items by drag 
+- Triggering swipe refresh while selecting items by drag
   if there are not many of them on the screen
 
 ## [1.35.2] - 2025-03-03
@@ -18,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Periodic
-  [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension)
-  update, which became unstable in [1.35.1] 
+  [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
+  update, which became unstable in [1.35.1]
 
 ## [1.35.1] - 2025-02-28
 
