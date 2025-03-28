@@ -54,4 +54,14 @@ class MemoriesPreferencesOnPrefs(
                 }
             }
 
+    private val personIdsToForgetKey = "${keyPrefix}_person_ids_to_forget"
+    override var personIdsToForget: Set<String>
+        get() = preferences.getStringSet(personIdsToForgetKey, emptySet())!!
+        set(value) = preferences.edit { putStringSet(personIdsToForgetKey, value) }
+            .also {
+                log.debug {
+                    "forgottenPersonIds::set(): set_value:" +
+                            "\nvalue=$value"
+                }
+            }
 }

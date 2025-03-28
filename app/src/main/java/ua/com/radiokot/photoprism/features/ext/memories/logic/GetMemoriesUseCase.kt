@@ -89,7 +89,10 @@ class GetMemoriesUseCase(
         shuffleSeed: Int,
     ): Single<List<GalleryMedia>> {
         val repository = galleryMediaRepositoryFactory.create(
-            params = SimpleGalleryMediaRepository.Params(searchConfig),
+            params = SimpleGalleryMediaRepository.Params(
+                query = searchConfig.getPhotoPrismQuery(),
+                postFilterExcludePersonIds = memoriesPreferences.personIdsToForget,
+            ),
             pageLimit = MAX_ITEMS_TO_LOAD,
         )
 
