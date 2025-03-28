@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Triggering swipe refresh while selecting items by drag
   if there are not many of them on the screen
 
+### Changed
+
+- Updated the video player library. If you have playback problems,
+  consider checking out this version
+
 ## [1.35.2] - 2025-03-03
 
 ### Fixed
