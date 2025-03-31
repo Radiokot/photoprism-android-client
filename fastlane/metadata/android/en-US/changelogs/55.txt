@@ -1,0 +1,11 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to select who should be shown in the memories and who shouldn't. By default, everyone is shown, as it used to be
+
+Fixed:
+- Crash when hitting "Back" or "X" while selecting items by drag
+- Triggering swipe refresh while selecting items by drag if there are not many of them on the screen
+
+Changed:
+- Updated the video player library. If you have playback problems, consider checking out this version
