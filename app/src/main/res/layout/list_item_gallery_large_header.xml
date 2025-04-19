@@ -2,7 +2,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="88sp"
     android:focusable="false"
     android:gravity="bottom|start"
     android:paddingHorizontal="12dp"

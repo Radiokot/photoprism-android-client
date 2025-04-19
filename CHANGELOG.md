@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Stretching some circle buttons when system text size is enlarged
+- Cutting long month headers when system text size is enlarged
 
 ## [1.36.0] - 2025-03-31
 
