@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stretching some circle buttons when system text size is enlarged
 - Cutting long month headers when system text size is enlarged
 
+### Changed
+
+- When opening an item in the web viewer, the viewer state (selection, etc.) is reset
+
 ## [1.36.0] - 2025-03-31
 
 ### Added

@@ -20,6 +20,9 @@ class WebViewInjectionScriptFactory {
             .toString()
 
         return """
+            // Reset the state on each opening.
+            localStorage.clear()
+            
             localStorage.setItem('session_id', '$sessionId')
             localStorage.setItem('sessionId', '$newSessionId')
             localStorage.setItem('authToken', '$sessionId')
