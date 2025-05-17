@@ -126,8 +126,8 @@ class UpdatePhotoFrameWidgetPhotoUseCase(
                         searchConfig = widgetSearchConfig.copy(
                             beforeLocal = randomDate
                         ),
+                        pageLimit = TIME_MAX_ITEMS_TO_LOAD,
                     ),
-                    pageLimit = TIME_MAX_ITEMS_TO_LOAD,
                 )
             }
             // Load enough items.

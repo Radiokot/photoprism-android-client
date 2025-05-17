@@ -28,17 +28,12 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDat
 import ua.com.radiokot.photoprism.features.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
 
-/**
- * @param pageLimit target limit setting the minimum number of items in the page.
- * The actual pages are bigger due to the PhotoPrism pagination workaround.
- */
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     val params: Params,
-    pageLimit: Int,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = PagingOrder.DESC,
-    pageLimit = pageLimit,
+    pageLimit = params.pageLimit,
 ) {
     private val log = kLogger("SimpleGalleryMediaRepo")
 
@@ -318,6 +313,8 @@ class SimpleGalleryMediaRepository(
      * as PhotoPrism is incapable of precise local time filtering.
      * @param postFilterExcludePersonIds a set of [Person.id] which may be subjects or faces,
      * to filter out items with any of them.
+     * @param pageLimit target limit setting the minimum number of items in the page.
+     * The actual pages are bigger due to the PhotoPrism pagination workaround.
      */
     @Parcelize
     data class Params(
@@ -325,25 +322,40 @@ class SimpleGalleryMediaRepository(
         val postFilterBefore: LocalDate? = null,
         val postFilterAfter: LocalDate? = null,
         val postFilterExcludePersonIds: Set<String> = emptySet(),
+        val pageLimit: Int = DEFAULT_PAGE_LIMIT,
     ) : Parcelable {
 
-        constructor(searchConfig: SearchConfig) : this(
+        constructor(
+            searchConfig: SearchConfig,
+            postFilterExcludePersonIds: Set<String> = emptySet(),
+            pageLimit: Int = DEFAULT_PAGE_LIMIT,
+        ) : this(
             query = searchConfig.getPhotoPrismQuery(),
             postFilterBefore = searchConfig.beforeLocal,
             postFilterAfter = searchConfig.afterLocal,
+            postFilterExcludePersonIds = postFilterExcludePersonIds,
+            pageLimit = pageLimit,
         )
+
+        companion object {
+            // Always 80 elements – not great, not terrible.
+            // It is better, of course, to dynamically adjust
+            // to the max number of items on the screen.
+            const val DEFAULT_PAGE_LIMIT = 80
+        }
     }
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
-        private val defaultPageLimit: Int,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
         fun get(searchConfig: SearchConfig) =
             get(Params(searchConfig))
 
-        fun get(params: Params = Params()): SimpleGalleryMediaRepository {
+        fun get(
+            params: Params = Params(),
+        ): SimpleGalleryMediaRepository {
             val key = params.asKey()
             return cache[key]
                 ?: create(params).also {
@@ -356,11 +368,9 @@ class SimpleGalleryMediaRepository(
 
         fun create(
             params: Params = Params(),
-            pageLimit: Int = defaultPageLimit,
         ) = SimpleGalleryMediaRepository(
             photoPrismPhotosService = photoPrismPhotosService,
             params = params,
-            pageLimit = pageLimit,
         )
 
         /**

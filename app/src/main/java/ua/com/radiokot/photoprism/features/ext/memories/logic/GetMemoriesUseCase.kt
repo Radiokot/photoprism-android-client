@@ -90,10 +90,10 @@ class GetMemoriesUseCase(
     ): Single<List<GalleryMedia>> {
         val repository = galleryMediaRepositoryFactory.create(
             params = SimpleGalleryMediaRepository.Params(
-                query = searchConfig.getPhotoPrismQuery(),
+                searchConfig = searchConfig,
                 postFilterExcludePersonIds = memoriesPreferences.personIdsToForget,
+                pageLimit = MAX_ITEMS_TO_LOAD,
             ),
-            pageLimit = MAX_ITEMS_TO_LOAD,
         )
 
         return repository
