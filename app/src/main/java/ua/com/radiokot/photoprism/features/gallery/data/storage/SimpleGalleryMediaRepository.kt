@@ -28,11 +28,14 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDat
 import ua.com.radiokot.photoprism.features.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
 
+/**
+ * Turned out to be not that simple after all...
+ */
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     val params: Params,
 ) : SimplePagedDataRepository<GalleryMedia>(
-    pagingOrder = PagingOrder.DESC,
+    pagingOrder = params.pagingOrder,
     pageLimit = params.pageLimit,
 ) {
     private val log = kLogger("SimpleGalleryMediaRepo")
@@ -323,18 +326,21 @@ class SimpleGalleryMediaRepository(
         val postFilterAfter: LocalDate? = null,
         val postFilterExcludePersonIds: Set<String> = emptySet(),
         val pageLimit: Int = DEFAULT_PAGE_LIMIT,
+        val pagingOrder: PagingOrder = PagingOrder.DESC,
     ) : Parcelable {
 
         constructor(
             searchConfig: SearchConfig,
             postFilterExcludePersonIds: Set<String> = emptySet(),
             pageLimit: Int = DEFAULT_PAGE_LIMIT,
+            pagingOrder: PagingOrder = PagingOrder.DESC,
         ) : this(
             query = searchConfig.getPhotoPrismQuery(),
             postFilterBefore = searchConfig.beforeLocal,
             postFilterAfter = searchConfig.afterLocal,
             postFilterExcludePersonIds = postFilterExcludePersonIds,
             pageLimit = pageLimit,
+            pagingOrder = pagingOrder,
         )
 
         companion object {
