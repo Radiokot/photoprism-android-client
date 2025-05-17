@@ -92,13 +92,15 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/selection_bottom_app_bar_height"
         android:layout_gravity="bottom"
+        android:visibility="invisible"
         app:elevation="0dp"
         app:fabAlignmentModeEndMargin="18dp"
         app:fabAnchorMode="cradle"
         app:menu="@menu/gallery_selecting"
         app:menuAlignmentMode="auto"
         app:navigationContentDescription="@string/clear_selection"
-        app:navigationIcon="@drawable/ic_close">
+        app:navigationIcon="@drawable/ic_close"
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/selection_bottom_app_bar_title_text_view"
