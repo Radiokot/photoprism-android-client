@@ -180,9 +180,8 @@
     <string name="extensions_preferences_summary">Επιπλέον χαρακτηριστικά για τη συλλογή</string>
     <string name="archive_action">Αρχειοθέτηση</string>
     <string name="media_viewer_deleting_confirmation">Διαγραφή αυτού του στοιχείου για πάντα;</string>
-    <string name="extension_store">Κατάστημα επεκτάσεων</string>
-    <string name="extension_store_preference">@string/extension_store</string>
-    <string name="extension_store_title">@string/extension_store</string>
+    <string name="extension_store_preference">@string/extension_catalog</string>
+    <string name="extension_store_title">@string/extension_catalog</string>
     <string name="extension_store_item_activated">Ενεργά</string>
     <string name="extension_store_failed_loading">Αποτυχία φόρτωσης επεκτάσεων</string>
     <string name="extension_marketplace_activate_key">Ενεργοποίηση κλειδιού</string>
@@ -286,5 +285,6 @@
     <string name="key_renewal_title">Ανανέωση του κλειδιού</string>
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Ποιον να εμφανίζετε στις αναμνήσεις και ποιον – όχι</string>
+    <string name="extension_catalog">Κατάλογος επεκτάσεων</string>
 
 </resources>

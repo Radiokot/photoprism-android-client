@@ -181,9 +181,8 @@
     <string name="extensions_preferences_summary">Fonctionnalités supplémentaires pour la galerie</string>
     <string name="archive_action">Archiver</string>
     <string name="media_viewer_deleting_confirmation">Supprimer définitivement cet élément ?</string>
-    <string name="extension_store">Boutique d\'extensions</string>
-    <string name="extension_store_preference">@string/extension_store</string>
-    <string name="extension_store_title">@string/extension_store</string>
+    <string name="extension_store_preference">@string/extension_catalog</string>
+    <string name="extension_store_title">@string/extension_catalog</string>
     <string name="extension_store_item_activated">Activé</string>
     <string name="extension_store_failed_loading">Échec du chargement des extensions</string>
     <string name="extension_marketplace_activate_key">Activer une clé</string>
@@ -287,5 +286,6 @@
     <string name="key_renewal_title">Renouvellement de la clé</string>
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Qui afficher dans les souvenirs et qui – non</string>
+    <string name="extension_catalog">Catalogue d\'extensions</string>
 
 </resources>
