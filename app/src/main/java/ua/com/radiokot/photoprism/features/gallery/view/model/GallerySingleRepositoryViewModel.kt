@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
@@ -27,7 +30,9 @@ class GallerySingleRepositoryViewModel(
 
     private val log = kLogger("GallerySingleRepositoryVM")
     private var isInitialized = false
-    private lateinit var currentMediaRepository: SimpleGalleryMediaRepository
+    private val mediaRepositoryChanges = BehaviorSubject.create<SimpleGalleryMediaRepository>()
+    private val currentMediaRepository: SimpleGalleryMediaRepository?
+        get() = mediaRepositoryChanges.value
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOnMain()
@@ -63,7 +68,9 @@ class GallerySingleRepositoryViewModel(
             return
         }
 
-        currentMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
+        mediaRepositoryChanges.onNext(
+            galleryMediaRepositoryFactory.get(repositoryParams)
+        )
 
         log.debug {
             "initSelectionForAppOnce(): initialized_selection:" +
@@ -88,7 +95,9 @@ class GallerySingleRepositoryViewModel(
             )
         } else {
             listViewModel.initSelectingMultiple(
-                shouldPostItemsNow = { true },
+                shouldPostItemsNow = { repositoryToPostFrom ->
+                    repositoryToPostFrom == currentMediaRepository
+                },
             )
         }
         initCommon()
@@ -108,7 +117,10 @@ class GallerySingleRepositoryViewModel(
             return
         }
 
-        currentMediaRepository = galleryMediaRepositoryFactory.get(repositoryParams)
+        mediaRepositoryChanges.onNext(
+            galleryMediaRepositoryFactory.get(repositoryParams)
+        )
+
         this.albumUid = albumUid
 
         log.debug {
@@ -131,7 +143,9 @@ class GallerySingleRepositoryViewModel(
                 stateSubject.onNext(State.Viewing)
                 backPressActionsStack.removeAction(switchBackToViewingOnBackPress)
             },
-            shouldPostItemsNow = { true },
+            shouldPostItemsNow = { repositoryToPostFrom ->
+                repositoryToPostFrom == currentMediaRepository
+            },
         )
         initCommon()
 
@@ -139,7 +153,7 @@ class GallerySingleRepositoryViewModel(
     }
 
     private fun initCommon() {
-        subscribeToRepository()
+        subscribeToRepositoryChanges()
 
         // Replace list VM viewer opening event with the custom one
         // which may contain album UID.
@@ -154,11 +168,30 @@ class GallerySingleRepositoryViewModel(
                 )
             }
             .subscribe(this, eventsSubject::onNext)
-
-        update()
     }
 
+    private fun subscribeToRepositoryChanges() {
+        mediaRepositoryChanges
+            .distinctUntilChanged()
+            .subscribe {
+                subscribeToRepository()
+                update()
+
+                eventsSubject.onNext(Event.ResetScroll)
+            }
+            .autoDispose(this)
+    }
+
+    private var repositorySubscriptionDisposable: CompositeDisposable? = null
     private fun subscribeToRepository() {
+        repositorySubscriptionDisposable?.dispose()
+
+        val disposable = CompositeDisposable()
+        repositorySubscriptionDisposable = disposable
+
+        val currentMediaRepository = this.currentMediaRepository
+            ?: return
+
         log.debug {
             "subscribeToRepository(): subscribing:" +
                     "\nrepository=$currentMediaRepository"
@@ -177,7 +210,7 @@ class GallerySingleRepositoryViewModel(
 
                 postGalleryItemsAsync(currentMediaRepository)
             }
-            .autoDispose(this)
+            .addTo(disposable)
 
         currentMediaRepository.loading
             .observeOn(AndroidSchedulers.mainThread())
@@ -190,7 +223,7 @@ class GallerySingleRepositoryViewModel(
                     mainError.value = null
                 }
             }
-            .autoDispose(this)
+            .addTo(disposable)
 
         currentMediaRepository.errors
             .observeOn(AndroidSchedulers.mainThread())
@@ -207,10 +240,15 @@ class GallerySingleRepositoryViewModel(
                     eventsSubject.onNext(Event.ShowFloatingError(contentLoadingError))
                 }
             }
-            .autoDispose(this)
+            .addTo(disposable)
+
+        disposable.autoDispose(this)
     }
 
     private fun update(force: Boolean = false) {
+        val currentMediaRepository = this.currentMediaRepository
+            ?: return
+
         if (!force) {
             currentMediaRepository.updateIfNotFresh()
         } else {
@@ -220,6 +258,9 @@ class GallerySingleRepositoryViewModel(
     }
 
     fun loadMore() {
+        val currentMediaRepository = this.currentMediaRepository
+            ?: return
+
         if (!currentMediaRepository.isLoading) {
             log.debug { "loadMore(): requesting_load_more" }
 
@@ -334,7 +375,9 @@ class GallerySingleRepositoryViewModel(
 
         galleryMediaRemoteActionsViewModel.archiveGalleryMedia(
             mediaUids = selectedMediaByUid.keys.toList(),
-            currentMediaRepository = currentMediaRepository,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to archive items from"
+            },
             onStarted = ::switchToViewing,
         )
     }
@@ -350,7 +393,9 @@ class GallerySingleRepositoryViewModel(
 
         galleryMediaRemoteActionsViewModel.deleteGalleryMedia(
             mediaUids = selectedMediaByUid.keys.toList(),
-            currentMediaRepository = currentMediaRepository,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to delete items from"
+            },
             onStarted = ::switchToViewing,
         )
     }
