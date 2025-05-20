@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to switch the order of items when viewing an album or a folder
+
 ### Fixed
 
 - Stretching some circle buttons when system text size is enlarged

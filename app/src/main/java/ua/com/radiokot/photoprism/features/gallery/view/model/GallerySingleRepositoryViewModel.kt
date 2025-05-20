@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
+import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.filterIsInstance
@@ -414,6 +415,27 @@ class GallerySingleRepositoryViewModel(
         }
 
         update(force = true)
+    }
+
+    fun onSortClicked() {
+        val currentMediaRepository = this.currentMediaRepository
+            ?: return
+
+        val newOrder =
+            PagingOrder.values()[(currentMediaRepository.params.pagingOrder.ordinal + 1) % PagingOrder.values().size]
+
+        log.debug {
+            "onSortClicked(): changing_order:" +
+                    "\nnewOrder=$newOrder"
+        }
+
+        mediaRepositoryChanges.onNext(
+            galleryMediaRepositoryFactory.get(
+                currentMediaRepository.params.copy(
+                    pagingOrder = newOrder,
+                )
+            )
+        )
     }
 
     sealed interface State {

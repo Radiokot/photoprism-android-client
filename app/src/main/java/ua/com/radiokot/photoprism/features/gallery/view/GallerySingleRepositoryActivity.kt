@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
@@ -765,6 +766,17 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
     private fun onStoragePermissionResult(isGranted: Boolean) {
         viewModel.onStoragePermissionResult(isGranted)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.gallery_single_repository, menu)
+
+        menu?.findItem(R.id.sort)?.setOnMenuItemClickListener {
+            viewModel.onSortClicked()
+            true
+        }
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     private val GallerySingleRepositoryViewModel.Error.localizedMessage: String

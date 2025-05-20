@@ -87,14 +87,8 @@ abstract class SimplePagedDataRepository<T>(
 
     protected open fun onNewPage(page: DataPage<T>) {
         isNeverUpdated = false
+        isFresh = true
         noMoreItems = page.isLast
-
-        if (pagingOrder == PagingOrder.DESC && isOnFirstPage
-            || pagingOrder == PagingOrder.ASC && noMoreItems
-        ) {
-            isFresh = true
-        }
-
         nextPage = page.nextCursor
 
         addNewPageItems(page)
