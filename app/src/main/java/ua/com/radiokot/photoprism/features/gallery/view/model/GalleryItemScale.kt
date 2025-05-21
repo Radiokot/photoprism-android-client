@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.data.model
+package ua.com.radiokot.photoprism.features.gallery.view.model
 
 import ua.com.radiokot.photoprism.R
 
