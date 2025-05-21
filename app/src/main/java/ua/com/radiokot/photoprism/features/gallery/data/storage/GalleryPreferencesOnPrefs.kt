@@ -1,16 +1,18 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import android.content.SharedPreferences
+import com.google.common.hash.Hashing
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemsOrder
 import ua.com.radiokot.photoprism.util.booleanPreferenceSubject
 import ua.com.radiokot.photoprism.util.stringifyPreferenceSubject
 
 class GalleryPreferencesOnPrefs(
-    preferences: SharedPreferences,
+    private val preferences: SharedPreferences,
     keyPrefix: String = "gallery",
 ) : GalleryPreferences {
     private val log = kLogger("GalleryPreferencesOnPrefs")
@@ -56,4 +58,40 @@ class GalleryPreferencesOnPrefs(
             stringSerializer = RawSharingMode::name,
             stringDeserializer = RawSharingMode::valueOf,
         )
+
+    override fun getItemsOrderBySearchQuery(
+        searchQuery: String?,
+    ): BehaviorSubject<GalleryItemsOrder> {
+
+        val keyPrefix =
+            if (searchQuery != null)
+                Hashing
+                    .sha256()
+                    .hashString(searchQuery, Charsets.UTF_8)
+                    .toString()
+            else
+                "default"
+
+
+        return stringifyPreferenceSubject(
+            preferences = preferences,
+            key = "${keyPrefix}_items_order",
+            defaultValue = GalleryItemsOrder.NEWEST_FIRST,
+            stringDeserializer = { valueString ->
+                tryOrNull {
+                    GalleryItemsOrder.valueOf(valueString)
+                }
+            },
+            stringSerializer = { newValue ->
+                newValue.name.also {
+                    log.debug {
+                        "itemsOrder::onNext(): set_value:" +
+                                "\nsearchQuery=$searchQuery," +
+                                "\nkeyPrefix=$keyPrefix," +
+                                "\nvalue=$newValue"
+                    }
+                }
+            },
+        )
+    }
 }

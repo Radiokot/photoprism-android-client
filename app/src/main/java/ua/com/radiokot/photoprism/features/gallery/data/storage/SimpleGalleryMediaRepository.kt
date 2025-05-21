@@ -22,6 +22,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.mapSuccessful
 import ua.com.radiokot.photoprism.extension.toMaybe
 import ua.com.radiokot.photoprism.extension.toSingle
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemsOrder
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
@@ -35,7 +36,13 @@ class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
     val params: Params,
 ) : SimplePagedDataRepository<GalleryMedia>(
-    pagingOrder = params.pagingOrder,
+    pagingOrder = when (params.itemsOrder) {
+        GalleryItemsOrder.NEWEST_FIRST ->
+            PagingOrder.DESC
+
+        GalleryItemsOrder.OLDEST_FIRST ->
+            PagingOrder.ASC
+    },
     pageLimit = params.pageLimit,
 ) {
     private val log = kLogger("SimpleGalleryMediaRepo")
@@ -309,7 +316,7 @@ class SimpleGalleryMediaRepository(
     }
 
     /**
-     * @param query user query
+     * @param query PhotoPrism search query
      * @param postFilterBefore local time to apply post filtering of the items,
      * as PhotoPrism is incapable of precise local time filtering.
      * @param postFilterAfter local time to apply post filtering of the items,
@@ -326,21 +333,21 @@ class SimpleGalleryMediaRepository(
         val postFilterAfter: LocalDate? = null,
         val postFilterExcludePersonIds: Set<String> = emptySet(),
         val pageLimit: Int = DEFAULT_PAGE_LIMIT,
-        val pagingOrder: PagingOrder = PagingOrder.DESC,
+        val itemsOrder: GalleryItemsOrder = GalleryItemsOrder.NEWEST_FIRST,
     ) : Parcelable {
 
         constructor(
             searchConfig: SearchConfig,
             postFilterExcludePersonIds: Set<String> = emptySet(),
             pageLimit: Int = DEFAULT_PAGE_LIMIT,
-            pagingOrder: PagingOrder = PagingOrder.DESC,
+            itemsOrder: GalleryItemsOrder = GalleryItemsOrder.NEWEST_FIRST,
         ) : this(
             query = searchConfig.getPhotoPrismQuery(),
             postFilterBefore = searchConfig.beforeLocal,
             postFilterAfter = searchConfig.afterLocal,
             postFilterExcludePersonIds = postFilterExcludePersonIds,
             pageLimit = pageLimit,
-            pagingOrder = pagingOrder,
+            itemsOrder = itemsOrder,
         )
 
         companion object {

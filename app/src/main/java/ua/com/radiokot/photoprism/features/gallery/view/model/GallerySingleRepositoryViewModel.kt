@@ -9,18 +9,20 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
-import ua.com.radiokot.photoprism.base.data.model.PagingOrder
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.filterIsInstance
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemsOrder
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.util.BackPressActionsStack
 
 class GallerySingleRepositoryViewModel(
     private val galleryMediaRepositoryFactory: SimpleGalleryMediaRepository.Factory,
+    private val galleryPreferences: GalleryPreferences,
     private val listViewModel: GalleryListViewModelImpl,
     private val galleryMediaDownloadActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
@@ -31,6 +33,7 @@ class GallerySingleRepositoryViewModel(
 
     private val log = kLogger("GallerySingleRepositoryVM")
     private var isInitialized = false
+    private lateinit var itemsOrder: BehaviorSubject<GalleryItemsOrder>
     private val mediaRepositoryChanges = BehaviorSubject.create<SimpleGalleryMediaRepository>()
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value
@@ -73,12 +76,6 @@ class GallerySingleRepositoryViewModel(
             galleryMediaRepositoryFactory.get(repositoryParams)
         )
 
-        log.debug {
-            "initSelectionForAppOnce(): initialized_selection:" +
-                    "\nrepositoryParams=$repositoryParams," +
-                    "\nallowMultiple=$allowMultiple"
-        }
-
         stateSubject.onNext(
             State.Selecting.ForOtherApp(
                 allowMultiple = allowMultiple,
@@ -101,9 +98,18 @@ class GallerySingleRepositoryViewModel(
                 },
             )
         }
-        initCommon()
+
+        initCommon(
+            repositoryParams = repositoryParams,
+        )
 
         isInitialized = true
+
+        log.debug {
+            "initSelectionForAppOnce(): initialized_selection:" +
+                    "\nrepositoryParams=$repositoryParams," +
+                    "\nallowMultiple=$allowMultiple"
+        }
     }
 
     fun initViewingOnce(
@@ -124,11 +130,6 @@ class GallerySingleRepositoryViewModel(
 
         this.albumUid = albumUid
 
-        log.debug {
-            "initViewingOnce(): initialized_viewing:" +
-                    "\nalbumUid=$albumUid"
-        }
-
         stateSubject.onNext(State.Viewing)
 
         listViewModel.initViewing(
@@ -148,12 +149,25 @@ class GallerySingleRepositoryViewModel(
                 repositoryToPostFrom == currentMediaRepository
             },
         )
-        initCommon()
+
+        initCommon(
+            repositoryParams = repositoryParams,
+        )
 
         isInitialized = true
+
+        log.debug {
+            "initViewingOnce(): initialized_viewing:" +
+                    "\nalbumUid=$albumUid"
+        }
     }
 
-    private fun initCommon() {
+    private fun initCommon(
+        repositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
+        subscribeToItemsOrder(
+            initialRepositoryParams = repositoryParams,
+        )
         subscribeToRepositoryChanges()
 
         // Replace list VM viewer opening event with the custom one
@@ -169,6 +183,25 @@ class GallerySingleRepositoryViewModel(
                 )
             }
             .subscribe(this, eventsSubject::onNext)
+    }
+
+    private fun subscribeToItemsOrder(
+        initialRepositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
+        itemsOrder = galleryPreferences
+            .getItemsOrderBySearchQuery(initialRepositoryParams.query)
+
+        itemsOrder
+            .subscribe { order ->
+                mediaRepositoryChanges.onNext(
+                    galleryMediaRepositoryFactory.get(
+                        params = initialRepositoryParams.copy(
+                            itemsOrder = order,
+                        ),
+                    )
+                )
+            }
+            .autoDispose(this)
     }
 
     private fun subscribeToRepositoryChanges() {
@@ -418,24 +451,17 @@ class GallerySingleRepositoryViewModel(
     }
 
     fun onSortClicked() {
-        val currentMediaRepository = this.currentMediaRepository
-            ?: return
+        val currentOrder = itemsOrder.value!!
 
         val newOrder =
-            PagingOrder.values()[(currentMediaRepository.params.pagingOrder.ordinal + 1) % PagingOrder.values().size]
+            GalleryItemsOrder.values()[(currentOrder.ordinal + 1) % GalleryItemsOrder.values().size]
 
         log.debug {
             "onSortClicked(): changing_order:" +
                     "\nnewOrder=$newOrder"
         }
 
-        mediaRepositoryChanges.onNext(
-            galleryMediaRepositoryFactory.get(
-                currentMediaRepository.params.copy(
-                    pagingOrder = newOrder,
-                )
-            )
-        )
+        itemsOrder.onNext(newOrder)
     }
 
     sealed interface State {
