@@ -295,12 +295,20 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
     private fun initList(savedInstanceState: Bundle?) {
         val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
-            setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
+
+            setNewList(
+                listOf(
+                    GalleryLoadingFooterListItem(
+                        isLoading = false,
+                        canLoadMore = false,
+                    )
+                )
+            )
 
             viewModel.isLoading.observe(this@GallerySingleRepositoryActivity) { isLoading ->
                 this[0] = GalleryLoadingFooterListItem(
                     isLoading = isLoading,
-                    canLoadMore = viewModel.canLoadMore
+                    canLoadMore = viewModel.canLoadMore,
                 )
             }
         }
@@ -311,7 +319,10 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                 galleryProgressFooterAdapter
             )
         ).apply {
-            stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+            // Allowed once the items adapter is not empty
+            // (progress footer adapter is never empty).
+            stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT
 
             addClickListener(
                 resolveView = { null },
@@ -487,8 +498,15 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         }
 
         val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.observeOnMain()
+        viewModel
+            .itemList
+            .observeOnMain()
             .subscribe(this@GallerySingleRepositoryActivity) { newItems ->
+
+                if (newItems.isNotEmpty()) {
+                    galleryAdapter.stateRestorationPolicy = Adapter.StateRestorationPolicy.ALLOW
+                }
+
                 FastAdapterDiffUtil.setBetter(
                     recyclerView = view.galleryRecyclerView,
                     adapter = galleryItemsAdapter,

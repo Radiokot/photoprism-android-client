@@ -51,7 +51,6 @@ import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.AlbumsActivity
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -60,6 +59,7 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarV
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingError
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListItem
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFooterListItem
@@ -88,9 +88,6 @@ class GalleryActivity : BaseActivity() {
     private val welcomeScreenPreferences: WelcomeScreenPreferences by inject()
 
     private val galleryItemsAdapter = ItemAdapter<GalleryListItem>()
-    private val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
-        setNewList(listOf(GalleryLoadingFooterListItem(isLoading = false, canLoadMore = false)))
-    }
     private lateinit var endlessScrollListener: EndlessRecyclerOnScrollListener
     private var currentListItemScale: GalleryItemScale? = null
 
@@ -222,11 +219,6 @@ class GalleryActivity : BaseActivity() {
 
     private fun subscribeToData() {
         viewModel.isLoading.observe(this) { isLoading ->
-            galleryProgressFooterAdapter[0] = GalleryLoadingFooterListItem(
-                isLoading = isLoading,
-                canLoadMore = viewModel.canLoadMore
-            )
-
             // Do not show refreshing if there are no gallery items,
             // as in this case the loading footer is on top and visible.
             // It also must not be shown if the recycler is not on the top,
@@ -234,17 +226,6 @@ class GalleryActivity : BaseActivity() {
             view.swipeRefreshLayout.isRefreshing = isLoading
                     && galleryItemsAdapter.adapterItemCount > 0
                     && !view.galleryRecyclerView.canScrollVertically(-1)
-        }
-
-        val diffCallback = GalleryListItemDiffCallback()
-        viewModel.itemList.observeOnMain().subscribe(this) { newItems ->
-            FastAdapterDiffUtil.setBetter(
-                recyclerView = view.galleryRecyclerView,
-                adapter = galleryItemsAdapter,
-                items = newItems,
-                callback = diffCallback,
-                detectMoves = false,
-            )
         }
 
         viewModel.mainError.observe(this) { error ->
@@ -500,6 +481,26 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initList(savedInstanceState: Bundle?) {
+
+        val galleryProgressFooterAdapter = ItemAdapter<GalleryLoadingFooterListItem>().apply {
+
+            setNewList(
+                listOf(
+                    GalleryLoadingFooterListItem(
+                        isLoading = false,
+                        canLoadMore = false,
+                    )
+                )
+            )
+
+            viewModel.isLoading.observe(this@GalleryActivity) { isLoading ->
+                this[0] = GalleryLoadingFooterListItem(
+                    isLoading = isLoading,
+                    canLoadMore = viewModel.canLoadMore,
+                )
+            }
+        }
+
         val galleryAdapter = FastAdapter.with(
             listOf(
                 memoriesListView.recyclerAdapter,
@@ -507,7 +508,10 @@ class GalleryActivity : BaseActivity() {
                 galleryProgressFooterAdapter
             )
         ).apply {
-            stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+            // Allowed once the items adapter is not empty
+            // (progress footer adapter is never empty).
+            stateRestorationPolicy = Adapter.StateRestorationPolicy.PREVENT
 
             addClickListener(
                 resolveView = { null },
@@ -691,6 +695,22 @@ class GalleryActivity : BaseActivity() {
         fastScrollView.init(
             fastScrollRecyclerView = view.galleryRecyclerView,
         )
+
+        val diffCallback = GalleryListItemDiffCallback()
+        viewModel.itemList.observeOnMain().subscribe(this) { newItems ->
+
+            if (newItems.isNotEmpty()) {
+                galleryAdapter.stateRestorationPolicy = Adapter.StateRestorationPolicy.ALLOW
+            }
+
+            FastAdapterDiffUtil.setBetter(
+                recyclerView = view.galleryRecyclerView,
+                adapter = galleryItemsAdapter,
+                items = newItems,
+                callback = diffCallback,
+                detectMoves = false,
+            )
+        }
     }
 
     private fun initSearch() {

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cutting long month headers when system text size is enlarged
 - Occasionally seeing the login screen when opening an item in the web viewer
 - Occasionally briefly seeing the bottom selection controls when starting the app
+- Resetting the scroll position after screen rotation when viewing an album or a folder
 
 ### Changed
 
