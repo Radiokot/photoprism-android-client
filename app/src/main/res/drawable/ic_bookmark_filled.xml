@@ -1,10 +1,12 @@
-<!-- drawable/bookmark.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="478"
+    android:viewportHeight="478">
+
     <path
-        android:fillColor="#000000"
-        android:pathData="M17,3H7A2,2 0 0,0 5,5V21L12,18L19,21V5C19,3.89 18.1,3 17,3Z" />
+        android:fillColor="#000"
+        android:fillType="evenOdd"
+        android:pathData="M367.2,28A53,53 0,0 1,420 80.8V397c0,19.6 -10.3,37 -27.5,46.4a52.2,52.2 0,0 1,-53.9 -2l-90,-57.9h-0.1c-4.5,-3 -10.5,-3 -15,0h-0.1l-90,58a52.2,52.2 0,0 1,-53.9 2A52.3,52.3 0,0 1,62 397V80.8A53,53 0,0 1,114.8 28h252.4ZM241,105c-4.5,0 -8.5,2.6 -10.4,6.5L206,163.2l-57,7.3a11.4,11.4 0,0 0,-6.4 19.6l41.8,39.2 -10.6,56.1a11.5,11.5 0,0 0,16.7 12.2l50.5,-27.4 50.4,27.4a11.8,11.8 0,0 0,12.3 -0.7c3.6,-2.6 5.3,-7 4.5,-11.4l-10.6,-56.2 41.8,-39.2a11.4,11.4 0,0 0,-6.4 -19.6l-57,-7.3 -24.6,-51.7c-1.9,-4 -6,-6.5 -10.4,-6.5Z" />
+
 </vector>
