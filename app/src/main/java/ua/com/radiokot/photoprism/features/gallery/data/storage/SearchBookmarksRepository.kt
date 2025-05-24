@@ -147,6 +147,9 @@ class SearchBookmarksRepository(
     fun findByConfig(config: SearchConfig): SearchBookmark? =
         itemsList.find { it.searchConfig == config }
 
+    fun findById(id: Long): SearchBookmark? =
+        itemsList.find { it.id == id }
+
     /**
      * Replaces all the bookmarks with given.
      */

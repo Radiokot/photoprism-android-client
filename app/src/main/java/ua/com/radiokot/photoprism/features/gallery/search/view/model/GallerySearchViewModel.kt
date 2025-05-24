@@ -15,8 +15,8 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmark
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
-import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
+import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 
 class GallerySearchViewModel(
@@ -98,6 +98,33 @@ class GallerySearchViewModel(
         get() = stateSubject.value is State.Configuring
                 && !bookmarksRepository.isLoading
                 && areBookmarksCurrentlyMoving.value == false
+
+    fun applyBookmarkByIdAsync(
+        bookmarkId: Long,
+    ) = bookmarksRepository
+        .updateIfNotFreshDeferred()
+        .doOnComplete {
+            val bookmark = bookmarksRepository.findById(bookmarkId)
+
+            if (bookmark == null) {
+                log.warn {
+                    "applyBookmarkByIdAsync(): bookmark_not_found:" +
+                            "\nbookmarkId=$bookmarkId"
+                }
+                return@doOnComplete
+            }
+
+            log.debug {
+                "applyBookmarkByIdAsync(): applying_bookmark:" +
+                        "\nbookmark=$bookmark"
+            }
+
+            applySearchConfig(
+                config = bookmark.searchConfig,
+            )
+        }
+        .subscribeBy()
+        .autoDispose(this)
 
     private fun subscribeToBookmarks() {
         bookmarksRepository.items

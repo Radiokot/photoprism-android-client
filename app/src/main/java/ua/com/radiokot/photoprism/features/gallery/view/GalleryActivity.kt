@@ -190,7 +190,9 @@ class GalleryActivity : BaseActivity() {
                 return
             }
 
-            viewModel.initViewingOnce()
+            viewModel.initViewingOnce(
+                requestedBookmarkId = getBookmarkId(intent),
+            )
         }
 
         rootView = ActivityGalleryBinding.inflate(layoutInflater)
@@ -1031,6 +1033,15 @@ class GalleryActivity : BaseActivity() {
             .show()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        if (intent?.action == ACTION_BOOKMARK_SHORTCUT) {
+            getBookmarkId(intent)
+                ?.also(viewModel.searchViewModel::applyBookmarkByIdAsync)
+        }
+    }
+
     private var backPressResetDisposable: Disposable? = null
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1098,7 +1109,13 @@ class GalleryActivity : BaseActivity() {
                 )
         }
 
-    private companion object {
+    companion object {
         private const val FALLBACK_LIST_SIZE = 100
+        const val ACTION_BOOKMARK_SHORTCUT = "bookmark-shortcut"
+        const val BOOKMARK_ID_EXTRA = "bookmark-id"
+
+        private fun getBookmarkId(intent: Intent): Long? = intent
+            .getLongExtra(BOOKMARK_ID_EXTRA, Long.MIN_VALUE)
+            .takeIf { it != Long.MIN_VALUE }
     }
 }

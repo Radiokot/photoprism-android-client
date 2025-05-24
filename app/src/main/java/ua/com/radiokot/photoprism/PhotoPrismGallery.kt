@@ -34,6 +34,7 @@ import ua.com.radiokot.photoprism.features.ext.memories.logic.CancelDailyMemorie
 import ua.com.radiokot.photoprism.features.ext.memories.logic.ScheduleDailyMemoriesUpdatesUseCase
 import ua.com.radiokot.photoprism.features.ext.store.galleryExtensionStoreModule
 import ua.com.radiokot.photoprism.features.gallery.galleryFeatureModule
+import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarkShortcutsManager
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
 import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 import ua.com.radiokot.photoprism.features.viewer.mediaViewerFeatureModule
@@ -88,6 +89,7 @@ class PhotoPrismGallery : Application() {
 
         initRxErrorHandler()
         initLogging()
+        initShortcuts()
         clearInternalDownloads()
 
         loadSessionIfPresent()
@@ -145,6 +147,13 @@ class PhotoPrismGallery : Application() {
         )
 
         get<UpdatePhotoFrameWidgetManifestComponentsUseCase>().invoke()
+    }
+
+    private fun initShortcuts() {
+        SearchBookmarkShortcutsManager(this)
+            .syncShortcutsWithBookmarks(
+                bookmarksRepository = get(),
+            )
     }
 
     override fun attachBaseContext(base: Context) =

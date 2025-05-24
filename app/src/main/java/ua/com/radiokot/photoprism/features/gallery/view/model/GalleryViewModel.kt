@@ -116,13 +116,6 @@ class GalleryViewModel(
             searchViewModel.availableMediaTypes.value = allowedMediaTypes
         }
 
-        log.debug {
-            "initSelectionForAppOnce(): initialized_selection:" +
-                    "\nrequestedMimeType=$requestedMimeType," +
-                    "\nallowMultiple=$allowMultiple," +
-                    "\nallowedMediaTypes=$allowedMediaTypes"
-        }
-
         stateSubject.onNext(
             State.Selecting.ForOtherApp(
                 allowedMediaTypes = allowedMediaTypes,
@@ -148,12 +141,22 @@ class GalleryViewModel(
                 },
             )
         }
+
         initCommon()
+
+        log.debug {
+            "initSelectionForAppOnce(): initialized_selection:" +
+                    "\nrequestedMimeType=$requestedMimeType," +
+                    "\nallowMultiple=$allowMultiple," +
+                    "\nallowedMediaTypes=$allowedMediaTypes"
+        }
 
         isInitialized = true
     }
 
-    fun initViewingOnce() {
+    fun initViewingOnce(
+        requestedBookmarkId: Long?,
+    ) {
         if (isInitialized) {
             log.debug {
                 "initViewingOnce(): already_initialized"
@@ -162,8 +165,10 @@ class GalleryViewModel(
             return
         }
 
-        log.debug {
-            "initViewingOnce(): initialized_viewing"
+        if (requestedBookmarkId != null) {
+            searchViewModel.applyBookmarkByIdAsync(
+                bookmarkId = requestedBookmarkId,
+            )
         }
 
         stateSubject.onNext(State.Viewing)
@@ -181,7 +186,13 @@ class GalleryViewModel(
                 repositoryToPostFrom == currentMediaRepository
             },
         )
+
         initCommon()
+
+        log.debug {
+            "initViewingOnce(): initialized_viewing:" +
+                    "\nrequestedBookmarkId=$requestedBookmarkId"
+        }
 
         isInitialized = true
     }
@@ -190,6 +201,7 @@ class GalleryViewModel(
         subscribeToSearch()
         subscribeToFastScroll()
         subscribeToRepositoryChanges()
+
         resetRepositoryAndSearchConfig()
     }
 

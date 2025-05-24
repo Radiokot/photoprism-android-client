@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Ability to switch the order of items when viewing an album or a folder
+- App shortcuts for search bookmarks – by long pressing the gallery icon in the launcher,
+  you'll see shortcuts which let you quickly open the gallery at a particular bookmark
 
 ### Fixed
 
