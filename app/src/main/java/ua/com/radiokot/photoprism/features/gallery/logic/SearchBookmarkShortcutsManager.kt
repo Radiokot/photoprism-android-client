@@ -26,22 +26,25 @@ class SearchBookmarkShortcutsManager(
 
             ShortcutManagerCompat.setDynamicShortcuts(
                 application,
-                bookmarks.map { bookmark ->
-                    ShortcutInfoCompat.Builder(application, bookmark.id.toString())
-                        .setShortLabel(bookmark.name)
-                        .setIcon(
-                            IconCompat.createWithResource(
-                                application,
-                                R.drawable.ic_bookmark_shortcut
+                bookmarks
+                    .take(ShortcutManagerCompat.getMaxShortcutCountPerActivity(application))
+                    .map { bookmark ->
+
+                        ShortcutInfoCompat.Builder(application, bookmark.id.toString())
+                            .setShortLabel(bookmark.name)
+                            .setIcon(
+                                IconCompat.createWithResource(
+                                    application,
+                                    R.drawable.ic_bookmark_shortcut
+                                )
                             )
-                        )
-                        .setIntent(
-                            Intent(application, GalleryActivity::class.java)
-                                .setAction(GalleryActivity.ACTION_BOOKMARK_SHORTCUT)
-                                .putExtra(GalleryActivity.BOOKMARK_ID_EXTRA, bookmark.id)
-                        )
-                        .build()
-                }
+                            .setIntent(
+                                Intent(application, GalleryActivity::class.java)
+                                    .setAction(GalleryActivity.ACTION_BOOKMARK_SHORTCUT)
+                                    .putExtra(GalleryActivity.BOOKMARK_ID_EXTRA, bookmark.id)
+                            )
+                            .build()
+                    }
             )
         }
 }
