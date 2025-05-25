@@ -1,0 +1,17 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to switch the order of items when viewing an album or a folder
+- App shortcuts for search bookmarks – by long pressing the gallery icon in the launcher, you'll see shortcuts which let you quickly open the gallery at a particular bookmark
+
+Fixed:
+- Stretching some circle buttons when system text size is enlarged
+- Cutting long month headers when system text size is enlarged
+- Occasionally seeing the login screen when opening an item in the web viewer
+- Occasionally briefly seeing the bottom selection controls when starting the app
+- Resetting the scroll position after screen rotation when viewing an album or a folder
+
+Changed:
+- When opening an item in the web viewer, the viewer state (selection, etc.) is reset
+- Renamed Extension store to Extension catalog
+- Made some icons rounded
