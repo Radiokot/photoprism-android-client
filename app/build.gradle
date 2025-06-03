@@ -196,9 +196,9 @@ dependencies {
     // Must be 4.3 for Java 8 compatibility.
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
 
-    implementation 'androidx.media3:media3-exoplayer:1.6.0'
-    implementation 'androidx.media3:media3-ui:1.6.0'
-    implementation 'androidx.media3:media3-datasource-okhttp:1.6.0'
+    implementation 'androidx.media3:media3-exoplayer:1.6.1'
+    implementation 'androidx.media3:media3-ui:1.6.1'
+    implementation 'androidx.media3:media3-datasource-okhttp:1.6.1'
 
     testImplementation 'junit:junit:4.13.2'
 
