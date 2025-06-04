@@ -45,6 +45,7 @@ class DefaultVideoPlayerFactory(
                                 )
                         )
                 )
+                    .fixClippingSources()
             )
             .build()
 }

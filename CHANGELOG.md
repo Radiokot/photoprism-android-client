@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Not playing some Samsung live photos
+
 ### Changed
 
 - Updated the video player library. If you have playback problems,
