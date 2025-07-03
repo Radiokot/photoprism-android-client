@@ -32,6 +32,7 @@
         </item>
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
     <style name="AppTheme" parent="BaseLightAppTheme" />

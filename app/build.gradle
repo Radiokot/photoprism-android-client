@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         minSdk 21
-        targetSdk 34
+        targetSdk 35
 
         applicationId "ua.com.radiokot.photoprism"
         versionCode 57
