@@ -98,6 +98,7 @@ class GalleryViewModel(
                 setOf(
                     GalleryMedia.TypeName.IMAGE,
                     GalleryMedia.TypeName.RAW,
+                    GalleryMedia.TypeName.LIVE,
                     GalleryMedia.TypeName.ANIMATED,
                     GalleryMedia.TypeName.VECTOR,
                 )
