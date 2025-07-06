@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
-import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto.File
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
 
@@ -215,12 +214,6 @@ class GalleryMedia(
 
             enum class Kind {
                 /**
-                 * Just a short video treated by PhotoPrism as a live photo
-                 * having the still image generated from the first frame.
-                 */
-                SHORT_VIDEO,
-
-                /**
                  * Real live photo with with a high quality still image
                  * taken at the end of the video.
                  * This kind has the true live photo magic ✨
@@ -295,30 +288,17 @@ class GalleryMedia(
                             .find { it.duration != null && it.duration > 0 }
                             ?.duration
                             ?.let(TimeUnit.NANOSECONDS::toMillis),
-                        kind = when {
-                            (files.mainFile to files.videoFile).let { (mainFile, videoFile) ->
-                                // Short videos have primary image file
-                                // generated from the video file,
-                                // while real live photos have the preview generated
-                                // from the image file (HEIC) or don't have it at all.
-                                videoFile != null
-                                        && videoFile != mainFile
-                                        && videoFile.codec != "heic"
-                                        && mainFile.name.startsWith(videoFile.name)
-                            } ->
-                                Live.Kind.SHORT_VIDEO
-
-                            source.cameraMake == "Samsung" ->
+                        kind = when (source.cameraMake) {
+                            "Samsung" ->
                                 Live.Kind.SAMSUNG
 
-                            source.cameraMake == "Apple" ->
+                            "Apple" ->
                                 Live.Kind.APPLE
 
-                            source.cameraMake == "Google" ->
+                            "Google" ->
                                 Live.Kind.GOOGLE
 
-                            else ->
-                                Live.Kind.OTHER
+                            else -> Live.Kind.OTHER
                         },
                     )
 
@@ -343,7 +323,6 @@ class GalleryMedia(
         val mediaUid: String,
         val mimeType: String,
         val mediaType: TypeName,
-        val sizeBytes: Long?,
         val isPrimary: Boolean?,
         val isSidecar: Boolean?,
         val isVideo: Boolean?,
@@ -363,7 +342,6 @@ class GalleryMedia(
             mediaUid = source.photoUid,
             mimeType = source.mime ?: "application/octet-stream",
             mediaType = TypeName.fromPhotoPrism(source.mediaType),
-            sizeBytes = source.size,
             isPrimary = source.primary,
             isSidecar = source.sidecar,
             isVideo = source.video,
