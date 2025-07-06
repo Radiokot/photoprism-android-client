@@ -19,11 +19,6 @@ sealed class MediaViewerPage(
         set(_) = error("Don't override my value")
 
     companion object {
-        private val FADE_END_LIVE_PHOTO_KINDS = setOf(
-            GalleryMedia.TypeData.Live.Kind.SAMSUNG,
-            GalleryMedia.TypeData.Live.Kind.APPLE,
-            GalleryMedia.TypeData.Live.Kind.GOOGLE,
-        )
         private const val FADE_END_PLAYBACK_DURATION_MS_SHORT =
             400L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val FADE_END_PLAYBACK_DURATION_MS_LONG =
@@ -38,7 +33,6 @@ sealed class MediaViewerPage(
         ): MediaViewerPage {
             return when {
                 source.media is GalleryMedia.TypeData.Live
-                        && source.media.kind in FADE_END_LIVE_PHOTO_KINDS
                         && source.media.fullDurationMs != null -> {
 
                     if (livePhotosAsImages) {
