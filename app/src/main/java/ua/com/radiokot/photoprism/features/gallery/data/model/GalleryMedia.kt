@@ -72,7 +72,7 @@ class GalleryMedia(
                     files.find { it.mediaType == TypeName.IMAGE && it.root == "/" }
 
                 TypeName.LIVE ->
-                    files.find { it.mediaType == TypeName.VIDEO || it.mediaType == TypeName.LIVE && it.root == "/" }
+                    files.find { (it.mediaType == TypeName.IMAGE || it.mediaType == TypeName.LIVE) && it.root == "/" }
 
                 TypeName.RAW,
                 TypeName.VIDEO,
