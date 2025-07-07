@@ -26,6 +26,7 @@ val photoFrameWidgetFeatureModule = module {
             GalleryMedia.TypeName.IMAGE,
             GalleryMedia.TypeName.RAW,
             GalleryMedia.TypeName.VECTOR,
+            GalleryMedia.TypeName.LIVE,
         )
     }
 
