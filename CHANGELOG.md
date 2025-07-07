@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- All the Live entries, including short videos previously identified as Lives, 
+  are now presented in the enhanced live photo viewer
+- Live entries are now shown when picking images for another app
+- Live entries can now be shown in a [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
+- When sharing or downloading Lives, the image file is now returned
+
 ## [1.37.1] - 2025-06-04
 
 ### Fixed
