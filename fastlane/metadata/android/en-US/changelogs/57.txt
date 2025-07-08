@@ -1,7 +1,0 @@
-Full: https://radiokot.com.ua/pp-changes
-
-Fixed:
-- Not playing some Samsung live photos
-
-Changed:
-- Updated the video player library. If you have playback problems, consider checking out this version

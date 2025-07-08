@@ -1,0 +1,6 @@
+Full: https://radiokot.com.ua/pp-changes
+
+- All the Live entries, including short videos previously identified as Lives, are now presented in the enhanced live photo viewer
+- Live entries are now shown when picking images for another app
+- Live entries can now be shown in a Photo frame widget (as still images, of course)
+- When sharing or downloading Lives, the image file is now returned
