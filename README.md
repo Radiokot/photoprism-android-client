@@ -15,18 +15,19 @@ This Android app brings a convenient mobile gallery experience for [PhotoPrism](
 
 It does not support all the official web app functionality, but nevertheless has plenty of useful features:
 - Sending photos and videos to Gmail, Telegram or any other app
-- Grouping the content by days and months
+- Content timeline with 5 grid size options, grouped by days and months
 - Timeline scroll that lets you quickly jump to a specific month
 - [Configurable search](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-search-the-library)
 - [Search bookmarks](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-use-search-bookmarks) that let you save search configurations and apply them later
 - Enhanced live photo viewer, which works best with Samsung and Apple shots
-- Full-screen slideshow with configurable speed and video autoplay
+- Full-screen slideshow with 5 speed options
 - Deleting items without archiving them first
 - Importing photos and videos trough sharing
-- Endless session without the need to re-enter the password
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
+- Endless session without the need to re-enter the password
 - Support of [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F), [HTTP basic auth](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#examples-of-valid-urls) and [SSO](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#sso) like Authelia, Cloudflare Access, etc.
-- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now. [Install through APK](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
+- Basic TV compatibility that lets you browser the timeline with a remote-control
+  (Not available in Google Play on TV, [install as APK](https://github.com/Radiokot/photoprism-android-client/issues/66#issuecomment-1667426238))
 - ⭐ Extensions:
   - [Memories](https://github.com/Radiokot/photoprism-android-client/wiki/Memories-extension) – get a daily collection of photos and videos from the same day in past years
   - [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension) – see random photos from your library on the home screen
