@@ -1,18 +1,19 @@
 This app brings a convenient mobile gallery experience for PhotoPrism.
 It does not support all the official web app functionality, but nevertheless has plenty of useful features:
 - Sending photos and videos to Gmail, Telegram or any other app
-- Grouping the content by days and months
+- Content timeline with 5 grid size options, grouped by days and months
 - Timeline scroll that lets you quickly jump to a specific month
 - Configurable search
 - Search bookmarks that let you save search configurations and apply them later
 - Enhanced live photo viewer, which works best with Samsung and Apple shots
-- Full-screen slideshow with configurable speed and video autoplay
+- Full-screen slideshow with 5 speed options
 - Deleting items without archiving them first
 - Importing photos and videos trough sharing
-- Endless session without the need to re-enter the password
 - Connection to both private and public libraries
-- Support of mTLS (mutual TLS), HTTP basic auth and SSO like Authelia, Cloudflare Access, etc.
-- TV compatibility to easily browse your library with a remote-control (Search is only available with a mouse for now)
+- Endless session without the need to re-enter the password
+- Support for mTLS (mutual TLS), HTTP basic auth and SSO like Authelia, Cloudflare Access, etc.
+- Basic TV compatibility that lets you browse the timeline with a remote-control
+  (Not available in Google Play on TV, install as APK)
 - ⭐ Extensions:
   - Memories – get a daily collection of photos and videos from the same day in past years
   - Photo frame widget – see random photos from your library on the home screen
