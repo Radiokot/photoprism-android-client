@@ -113,12 +113,13 @@ class UpdateMemoriesWorker(
                 }
             }
             .map { Result.success() }
-            .doOnError {
-                log.error(it) {
+            .onErrorReturn { error ->
+                log.error(error) {
                     "createWork(): error_occurred"
                 }
+
+                Result.retry()
             }
-            .onErrorReturnItem(Result.retry())
     }
 
     data class Status(

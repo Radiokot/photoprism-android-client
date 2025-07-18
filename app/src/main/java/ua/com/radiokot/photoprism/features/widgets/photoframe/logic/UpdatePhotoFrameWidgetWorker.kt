@@ -80,11 +80,11 @@ class UpdatePhotoFrameWidgetWorker(
             }
             .onErrorReturn { error ->
                 log.error(error) {
-                    "error_occurred:" +
+                    "createWork(): error_occurred:" +
                             "\nwidgetId=$widgetId"
                 }
 
-                Result.failure()
+                Result.retry()
             }
     }
 

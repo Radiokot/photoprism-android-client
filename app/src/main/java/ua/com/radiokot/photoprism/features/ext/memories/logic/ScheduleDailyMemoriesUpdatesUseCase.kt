@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.memories.logic
 
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -25,7 +27,12 @@ class ScheduleDailyMemoriesUpdatesUseCase(
     }
 
     private val constraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiredNetworkRequest(
+            networkRequest = NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build(),
+            networkType = NetworkType.CONNECTED,
+        )
         .build()
 
     private val workRequest = PeriodicWorkRequestBuilder<UpdateMemoriesWorker>(2, TimeUnit.HOURS)
