@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.env.data.model.EnvAuth
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.data.storage.EnvSessionHolder
 import ua.com.radiokot.photoprism.env.data.storage.KoinScopeEnvSessionHolder
+import ua.com.radiokot.photoprism.features.envconnection.data.storage.EncryptedSharedPreferencesRemovalMigration
 import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvAuthPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.envconnection.data.storage.EnvSessionPersistenceOnPrefs
 import ua.com.radiokot.photoprism.features.envconnection.logic.ConnectToEnvUseCase
@@ -32,7 +33,15 @@ val envConnectionFeatureModule = module {
         androidApplication().getSharedPreferences(
             "env",
             Context.MODE_PRIVATE,
-        )
+        ).also { envPreferences ->
+            val encryptedSharedPreferencesRemovalMigration =
+                EncryptedSharedPreferencesRemovalMigration(
+                    context = get(),
+                )
+            if (encryptedSharedPreferencesRemovalMigration.isApplicable) {
+                encryptedSharedPreferencesRemovalMigration.apply(envPreferences)
+            }
+        }
     } bind SharedPreferences::class
 
     single<ObjectPersistence<EnvSession>>(_q<EnvSession>()) {

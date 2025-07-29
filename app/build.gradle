@@ -185,7 +185,9 @@ dependencies {
     //noinspection KaptUsageInsteadOfKsp
     kapt "androidx.room:room-compiler:$room_version"
 
+    // To be removed after a while together with EncryptedSharedPreferencesRemovalMigration
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+
     implementation 'androidx.browser:browser:1.8.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
     implementation 'com.github.Radiokot:offline-license-key:1.0.0'
