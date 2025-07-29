@@ -9,28 +9,13 @@ import ua.com.radiokot.photoprism.base.data.storage.ObjectPersistenceOnPrefs
 import ua.com.radiokot.photoprism.di.JsonObjectMapper
 import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
-import ua.com.radiokot.photoprism.extension.basicAuth
-import ua.com.radiokot.photoprism.extension.checkNotNull
-import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
-import ua.com.radiokot.photoprism.extension.withMaskedCredentials
 
 class EnvSessionPersistenceOnPrefs(
     key: String,
     preferences: SharedPreferences,
     jsonObjectMapper: JsonObjectMapper,
 ) : ObjectPersistence<EnvSession> {
-    private val log = kLogger("EnvSessionPersistenceSP")
-
-    private val v1Persistence =
-        ObjectPersistenceOnPrefs.forType<StoredEnvSession>(key, preferences, jsonObjectMapper)
-
-    private val v2Persistence =
-        ObjectPersistenceOnPrefs.forType<StoredEnvSessionV2>(
-            key + 2,
-            preferences,
-            jsonObjectMapper
-        )
 
     private val v3Persistence =
         ObjectPersistenceOnPrefs.forType<StoredEnvSessionV3>(
@@ -40,29 +25,8 @@ class EnvSessionPersistenceOnPrefs(
         )
 
     private val underlyingPersistence: ObjectPersistenceOnPrefs<StoredEnvSessionV3> by lazy {
-        migrate()
+        // Add migration here in the future.
         v3Persistence
-    }
-
-    private fun migrate() {
-        try {
-            v1Persistence.loadItem()
-                ?.also { storedV1 ->
-                    v2Persistence.saveItem(storedV1.toV2())
-                    v1Persistence.clear()
-
-                    log.debug { "migrate(): migrated_from_1_to_2" }
-                }
-            v2Persistence.loadItem()
-                ?.also { storedV2 ->
-                    v3Persistence.saveItem(storedV2.toV3())
-                    v2Persistence.clear()
-
-                    log.debug { "migrate(): migrated_from_2_to_3" }
-                }
-        } catch (e: Exception) {
-            log.error(e) { "migrate(): migration_failed" }
-        }
     }
 
     override fun loadItem(): EnvSession? = tryOrNull {
@@ -77,60 +41,6 @@ class EnvSessionPersistenceOnPrefs(
 
     override fun clear() =
         underlyingPersistence.clear()
-
-    private class StoredEnvSession
-    @JsonCreator
-    constructor(
-        @JsonProperty("a")
-        val apiUrl: String,
-        @JsonProperty("crt")
-        val clientCertificateAlias: String?,
-        @JsonProperty("i")
-        val id: String,
-        @JsonProperty("pt")
-        val previewToken: String,
-        @JsonProperty("dt")
-        val downloadToken: String,
-    ) {
-        fun toV2() = StoredEnvSessionV2(
-            id = id,
-            rootUrl = apiUrl.substringBeforeLast(delimiter = "api/", missingDelimiterValue = "")
-                .checkNotNull {
-                    "How come there is no 'api/' in the V1 apiUrl?"
-                },
-            clientCertificateAlias = clientCertificateAlias,
-            previewToken = previewToken,
-            downloadToken = downloadToken,
-        )
-    }
-
-    private class StoredEnvSessionV2
-    @JsonCreator
-    constructor(
-        @JsonProperty("r")
-        val rootUrl: String,
-        @JsonProperty("c")
-        val clientCertificateAlias: String?,
-        @JsonProperty("i")
-        val id: String,
-        @JsonProperty("pt")
-        val previewToken: String,
-        @JsonProperty("dt")
-        val downloadToken: String,
-    ) {
-        fun toV3(): StoredEnvSessionV3 {
-            val rootHttpUrl = rootUrl.toHttpUrl()
-
-            return StoredEnvSessionV3(
-                id = id,
-                rootUrl = rootHttpUrl.withMaskedCredentials().toString(),
-                clientCertificateAlias = clientCertificateAlias,
-                httpAuth = rootHttpUrl.basicAuth,
-                previewToken = previewToken,
-                downloadToken = downloadToken,
-            )
-        }
-    }
 
     private class StoredEnvSessionV3
     @JsonCreator
