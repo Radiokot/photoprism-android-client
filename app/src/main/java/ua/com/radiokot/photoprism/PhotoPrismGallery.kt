@@ -50,7 +50,9 @@ import java.util.Locale
 import kotlin.concurrent.thread
 
 class PhotoPrismGallery : Application() {
-    private val log = kLogger("App")
+    private val log by lazy {
+        kLogger("App")
+    }
 
     override fun onCreate() {
         super.onCreate()
