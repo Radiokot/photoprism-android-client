@@ -1,10 +1,7 @@
 package ua.com.radiokot.photoprism.features.envconnection.di
 
+import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
-import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme
-import androidx.security.crypto.MasterKey
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier._q
@@ -32,14 +29,10 @@ val envConnectionFeatureModule = module {
     includes(envModule)
 
     single(named(AUTH_PREFERENCES)) {
-        EncryptedSharedPreferences.create(
-            get(),
+        // TODO migrate without the dependency?
+        androidApplication().getSharedPreferences(
             "auth",
-            MasterKey.Builder(get(), "auth")
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build(),
-            PrefKeyEncryptionScheme.AES256_SIV,
-            PrefValueEncryptionScheme.AES256_GCM,
+            Context.MODE_PRIVATE,
         )
     } bind SharedPreferences::class
 
