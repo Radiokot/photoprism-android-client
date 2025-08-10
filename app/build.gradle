@@ -12,11 +12,14 @@ def fileProviderAuthority = ""
 
 android {
     namespace "ua.com.radiokot.photoprism"
+
+    //noinspection GradleDependency
     compileSdk 35
 
     defaultConfig {
-        minSdk 21
+        //noinspection OldTargetApi
         targetSdk 35
+        minSdk 21
 
         applicationId "ua.com.radiokot.photoprism"
         versionCode 58
@@ -103,9 +106,8 @@ android {
     }
 
     kotlinOptions {
+        //noinspection GrDeprecatedAPIUsage
         jvmTarget = "17"
-        languageVersion = kotlin_version
-        apiVersion = kotlin_version
     }
 
     buildFeatures {
