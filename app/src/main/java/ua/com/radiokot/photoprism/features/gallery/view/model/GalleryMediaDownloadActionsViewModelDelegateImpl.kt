@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawDownloadMode
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
@@ -58,7 +59,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
         fun doDownload() {
             downloadFiles(
                 filesAndDestinations = media.map {
-                    val mediaFile = it.originalFile
+                    val mediaFile = it.fileForDownload
                     mediaFile to getExternalDownloadDestination(mediaFile)
                 },
                 notifyMediaScanner = true,
@@ -93,7 +94,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
         onDownloadEnqueued: (SendableFile) -> Unit
     ) {
         fun doEnqueue() {
-            val file = media.originalFile
+            val file = media.fileForDownload
             val destination = getExternalDownloadDestination(file)
 
             backgroundMediaFileDownloadManager.enqueue(
@@ -161,20 +162,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
 
         downloadFiles(
             filesAndDestinations = media.map {
-                val mediaFile = when (it.media) {
-                    is GalleryMedia.TypeData.Raw ->
-                        when (galleryPreferences.rawSharingMode.value!!) {
-                            RawSharingMode.ORIGINAL ->
-                                it.originalFile
-
-                            RawSharingMode.COMPATIBLE_JPEG ->
-                                it.mainFile
-                        }
-
-                    else ->
-                        it.originalFile
-                }
-
+                val mediaFile = it.fileForSharing
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
             notifyMediaScanner = false,
@@ -193,7 +181,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
     ) {
         downloadFiles(
             filesAndDestinations = media.map {
-                val mediaFile = it.originalFile
+                val mediaFile = it.fileForSharing
                 mediaFile to getInternalDownloadDestination(mediaFile)
             },
             notifyMediaScanner = false,
@@ -292,10 +280,10 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
                         downloadProgressState.onNext(
                             DownloadProgressViewModel.State.Running(
                                 percent =
-                                if (progress.percent < 0)
-                                    -1
-                                else
-                                    progress.percent.roundToInt().coerceAtLeast(1),
+                                    if (progress.percent < 0)
+                                        -1
+                                    else
+                                        progress.percent.roundToInt().coerceAtLeast(1),
                                 currentDownloadNumber = currentDownloadIndex + 1,
                                 downloadsCount = filesAndDestinations.size,
                             )
@@ -354,7 +342,7 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
                         "There must be the separate download folder name if it is enabled"
                     }
                 )
-            } else{
+            } else {
                 externalDownloadsDir
             }
 
@@ -393,4 +381,34 @@ class GalleryMediaDownloadActionsViewModelDelegateImpl(
             internalDownloadsDir.also(File::mkdirs),
             "download_${file.uid}"
         )
+
+    private val GalleryMedia.fileForDownload: GalleryMedia.File
+        get() = when (media) {
+            is GalleryMedia.TypeData.Raw ->
+                when (downloadPreferences.rawDownloadMode.value!!) {
+                    RawDownloadMode.ORIGINAL ->
+                        originalFile
+
+                    RawDownloadMode.COMPATIBLE_JPEG ->
+                        mainFile
+                }
+
+            else ->
+                originalFile
+        }
+
+    private val GalleryMedia.fileForSharing: GalleryMedia.File
+        get() = when (media) {
+            is GalleryMedia.TypeData.Raw ->
+                when (galleryPreferences.rawSharingMode.value!!) {
+                    RawSharingMode.ORIGINAL ->
+                        originalFile
+
+                    RawSharingMode.COMPATIBLE_JPEG ->
+                        mainFile
+                }
+
+            else ->
+                originalFile
+        }
 }

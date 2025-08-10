@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import android.content.SharedPreferences
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawDownloadMode
 import ua.com.radiokot.photoprism.util.booleanPreferenceSubject
 import ua.com.radiokot.photoprism.util.stringifyPreferenceSubject
 
@@ -22,5 +23,14 @@ class DownloadPreferencesOnPrefs(
             defaultValue = "PhotoPrism",
             stringSerializer = String::toString,
             stringDeserializer = String::toString,
+        )
+
+    override val rawDownloadMode: BehaviorSubject<RawDownloadMode> =
+        stringifyPreferenceSubject(
+            preferences = preferences,
+            key = "download_raw_mode",
+            defaultValue = RawDownloadMode.ORIGINAL,
+            stringSerializer = RawDownloadMode::name,
+            stringDeserializer = RawDownloadMode::valueOf,
         )
 }
