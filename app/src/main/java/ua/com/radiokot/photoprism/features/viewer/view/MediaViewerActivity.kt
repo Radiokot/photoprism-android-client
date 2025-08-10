@@ -38,6 +38,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.listeners.EventHook
 import com.mikepenz.fastadapter.listeners.addClickListener
 import org.koin.android.ext.android.inject
@@ -54,6 +55,7 @@ import ua.com.radiokot.photoprism.extension.fadeVisibility
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.recyclerView
+import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -263,7 +265,8 @@ class MediaViewerActivity : BaseActivity() {
 
         adapter = fastAdapter
 
-        recyclerView.addOnScrollListener(ViewerEndlessScrollListener(
+        recyclerView.addOnScrollListener(
+            ViewerEndlessScrollListener(
             recyclerView = recyclerView,
             isLoadingLiveData = viewModel.isLoading,
             visibleThreshold = 6,
@@ -699,9 +702,16 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        viewModel.itemsList.observe(this) {
-            if (it != null) {
-                viewerPagesAdapter.setNewList(it)
+        val diffCallback = MediaViewerPageDiffCallback()
+        viewModel.itemsList.observe(this) { items ->
+            if (items != null) {
+                FastAdapterDiffUtil.setBetter(
+                    recyclerView = view.viewPager.recyclerView,
+                    adapter = viewerPagesAdapter,
+                    items = items,
+                    callback = diffCallback,
+                    detectMoves = false,
+                )
             }
         }
 

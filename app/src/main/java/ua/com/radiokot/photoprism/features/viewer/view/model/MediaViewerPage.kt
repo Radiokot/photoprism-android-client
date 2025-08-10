@@ -9,11 +9,13 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeRe
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
 
+// MediaViewerPageDiffCallback must be updated when adding new page types.
 sealed class MediaViewerPage(
     val thumbnailUrl: String,
     val source: GalleryMedia?,
 ) : AbstractItem<MediaViewerPageViewHolder<out MediaViewerPage>>() {
 
+    // Used in MediaViewerPageDiffCallback for item equality.
     override var identifier: Long
         get() = (thumbnailUrl + type).hashCode().toLong()
         set(_) = error("Don't override my value")

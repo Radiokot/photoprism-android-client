@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.net.Uri
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -20,7 +21,7 @@ class VideoViewerPage(
     thumbnailUrl: String,
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
-    val previewUri: Uri = Uri.parse(previewUrl)
+    val previewUri: Uri = previewUrl.toUri()
     val mediaId: String = identifier.toString()
 
     override val type: Int

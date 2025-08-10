@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Resetting photo zoom in the media viewer when setting or unsetting the photo favorite or private
+
 ### Removed
 
 - Redundant encryption of the stored credentials and library connection parameters.
