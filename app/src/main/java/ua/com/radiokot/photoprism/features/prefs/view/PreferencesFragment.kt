@@ -50,6 +50,7 @@ import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivation
 import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPreferencesFragment
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
+import ua.com.radiokot.photoprism.features.gallery.data.model.RawDownloadMode
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
@@ -265,6 +266,17 @@ class PreferencesFragment :
                 } else {
                     false
                 }
+            }
+        }
+
+        with(requirePreference(R.string.pk_download_raw_mode)) {
+            this as ListPreference
+            entries = resources.getStringArray(R.array.raw_download_mode_array)
+            entryValues = RawDownloadMode.values().map(RawDownloadMode::name).toTypedArray()
+            value = downloadPreferences.rawDownloadMode.value!!.name
+            setOnPreferenceChangeListener { _, newValue ->
+                downloadPreferences.rawDownloadMode.onNext(RawDownloadMode.valueOf(newValue as String))
+                true
             }
         }
 

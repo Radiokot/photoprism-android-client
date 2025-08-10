@@ -85,6 +85,13 @@
             app:summary="***"
             app:title="@string/download_separate_folder_name_preference" />
 
+        <ListPreference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_download_raw_mode"
+            app:persistent="false"
+            app:summary="%1$s"
+            app:title="@string/raw_download_preference" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

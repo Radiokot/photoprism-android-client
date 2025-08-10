@@ -265,11 +265,18 @@
     <string name="calendar">Kalendář</string>
     <string name="failed_to_load_calendar">Nepodařilo se načíst kalendář</string>
     <string name="nothing_found">Nic nenalezeno</string>
+    <string name="raw_original">Původní</string>
+    <string name="raw_compatible_jpeg_if_present">Kompatibilní JPEG, pokud je přítomen</string>
     <string name="raw_sharing_preference">Sdílet RAW jako</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Kompatibilní JPEG, pokud je přítomen</item>
-        <item>Původní</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Odstranit z alba</string>
     <string name="download_preferences">Stažené soubory</string>
@@ -287,5 +294,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Koho zobrazovat ve vzpomínkách a koho ne</string>
     <string name="extension_catalog">Katalog rozšíření</string>
+    <string name="raw_download_preference">Stahovat RAW jako</string>
 
 </resources>

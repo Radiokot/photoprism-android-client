@@ -265,10 +265,17 @@
     <string name="failed_to_load_calendar">Αποτυχία φόρτωσης ημερολογίου</string>
     <string name="nothing_found">Δεν βρέθηκε τίποτα</string>
     <string name="raw_sharing_preference">Μοιράζεστε RAW ως</string>
+    <string name="raw_original">Πρωτότυπο</string>
+    <string name="raw_compatible_jpeg_if_present">Συμβατό JPEG, εάν υπάρχει</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Συμβατό JPEG, εάν υπάρχει</item>
-        <item>Πρωτότυπο</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Αφαίρεση από το άλμπουμ</string>
     <string name="download_preferences">Λήψεις</string>
@@ -286,5 +293,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Ποιον να εμφανίζετε στις αναμνήσεις και ποιον – όχι</string>
     <string name="extension_catalog">Κατάλογος επεκτάσεων</string>
+    <string name="raw_download_preference">Λήψη RAW ως</string>
 
 </resources>

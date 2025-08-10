@@ -263,10 +263,17 @@
     <string name="failed_to_load_calendar">Kalender konnte nicht geladen werden</string>
     <string name="nothing_found">Nichts gefunden</string>
     <string name="raw_sharing_preference">RAW teilen als</string>
+    <string name="raw_original">Original</string>
+    <string name="raw_compatible_jpeg_if_present">Kompatibles JPEG, wenn vorhanden</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Kompatibles JPEG, wenn vorhanden</item>
-        <item>Original</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Aus dem Album entfernen</string>
     <string name="download_preferences">Downloads</string>
@@ -284,5 +291,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Wen man in den Erinnerungen anzeigen sollte und wen nicht</string>
     <string name="extension_catalog">Erweiterungskatalog</string>
+    <string name="raw_download_preference">RAW herunterladen als</string>
 
 </resources>

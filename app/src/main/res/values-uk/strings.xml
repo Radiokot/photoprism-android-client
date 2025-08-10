@@ -265,10 +265,17 @@
     <string name="failed_to_load_calendar">Не вдалося завантажити календар</string>
     <string name="nothing_found">Нічого не знайдено</string>
     <string name="raw_sharing_preference">Відправляти RAW як</string>
+    <string name="raw_original">Оригінал</string>
+    <string name="raw_compatible_jpeg_if_present">Сумісний JPEG, якщо є</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Сумісний JPEG, якщо є</item>
-        <item>Оригінал</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Видалити з альбому</string>
     <string name="download_preferences">Завантаження</string>
@@ -286,5 +293,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Кого показувати у спогадах, а кого – ні</string>
     <string name="extension_catalog">Каталог розширень</string>
+    <string name="raw_download_preference">Завантажувати RAW як</string>
 
 </resources>

@@ -3,6 +3,7 @@
     <string name="pk_library" translatable="false">library</string>
     <string name="pk_download_use_separate_folder" translatable="false">download_use_separate_folder</string>
     <string name="pk_download_separate_folder_name" translatable="false">download_separate_folder_name</string>
+    <string name="pk_download_raw_mode" translatable="false">download_raw_mode</string>
     <string name="pk_report_issue" translatable="false">report_issue</string>
     <string name="pk_app_version" translatable="false">app_version</string>
     <string name="pk_export_bookmarks" translatable="false">export_bookmarks</string>

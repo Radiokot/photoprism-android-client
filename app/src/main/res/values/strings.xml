@@ -269,11 +269,18 @@
     <string name="calendar">Calendar</string>
     <string name="failed_to_load_calendar">Failed to load calendar</string>
     <string name="nothing_found">Nothing found</string>
+    <string name="raw_original">Original</string>
+    <string name="raw_compatible_jpeg_if_present">Compatible JPEG, if present</string>
     <string name="raw_sharing_preference">Share RAW as</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Compatible JPEG, if present</item>
-        <item>Original</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Remove from the album</string>
     <string name="download_preferences">Downloads</string>
@@ -291,4 +298,5 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Who should be shown in the memories and who shouldn\'t</string>
     <string name="extension_catalog">Extension catalog</string>
+    <string name="raw_download_preference">Download RAW as</string>
 </resources>

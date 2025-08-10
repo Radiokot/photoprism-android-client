@@ -265,10 +265,17 @@
     <string name="failed_to_load_calendar">Takvim yüklenemedi</string>
     <string name="nothing_found">Hiçbir şey bulunamadı</string>
     <string name="raw_sharing_preference">RAW olarak paylaşmak</string>
+    <string name="raw_original">Orijinal</string>
+    <string name="raw_compatible_jpeg_if_present">Mevcutsa uyumlu JPEG</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>Mevcutsa uyumlu JPEG</item>
-        <item>Orijinal</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Albümden kaldır</string>
     <string name="download_preferences">İndirilenler</string>
@@ -286,5 +293,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Anıları kim göstermeli ve kim – göstermemeli</string>
     <string name="extension_catalog">Eklentiler kataloğu</string>
+    <string name="raw_download_preference">RAW olarak indirmek</string>
 
 </resources>

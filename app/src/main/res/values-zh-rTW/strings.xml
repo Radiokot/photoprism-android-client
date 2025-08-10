@@ -265,10 +265,17 @@
     <string name="failed_to_load_calendar">日曆加載失敗</string>
     <string name="nothing_found">找不到任何內容</string>
     <string name="raw_sharing_preference">分享 RAW 作為</string>
+    <string name="raw_original">原始</string>
+    <string name="raw_compatible_jpeg_if_present">兼容 JPEG（如有）</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>兼容 JPEG（如有）</item>
-        <item>原始</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">從相簿中移除</string>
     <string name="download_preferences">下載</string>
@@ -286,5 +293,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">記憶中該顯示誰，不該顯示誰</string>
     <string name="extension_catalog">擴展目錄</string>
+    <string name="raw_download_preference">下載 RAW 為</string>
 
 </resources>

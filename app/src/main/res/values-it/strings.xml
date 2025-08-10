@@ -265,10 +265,17 @@
     <string name="failed_to_load_calendar">Caricamento del calendario non riuscito</string>
     <string name="nothing_found">Nessun risultato</string>
     <string name="raw_sharing_preference">Condividere RAW come</string>
+    <string name="raw_original">Originale</string>
+    <string name="raw_compatible_jpeg_if_present">JPEG compatibile, se presente</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
-        <item>JPEG compatibile, se presente</item>
-        <item>Originale</item>
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <!-- Must be aligned with RawDownloadMode enum -->
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
     </string-array>
     <string name="remove_from_album">Rimuovi dall\'album</string>    <string name="download_preferences">Download</string>
     <string name="download_use_separate_folder_preference">Utilizzare una cartella separata</string>
@@ -285,5 +292,6 @@
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Chi mostrare nei ricordi e chi – no</string>
     <string name="extension_catalog">Catalogo delle estensioni</string>
+    <string name="raw_download_preference">Scaricare RAW come</string>
 
 </resources>

@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Resetting photo zoom in the media viewer when setting or unsetting the photo favorite or private
 
+### Added
+
+- Ability to change the download behavior for RAWs in the preferences:
+  you can choose between downloading the original file or a compatible JPEG, if available
+
 ### Removed
 
 - Redundant encryption of the stored credentials and library connection parameters.
