@@ -165,7 +165,7 @@
         <item>大的</item>
         <item>巨大的</item>
     </string-array>
-    <string name="language_preference">語言</string>
+    <string name="language_preference">语言</string>
     <string name="paste">粘贴</string>
     <string name="tfa_code_dialog_title">验证码</string>
     <string name="tfa_code_dialog_message">输入或粘贴来自身份验证器的代码</string>
