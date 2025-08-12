@@ -1,6 +1,7 @@
 <resources>
     <!-- Greek -->
     <string name="language_code">el</string>
+    <string name="script_code" />
     <string name="app_name">PhotoPrism Γκαλερί</string>
 
     <string name="media_type_image">εικόνα</string>

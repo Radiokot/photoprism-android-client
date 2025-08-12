@@ -16,9 +16,9 @@ class LocalizedContextFactory(
 ) {
     private fun getLocaleOfStrings(resources: Resources): Locale {
         val configurationLocales = ConfigurationCompat.getLocales(resources.configuration)
-        val stringsLanguageCode = resources.getString(R.string.language_code)
         return Locale.Builder()
-            .setLanguage(stringsLanguageCode)
+            .setLanguage(resources.getString(R.string.language_code))
+            .setScript(resources.getString(R.string.script_code).takeUnless(String::isEmpty))
             .setRegion(configurationLocales.get(0).checkNotNull().country)
             .build()
     }

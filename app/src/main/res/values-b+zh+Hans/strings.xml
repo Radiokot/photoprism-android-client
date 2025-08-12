@@ -1,6 +1,7 @@
 <resources>
     <!-- Chinese Han Simplified -->
     <string name="language_code">zh</string>
+    <string name="script_code">Hans</string>
     <string name="app_name">PhotoPrism 画廊</string>
 
     <string name="media_type_image">图片</string>

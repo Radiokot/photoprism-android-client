@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to change the download behavior for RAWs in the preferences:
   you can choose between downloading the original file or a compatible JPEG, if available
 
+### Changed
+
+- Switched to a script-based Traditional/Simplified Chinese selection,
+  which should make it more accurate
+
 ### Removed
 
 - Redundant encryption of the stored credentials and library connection parameters.

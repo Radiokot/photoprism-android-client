@@ -2,6 +2,7 @@
 <resources>
     <!-- Czech -->
     <string name="language_code">cs</string>
+    <string name="script_code" />
     <string name="app_name">PhotoPrism Galerie</string>
 
     <string name="media_type_image">Obrázek</string>

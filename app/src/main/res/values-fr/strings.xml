@@ -2,6 +2,7 @@
 <resources>
     <!-- French -->
     <string name="language_code">fr</string>
+    <string name="script_code" />
     <string name="app_name">Galerie PhotoPrism</string>
 
     <string name="media_type_image">Image</string>

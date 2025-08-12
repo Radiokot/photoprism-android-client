@@ -12,6 +12,6 @@
     <locale android:name="ru" /> <!-- Russian -->
     <locale android:name="tr" /> <!-- Turkish -->
     <locale android:name="uk" /> <!-- Ukrainian -->
-    <locale android:name="zh" /> <!-- Chinese Han Simplified -->
-    <locale android:name="zh-Hant" /> <!-- Chinese Han Traditional. To be a separate item, "-Hant" is used instead of "-rTW" -->
+    <locale android:name="zh-Hans" /> <!-- Chinese Han Simplified, values-b+zh+Hans -->
+    <locale android:name="zh-Hant" /> <!-- Chinese Han Traditional, values-b+zh+Hant -->
 </locale-config>

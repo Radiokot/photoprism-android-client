@@ -2,6 +2,7 @@
 <resources>
     <!-- Spanish -->
     <string name="language_code">es</string>
+    <string name="script_code" />
     <string name="app_name">PhotoPrism Galería</string>
 
     <string name="media_type_image">Imagen</string>
