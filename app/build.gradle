@@ -13,17 +13,16 @@ def fileProviderAuthority = ""
 android {
     namespace "ua.com.radiokot.photoprism"
 
-    //noinspection GradleDependency
-    compileSdk 35
-
     defaultConfig {
         //noinspection OldTargetApi
         targetSdk 35
+        //noinspection GradleDependency
+        compileSdk 35
         minSdk 21
 
         applicationId "ua.com.radiokot.photoprism"
-        versionCode 58
-        versionName "1.38.0"
+        versionCode 59
+        versionName "1.39.0"
 
         // Must be aligned with @xml/locale_config and values-*.
         resConfigs "en", "cs", "de", "el", "es", "fr", "it", "ru", "tr", "uk",
