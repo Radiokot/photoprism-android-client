@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- German -->
+<resources> <!-- German -->
     <string name="language_code">de</string>
     <string name="script_code" />
     <string name="app_name">PhotoPrism Galerie</string>
 
+
     <string name="media_type_image">Bild</string>
+
     <string name="media_type_animated">Animation</string>
     <string name="media_type_live">Live Photo</string>
     <string name="media_type_video">Video</string>
     <string name="media_type_vector">Vector</string>
-    <string name="media_type_sidecar">Filialdatei</string>
+    <string name="media_type_sidecar">Sidecar-Datei</string>
     <string name="media_type_text">Text</string>
-    <string name="media_type_other">Andere</string>
-    <string name="media_type_unknown">Unbekannt</string>
-    <string name="file_thumbnail">Miniaturansicht</string>
+    <string name="media_type_other">Andere Datei</string>
+    <string name="media_type_unknown">Unbekannter Dateityp</string>
+    <string name="file_thumbnail">Vorschaubild</string>
     <string name="downloading_progress">Herunterladen…</string>
     <string name="cancel">Abbrechen</string>
     <string name="failed_to_download_file">Herunterladen fehlgeschlagen</string>
@@ -25,16 +26,16 @@
     <string name="download">Herunterladen</string>
     <string name="open_with">Öffnen mit</string>
     <string name="add_to_favorites">Zu Favoriten hinzufügen</string>
-    <string name="remove_from_favorites">Von Favoriten entfernen</string>
-    <string name="failed_to_load_the_preview">Vorschau laden fehlgeschlagen</string>
-    <string name="failed_to_load_the_thumbnail">Miniaturansicht laden fehlgeschlagen</string>
+    <string name="remove_from_favorites">Aus Favoriten entfernen</string>
+    <string name="failed_to_load_the_preview">Konnte Vorschau nicht laden</string>
+    <string name="failed_to_load_the_thumbnail">Konnte Vorschaubild nicht laden</string>
     <string name="today">Heute</string>
     <string name="search_the_library">Durchsuchen</string>
     <string name="use_mouse_to_search_the_library">Durchsuchen (Maus benutzen)</string>
-    <string name="enter_the_query">Suchbegriffe eingeben</string>
+    <string name="enter_the_query">Suchanfrage eingeben</string>
     <string name="media_type">Typ</string>
-    <string name="apply_search">Finden</string>
-    <string name="reset_search">Neue Suche</string>
+    <string name="apply_search">Anwenden</string>
+    <string name="reset_search">Zurücksetzen</string>
     <string name="error_you_have_to_connect_to_library">Zuerst mit einer Sammlung verbinden</string>
     <string name="library_root_url">URL der Sammlung</string>
     <string name="username_optional">Benutzername (optional)</string>
@@ -42,15 +43,15 @@
     <string name="connect_to_a_library">Mit Sammlung verbinden</string>
     <string name="connect">Verbinden</string>
     <string name="template_error_inaccessible_library_url">Kein Zugriff auf Sammlung: %1$s</string>
-    <string name="error_invalid_library_url_format">URL Format ist fehlerhaft. Bitte sicherstellen, dass auch das Protokoll (z.B.: http, https) angegeben ist</string>
+    <string name="error_invalid_library_url_format">URL-Format ist fehlerhaft. Muss auch das Protokoll enthalten</string>
     <string name="error_library_requires_credentials">Sammlung benötigt Zugangsdaten</string>
     <string name="error_invalid_password">Falsches Passwort</string>
     <string name="template_error_failed_to_load_content">Konnte Inhalt nicht laden: %1$s</string>
-    <string name="error_library_not_accessible_try_again">Kein Zugriff auf Sammlung. Bitte Verbindung prüfen und nochmal versuchen</string>
+    <string name="error_library_not_accessible_try_again">Kein Zugriff auf Sammlung. Verbindung prüfen und erneut versuchen</string>
     <string name="try_again">Erneut versuchen</string>
     <string name="load_more">Weitere laden</string>
     <string name="template_started_download_file">Datei wird in Downloads gespeichert: %1$s</string>
-    <string name="error_storage_permission_is_required">Zugriffsberechtigung wird benötigt</string>
+    <string name="error_storage_permission_is_required">Speicherzugriffsberechtigung wird benötigt</string>
     <string name="add_search_bookmark">Lesezeichen hinzufügen</string>
     <string name="edit_search_bookmark">Lesezeichen bearbeiten</string>
     <string name="search_bookmark_name">Titel</string>
@@ -67,13 +68,16 @@
     <string name="client_certificate_optional">Client Zertifikat (optional)</string>
     <string name="clear">Löschen</string>
     <string name="how_to_use_client_certificate">Nutzen von Client Zertifikaten</string>
-    <string name="p12_certificate_guide">1. PKCS12 (.p12) Bundle herunterladen.\n\n2. Bundle öffnen. \"VPN und apps\" wählen.\n\n3. Dann das installierte Zertifikat hier in der App auswählen.</string>
+    <string name="p12_certificate_guide">
+        1. PKCS12 (.p12) Bundle herunterladen.\n\n
+        2. Bundle öffnen und installieren. \"VPN und apps\" wählen.\n\n
+        3. Dann das installierte Zertifikat hier in der App auswählen.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Mehr erfahren</string>
     <string name="preferences">Einstellungen</string>
     <string name="library_preferences">@string/library</string>
     <string name="about">Über</string>
-    <string name="report_an_issue">Fehlerbericht einreichen</string>
+    <string name="report_an_issue">Fehler melden</string>
     <string name="template_error_failed_to_export_bookmarks">Konnte Lesezeichen nicht exportieren: %1$s</string>
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
     <string name="export">Export</string>
@@ -94,22 +98,24 @@
     <string name="albums">Alben</string>
     <string name="loading_albums_progress">@string/loading_data_progress</string>
     <string name="reload_albums">@string/reload</string>
-    <string name="no_albums_found">Kene Alben gefunden</string>
+    <string name="no_albums_found">Keine Alben gefunden</string>
     <string name="clear_selection">Auswahl aufheben</string>
     <string name="done_selecting">Erledigt</string>
     <string name="template_current_of">%1$d von %2$d</string>
     <string name="search_doesnt_fit_allowed_types">Die Suchanfrage entspricht nicht den zulässigen Typen</string>
     <string name="save_file_to_the_storage">Datei speichern</string>
     <string name="share_the_file">Datei teilen</string>
-    <string name="download_is_completed">Herunterladen vollständig</string>
+    <string name="download_is_completed">Herunterladen abgeschlossen</string>
+
+
     <string name="welcome_title">Willkommen</string>
     <string name="template_welcome_text">
         <![CDATA[
-        Bitte beachten: Dies ist keine offizielle App der PhotoPrism Entwickler.
-        Diese App wird von Oleg\u00A0Koretsky (Radiokot) gepflegt, unabhängig vom PhotoPrism Entwickler Team.
+        Bitte beachten: Dies ist keine offizielle App der PhotoPrism-Entwickler.
+        Diese App wird von Oleg\u00A0Koretsky (Radiokot) gepflegt, unabhängig vom PhotoPrism-Team.
         <br><br>
         Sollte ein Problem auftauchen, bitte ein Feedback auf Google Play hinterlassen,
-        <a href="#issue">einen Fehlerbericht einreichen</a>
+        <a href="#issue">den Fehler melden</a>
         oder eine Nachricht an <a href="mailto:%1$s">%1$s</a> senden.
         <br><br>
         Besten Dank!
@@ -117,7 +123,7 @@
     </string>
     <string name="used_open_source_software">Verwendete Open-Source Software</string>
     <string name="user_guides">Handbuch</string>
-    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky und Mitwirkende von GitHub</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Koretsky und Mitwirkende bei GitHub</string>
     <string name="people">Personen</string>
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
@@ -135,18 +141,18 @@
     <string name="failed_to_load_albums">Konnte Alben nicht laden</string>
     <string name="failed_to_load_people">Konnte Personen nicht laden</string>
     <string name="folders">Ordner</string>
-    <string name="show_album_folders_explanation">Verzeichnisse in der Liste der Alben anzeigen</string>
+    <string name="show_album_folders_explanation">Ordner in der Liste der Alben anzeigen</string>
     <string name="files_saved_to_downloads">Dateien wurden in Downloads gespeichert</string>
-    <string name="start_slideshow">Präsentation</string>
+    <string name="start_slideshow">Slideshow</string>
     <string name="slideshow_previous">Vorherige</string>
     <string name="got_it">Verstanden</string>
     <string name="slideshow_guide_got_it">@string/got_it</string>
     <string name="slideshow_next">Nächste</string>
-    <string name="slideshow_guide_show_system_buttons">Zeige System Leisten</string>
-    <string name="slideshow_exit">Präsentation verlassen</string>
-    <string name="slideshow_guide_speed">Die Geschwindigkeit kann in den Einstellungen angepasst werden</string>
+    <string name="slideshow_guide_show_system_buttons">Zeige System-Leisten</string>
+    <string name="slideshow_exit">Slideshow verlassen</string>
+    <string name="slideshow_guide_speed">Die Schnelligkeit kann in den Einstellungen angepasst werden</string>
     <string name="viewing_preferences">Ansicht</string>
-    <string name="slideshow_speed_preference">Präsentationgeschwindigkeit</string>
+    <string name="slideshow_speed_preference">Schnelligkeit der Slideshow</string>
     <string-array name="slideshow_speed_array">
         <!-- Must be aligned with SlideshowSpeed enum -->
         <item>Langsam</item>
@@ -155,7 +161,7 @@
         <item>Schneller</item>
         <item>Schnell</item>
     </string-array>
-    <string name="gallery_item_scale_preference">Größe des Galerieelements</string>
+    <string name="gallery_item_scale_preference">Größe der Galerieelemente</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Winzig</item>
@@ -167,29 +173,29 @@
     <string name="language_preference">Sprache</string>
     <string name="paste">Einfügen</string>
     <string name="tfa_code_dialog_title">Bestätigungscode</string>
-    <string name="tfa_code_dialog_message">Gib den Code aus dem Authenticator ein oder füge ihn ein</string>
+    <string name="tfa_code_dialog_message">Authenticator-Code eingeben oder einfügen</string>
     <string name="tfa_code_dialog_input_hint">Code</string>
     <string name="error_invalid_tfa_code">Ungültiger Bestätigungscode</string>
     <string name="error_session_expired">Die Sitzung ist abgelaufen. Erwägen Sie die Verwendung eines speziellen Passworts für die Galerie</string>
     <string name="memories_notification_new_memories_title">Neue Erinnerungen gefunden</string>
-    <string name="memories_notification_new_memories_text">Erinnere dich an Momente aus der Vergangenheit</string>
+    <string name="memories_notification_new_memories_text">Erinnere dich an vergangene Momente</string>
     <string name="memories_notification_channel_name">@string/extension_memories_title</string>
     <string name="memories_notification_channel_description">Immer wenn neue Erinnerungen gefunden werden</string>
     <string name="extensions_preferences">Erweiterungen</string>
     <string name="extensions_preferences_summary">Erweiterungen für die Galerie</string>
     <string name="archive_action">Archivieren</string>
-    <string name="media_viewer_deleting_confirmation">Diesen Artikel endgültig löschen?</string>
+    <string name="media_viewer_deleting_confirmation">Dieses Element endgültig löschen?</string>
     <string name="extension_store_preference">@string/extension_catalog</string>
     <string name="extension_store_title">@string/extension_catalog</string>
-    <string name="extension_store_item_activated" translatable="false">Activated</string>
-    <string name="extension_store_failed_loading">Erweiterungen konnten nicht geladen werden</string>
+    <string name="extension_store_item_activated">Aktiviert</string>
+    <string name="extension_store_failed_loading">Konnte Erweiterungen nicht laden</string>
     <string name="extension_marketplace_activate_key">Schlüssel aktivieren</string>
-    <string name="activate_key_preference">Aktiviere einen anderen Schlüssel</string>
+    <string name="activate_key_preference">Anderen Schlüssel aktivieren</string>
     <string name="extension_memories_title">Erinnerungen</string>
     <string name="extension_memories_description">Erhalte täglich eine Sammlung von Fotos und Videos vom selben Tag in vergangenen Jahren</string>
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
     <string name="extension_memories_notification_preference">Benachrichtigungen</string>
-    <string name="extension_memories_notification_preference_summary">Sende eine Benachrichtigung, wenn neue Erinnerungen gefunden werden</string>
+    <string name="extension_memories_notification_preference_summary">Benachrichtigen wenn neue Erinnerungen gefunden werden</string>
     <string name="key_activation_input_title">Aktiviere einen Schlüssel</string>
     <string name="key_activation_input_subtitle">Füge den erhaltenen Schlüssel ein, um Erweiterungen zu aktivieren</string>
     <string name="key_activation_input_field_title">Schlüssel</string>
@@ -198,7 +204,7 @@
     <string name="key_activation_error_invalid">Dieser Schlüssel ist ungültig</string>
     <string name="key_activation_error_expired">Dieser Schlüssel ist abgelaufen</string>
     <string name="key_activation_error_no_new_extensions">Dieser Schlüssel fügt keine neuen Erweiterungen hinzu</string>
-    <string name="template_key_activation_error_failed_processing">Verarbeitung des Schlüssels fehlgeschlagen: %1$s</string>
+    <string name="template_key_activation_error_failed_processing">Konnte den Schlüssel nicht verarbeiten: %1$s</string>
     <string name="key_activation_success_title">Schlüssel aktiviert</string>
     <string name="key_activation_success_subtitle">Neue Erweiterungen wurden zur Galerie hinzugefügt 😎</string>
     <string name="key_activation_success_done">Fertig</string>
@@ -206,7 +212,7 @@
     <string name="gallery_deleting_confirmation">Ausgewählte Elemente endgültig löschen?</string>
     <string name="general_preferences">Allgemein</string>
     <string name="import_notification_channel_name">@string/importt</string>
-    <string name="import_notification_channel_description">Fortschritt des Hintergrund Imports</string>
+    <string name="import_notification_channel_description">Fortschritt des Imports im Hintergrund</string>
     <string name="import_notification_progress_title">Dateien werden hochgeladen…</string>
     <string name="import_notification_failed_title">Hochladen fehlgeschlagen</string>
     <string name="import_notification_failed_text">Bitte versuchen Sie es erneut</string>
@@ -216,10 +222,10 @@
     <string name="template_import_files_size">%1$s, %2$.2f MB</string>
     <string name="import_to_be_uploaded">Zum Hochladen</string>
     <string name="import_started_in_background">Im Hintergrund gestartet</string>
-    <string name="import_notifications_permission_rationale">Die Berechtigung zum Posten von Benachrichtigungen ermöglicht zuverlässigen Hintergrundbetrieb des Imports</string>
-    <string name="import_media_permission_rationale">Die Berechtigung zum Zugriff auf Fotos und Videos verhindert das Löschen von Geolokationsdaten aus den Dateien</string>
-    <string name="template_destination_album_selection_create_new">Erstellen von \"%1$s\"</string>
-    <string name="destination_album_selection_enter_album_title">Geben Sie den Albumtitel ein</string>
+    <string name="import_notifications_permission_rationale">Die Berechtigung zum Benachrichtigen ermöglicht zuverlässigen Hintergrundbetrieb des Imports</string>
+    <string name="import_media_permission_rationale">Die Berechtigung zum Zugriff auf Fotos und Videos verhindert das Löschen von Georeferenzen aus Dateien</string>
+    <string name="template_destination_album_selection_create_new">Erstelle \"%1$s\"</string>
+    <string name="destination_album_selection_enter_album_title">Albumtitel eingeben</string>
     <string name="import_albums_not_selected">Nicht ausgewählt</string>
     <string name="photo_frame_widget_name">Bilderrahmen</string>
     <string name="photo_frame_widget_description">Zeigt ein zufälliges Foto, das alle paar Stunden wechselt</string>
@@ -229,30 +235,31 @@
     <string name="photo_frame_widget_configuration_show_date">Datum</string>
     <string name="photo_frame_widget_configuration_show_date_summary">Datum der Aufnahme zeigen</string>
     <string name="extension_photo_frame_widget_name">Bilderrahmen-Widget</string>
-    <string name="extension_photo_frame_widget_description">Zufällige Fotos aus Ihrer Sammlung auf dem Startbildschirm anzeigen</string>
-    <string name="extension_store_item_acquire">Erhalten</string>
+    <string name="extension_photo_frame_widget_description">Zufällige Fotos aus der Sammlung auf dem Startbildschirm anzeigen</string>
+    <string name="extension_store_item_acquire">Erwerben</string>
     <string name="extension_store_disclaimer">
         <![CDATA[
         Galerie-Erweiterungen sind zusätzliche Funktionen der App, die einzeln zu einem kleinen Preis erworben werden können.
+
         Sie werden durch dauerhafte Offline-Lizenzschlüssel aktiviert – keine Konten und Abonnements erforderlich.
         <br/>
-        Erweiterungen sind kostenlos für <a href="#sponsors">Sponsoren</a> und Mitwirkende von GitHub.
+        Erweiterungen sind kostenlos für <a href="#sponsors">Sponsoren</a> und Mitwirkende bei GitHub.
         ]]>
     </string>
     <string name="extension_store_disclaimer_got_it">@string/got_it</string>
-    <string name="menu">Menü</string>
     <string name="no_folders_found">Keine Ordner gefunden</string>
-    <string name="failed_to_load_folders">Ordner konnten nicht geladen werden</string>
+    <string name="failed_to_load_folders">Konnte Ordner nicht laden</string>
+    <string name="menu">Menü</string>
     <string name="sort_preference">Sortierung</string>
-    <string name="sort_order_name">Bezeichnung</string>
-    <string name="sort_order_name_desc">Bezeichnung, absteigend</string>
+    <string name="sort_order_name">Name</string>
+    <string name="sort_order_name_desc">Name, absteigend</string>
     <string name="sort_order_newest_first">Neueste zuerst</string>
     <string name="sort_order_oldest_first">Älteste zuerst</string>
     <string name="sort_order_recently_added">Kürzlich hinzugefügt</string>
     <string name="sort_favorites_first">Favoriten zuerst</string>
     <string name="memory_deleting_confirmation">Diese Erinnerung löschen?</string>
     <string name="live_photos_as_images">Live-Fotos als Bilder</string>
-    <string name="live_photos_as_images_explanation">Nicht animieren JPEG- oder HEIF-Live-Fotos</string>
+    <string name="live_photos_as_images_explanation">JPEG/HEIF-Live-Fotos nicht animieren</string>
     <string name="activated_keys">Aktivierte Schlüssel</string>
     <string name="is_private">Privat</string>
     <string name="add_to_album">Zum Album hinzufügen</string>
@@ -261,11 +268,11 @@
     <string name="preference_enabled">Aktiviert</string>
     <string name="extension_memories_max_entry_count_preference">Maximale Anzahl von Elementen</string>
     <string name="calendar">Kalender</string>
-    <string name="failed_to_load_calendar">Kalender konnte nicht geladen werden</string>
+    <string name="failed_to_load_calendar">Konnte Kalender nicht laden</string>
     <string name="nothing_found">Nichts gefunden</string>
-    <string name="raw_sharing_preference">RAW teilen als</string>
     <string name="raw_original">Original</string>
     <string name="raw_compatible_jpeg_if_present">Kompatibles JPEG, wenn vorhanden</string>
+    <string name="raw_sharing_preference">RAW teilen als</string>
     <string-array name="raw_sharing_mode_array">
         <!-- Must be aligned with RawSharingMode enum -->
         <item>@string/raw_original</item>
@@ -286,12 +293,11 @@
     <string name="key_renewal_current_key_title">Aktueller Schlüssel</string>
     <string name="key_renewal_new_key_title">Neuer Schlüssel</string>
     <string name="key_renewal_activate_new_key">Aktivieren</string>
-    <string name="key_renewal_error_failed">Fehler beim Erneuern des Schlüssels</string>
+    <string name="key_renewal_error_failed">Konnte Schlüssel nicht erneuern</string>
     <string name="key_renewal_error_not_available">Die Erneuerung kann einmal täglich durchgeführt werden. Versuchen Sie es am nächsten Tag erneut</string>
     <string name="key_renewal_title">Schlüssel erneuern</string>
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
-    <string name="extension_memories_people_to_forget_preference_summary">Wen man in den Erinnerungen anzeigen sollte und wen nicht</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Wer in den Erinnerungen gezeigt werden sollte und wer nicht</string>
     <string name="extension_catalog">Erweiterungskatalog</string>
     <string name="raw_download_preference">RAW herunterladen als</string>
-
 </resources>
