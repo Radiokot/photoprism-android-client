@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Inconsistencies in the German translation
+- Inconsistencies in German and Turkish translations
 
 ## [1.39.0] - 2025-08-29
 
