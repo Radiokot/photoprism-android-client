@@ -42,7 +42,7 @@
     <string name="connect">Bağlan</string>
     <string name="template_error_inaccessible_library_url">Kitaplık erişilebilir değil: %1$s</string>
     <string name="error_invalid_library_url_format">URL biçimi yanlış. Protokol içerdiğinden emin ol</string>
-    <string name="error_library_requires_credentials">Library requires credentials</string>
+    <string name="error_library_requires_credentials">Kütüphane kimlik bilgileri gerektiriyor</string>
     <string name="error_invalid_password">Geçersiz şifre</string>
     <string name="template_error_failed_to_load_content">İçerik yüklenemedi: %1$s</string>
     <string name="error_library_not_accessible_try_again">Kitaplık erişilebilir değil. İnternetini kontrol et ve tekrar dene</string>
@@ -80,7 +80,7 @@
     <string name="bookmarks_preferences">@string/search_bookmarks</string>
     <string name="export">Dışa aktar</string>
     <string name="export_bookmarks">Yer imlerini dışa aktar</string>
-    <string name="importt">Içeri aktar</string>
+    <string name="importt">İçeri aktar</string>
     <string name="import_bookmarks">Yer imlerini içeri aktar</string>
     <string name="template_error_failed_to_import_bookmarks">Yer imleri içeri aktarılamadı: %1$s</string>
     <string name="template_successfully_imported_search_bookmarks">Başarıyla %1$s</string>
@@ -108,11 +108,11 @@
     <string name="template_welcome_text">
         <![CDATA[
         Lütfen bunun resmi bir PhotoPrism uygulaması olmadığını unutmayın.
-        Oleg\u00A0Koretsky (Radiokot) tarafından sürdürülür ve çekirdek ekiple hiçbir ilişkisi yoktur.
+        Oleg\u00A0Koretsky (Radiokot) tarafından sürdürülüyor ve çekirdek ekiple hiçbir ilişkisi yoktur.
         <br><br>
         Uygulamayla ilgili bir sorun varsa, lütfen Google Play\'de geri bildirim bırakın,
         <a href="#issue">bir hata raporu</a>
-        gönderin veya <a href="mailto:%1$s">%1$s</a> adresine bir mektup gönderin.
+        gönderin veya <a href="mailto:%1$s">%1$s</a> adresine bir posta gönderin.
         <br><br>
         Teşekkür ederim.
         ]]>
@@ -123,7 +123,7 @@
     <string name="people">Kişi</string>
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
-    <string name="no_people_found">Hiç kimse bulunamadı</string>
+    <string name="no_people_found">Kimse bulunamadı</string>
     <string name="reload">Tekrar yükle</string>
     <string name="loading_data_progress">Veri yükleniyor…</string>
     <string name="search_preferences">Arama</string>
@@ -131,8 +131,8 @@
     <string name="show_people_explanation">Arama ekranında kişileri ve yeni yüzleri gösterin</string>
     <string name="show_albums">@string/albums</string>
     <string name="show_albums_explanation">Arama ekranında albümleri göster</string>
-    <string name="see_all_albums">Tüm bakın</string>
-    <string name="see_all_people">Tüm gör</string>
+    <string name="see_all_albums">Tümünü gör</string>
+    <string name="see_all_people">Tümünü gör</string>
     <string name="search">Arama</string>
     <string name="failed_to_load_albums">Albümler yüklenemedi</string>
     <string name="failed_to_load_people">Kişiler yüklenemedi</string>
@@ -186,7 +186,7 @@
     <string name="extension_store_item_activated">Aktif</string>
     <string name="extension_store_failed_loading">Uzantılar yüklenemedi</string>
     <string name="extension_marketplace_activate_key">Anahtarı etkinleştir</string>
-    <string name="activate_key_preference">Başka bir anahtarı etkinleştir</string>
+    <string name="activate_key_preference">Başka bir anahtar etkinleştir</string>
     <string name="extension_memories_title">Anılar</string>
     <string name="extension_memories_description">Geçmiş yıllardaki aynı günün günlük fotoğraf ve video koleksiyonunu alın</string>
     <string name="extension_memories_preferences">@string/extension_memories_title</string>
@@ -195,10 +195,10 @@
     <string name="key_activation_input_title">Bir anahtarı etkinleştir</string>
     <string name="key_activation_input_subtitle">Uzantıları etkinleştirmek için elinizdeki anahtarı yapıştırın</string>
     <string name="key_activation_input_field_title">Anahtar</string>
-    <string name="key_activation_error_device_mismatch">Bu anahtar bu cihaz için verilmemiştir</string>
-    <string name="key_activation_error_email_mismatch">Bu anahtar size verilmemiştir</string>
+    <string name="key_activation_error_device_mismatch">Bu anahtar bu cihaz için verilmedi</string>
+    <string name="key_activation_error_email_mismatch">Bu anahtar size verilmedi</string>
     <string name="key_activation_error_invalid">Bu anahtar geçersiz</string>
-    <string name="key_activation_error_expired">Bu anahtar süresi dolmuş</string>
+    <string name="key_activation_error_expired">Bu anahtarın süresi dolmuş</string>
     <string name="key_activation_error_no_new_extensions">Bu anahtar yeni uzantılar eklemiyor</string>
     <string name="template_key_activation_error_failed_processing">Anahtar işlenemedi: %1$s</string>
     <string name="key_activation_success_title">Anahtar etkinleştirildi</string>
@@ -213,7 +213,7 @@
     <string name="import_notification_failed_title">Yükleme başarısız</string>
     <string name="import_notification_failed_text">Lütfen tekrar deneyin</string>
     <string name="import_notification_success_title">Başarıyla yüklendi</string>
-    <string name="import_start">Başlangıç</string>
+    <string name="import_start">Yüklemeyi başlat</string>
     <string name="import_title">@string/importt</string>
     <string name="template_import_files_size">%1$s, %2$.2f MB</string>
     <string name="import_to_be_uploaded">Yüklenecek</string>
@@ -224,7 +224,7 @@
     <string name="destination_album_selection_enter_album_title">Albüm başlığını girin</string>
     <string name="import_albums_not_selected">Seçilmedi</string>
     <string name="photo_frame_widget_name">Fotoğraf çerçevesi</string>
-    <string name="photo_frame_widget_description">Rastgele bir fotoğraf gösterir ve her birkaç saatte bir değişir</string>
+    <string name="photo_frame_widget_description">Her birkaç saatte bir değişen rastgele bir fotoğraf gösterir</string>
     <string name="photos">Fotoğraflar</string>
     <string name="photo_frame_widget_configuration_all_photos_to_show">Tüm fotoğraflar gösteriliyor</string>
     <string name="photo_frame_widget_configuration_shape">Şekil</string>
@@ -232,7 +232,7 @@
     <string name="photo_frame_widget_configuration_show_date_summary">Çekim tarihini göster</string>
     <string name="extension_photo_frame_widget_name">Fotoğraf Çerçevesi widget\'ı</string>
     <string name="extension_photo_frame_widget_description">Ana ekranda kitaplığınızdaki rastgele fotoğrafları görün</string>
-    <string name="extension_store_item_acquire">Almak</string>
+    <string name="extension_store_item_acquire">Edin</string>
     <string name="extension_store_disclaimer">
         <![CDATA[
         Galeri uzantıları, uygulamanın her biri kendi küçük fiyatıyla ayrı ayrı edinilebilen ekstra özellikleridir.
@@ -248,16 +248,16 @@
     <string name="sort_preference">Sıralama</string>
     <string name="sort_order_name">Başlık</string>
     <string name="sort_order_name_desc">Başlık, azalan</string>
-    <string name="sort_order_newest_first">En yeni önce</string>
-    <string name="sort_order_oldest_first">En eski önce</string>
+    <string name="sort_order_newest_first">Önce en eski</string>
+    <string name="sort_order_oldest_first">Önce en eski</string>
     <string name="sort_order_recently_added">Son eklenen</string>
-    <string name="sort_favorites_first">Favoriler önce</string>
+    <string name="sort_favorites_first">Önce favoriler</string>
     <string name="memory_deleting_confirmation">Bu hatırayı sil?</string>
-    <string name="live_photos_as_images">Canlı fotoğraflar resimler gibi</string>
-    <string name="live_photos_as_images_explanation">JPEG veya HEIF canlı fotoğrafları animasyon yapmayın</string>
+    <string name="live_photos_as_images">Fotoğrafları resim olarak görüntüle</string>
+    <string name="live_photos_as_images_explanation">JPEG veya HEIF canlı fotoğrafları oynatma</string>
     <string name="activated_keys">Etkinleştirilmiş anahtarlar</string>
     <string name="is_private">Gizlenmiş</string>
-    <string name="add_to_album">Albüm ekle</string>
+    <string name="add_to_album">Albüme ekle</string>
     <string name="template_selected_added_to_album">%1$s albümüne eklendi</string>
     <string name="favorites">Favoriler</string>
     <string name="preference_enabled">Etkin</string>
@@ -265,7 +265,7 @@
     <string name="calendar">Takvim</string>
     <string name="failed_to_load_calendar">Takvim yüklenemedi</string>
     <string name="nothing_found">Hiçbir şey bulunamadı</string>
-    <string name="raw_sharing_preference">RAW olarak paylaşmak</string>
+    <string name="raw_sharing_preference">RAW\'ı olarak paylaş:</string>
     <string name="raw_original">Orijinal</string>
     <string name="raw_compatible_jpeg_if_present">Mevcutsa uyumlu JPEG</string>
     <string-array name="raw_sharing_mode_array">
@@ -281,19 +281,19 @@
     <string name="remove_from_album">Albümden kaldır</string>
     <string name="download_preferences">İndirilenler</string>
     <string name="download_use_separate_folder_preference">Ayrı bir klasör kullan</string>
-    <string name="download_use_separate_folder_preference_summary">Dosyaları İndirilenler içinde ayrı bir klasöre kaydetmek</string>
+    <string name="download_use_separate_folder_preference_summary">Dosyaları İndirilenler içinde ayrı bir klasöre kaydet</string>
     <string name="download_separate_folder_name_preference">Klasör adı</string>
     <string name="key_activation_renew">Yenile</string>
     <string name="key_renewal_subtitle">Başka bir cihaz için bir anahtarınız varsa, bu cihaz için bir kopyasını alabilirsiniz. Yenileme günde bir kez yapılabilir</string>
-    <string name="key_renewal_current_key_title">Geçerli anahtar</string>
+    <string name="key_renewal_current_key_title">Mevcut anahtar</string>
     <string name="key_renewal_new_key_title">Yeni anahtar</string>
     <string name="key_renewal_activate_new_key">Etkinleştir</string>
     <string name="key_renewal_error_failed">Anahtarı yenileme başarısız oldu</string>
     <string name="key_renewal_error_not_available">Yenileme günde bir kez yapılabilir. Ertesi gün tekrar deneyin</string>
-    <string name="key_renewal_title">Anahtarın yenilenmesi</string>
+    <string name="key_renewal_title">Anahtarı yenile</string>
     <string name="extension_memories_people_to_forget_preference">@string/people</string>
     <string name="extension_memories_people_to_forget_preference_summary">Anıları kim göstermeli ve kim – göstermemeli</string>
-    <string name="extension_catalog">Eklentiler kataloğu</string>
-    <string name="raw_download_preference">RAW olarak indirmek</string>
+    <string name="extension_catalog">Eklenti kataloğu</string>
+    <string name="raw_download_preference">RAW olarak indir</string>
 
 </resources>
