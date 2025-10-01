@@ -198,9 +198,11 @@ dependencies {
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).
-    implementation 'androidx.media3:media3-exoplayer:1.6.1'
-    implementation 'androidx.media3:media3-ui:1.6.1'
-    implementation 'androidx.media3:media3-datasource-okhttp:1.6.1'
+    //
+    // Version 1.8.0 causes a single short freeze when playing live photos.
+    implementation 'androidx.media3:media3-exoplayer:1.6.1!!'
+    implementation 'androidx.media3:media3-ui:1.6.1!!'
+    implementation 'androidx.media3:media3-datasource-okhttp:1.6.1!!'
 
     testImplementation 'junit:junit:4.13.2'
 
