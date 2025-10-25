@@ -3,9 +3,13 @@ package ua.com.radiokot.photoprism.features.albums.view.model
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
+import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.squareup.picasso.Picasso
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
@@ -27,11 +31,13 @@ class AlbumListItem(
     private val description: String?,
     private val thumbnailUrl: String,
     val source: Album?,
+    val isCached: Observable<Boolean>,
 ) : AbstractItem<AlbumListItem.ViewHolder>() {
 
     constructor(
         source: Album,
         previewUrlFactory: MediaPreviewUrlFactory,
+        isCached: Observable<Boolean>,
     ) : this(
         title = source.title,
         monthTitleDate =
@@ -45,6 +51,7 @@ class AlbumListItem(
             sizePx = 500,
         ),
         source = source,
+        isCached = isCached,
     )
 
     override val layoutRes: Int =
@@ -67,6 +74,7 @@ class AlbumListItem(
         private val view = ListItemAlbumBinding.bind(itemView)
         private val picasso: Picasso by inject()
         private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
+        private var isCachedSubscription: Disposable? = null
 
         override fun bindView(item: AlbumListItem, payloads: List<Any>) {
             view.imageView.contentDescription = item.title
@@ -90,11 +98,30 @@ class AlbumListItem(
             view.descriptionTextView.text = item.description
             view.descriptionTextView.isSelected = true
 
+            isCachedSubscription?.dispose()
+            isCachedSubscription = item.isCached.subscribe { isCached ->
+                view.cacheIcon.isVisible = isCached
+            }
+
             ViewCompat.setTooltipText(view.root, item.title)
         }
 
         override fun unbindView(item: AlbumListItem) {
             picasso.cancelRequest(view.imageView)
+            isCachedSubscription?.dispose()
+        }
+    }
+
+    class CacheClickEvent(private val listener: (Album) -> Unit) : ClickEventHook<AlbumListItem>() {
+//        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+//            return (viewHolder as ViewHolder).view.cacheIcon
+//        }
+//        override fun onBind(viewHolder: FastAdapter.ViewHolder<AlbumListItem>): View? {
+//            return (viewHolder as ViewHolder).view.cacheIcon
+//        }
+
+        override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<AlbumListItem>, item: AlbumListItem) {
+            item.source?.also(listener)
         }
     }
 }

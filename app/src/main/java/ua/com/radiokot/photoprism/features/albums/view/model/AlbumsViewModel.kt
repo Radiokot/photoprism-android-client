@@ -4,6 +4,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -14,6 +15,8 @@ import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
+import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbum
+import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbumDao
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
@@ -24,6 +27,7 @@ class AlbumsViewModel(
     private val preferences: AlbumsPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
     private val previewUrlFactory: MediaPreviewUrlFactory,
+    private val cachedAlbumDao: CachedAlbumDao,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
@@ -163,6 +167,7 @@ class AlbumsViewModel(
                 AlbumListItem(
                     source = album,
                     previewUrlFactory = previewUrlFactory,
+                    isCached = isAlbumCached(album.uid),
                 )
             }
 
@@ -175,6 +180,10 @@ class AlbumsViewModel(
                     // Dismiss the main error when there are items.
                     null
             }
+    }
+
+    private fun isAlbumCached(albumId: String): Observable<Boolean> {
+        return cachedAlbumDao.isAlbumCached(albumId)
     }
 
     fun onRetryClicked() {
@@ -228,6 +237,20 @@ class AlbumsViewModel(
                 )
             )
         )
+    }
+
+    fun onCacheIconClicked(album: Album) {
+        val albumId = album.uid
+
+        val isCached = isAlbumCached(albumId).blockingFirst()
+
+        val completable = if (isCached) {
+            cachedAlbumDao.deleteCachedAlbum(albumId)
+        } else {
+            cachedAlbumDao.addCachedAlbum(CachedAlbum(albumId))
+        }
+
+        completable.subscribe().autoDispose(this)
     }
 
     fun onSortClicked() {

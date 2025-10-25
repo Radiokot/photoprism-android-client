@@ -18,7 +18,7 @@ android {
         targetSdk 35
         //noinspection GradleDependency
         compileSdk 35
-        minSdk 21
+        minSdk 26
 
         applicationId "ua.com.radiokot.photoprism"
         versionCode 59
@@ -105,6 +105,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
     kotlinOptions {
         //noinspection GrDeprecatedAPIUsage
         jvmTarget = "17"
@@ -186,6 +190,8 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     //noinspection KaptUsageInsteadOfKsp
     kapt "androidx.room:room-compiler:$room_version"
+
+    implementation "androidx.room:room-rxjava3:$room_version"
 
     // To be removed after a while together with EncryptedSharedPreferencesRemovalMigration
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'

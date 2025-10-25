@@ -63,6 +63,7 @@ val albumsFeatureModule = module {
                     SearchPredicates.generalCondition(query, fields)
                 },
                 previewUrlFactory = get(),
+                cachedAlbumDao = get()
             )
         }
 
