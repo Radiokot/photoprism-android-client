@@ -40,6 +40,7 @@ val albumsFeatureModule = module {
         scoped {
             AlbumsRepository.Factory(
                 photoPrismAlbumsService = get(),
+                appDatabase = get()
             )
         } bind AlbumsRepository.Factory::class
 
@@ -62,8 +63,7 @@ val albumsFeatureModule = module {
 
                     SearchPredicates.generalCondition(query, fields)
                 },
-                previewUrlFactory = get(),
-                cachedAlbumDao = get()
+                previewUrlFactory = get()
             )
         }
 

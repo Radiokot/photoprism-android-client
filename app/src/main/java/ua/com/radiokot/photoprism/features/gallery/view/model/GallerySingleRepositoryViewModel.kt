@@ -34,6 +34,7 @@ class GallerySingleRepositoryViewModel(
     private val log = kLogger("GallerySingleRepositoryVM")
     private var isInitialized = false
     private lateinit var itemsOrder: BehaviorSubject<GalleryItemsOrder>
+    private lateinit var shouldCacheForOffline: BehaviorSubject<Boolean>
     private val mediaRepositoryChanges = BehaviorSubject.create<SimpleGalleryMediaRepository>()
     private val currentMediaRepository: SimpleGalleryMediaRepository?
         get() = mediaRepositoryChanges.value
@@ -168,6 +169,11 @@ class GallerySingleRepositoryViewModel(
         subscribeToItemsOrder(
             initialRepositoryParams = repositoryParams,
         )
+
+        subscribeToCacheOffline(
+            initialRepositoryParams = repositoryParams,
+        )
+
         subscribeToRepositoryChanges()
 
         // Replace list VM viewer opening event with the custom one
@@ -202,6 +208,23 @@ class GallerySingleRepositoryViewModel(
                 )
             }
             .autoDispose(this)
+    }
+
+    private fun subscribeToCacheOffline(
+        initialRepositoryParams: SimpleGalleryMediaRepository.Params,
+    ) {
+        shouldCacheForOffline = BehaviorSubject.create<Boolean>()
+
+        shouldCacheForOffline
+            .subscribe { shouldCache ->
+                mediaRepositoryChanges.onNext(
+                    galleryMediaRepositoryFactory.get(
+                        params = initialRepositoryParams.copy(
+                            shouldCacheAlbum = shouldCache,
+                        ),
+                    )
+                )
+            }.autoDispose(this)
     }
 
     private fun subscribeToRepositoryChanges() {
@@ -448,6 +471,16 @@ class GallerySingleRepositoryViewModel(
         }
 
         update(force = true)
+    }
+
+    fun onToggleOfflineAvailable() {
+        // mark the current album as should be cached
+        log.debug {
+            "onToggleOfflineAvailable(): toggling_offline_available" +
+                    "current value: ${shouldCacheForOffline.value}"
+        }
+        val cacheOptionEnabled = shouldCacheForOffline.value ?: false;
+        this.shouldCacheForOffline.onNext(!cacheOptionEnabled)
     }
 
     fun onSortClicked() {

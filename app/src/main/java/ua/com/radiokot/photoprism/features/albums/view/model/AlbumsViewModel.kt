@@ -15,8 +15,8 @@ import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbum
-import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbumDao
+import ua.com.radiokot.photoprism.features.albums.data.model.CachedAlbum
+import ua.com.radiokot.photoprism.features.albums.data.storage.CachedAlbumDao
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
@@ -27,7 +27,6 @@ class AlbumsViewModel(
     private val preferences: AlbumsPreferences,
     private val searchPredicate: (album: Album, query: String) -> Boolean,
     private val previewUrlFactory: MediaPreviewUrlFactory,
-    private val cachedAlbumDao: CachedAlbumDao,
 ) : ViewModel(),
     SearchViewViewModel by SearchViewViewModelImpl() {
 
@@ -166,8 +165,7 @@ class AlbumsViewModel(
             .map { album ->
                 AlbumListItem(
                     source = album,
-                    previewUrlFactory = previewUrlFactory,
-                    isCached = isAlbumCached(album.uid),
+                    previewUrlFactory = previewUrlFactory
                 )
             }
 
@@ -180,10 +178,6 @@ class AlbumsViewModel(
                     // Dismiss the main error when there are items.
                     null
             }
-    }
-
-    private fun isAlbumCached(albumId: String): Observable<Boolean> {
-        return cachedAlbumDao.isAlbumCached(albumId)
     }
 
     fun onRetryClicked() {
@@ -220,16 +214,17 @@ class AlbumsViewModel(
             Event.OpenAlbum(
                 title = album.title,
                 monthTitle =
-                if (album.type == Album.TypeName.MONTH)
-                    album.ymdLocalDate
-                else
-                    null,
+                    if (album.type == Album.TypeName.MONTH)
+                        album.ymdLocalDate
+                    else
+                        null,
                 albumUid =
-                if (album.type == Album.TypeName.ALBUM)
-                    album.uid
-                else
-                    null,
+                    if (album.type == Album.TypeName.ALBUM)
+                        album.uid
+                    else
+                        null,
                 repositoryParams = SimpleGalleryMediaRepository.Params(
+                    shouldUseCache = album.shouldCache,
                     searchConfig = SearchConfig.forAlbum(
                         albumUid = album.uid,
                         base = defaultSearchConfig,
@@ -237,20 +232,6 @@ class AlbumsViewModel(
                 )
             )
         )
-    }
-
-    fun onCacheIconClicked(album: Album) {
-        val albumId = album.uid
-
-        val isCached = isAlbumCached(albumId).blockingFirst()
-
-        val completable = if (isCached) {
-            cachedAlbumDao.deleteCachedAlbum(albumId)
-        } else {
-            cachedAlbumDao.addCachedAlbum(CachedAlbum(albumId))
-        }
-
-        completable.subscribe().autoDispose(this)
     }
 
     fun onSortClicked() {

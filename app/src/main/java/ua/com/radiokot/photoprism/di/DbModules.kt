@@ -44,5 +44,5 @@ val appDbModule = module {
                 }
             )
             .build()
-    } bind AppDatabase::class
+    }  bind AppDatabase::class
 }

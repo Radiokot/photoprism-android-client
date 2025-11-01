@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.api.albums.model
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.reactivex.rxjava3.core.Single
 
 data class PhotoPrismAlbum
 @JsonCreator
@@ -28,4 +29,6 @@ constructor(
     val month: Int,
     @JsonProperty("Day")
     val day: Int,
-)
+) {
+    lateinit var cached: Single<Boolean>
+}

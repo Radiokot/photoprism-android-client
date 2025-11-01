@@ -30,14 +30,12 @@ class AlbumListItem(
     private val monthTitleDate: LocalDate?,
     private val description: String?,
     private val thumbnailUrl: String,
-    val source: Album?,
-    val isCached: Observable<Boolean>,
+    val source: Album?
 ) : AbstractItem<AlbumListItem.ViewHolder>() {
 
     constructor(
         source: Album,
         previewUrlFactory: MediaPreviewUrlFactory,
-        isCached: Observable<Boolean>,
     ) : this(
         title = source.title,
         monthTitleDate =
@@ -51,7 +49,6 @@ class AlbumListItem(
             sizePx = 500,
         ),
         source = source,
-        isCached = isCached,
     )
 
     override val layoutRes: Int =
@@ -97,11 +94,8 @@ class AlbumListItem(
             view.descriptionTextView.isVisible = item.description != null
             view.descriptionTextView.text = item.description
             view.descriptionTextView.isSelected = true
+            view.cacheIcon.visibility = if (item.source?.shouldCache == true ) View.VISIBLE else View.INVISIBLE
 
-            isCachedSubscription?.dispose()
-            isCachedSubscription = item.isCached.subscribe { isCached ->
-                view.cacheIcon.isVisible = isCached
-            }
 
             ViewCompat.setTooltipText(view.root, item.title)
         }

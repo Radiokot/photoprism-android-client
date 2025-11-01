@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.base.data.model.DataPage
 import ua.com.radiokot.photoprism.base.data.storage.SimpleCollectionRepository
+import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.util.PagedCollectionLoader
@@ -20,6 +21,7 @@ import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 class AlbumsRepository(
     private val types: Set<Album.TypeName>,
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
+    private val cachedAlbumDao: CachedAlbumDao
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
@@ -46,6 +48,13 @@ class AlbumsRepository(
                         offset = offset,
                         type = type.value,
                     )
+
+                    // add the tag whether the albums should be cached or not
+                    val cachedAlbumIds = cachedAlbumDao.getCachedAlbums()
+                    items.forEach {
+                        it.cached = cachedAlbumIds.contains(it.uid)
+                    }
+
 
                     DataPage(
                         items = items,
@@ -109,11 +118,13 @@ class AlbumsRepository(
 
     class Factory(
         private val photoPrismAlbumsService: PhotoPrismAlbumsService,
+        private val appDatabase: AppDatabase
     ) {
         val albums: AlbumsRepository by lazy {
             AlbumsRepository(
                 types = setOf(Album.TypeName.ALBUM),
                 photoPrismAlbumsService = photoPrismAlbumsService,
+                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 
@@ -121,6 +132,7 @@ class AlbumsRepository(
             AlbumsRepository(
                 types = setOf(Album.TypeName.FOLDER),
                 photoPrismAlbumsService = photoPrismAlbumsService,
+                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 
@@ -128,6 +140,7 @@ class AlbumsRepository(
             AlbumsRepository(
                 types = setOf(Album.TypeName.MONTH),
                 photoPrismAlbumsService = photoPrismAlbumsService,
+                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 

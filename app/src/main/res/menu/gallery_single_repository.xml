@@ -4,6 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/toggle_offline_cache"
+        android:icon="@drawable/ic_download"
+        android:title="@string/offline_cache"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="ifRoom"
+        tools:ignore="PrivateResource" />
+
+    <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_reorder"
         android:title="@string/sort_preference"

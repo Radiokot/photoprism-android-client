@@ -300,4 +300,5 @@
     <string name="extension_memories_people_to_forget_preference_summary">Who should be shown in the memories and who shouldn\'t</string>
     <string name="extension_catalog">Extension catalog</string>
     <string name="raw_download_preference">Download RAW as</string>
+    <string name="offline_cache">Download for offline</string>
 </resources>

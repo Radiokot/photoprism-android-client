@@ -131,7 +131,7 @@ class AlbumsActivity : BaseActivity() {
                     true
                 }
 
-                addEventHook(AlbumListItem.CacheClickEvent(viewModel::onCacheIconClicked))
+//                addEventHook(AlbumListItem.CacheClickEvent(viewModel::onCacheIconClicked))
             }
 
             // Add the row spacing and make the items fill the column width

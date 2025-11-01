@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhotoUpdate
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.base.data.model.DataPage
@@ -34,6 +35,7 @@ import ua.com.radiokot.photoprism.util.LocalDate
  */
 class SimpleGalleryMediaRepository(
     private val photoPrismPhotosService: PhotoPrismPhotosService,
+    private val cachingFileRetrievalService: CachingFileRetrievalService?,
     val params: Params,
 ) : SimplePagedDataRepository<GalleryMedia>(
     pagingOrder = when (params.itemsOrder) {
@@ -79,15 +81,7 @@ class SimpleGalleryMediaRepository(
                         "\nlookaheadLimit=$lookaheadLimit"
             }
 
-            photoPrismPhotosService.getMergedPhotos(
-                count = lookaheadLimit,
-                offset = offset,
-                q = params.query,
-                order = when (pagingOrder) {
-                    PagingOrder.DESC -> PhotoPrismOrder.NEWEST
-                    PagingOrder.ASC -> PhotoPrismOrder.OLDEST
-                }
-            ).asSequence()
+            getMergedPhotos(lookaheadLimit, offset)
         }
             .toSingle()
             .map { photoPrismPhotos ->
@@ -171,6 +165,27 @@ class SimpleGalleryMediaRepository(
                     isLast = pageIsLast,
                 )
             }
+    }
+
+    private fun getMergedPhotos(
+        lookaheadLimit: Int,
+        offset: Int
+    ): Sequence<PhotoPrismMergedPhoto> {
+        val rawMergedPhotos =  photoPrismPhotosService.getMergedPhotos(
+            count = lookaheadLimit,
+            offset = offset,
+            q = params.query,
+            order = when (pagingOrder) {
+                PagingOrder.DESC -> PhotoPrismOrder.NEWEST
+                PagingOrder.ASC -> PhotoPrismOrder.OLDEST
+            }
+        ).asSequence()
+
+        if (params.shouldCacheAlbum) {
+            cachingFileRetrievalService?.cacheAndAssignCachePaths(rawMergedPhotos)
+        }
+
+        return rawMergedPhotos;
     }
 
     private var newestAndOldestDates: Pair<LocalDate, LocalDate>? = null
@@ -334,6 +349,7 @@ class SimpleGalleryMediaRepository(
         val postFilterExcludePersonIds: Set<String> = emptySet(),
         val pageLimit: Int = DEFAULT_PAGE_LIMIT,
         val itemsOrder: GalleryItemsOrder = GalleryItemsOrder.NEWEST_FIRST,
+        val shouldCacheAlbum:  Boolean = false,
     ) : Parcelable {
 
         constructor(
@@ -341,6 +357,7 @@ class SimpleGalleryMediaRepository(
             postFilterExcludePersonIds: Set<String> = emptySet(),
             pageLimit: Int = DEFAULT_PAGE_LIMIT,
             itemsOrder: GalleryItemsOrder = GalleryItemsOrder.NEWEST_FIRST,
+            shouldUseCache: Boolean = false,
         ) : this(
             query = searchConfig.getPhotoPrismQuery(),
             postFilterBefore = searchConfig.beforeLocal,
@@ -348,6 +365,7 @@ class SimpleGalleryMediaRepository(
             postFilterExcludePersonIds = postFilterExcludePersonIds,
             pageLimit = pageLimit,
             itemsOrder = itemsOrder,
+            shouldCacheAlbum = shouldUseCache,
         )
 
         companion object {
@@ -360,6 +378,7 @@ class SimpleGalleryMediaRepository(
 
     class Factory(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
+        private val cachingFileRetrievalService: CachingFileRetrievalService
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
 
@@ -383,6 +402,7 @@ class SimpleGalleryMediaRepository(
             params: Params = Params(),
         ) = SimpleGalleryMediaRepository(
             photoPrismPhotosService = photoPrismPhotosService,
+            cachingFileRetrievalService = cachingFileRetrievalService,
             params = params,
         )
 

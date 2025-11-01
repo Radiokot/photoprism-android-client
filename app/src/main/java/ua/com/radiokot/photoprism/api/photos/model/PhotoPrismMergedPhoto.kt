@@ -99,6 +99,8 @@ constructor(
         val markers: List<Marker>?,
     ) {
 
+        var cachedPath: String? = null
+
         /**
          * [marker.go](https://github.com/photoprism/photoprism/blob/9e95c7e71ccdc155862d7e86b0cb071872ef4469/internal/entity/marker.go#L27)
          */

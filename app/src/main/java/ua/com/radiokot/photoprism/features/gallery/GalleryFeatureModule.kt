@@ -120,6 +120,7 @@ val galleryFeatureModule = module {
         scoped {
             SimpleGalleryMediaRepository.Factory(
                 photoPrismPhotosService = get(),
+                cachingFileRetrievalService = get()
             )
         } bind SimpleGalleryMediaRepository.Factory::class
 

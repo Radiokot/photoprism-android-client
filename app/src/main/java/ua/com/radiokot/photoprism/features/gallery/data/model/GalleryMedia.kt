@@ -332,6 +332,7 @@ class GalleryMedia(
         val frames: Long?,
         val root: String?,
         val hash: String,
+        val cachedPath: String?
     ) : Parcelable {
 
         constructor(
@@ -351,6 +352,7 @@ class GalleryMedia(
             frames = source.frames,
             root = source.root,
             hash = source.hash,
+            cachedPath = source.cachedPath
         )
 
         override fun equals(other: Any?): Boolean {

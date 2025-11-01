@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.data.storage.db
+package ua.com.radiokot.photoprism.features.albums.data.storage
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,13 +6,14 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import ua.com.radiokot.photoprism.features.albums.data.model.CachedAlbum
 
 @Dao
 interface CachedAlbumDao {
     @Query("SELECT * FROM cached_albums")
     fun getCachedAlbums(): Observable<List<CachedAlbum>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     fun addCachedAlbum(album: CachedAlbum): Completable
 
     @Query("DELETE FROM cached_albums WHERE albumId = :albumId")

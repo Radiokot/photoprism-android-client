@@ -626,7 +626,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                         mediaIndex = event.mediaIndex,
                         repositoryParams = event.repositoryParams,
                         areActionsEnabled = event.areActionsEnabled,
-                        albumUid = event.albumUid,
+                        albumUid = event.albumUid
                     )
             }
 
@@ -791,6 +791,11 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
         menu?.findItem(R.id.sort)?.setOnMenuItemClickListener {
             viewModel.onSortClicked()
+            true
+        }
+
+        menu?.findItem(R.id.toggle_offline_cache)?.setOnMenuItemClickListener {
+            viewModel.onToggleOfflineAvailable()
             true
         }
 

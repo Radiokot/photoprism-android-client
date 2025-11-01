@@ -8,8 +8,8 @@ import ua.com.radiokot.photoprism.features.ext.memories.data.model.MemoryDbEntit
 import ua.com.radiokot.photoprism.features.ext.memories.data.storage.MemoriesDbDao
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmarksDbEntity
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksDbDao
-import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbum
-import ua.com.radiokot.photoprism.features.gallery.data.storage.db.CachedAlbumDao
+import ua.com.radiokot.photoprism.features.albums.data.model.CachedAlbum
+import ua.com.radiokot.photoprism.features.albums.data.storage.CachedAlbumDao
 
 @Database(
     version = 8,

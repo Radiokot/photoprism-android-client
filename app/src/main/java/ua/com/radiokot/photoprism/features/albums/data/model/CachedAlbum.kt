@@ -1,4 +1,4 @@
-package ua.com.radiokot.photoprism.features.gallery.data.storage.db
+package ua.com.radiokot.photoprism.features.albums.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
