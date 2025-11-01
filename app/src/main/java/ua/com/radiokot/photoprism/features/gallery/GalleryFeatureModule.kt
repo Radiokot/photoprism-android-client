@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery
 
 import android.net.Uri
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.scopedOf
@@ -14,8 +15,10 @@ import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dateFormatModule
+import ua.com.radiokot.photoprism.di.ioModules
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
+import ua.com.radiokot.photoprism.features.gallery.data.storage.CachingFileRetrievalService
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
@@ -59,6 +62,7 @@ class ImportSearchBookmarksUseCaseParams(
 val galleryFeatureModule = module {
     includes(envConnectionFeatureModule)
     includes(dateFormatModule)
+    includes(ioModules)
     includes(gallerySearchFeatureModules)
 
     single {
@@ -116,6 +120,14 @@ val galleryFeatureModule = module {
         // Downloader must be session-scoped to have the correct
         // HTTP client (e.g. for mTLS)
         scopedOf(::OkHttpObservableDownloader) bind ObservableDownloader::class
+
+        scoped {
+            CachingFileRetrievalService(
+                context = androidApplication(),
+                httpClient = get(),
+                urlFactory = get()
+            )
+        }
 
         scoped {
             SimpleGalleryMediaRepository.Factory(

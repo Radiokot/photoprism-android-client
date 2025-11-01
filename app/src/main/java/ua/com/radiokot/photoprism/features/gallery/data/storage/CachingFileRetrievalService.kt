@@ -14,7 +14,6 @@ import kotlin.math.max
 
 class CachingFileRetrievalService(
     private val context: Context,
-    private val imageViewSize: Size,
     private val httpClient: OkHttpClient,
     private val urlFactory: MediaPreviewUrlFactory
 ) {
@@ -27,6 +26,8 @@ class CachingFileRetrievalService(
      * Downloads files for the given photos and updates their links to point to local files.
      */
     fun cacheAndAssignCachePaths(photos: Sequence<PhotoPrismMergedPhoto>) {
+        // we should take the size from the displayer but it's not really available here, we'll hard code to 1920 for now
+
         photos.forEach { photo ->
             photo.files
 //                .filter { it.isImageMimeType } // We only cache displayable images.
@@ -34,10 +35,12 @@ class CachingFileRetrievalService(
                     try {
                         val remoteUrl = urlFactory.getImagePreviewUrl(
                             file.hash,
-                            max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
+                            1920
+
+//                            max(
+//                                imageViewSize.width,
+//                                imageViewSize.height
+//                        )
                         ) //?: return@forEach
 
 
