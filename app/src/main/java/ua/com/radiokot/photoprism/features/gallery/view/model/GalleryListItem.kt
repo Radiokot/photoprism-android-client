@@ -195,6 +195,12 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                         visibility = View.GONE
                     }
 
+                    if (item.source != null && item.source.files.first().cachedPath != null) {
+                        view.cachedImage.visibility = View.VISIBLE
+                    } else {
+                        view.cachedImage.visibility = View.GONE
+                    }
+
                     contentDescription =
                         if (item.mediaTypeName != null)
                             context.getString(item.mediaTypeName)

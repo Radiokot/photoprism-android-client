@@ -122,13 +122,14 @@ sealed class MediaViewerPage(
 
                 source.media is Viewable.AsImage ->
                     ImageViewerPage(
-                        previewUrl = previewUrlFactory.getImagePreviewUrl(
-                            previewHash = source.hash,
-                            sizePx = max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
-                        ),
+                        previewUrl = source.files.first().cachedPath
+                            ?: previewUrlFactory.getImagePreviewUrl(
+                                previewHash = source.hash,
+                                sizePx = max(
+                                    imageViewSize.width,
+                                    imageViewSize.height
+                                )
+                            ),
                         imageViewSize = imageViewSize,
                         thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                             thumbnailHash = source.hash,

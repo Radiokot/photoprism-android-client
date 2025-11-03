@@ -53,9 +53,23 @@
         tools:src="@drawable/ic_sledding" />
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/cached_image"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:alpha="0.75"
+        android:background="@drawable/list_item_gallery_media_indicator_background"
+        android:paddingHorizontal="4dp"
+        android:paddingTop="1dp"
+        app:layout_constraintEnd_toEndOf="@id/image_view_space"
+        app:layout_constraintTop_toTopOf="@id/image_view_space"
+        app:srcCompat="@drawable/ic_download"
+        app:tint="@android:color/white" />
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/favorite_image_view"
         android:layout_width="23dp"
         android:layout_height="23dp"
+        android:layout_marginTop="50dp"
         android:alpha="0.75"
         android:background="@drawable/list_item_gallery_media_indicator_background"
         android:paddingHorizontal="4dp"
