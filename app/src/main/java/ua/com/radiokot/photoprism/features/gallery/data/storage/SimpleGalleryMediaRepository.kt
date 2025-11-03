@@ -183,6 +183,8 @@ class SimpleGalleryMediaRepository(
 
         if (params.shouldCacheAlbum) {
             cachingFileRetrievalService?.cacheAndAssignCachePaths(rawMergedPhotos)
+        } else {
+            cachingFileRetrievalService?.checkForCache(rawMergedPhotos)
         }
 
         return rawMergedPhotos;

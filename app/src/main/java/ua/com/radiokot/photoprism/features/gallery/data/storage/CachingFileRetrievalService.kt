@@ -11,6 +11,7 @@ import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.io.File
 import java.io.IOException
 import kotlin.math.max
+import kotlin.text.substringAfterLast
 
 class CachingFileRetrievalService(
     private val context: Context,
@@ -25,40 +26,39 @@ class CachingFileRetrievalService(
     /**
      * Downloads files for the given photos and updates their links to point to local files.
      */
-    fun cacheAndAssignCachePaths(photos: Sequence<PhotoPrismMergedPhoto>) {
+    fun cacheAndAssignCachePaths(
+        photos: Sequence<PhotoPrismMergedPhoto>,
+        shouldDownloadFile: Boolean
+    ) {
         // we should take the size from the displayer but it's not really available here, we'll hard code to 1920 for now
 
         photos.forEach { photo ->
             photo.files
 //                .filter { it.isImageMimeType } // We only cache displayable images.
                 .forEach { file ->
+                    // cache image files
                     try {
-                        val remoteUrl = urlFactory.getImagePreviewUrl(
-                            file.hash,
-                            1920
-
-//                            max(
-//                                imageViewSize.width,
-//                                imageViewSize.height
-//                        )
-                        ) //?: return@forEach
-
-
-
-                        // Use UID and file hash to create a unique local filename.
-                        val localFile = File(
-                            cacheDir,
-                            "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}"
-                        )
-
-                        if (!localFile.exists()) {
-                            log.debug { "cacheAndAssignLocalPaths(): downloading: remoteUrl=$remoteUrl, localFile=$localFile" }
-                            downloadFile(remoteUrl, localFile)
+                        var remoteUrl: String? = null
+                        var localFileName: String
+                        if (file.video == true) {
+                            remoteUrl = urlFactory.getVideoPreviewUrl( photo.hash,
+                                file.hash,
+                                file.codec)
+                            localFileName =
+                                "${photo.uid}-${file.hash}.video}";
                         } else {
-                            log.debug { "cacheAndAssignLocalPaths(): already cached: localFile=$localFile" }
+                            remoteUrl = urlFactory.getImagePreviewUrl(
+                                file.hash,
+                                1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
+                            )
+                            localFileName =
+                                "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
                         }
 
-                        // Mutate the link to point to the local file.
+                        val localFile =
+                            saveAndGetLocalUrl(shouldDownloadFile, remoteUrl, localFileName)
+
+                        // fill in the cached path to point to the local file.
                         file.cachedPath = Uri.fromFile(localFile).toString()
 
                     } catch (e: Exception) {
@@ -68,6 +68,28 @@ class CachingFileRetrievalService(
                     }
                 }
         }
+    }
+
+    private fun saveAndGetLocalUrl(
+        shouldDownloadFile: Boolean,
+        remoteUrl: String,
+        targetFileName: String
+    ): File {
+        // Use UID and file hash to create a unique local filename.
+        val localFile = File(
+            cacheDir,
+            targetFileName
+        )
+
+        if (!localFile.exists()) {
+            if (shouldDownloadFile) {
+                log.debug { "cacheAndAssignLocalPaths(): downloading: remoteUrl=$remoteUrl, localFile=$localFile" }
+                downloadFile(remoteUrl, localFile)
+            }
+        } else {
+            log.debug { "cacheAndAssignLocalPaths(): already cached: localFile=$localFile" }
+        }
+        return localFile
     }
 
     private fun downloadFile(url: String, destination: File) {
@@ -82,5 +104,19 @@ class CachingFileRetrievalService(
                 }
             } ?: throw IOException("Response body is null for $url")
         }
+    }
+
+    /**
+     * Checks whether a file in the cache exists for the current file, fills in the cachedpath of each file if the file exists and downloads the file into the cache otherwise
+     */
+    fun cacheAndAssignCachePaths(photos: Sequence<PhotoPrismMergedPhoto>) {
+        cacheAndAssignCachePaths(photos, true)
+    }
+
+    /**
+     * Checks whether a file in the cache exists for the current file, fills in the cachedpath of each file if the file exists and does nothing otherwise
+     */
+    fun checkForCache(photos: Sequence<PhotoPrismMergedPhoto>) {
+        cacheAndAssignCachePaths(photos, false)
     }
 }
