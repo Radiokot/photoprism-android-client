@@ -15,8 +15,6 @@ import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsPreferences
 import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
-import ua.com.radiokot.photoprism.features.albums.data.model.CachedAlbum
-import ua.com.radiokot.photoprism.features.albums.data.storage.CachedAlbumDao
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModel
 import ua.com.radiokot.photoprism.features.shared.search.view.model.SearchViewViewModelImpl
@@ -224,7 +222,6 @@ class AlbumsViewModel(
                     else
                         null,
                 repositoryParams = SimpleGalleryMediaRepository.Params(
-                    shouldUseCache = album.shouldCache,
                     searchConfig = SearchConfig.forAlbum(
                         albumUid = album.uid,
                         base = defaultSearchConfig,

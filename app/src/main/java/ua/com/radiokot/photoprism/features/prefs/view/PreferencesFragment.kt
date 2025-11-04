@@ -219,6 +219,17 @@ class PreferencesFragment :
             bindToSubject(galleryPreferences.livePhotosAsImages, viewLifecycleOwner)
         }
 
+        with(requirePreference(R.string.pk_gallery_item_scale)) {
+            this as ListPreference
+            entries = resources.getStringArray(R.array.gallery_item_scale_array)
+            entryValues = GalleryItemScale.values().map(GalleryItemScale::name).toTypedArray()
+            value = galleryPreferences.itemScale.value!!.name
+            setOnPreferenceChangeListener { _, newValue ->
+                galleryPreferences.itemScale.onNext(GalleryItemScale.valueOf(newValue as String))
+                true
+            }
+        }
+
         with(requirePreference(R.string.pk_raw_sharing_mode)) {
             this as ListPreference
             entries = resources.getStringArray(R.array.raw_sharing_mode_array)

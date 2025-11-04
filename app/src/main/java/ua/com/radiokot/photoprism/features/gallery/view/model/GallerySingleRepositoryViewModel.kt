@@ -220,7 +220,7 @@ class GallerySingleRepositoryViewModel(
                 mediaRepositoryChanges.onNext(
                     galleryMediaRepositoryFactory.get(
                         params = initialRepositoryParams.copy(
-                            shouldCacheAlbum = shouldCache,
+                            shouldCacheMediaItems = shouldCache,
                         ),
                     )
                 )

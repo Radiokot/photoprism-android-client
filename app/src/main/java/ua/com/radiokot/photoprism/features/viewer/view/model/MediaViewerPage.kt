@@ -39,7 +39,8 @@ sealed class MediaViewerPage(
 
                     if (livePhotosAsImages) {
                         return ImageViewerPage(
-                            previewUrl = previewUrlFactory.getImagePreviewUrl(
+                            previewUrl = source.files.first { it.isVideo == false }.cachedPath
+                                ?: previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
                                 sizePx = max(
                                     imageViewSize.width,
@@ -84,16 +85,19 @@ sealed class MediaViewerPage(
                         }
 
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = previewUrlFactory.getImagePreviewUrl(
-                            previewHash = source.hash,
-                            sizePx = max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
-                        ),
-                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
-                            galleryMedia = source,
-                        ),
+                        photoPreviewUrl = source.files.first { it.isVideo == false }
+                            .cachedPath
+                            ?: previewUrlFactory.getImagePreviewUrl(
+                                previewHash = source.hash,
+                                sizePx = max(
+                                    imageViewSize.width,
+                                    imageViewSize.height
+                                )
+                            ),
+                        videoPreviewUrl = source.files.first { it.isVideo == true }.cachedPath
+                            ?: previewUrlFactory.getVideoPreviewUrl(
+                                galleryMedia = source,
+                            ),
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
@@ -107,9 +111,10 @@ sealed class MediaViewerPage(
 
                 source.media is Viewable.AsVideo ->
                     VideoViewerPage(
-                        previewUrl = previewUrlFactory.getVideoPreviewUrl(
-                            galleryMedia = source,
-                        ),
+                        previewUrl = source.files.first { it.isVideo == true }.cachedPath
+                            ?: previewUrlFactory.getVideoPreviewUrl(
+                                galleryMedia = source,
+                            ),
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,

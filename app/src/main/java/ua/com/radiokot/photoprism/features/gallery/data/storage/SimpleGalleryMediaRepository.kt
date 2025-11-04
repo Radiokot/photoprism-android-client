@@ -181,7 +181,7 @@ class SimpleGalleryMediaRepository(
             }
         ).asSequence()
 
-        if (params.shouldCacheAlbum) {
+        if (params.shouldCacheMediaItems) {
             cachingFileRetrievalService?.cacheAndAssignCachePaths(rawMergedPhotos)
         } else {
             cachingFileRetrievalService?.checkForCache(rawMergedPhotos)
@@ -351,7 +351,7 @@ class SimpleGalleryMediaRepository(
         val postFilterExcludePersonIds: Set<String> = emptySet(),
         val pageLimit: Int = DEFAULT_PAGE_LIMIT,
         val itemsOrder: GalleryItemsOrder = GalleryItemsOrder.NEWEST_FIRST,
-        val shouldCacheAlbum:  Boolean = false,
+        val shouldCacheMediaItems:  Boolean = false,
     ) : Parcelable {
 
         constructor(
@@ -367,7 +367,7 @@ class SimpleGalleryMediaRepository(
             postFilterExcludePersonIds = postFilterExcludePersonIds,
             pageLimit = pageLimit,
             itemsOrder = itemsOrder,
-            shouldCacheAlbum = shouldUseCache,
+            shouldCacheMediaItems = shouldUseCache,
         )
 
         companion object {

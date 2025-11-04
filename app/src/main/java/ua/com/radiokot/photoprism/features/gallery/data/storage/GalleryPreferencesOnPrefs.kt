@@ -10,6 +10,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryItemsOrder
 import ua.com.radiokot.photoprism.util.booleanPreferenceSubject
 import ua.com.radiokot.photoprism.util.stringifyPreferenceSubject
+import ua.com.radiokot.photoprism.util.intPreferenceSubject
 
 class GalleryPreferencesOnPrefs(
     private val preferences: SharedPreferences,
@@ -57,6 +58,13 @@ class GalleryPreferencesOnPrefs(
             defaultValue = RawSharingMode.COMPATIBLE_JPEG,
             stringSerializer = RawSharingMode::name,
             stringDeserializer = RawSharingMode::valueOf,
+        )
+
+    override val cacheSizeLimitInMb: BehaviorSubject<Int> =
+        intPreferenceSubject(
+            preferences = preferences,
+            key = "${keyPrefix}_cache_size_limit",
+            defaultValue = 500,
         )
 
     override fun getItemsOrderBySearchQuery(

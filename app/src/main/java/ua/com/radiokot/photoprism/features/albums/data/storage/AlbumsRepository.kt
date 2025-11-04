@@ -21,7 +21,6 @@ import ua.com.radiokot.photoprism.util.PagedCollectionLoader
 class AlbumsRepository(
     private val types: Set<Album.TypeName>,
     private val photoPrismAlbumsService: PhotoPrismAlbumsService,
-    private val cachedAlbumDao: CachedAlbumDao
 ) : SimpleCollectionRepository<Album>() {
     override fun getCollection(): Single<List<Album>> =
         Single.mergeDelayError(types.map(::getAlbumsOfType))
@@ -48,13 +47,6 @@ class AlbumsRepository(
                         offset = offset,
                         type = type.value,
                     )
-
-                    // add the tag whether the albums should be cached or not
-                    val cachedAlbumIds = cachedAlbumDao.getCachedAlbums()
-                    items.forEach {
-                        it.cached = cachedAlbumIds.contains(it.uid)
-                    }
-
 
                     DataPage(
                         items = items,
@@ -124,7 +116,6 @@ class AlbumsRepository(
             AlbumsRepository(
                 types = setOf(Album.TypeName.ALBUM),
                 photoPrismAlbumsService = photoPrismAlbumsService,
-                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 
@@ -132,7 +123,6 @@ class AlbumsRepository(
             AlbumsRepository(
                 types = setOf(Album.TypeName.FOLDER),
                 photoPrismAlbumsService = photoPrismAlbumsService,
-                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 
@@ -140,7 +130,6 @@ class AlbumsRepository(
             AlbumsRepository(
                 types = setOf(Album.TypeName.MONTH),
                 photoPrismAlbumsService = photoPrismAlbumsService,
-                cachedAlbumDao = appDatabase.cachedAlbums()
             )
         }
 

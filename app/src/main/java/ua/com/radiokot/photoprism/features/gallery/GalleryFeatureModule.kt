@@ -10,6 +10,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.BuildConfig
+import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.di.APP_NO_BACKUP_PREFERENCES
 import ua.com.radiokot.photoprism.di.EXTERNAL_DOWNLOADS_DIRECTORY
 import ua.com.radiokot.photoprism.di.INTERNAL_DOWNLOADS_DIRECTORY
@@ -125,7 +126,9 @@ val galleryFeatureModule = module {
             CachingFileRetrievalService(
                 context = androidApplication(),
                 httpClient = get(),
-                urlFactory = get()
+                urlFactory = get(),
+                cachedMediaItemDao = get<AppDatabase>().cachedMediaItems(),
+                preferences = get()
             )
         }
 

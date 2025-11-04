@@ -20,7 +20,6 @@ class Album(
     val path: String?,
     val uid: String,
     val isFavorite: Boolean,
-    val shouldCache: Boolean,
     /**
      * String representation of album's YYYYMMDD.
      * This "date" can be used to sort automatically created folders like "December 2023".
@@ -48,7 +47,6 @@ class Album(
         isFavorite = source.favorite,
         ymd = "%04d%02d%02d".format(source.year, source.month, source.day),
         thumbnailHash = source.thumb,
-        shouldCache = false
     )
 
     override fun equals(other: Any?): Boolean {

@@ -170,6 +170,7 @@
         <item>Large</item>
         <item>Huge</item>
     </string-array>
+    <string name="gallery_cache_size_in_mb">Cache size in MB</string>
     <string name="language_preference">Language</string>
     <string name="paste">Paste</string>
     <string name="tfa_code_dialog_title">Verification code</string>

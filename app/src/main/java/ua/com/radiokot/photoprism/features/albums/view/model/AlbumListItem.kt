@@ -94,8 +94,6 @@ class AlbumListItem(
             view.descriptionTextView.isVisible = item.description != null
             view.descriptionTextView.text = item.description
             view.descriptionTextView.isSelected = true
-            view.cacheIcon.visibility = if (item.source?.shouldCache == true ) View.VISIBLE else View.INVISIBLE
-
 
             ViewCompat.setTooltipText(view.root, item.title)
         }

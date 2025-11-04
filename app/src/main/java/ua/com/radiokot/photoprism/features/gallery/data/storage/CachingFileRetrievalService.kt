@@ -6,7 +6,9 @@ import android.util.Size
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
+import ua.com.radiokot.photoprism.db.AppDatabase
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.features.gallery.data.model.CachedMediaItemRecord
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.io.File
 import java.io.IOException
@@ -16,9 +18,12 @@ import kotlin.text.substringAfterLast
 class CachingFileRetrievalService(
     private val context: Context,
     private val httpClient: OkHttpClient,
-    private val urlFactory: MediaPreviewUrlFactory
+    private val cachedMediaItemDao: CachedMediaItemDao,
+    private val urlFactory: MediaPreviewUrlFactory,
+    private val preferences: GalleryPreferences
 ) {
     private val log = kLogger("CachingFileRetrievalSvc")
+
     private val cacheDir by lazy {
         File(context.cacheDir, "photo_cache").apply { mkdirs() }
     }
@@ -38,14 +43,25 @@ class CachingFileRetrievalService(
                 .forEach { file ->
                     // cache image files
                     try {
+                        // look for file in db
+                        val cachedMediaItem = cachedMediaItemDao.getByHash(file.hash)
+
+                        if (cachedMediaItem != null) {
+                            file.cachedPath = cachedMediaItem.localPath
+                            cachedMediaItemDao.updateLastHit(file.hash, System.currentTimeMillis())
+                            return
+                        }
+
                         var remoteUrl: String? = null
                         var localFileName: String
                         if (file.video == true) {
-                            remoteUrl = urlFactory.getVideoPreviewUrl( photo.hash,
+                            remoteUrl = urlFactory.getVideoPreviewUrl(
+                                photo.hash,
                                 file.hash,
-                                file.codec)
+                                file.codec
+                            )
                             localFileName =
-                                "${photo.uid}-${file.hash}.video}";
+                                "${photo.uid}-${file.hash}.video";
                         } else {
                             remoteUrl = urlFactory.getImagePreviewUrl(
                                 file.hash,
@@ -59,7 +75,19 @@ class CachingFileRetrievalService(
                             saveAndGetLocalUrl(shouldDownloadFile, remoteUrl, localFileName)
 
                         // fill in the cached path to point to the local file.
-                        file.cachedPath = Uri.fromFile(localFile).toString()
+                        if (localFile != null) {
+                            file.cachedPath = Uri.fromFile(localFile).toString()
+                            // add new entry to db
+                            cachedMediaItemDao.insert(
+                                CachedMediaItemRecord(
+                                    hash = file.hash,
+                                    localPath = file.cachedPath ?: "",
+                                    cachedAt = System.currentTimeMillis(), // current time
+                                    size = localFile.length(),
+                                    lastHitAt = System.currentTimeMillis()
+                                )
+                            )
+                        }
 
                     } catch (e: Exception) {
                         log.error(e) { "cacheAndAssignLocalPaths(): failed to cache file: file=$file" }
@@ -74,7 +102,7 @@ class CachingFileRetrievalService(
         shouldDownloadFile: Boolean,
         remoteUrl: String,
         targetFileName: String
-    ): File {
+    ): File? {
         // Use UID and file hash to create a unique local filename.
         val localFile = File(
             cacheDir,
@@ -83,13 +111,34 @@ class CachingFileRetrievalService(
 
         if (!localFile.exists()) {
             if (shouldDownloadFile) {
+                // check that the cache is not too big
+                val cacheSizeInBytes = cachedMediaItemDao.getCacheSizeInBytes()
+                if ((cacheSizeInBytes / 1000) > (preferences.cacheSizeLimitInMb.value ?: 0)
+                ) {
+                    // remove old cache files
+                    var sizeToRemove =
+                        cacheSizeInBytes - (preferences.cacheSizeLimitInMb.value ?: 0) * 1000
+                    for (record in cachedMediaItemDao.getAllByLastHit()) {
+                        val file = File(record.localPath)
+                        if (file.exists()) {
+                            file.delete()
+                            log.debug { "cacheAndAssignLocalPaths(): deleted file: localFile=$file" }
+                        }
+                        cachedMediaItemDao.deleteById(record.id)
+                        sizeToRemove -= record.size
+                        if (sizeToRemove <= 0)
+                            break;
+                    }
+                }
                 log.debug { "cacheAndAssignLocalPaths(): downloading: remoteUrl=$remoteUrl, localFile=$localFile" }
                 downloadFile(remoteUrl, localFile)
+                return localFile
             }
+            return null;
         } else {
             log.debug { "cacheAndAssignLocalPaths(): already cached: localFile=$localFile" }
+            return localFile;
         }
-        return localFile
     }
 
     private fun downloadFile(url: String, destination: File) {

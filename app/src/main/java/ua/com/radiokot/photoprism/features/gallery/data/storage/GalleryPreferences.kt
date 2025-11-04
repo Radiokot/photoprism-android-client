@@ -9,6 +9,7 @@ interface GalleryPreferences {
     val itemScale: BehaviorSubject<GalleryItemScale>
     val livePhotosAsImages: BehaviorSubject<Boolean>
     val rawSharingMode: BehaviorSubject<RawSharingMode>
+    val cacheSizeLimitInMb: BehaviorSubject<Int>
 
     fun getItemsOrderBySearchQuery(searchQuery: String?): BehaviorSubject<GalleryItemsOrder>
 }
