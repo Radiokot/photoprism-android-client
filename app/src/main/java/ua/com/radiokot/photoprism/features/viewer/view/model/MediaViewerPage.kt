@@ -39,7 +39,7 @@ sealed class MediaViewerPage(
 
                     if (livePhotosAsImages) {
                         return ImageViewerPage(
-                            previewUrl = source.files.first { it.isVideo == false }.cachedPath
+                            previewUrl = source.files.first { !(it.isVideo ?: false) }.cachedPath
                                 ?: previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
                                 sizePx = max(
@@ -85,7 +85,7 @@ sealed class MediaViewerPage(
                         }
 
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = source.files.first { it.isVideo == false }
+                        photoPreviewUrl = source.files.first { !(it.isVideo ?: false) }
                             .cachedPath
                             ?: previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
@@ -94,7 +94,7 @@ sealed class MediaViewerPage(
                                     imageViewSize.height
                                 )
                             ),
-                        videoPreviewUrl = source.files.first { it.isVideo == true }.cachedPath
+                        videoPreviewUrl = source.files.first { (it.isVideo ?: false) }.cachedPath
                             ?: previewUrlFactory.getVideoPreviewUrl(
                                 galleryMedia = source,
                             ),
@@ -111,7 +111,7 @@ sealed class MediaViewerPage(
 
                 source.media is Viewable.AsVideo ->
                     VideoViewerPage(
-                        previewUrl = source.files.first { it.isVideo == true }.cachedPath
+                        previewUrl = source.files.first { (it.isVideo ?: false) }.cachedPath
                             ?: previewUrlFactory.getVideoPreviewUrl(
                                 galleryMedia = source,
                             ),
