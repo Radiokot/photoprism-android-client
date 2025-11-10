@@ -63,8 +63,15 @@ class GalleryPreferencesOnPrefs(
     override val cacheSizeLimitInMb: BehaviorSubject<Int> =
         intPreferenceSubject(
             preferences = preferences,
-            key = "${keyPrefix}_cache_size_limit",
+            key = "${keyPrefix}_cache_size_in_mb",
             defaultValue = 500,
+            onValuePut = { _, newValue ->
+                log.debug {
+                    "cacheSizeLimitInMb::onNext(): set_value:" +
+                            "\nvalue=$newValue"
+                }
+            }
+
         )
 
     override fun getItemsOrderBySearchQuery(

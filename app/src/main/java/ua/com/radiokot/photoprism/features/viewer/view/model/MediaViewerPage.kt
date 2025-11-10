@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import android.util.Size
 import com.mikepenz.fastadapter.items.AbstractItem
+import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
@@ -9,23 +10,22 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeRe
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
 
-// MediaViewerPageDiffCallback must be updated when adding new page types.
 sealed class MediaViewerPage(
     val thumbnailUrl: String,
     val source: GalleryMedia?,
 ) : AbstractItem<MediaViewerPageViewHolder<out MediaViewerPage>>() {
 
-    // Used in MediaViewerPageDiffCallback for item equality.
     override var identifier: Long
         get() = (thumbnailUrl + type).hashCode().toLong()
         set(_) = error("Don't override my value")
-
     companion object {
         private const val FADE_END_PLAYBACK_DURATION_MS_SHORT =
             400L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val FADE_END_PLAYBACK_DURATION_MS_LONG =
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val THUMBNAIL_SIZE_PX = 500
+
+        private val log = kLogger("MediaVP")
 
         fun fromGalleryMedia(
             source: GalleryMedia,
@@ -36,17 +36,16 @@ sealed class MediaViewerPage(
             return when {
                 source.media is GalleryMedia.TypeData.Live
                         && source.media.fullDurationMs != null -> {
-
                     if (livePhotosAsImages) {
                         return ImageViewerPage(
-                            previewUrl = source.files.first { !(it.isVideo ?: false) }.cachedPath
+                            previewUrl = source.files.first { it.hash == source.hash }.cachedPath
                                 ?: previewUrlFactory.getImagePreviewUrl(
-                                previewHash = source.hash,
-                                sizePx = max(
-                                    imageViewSize.width,
-                                    imageViewSize.height
-                                )
-                            ),
+                                    previewHash = source.hash,
+                                    sizePx = max(
+                                        imageViewSize.width,
+                                        imageViewSize.height
+                                    )
+                                ),
                             imageViewSize = imageViewSize,
                             thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                                 thumbnailHash = source.hash,
@@ -85,8 +84,7 @@ sealed class MediaViewerPage(
                         }
 
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = source.files.first { !(it.isVideo ?: false) }
-                            .cachedPath
+                        photoPreviewUrl = source.files.first { it.hash == source.hash }.cachedPath
                             ?: previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
                                 sizePx = max(
@@ -94,10 +92,13 @@ sealed class MediaViewerPage(
                                     imageViewSize.height
                                 )
                             ),
-                        videoPreviewUrl = source.files.first { (it.isVideo ?: false) }.cachedPath
+                        videoPreviewUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
                             ?: previewUrlFactory.getVideoPreviewUrl(
                                 galleryMedia = source,
                             ),
+//                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
+//                                galleryMedia = source,
+//                            ),
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
@@ -109,12 +110,15 @@ sealed class MediaViewerPage(
                     )
                 }
 
-                source.media is Viewable.AsVideo ->
+                source.media is Viewable.AsVideo -> {
                     VideoViewerPage(
-                        previewUrl = source.files.first { (it.isVideo ?: false) }.cachedPath
+                        previewUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
                             ?: previewUrlFactory.getVideoPreviewUrl(
                                 galleryMedia = source,
                             ),
+//                        previewUrl = previewUrlFactory.getVideoPreviewUrl(
+//                                galleryMedia = source,
+//                            ),
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
@@ -124,10 +128,11 @@ sealed class MediaViewerPage(
                         ),
                         source = source,
                     )
+                }
 
-                source.media is Viewable.AsImage ->
+                source.media is Viewable.AsImage -> {
                     ImageViewerPage(
-                        previewUrl = source.files.first().cachedPath
+                        previewUrl = source.files.first { it.hash == source.hash }.cachedPath
                             ?: previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
                                 sizePx = max(
@@ -142,6 +147,7 @@ sealed class MediaViewerPage(
                         ),
                         source = source,
                     )
+                }
 
                 else ->
                     unsupported(source, previewUrlFactory)

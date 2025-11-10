@@ -16,6 +16,7 @@ import androidx.preference.MaterialPreferenceDialogDisplay
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
 import androidx.preference.PreferenceScreen
+import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -210,6 +211,18 @@ class PreferencesFragment :
             value = slideshowPreferences.speed.name
             setOnPreferenceChangeListener { _, newValue ->
                 slideshowPreferences.speed = SlideshowSpeed.valueOf(newValue as String)
+                true
+            }
+        }
+
+        with(requirePreference(R.string.pk_gallery_cache_size_in_mb)) {
+            this as SeekBarPreference
+            summary = galleryPreferences.cacheSizeLimitInMb.value!!.toString()
+            value = galleryPreferences.cacheSizeLimitInMb.value!!
+            setOnPreferenceChangeListener { _, newValue ->
+                val newCacheSize = newValue as Int
+                galleryPreferences.cacheSizeLimitInMb.onNext(newCacheSize)
+                summary = newCacheSize.toString()
                 true
             }
         }

@@ -25,7 +25,7 @@ class CachingFileRetrievalService(
     private val log = kLogger("CachingFileRetrievalSvc")
 
     private val cacheDir by lazy {
-        File(context.cacheDir, "photo_cache").apply { mkdirs() }
+        File(context.filesDir, "photo_cache").apply { mkdirs() }
     }
 
     /**
@@ -47,21 +47,23 @@ class CachingFileRetrievalService(
                         val cachedMediaItem = cachedMediaItemDao.getByHash(file.hash)
 
                         if (cachedMediaItem != null) {
-                            file.cachedPath = cachedMediaItem.localPath
+                            file.cachedPath =
+                                Uri.fromFile(File(cachedMediaItem.localPath)).toString()
                             cachedMediaItemDao.updateLastHit(file.hash, System.currentTimeMillis())
-                            return
+                            return@forEach
                         }
 
                         var remoteUrl: String? = null
                         var localFileName: String
-                        if (file.video == true) {
+                        if ((file.video ?: false)) {
+//                            return@forEach // skip video files
                             remoteUrl = urlFactory.getVideoPreviewUrl(
                                 photo.hash,
                                 file.hash,
                                 file.codec
                             )
                             localFileName =
-                                "${photo.uid}-${file.hash}.video";
+                                "${photo.uid}-${file.hash}.mp4";
                         } else {
                             remoteUrl = urlFactory.getImagePreviewUrl(
                                 file.hash,
@@ -71,6 +73,7 @@ class CachingFileRetrievalService(
                                 "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
                         }
 
+                        manageCache(photos)
                         val localFile =
                             saveAndGetLocalUrl(shouldDownloadFile, remoteUrl, localFileName)
 
@@ -81,7 +84,7 @@ class CachingFileRetrievalService(
                             cachedMediaItemDao.insert(
                                 CachedMediaItemRecord(
                                     hash = file.hash,
-                                    localPath = file.cachedPath ?: "",
+                                    localPath = localFile.path ?: "",
                                     cachedAt = System.currentTimeMillis(), // current time
                                     size = localFile.length(),
                                     lastHitAt = System.currentTimeMillis()
@@ -98,6 +101,34 @@ class CachingFileRetrievalService(
         }
     }
 
+    private fun manageCache(photos: Sequence<PhotoPrismMergedPhoto>) {
+        // check that the cache is not too big
+        val cacheSizeInBytes = cachedMediaItemDao.getCacheSizeInBytes()
+        if ((cacheSizeInBytes / 1000000) > (preferences.cacheSizeLimitInMb.value ?: 0)
+        ) {
+            // remove old cache files
+            var sizeToRemove =
+                cacheSizeInBytes - (preferences.cacheSizeLimitInMb.value ?: 0) * 1000000
+            for (record in cachedMediaItemDao.getAllByLastHit()) {
+                val file = File(record.localPath)
+                if (file.exists()) {
+                    file.delete()
+                    log.debug { "cacheAndAssignLocalPaths(): deleted file: localFile=$file" }
+                }
+                cachedMediaItemDao.delete(record)
+                // remove the cachedpath from any photos in our list
+                val selectedPhoto = photos.firstOrNull { it.files.any { it.hash == record.hash } }
+                if (selectedPhoto != null) {
+                    val selectedFile = selectedPhoto.files.first { it.hash == record.hash }
+                    selectedFile.cachedPath = null
+                }
+                sizeToRemove -= record.size
+                if (sizeToRemove <= 0)
+                    break;
+            }
+        }
+    }
+
     private fun saveAndGetLocalUrl(
         shouldDownloadFile: Boolean,
         remoteUrl: String,
@@ -111,25 +142,6 @@ class CachingFileRetrievalService(
 
         if (!localFile.exists()) {
             if (shouldDownloadFile) {
-                // check that the cache is not too big
-                val cacheSizeInBytes = cachedMediaItemDao.getCacheSizeInBytes()
-                if ((cacheSizeInBytes / 1000) > (preferences.cacheSizeLimitInMb.value ?: 0)
-                ) {
-                    // remove old cache files
-                    var sizeToRemove =
-                        cacheSizeInBytes - (preferences.cacheSizeLimitInMb.value ?: 0) * 1000
-                    for (record in cachedMediaItemDao.getAllByLastHit()) {
-                        val file = File(record.localPath)
-                        if (file.exists()) {
-                            file.delete()
-                            log.debug { "cacheAndAssignLocalPaths(): deleted file: localFile=$file" }
-                        }
-                        cachedMediaItemDao.deleteById(record.id)
-                        sizeToRemove -= record.size
-                        if (sizeToRemove <= 0)
-                            break;
-                    }
-                }
                 log.debug { "cacheAndAssignLocalPaths(): downloading: remoteUrl=$remoteUrl, localFile=$localFile" }
                 downloadFile(remoteUrl, localFile)
                 return localFile

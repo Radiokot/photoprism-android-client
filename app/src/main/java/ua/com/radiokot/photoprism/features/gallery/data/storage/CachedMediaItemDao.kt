@@ -1,6 +1,7 @@
 package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -11,7 +12,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.CachedMediaItemRec
 @Dao
 interface CachedMediaItemDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    fun insert(item: CachedMediaItemRecord): Completable
+    fun insert(item: CachedMediaItemRecord)
 
     @Query("SELECT sum(size) FROM cached_media_items")
     fun getCacheSizeInBytes(): Long
@@ -25,9 +26,12 @@ interface CachedMediaItemDao {
     @Query("UPDATE cached_media_items SET lastHitAt = :timestamp WHERE `hash` = :hash")
     fun updateLastHit(hash: String, timestamp: Long): Completable
 
-    @Query("DELETE FROM cached_media_items WHERE `hash` = :hash")
-    fun deleteByHash(hash: String): Completable
-
-    @Query("DELETE FROM cached_media_items WHERE 'id' = :id")
-    fun deleteById(id: Long): Completable
+    @Delete(entity = CachedMediaItemRecord::class)
+    fun delete(item: CachedMediaItemRecord)
 }
+
+//    @Query("DELETE FROM cached_media_items WHERE `hash` = :hash")
+//    fun deleteByHash(hash: String): Completable
+//
+//    @Query("DELETE FROM cached_media_items WHERE 'id' = :id")
+//    fun deleteById(id: Long): Completable

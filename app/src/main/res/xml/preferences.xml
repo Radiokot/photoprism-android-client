@@ -55,8 +55,8 @@
             app:iconSpaceReserved="false"
             app:key="@string/pk_gallery_cache_size_in_mb"
             app:min="0"
-            app:persistent="false"
             app:summary="%1$s"
+            app:persistent="false"
             app:title="@string/gallery_cache_size_in_mb" />
 
         <ListPreference
