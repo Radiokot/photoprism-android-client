@@ -3,7 +3,7 @@
     <!-- Polish -->
     <string name="language_code">pl</string>
     <string name="script_code" />
-    <string name="app_name">PhotoPrism</string>
+    <string name="app_name">PhotoPrism Galeria</string>
 
     <string name="media_type_image">Zdjęcie</string>
     <string name="media_type_animated">Animacja</string>
@@ -39,7 +39,7 @@
     <string name="library_root_url">Główny URL biblioteki</string>
     <string name="username_optional">Nazwa użytkownika (opcjonalnie)</string>
     <string name="password_optional">Hasło (opcjonalnie)</string>
-    <string name="connect_to_a_library">Połączenie z biblioteką</string>
+    <string name="connect_to_a_library">Połącz z biblioteką</string>
     <string name="connect">Połącz</string>
     <string name="template_error_inaccessible_library_url">Biblioteka niedostępna: %1$s</string>
     <string name="error_invalid_library_url_format">Nieprawidłowy format URL. Upewnij się, że podano protokół</string>
@@ -67,7 +67,7 @@
     <string name="client_certificate_optional">Certyfikat klienta (opcjonalnie)</string>
     <string name="clear">Wyczyść</string>
     <string name="how_to_use_client_certificate">Jak używać certyfikatów klienta</string>
-    <string name="p12_certificate_guide">"         1. Prześlij na urządzenie swój certyfikat w formacie PKCS12 (.p12);         2. Zainstaluj certyfikat, otwierając go w menedżerze plików. Wybierz typ „VPN lub aplikacja”;         3. Wróć do galerii i wybierz zainstalowany certyfikat."</string>
+    <string name="p12_certificate_guide">"         1. Pobierz Twój certyfikat w formacie PKCS12 (.p12) na swoje urządzenie;         2. Zainstaluj certyfikat, otwierając go w menedżerze plików. Wybierz typ „VPN lub aplikacja”;         3. Wróć do galerii i wybierz zainstalowany certyfikat."</string>
     <string name="ok">OK</string>
     <string name="learn_more">Dowiedz się więcej</string>
     <string name="preferences">Ustawienia</string>
@@ -113,7 +113,7 @@
         <br><br>
         Dziękuję.
     ]]></string>
-    <string name="used_open_source_software">Używane oprogramowanie open source</string>
+    <string name="used_open_source_software">Używane oprogramowanie open-source</string>
     <string name="user_guides">Instrukcje użytkownika</string>
     <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Korecki i współautorzy z GitHub</string>
     <string name="people">Osoby</string>
@@ -204,7 +204,7 @@
     <string name="import_notification_channel_name">@string/importt</string>
     <string name="import_notification_channel_description">Postęp importu w tle</string>
     <string name="import_notification_progress_title">Przesyłanie plików…</string>
-    <string name="import_notification_failed_title">Import nie powiódł się</string>
+    <string name="import_notification_failed_title">Przesyłanie nie powiodło się</string>
     <string name="import_notification_failed_text">Proszę spróbować ponownie</string>
     <string name="import_notification_success_title">Pomyślnie przesłano</string>
     <string name="import_start">Rozpocznij import</string>
