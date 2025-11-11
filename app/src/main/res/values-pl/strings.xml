@@ -67,7 +67,10 @@
     <string name="client_certificate_optional">Certyfikat klienta (opcjonalnie)</string>
     <string name="clear">Wyczyść</string>
     <string name="how_to_use_client_certificate">Jak używać certyfikatów klienta</string>
-    <string name="p12_certificate_guide">"         1. Pobierz Twój certyfikat w formacie PKCS12 (.p12) na swoje urządzenie;         2. Zainstaluj certyfikat, otwierając go w menedżerze plików. Wybierz typ „VPN lub aplikacja”;         3. Wróć do galerii i wybierz zainstalowany certyfikat."</string>
+    <string name="p12_certificate_guide">
+        1. Pobierz Twój certyfikat w formacie PKCS12 (.p12) na swoje urządzenie;\n\n
+        2. Zainstaluj certyfikat, otwierając go w menedżerze plików. Wybierz typ \„VPN lub aplikacja\”;\n\n
+        3. Wróć do galerii i wybierz zainstalowany certyfikat.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Dowiedz się więcej</string>
     <string name="preferences">Ustawienia</string>

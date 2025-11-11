@@ -68,7 +68,10 @@
     <string name="client_certificate_optional">Client certificate (optional)</string>
     <string name="clear">Clear</string>
     <string name="how_to_use_client_certificate">How to use client certificates</string>
-    <string name="p12_certificate_guide">"         1. Download your PKCS12 (.p12) bundle to the device;           2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;           3. Return to the gallery and select the installed certificate."</string>
+    <string name="p12_certificate_guide">
+        1. Download your PKCS12 (.p12) bundle to the device;\n\n
+        2. Install the bundle by opening it from a file explorer. Use \"VPN and apps\" type;\n\n
+        3. Return to the gallery and select the installed certificate.</string>
     <string name="ok">OK</string>
     <string name="learn_more">Learn more</string>
     <string name="preferences">Preferences</string>
