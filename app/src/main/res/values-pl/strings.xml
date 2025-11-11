@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Polish -->
+    <string name="language_code">pl</string>
+    <string name="script_code" />
+    <string name="app_name">PhotoPrism</string>
+
+    <string name="media_type_image">Zdjęcie</string>
+    <string name="media_type_animated">Animacja</string>
+    <string name="media_type_live">Zdjęcie na żywo</string>
+    <string name="media_type_video">Wideo</string>
+    <string name="media_type_vector">Wektor</string>
+    <string name="media_type_sidecar">Plik pomocniczy</string>
+    <string name="media_type_text">Tekst</string>
+    <string name="media_type_other">Inny plik</string>
+    <string name="media_type_unknown">Nieznany typ</string>
+    <string name="file_thumbnail">Miniatura</string>
+    <string name="downloading_progress">Pobieranie…</string>
+    <string name="cancel">Anuluj</string>
+    <string name="failed_to_download_file">Nie udało się pobrać pliku</string>
+    <string name="select_content">Wybierz zawartość</string>
+    <string name="library">Biblioteka</string>
+    <string name="preview_is_not_available">Podgląd niedostępny</string>
+    <string name="share">Udostępnij</string>
+    <string name="download">Pobierz</string>
+    <string name="open_with">Otwórz za pomocą</string>
+    <string name="add_to_favorites">Dodaj do ulubionych</string>
+    <string name="remove_from_favorites">Usuń z ulubionych</string>
+    <string name="failed_to_load_the_preview">Nie udało się załadować podglądu</string>
+    <string name="failed_to_load_the_thumbnail">Nie udało się załadować miniatury</string>
+    <string name="today">Dziś</string>
+    <string name="search_the_library">Szukaj w bibliotece</string>
+    <string name="use_mouse_to_search_the_library">Szukaj w bibliotece (użyj myszy)</string>
+    <string name="enter_the_query">Wpisz zapytanie</string>
+    <string name="media_type">Typ</string>
+    <string name="apply_search">Zastosuj</string>
+    <string name="reset_search">Resetuj</string>
+    <string name="error_you_have_to_connect_to_library">Najpierw połącz się z biblioteką</string>
+    <string name="library_root_url">Główny URL biblioteki</string>
+    <string name="username_optional">Nazwa użytkownika (opcjonalnie)</string>
+    <string name="password_optional">Hasło (opcjonalnie)</string>
+    <string name="connect_to_a_library">Połączenie z biblioteką</string>
+    <string name="connect">Połącz</string>
+    <string name="template_error_inaccessible_library_url">Biblioteka niedostępna: %1$s</string>
+    <string name="error_invalid_library_url_format">Nieprawidłowy format URL. Upewnij się, że podano protokół</string>
+    <string name="error_library_requires_credentials">Wymagane są nazwa użytkownika i hasło</string>
+    <string name="error_invalid_password">Nieprawidłowe hasło</string>
+    <string name="template_error_failed_to_load_content">Nie udało się załadować danych: %1$s</string>
+    <string name="error_library_not_accessible_try_again">Biblioteka jest niedostępna. Sprawdź połączenie i spróbuj ponownie</string>
+    <string name="try_again">Spróbuj ponownie</string>
+    <string name="load_more">Wczytaj więcej</string>
+    <string name="template_started_download_file">Plik zostanie zapisany w Pobrane: %1$s</string>
+    <string name="error_storage_permission_is_required">Wymagane jest pozwolenie na dostęp do pamięci</string>
+    <string name="add_search_bookmark">Nowa zakładka</string>
+    <string name="edit_search_bookmark">Zakładka</string>
+    <string name="search_bookmark_name">Nazwa</string>
+    <string name="save">Zapisz</string>
+    <string name="delete">Usuń</string>
+    <string name="search_bookmarks">Zakładki</string>
+    <string name="template_error_failed_to_add_bookmark">Nie udało się dodać zakładki: %1$s</string>
+    <string name="template_error_failed_to_edit_bookmark">Nie udało się edytować zakładki: %1$s</string>
+    <string name="template_error_failed_to_delete_bookmark">Nie udało się usunąć zakładki: %1$s</string>
+    <string name="how_to_search_the_library">Jak wyszukiwać w bibliotece</string>
+    <string name="some_types_are_not_available_when_selecting">Dostępne tylko typy obsługiwane przez aplikację żądającą</string>
+    <string name="include_private_content">Pokaż zawartość prywatną</string>
+    <string name="only_favorite_content">Tylko ulubione</string>
+    <string name="client_certificate_optional">Certyfikat klienta (opcjonalnie)</string>
+    <string name="clear">Wyczyść</string>
+    <string name="how_to_use_client_certificate">Jak używać certyfikatów klienta</string>
+    <string name="p12_certificate_guide">1. Prześlij na urządzenie swój certyfikat w formacie PKCS12 (.p12);\n\n2. Zainstaluj certyfikat, otwierając go w menedżerze plików. Wybierz typ „VPN lub aplikacja”;\n\n3. Wróć do galerii i wybierz zainstalowany certyfikat.</string>
+    <string name="ok">OK</string>
+    <string name="learn_more">Dowiedz się więcej</string>
+    <string name="preferences">Ustawienia</string>
+    <string name="library_preferences">@string/library</string>
+    <string name="about">O aplikacji</string>
+    <string name="report_an_issue">Zgłoś problem</string>
+    <string name="template_error_failed_to_export_bookmarks">Nie udało się wyeksportować zakładek: %1$s</string>
+    <string name="bookmarks_preferences">@string/search_bookmarks</string>
+    <string name="export">Eksport</string>
+    <string name="export_bookmarks">Eksport zakładek</string>
+    <string name="importt">Import</string>
+    <string name="import_bookmarks">Importuj zakładki</string>
+    <string name="template_error_failed_to_import_bookmarks">Nie udało się zaimportować zakładek: %1$s</string>
+    <string name="template_successfully_imported_search_bookmarks">Pomyślnie %1$s</string>
+    <string name="replace_current_bookmarks_with_saved">Zastąp zakładki zapisanymi wcześniej</string>
+    <string name="save_current_bookmarks_to_file">Zapisz zakładki do pliku</string>
+    <string name="your_bookmarks_will_be_replaced">Twoje aktualne zakładki zostaną nadpisane. Kontynuować?</string>
+    <string name="continuee">Kontynuuj</string>
+    <string name="disconnect_from_library">Rozłącz się</string>
+    <string name="disconnect_from_library_confirmation">Rozłączyć się z biblioteką? Twoje zakładki nie zostaną usunięte</string>
+    <string name="template_error_failed_to_disconnect">Nie udało się rozłączyć: %1$s</string>
+    <string name="view_media">Wyświetl</string>
+    <string name="open_in_web_viewer">Otwórz w przeglądarce</string>
+    <string name="albums">Albumy</string>
+    <string name="loading_albums_progress">@string/loading_data_progress</string>
+    <string name="reload_albums">@string/reload</string>
+    <string name="no_albums_found">Albumy nie znalezione</string>
+    <string name="clear_selection">Wyczyść zaznaczenie</string>
+    <string name="done_selecting">Gotowe</string>
+    <string name="template_current_of">%1$d z %2$d</string>
+    <string name="search_doesnt_fit_allowed_types">Wyszukiwanie nie pasuje do dozwolonych typów</string>
+    <string name="save_file_to_the_storage">Zapisz plik na urządzeniu</string>
+    <string name="share_the_file">Udostępnij plik</string>
+    <string name="download_is_completed">Pobieranie zakończone</string>
+    <string name="welcome_title">Witamy w galerii</string>
+    <string name="template_welcome_text"><![CDATA[
+        Proszę pamiętać, że to nieoficjalna aplikacja PhotoPrism.
+        Jest utrzymywana przez Olega Koreckiego (Radiokot) i nie jest związana z głównym zespołem.
+        <br><br>
+        Jeśli coś jest nie tak z aplikacją, proszę zostawić opinię w Google Play,
+        <a href="#issue">zgłosić błąd</a>
+        lub napisać na <a href="mailto:%1$s">%1$s</a>.
+        <br><br>
+        Dziękuję.
+    ]]></string>
+    <string name="used_open_source_software">Używane oprogramowanie open source</string>
+    <string name="user_guides">Instrukcje użytkownika</string>
+    <string name="template_preferences_version">%1$s %2$s\n%3$s Oleg Korecki i współautorzy z GitHub</string>
+    <string name="people">Osoby</string>
+    <string name="loading_people_progress">@string/loading_data_progress</string>
+    <string name="reload_people">@string/reload</string>
+    <string name="no_people_found">Osoby nie znalezione</string>
+    <string name="reload">Odśwież</string>
+    <string name="loading_data_progress">Ładowanie danych…</string>
+    <string name="search_preferences">Wyszukiwanie</string>
+    <string name="show_people">@string/people</string>
+    <string name="show_people_explanation">Pokaż osoby i nowe twarze na ekranie wyszukiwania</string>
+    <string name="show_albums">@string/albums</string>
+    <string name="show_albums_explanation">Pokaż albumy na ekranie wyszukiwania</string>
+    <string name="see_all_albums">Pokaż wszystkie</string>
+    <string name="see_all_people">Pokaż wszystkich</string>
+    <string name="search">Szukaj</string>
+    <string name="failed_to_load_albums">Nie udało się załadować albumów</string>
+    <string name="failed_to_load_people">Nie udało się załadować osób</string>
+    <string name="folders">Foldery</string>
+    <string name="show_album_folders_explanation">Pokaż foldery na liście albumów</string>
+    <string name="files_saved_to_downloads">Pliki zapisano w Pobrane</string>
+    <string name="start_slideshow">Pokaz slajdów</string>
+    <string name="slideshow_previous">Poprzedni</string>
+    <string name="got_it">Rozumiem</string>
+    <string name="slideshow_guide_got_it">@string/got_it</string>
+    <string name="slideshow_next">Następny</string>
+    <string name="slideshow_guide_show_system_buttons">Pokaż przyciski systemowe</string>
+    <string name="slideshow_exit">Zakończ pokaz slajdów</string>
+    <string name="slideshow_guide_speed">Prędkość można zmienić w Ustawieniach</string>
+    <string name="viewing_preferences">Wyświetlanie</string>
+    <string name="slideshow_speed_preference">Szybkość pokazu slajdów</string>
+    <string-array name="slideshow_speed_array">
+        <item>Wolno</item>
+        <item>Wolniej</item>
+        <item>Normalnie</item>
+        <item>Szybciej</item>
+        <item>Bardzo szybko</item>
+    </string-array>
+    <string name="gallery_item_scale_preference">Rozmiar elementów w galerii</string>
+    <string-array name="gallery_item_scale_array">
+        <item>Maleńki</item>
+        <item>Mały</item>
+        <item>Normalny</item>
+        <item>Duży</item>
+        <item>Ogromny</item>
+    </string-array>
+    <string name="language_preference">Język</string>
+    <string name="paste">Wklej</string>
+    <string name="tfa_code_dialog_title">Kod weryfikacyjny</string>
+    <string name="tfa_code_dialog_message">Wpisz lub wklej kod z aplikacji uwierzytelniającej</string>
+    <string name="tfa_code_dialog_input_hint">Kod</string>
+    <string name="error_invalid_tfa_code">Nieprawidłowy kod</string>
+    <string name="error_session_expired">Sesja wygasła. Rozważ utworzenie osobnego hasła dla galerii</string>
+    <string name="memories_notification_new_memories_title">Nowe wspomnienia</string>
+    <string name="memories_notification_new_memories_text">Przywołaj chwile z przeszłości</string>
+    <string name="memories_notification_channel_name">@string/extension_memories_title</string>
+    <string name="memories_notification_channel_description">Gdy pojawią się nowe wspomnienia</string>
+    <string name="extensions_preferences">Rozszerzenia</string>
+    <string name="extensions_preferences_summary">Dodatkowe funkcje do galerii</string>
+    <string name="archive_action">Archiwizuj</string>
+    <string name="media_viewer_deleting_confirmation">Usunąć ten element na stałe?</string>
+    <string name="extension_store_preference">@string/extension_catalog</string>
+    <string name="extension_store_title">@string/extension_catalog</string>
+    <string name="extension_store_item_activated">Aktywowane</string>
+    <string name="extension_store_failed_loading">Nie udało się wczytać rozszerzeń</string>
+    <string name="extension_marketplace_activate_key">Aktywuj klucz</string>
+    <string name="activate_key_preference">Aktywuj kolejny klucz</string>
+    <string name="extension_memories_title">Wspomnienia</string>
+    <string name="extension_memories_description">Codzienna selekcja zdjęć i filmów wykonanych tego dnia w poprzednich latach</string>
+    <string name="extension_memories_preferences">@string/extension_memories_title</string>
+    <string name="extension_memories_notification_preference">Powiadomienia</string>
+    <string name="extension_memories_notification_preference_summary">Wysyłaj powiadomienie, gdy znajdowane są nowe wspomnienia</string>
+    <string name="key_activation_input_title">Aktywacja klucza</string>
+    <string name="key_activation_input_subtitle">Wklej swój klucz, aby aktywować rozszerzenia</string>
+    <string name="key_activation_input_field_title">Klucz</string>
+    <string name="key_activation_error_device_mismatch">Ten klucz nie jest wydany dla tego urządzenia</string>
+    <string name="key_activation_error_email_mismatch">Ten klucz nie jest przypisany do Ciebie</string>
+    <string name="key_activation_error_invalid">Ten klucz jest nieprawidłowy</string>
+    <string name="key_activation_error_expired">Ten klucz wygasł</string>
+    <string name="key_activation_error_no_new_extensions">Ten klucz nie dodaje nowych rozszerzeń</string>
+    <string name="template_key_activation_error_failed_processing">Nie udało się rozpoznać klucza: %1$s</string>
+    <string name="key_activation_success_title">Klucz aktywowany</string>
+    <string name="key_activation_success_subtitle">Nowe rozszerzenia dodane do galerii 😎</string>
+    <string name="key_activation_success_done">Gotowe</string>
+    <string name="template_extensions_preferences_activated_extensions_for">%1$s dla %2$s</string>
+    <string name="gallery_deleting_confirmation">Usunąć wybrane elementy na zawsze?</string>
+    <string name="general_preferences">Ogólne</string>
+    <string name="import_notification_channel_name">@string/importt</string>
+    <string name="import_notification_channel_description">Postęp importu w tle</string>
+    <string name="import_notification_progress_title">Przesyłanie plików…</string>
+    <string name="import_notification_failed_title">Import nie powiódł się</string>
+    <string name="import_notification_failed_text">Proszę spróbować ponownie</string>
+    <string name="import_notification_success_title">Pomyślnie przesłano</string>
+    <string name="import_start">Rozpocznij import</string>
+    <string name="import_title">@string/importt</string>
+    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="import_to_be_uploaded">Do przesłania</string>
+    <string name="import_started_in_background">Rozpoczęto w tle</string>
+    <string name="import_notifications_permission_rationale">Pozwolenie na wysyłanie powiadomień zapewnia niezawodną pracę importu w tle</string>
+    <string name="import_media_permission_rationale">Pozwolenie na dostęp do zdjęć i wideo zapobiega utracie danych lokalizacji w plikach</string>
+    <string name="template_destination_album_selection_create_new">Utwórz "%1$s"</string>
+    <string name="destination_album_selection_enter_album_title">Wpisz tytuł albumu</string>
+    <string name="import_albums_not_selected">Nie wybrano</string>
+    <string name="photo_frame_widget_name">Ramka na zdjęcia</string>
+    <string name="photo_frame_widget_description">Wyświetla losowe zdjęcie, które zmienia się co kilka godzin</string>
+    <string name="photos">Zdjęcia</string>
+    <string name="photo_frame_widget_configuration_all_photos_to_show">Pokaż wszystkie zdjęcia</string>
+    <string name="photo_frame_widget_configuration_shape">Kształt</string>
+    <string name="photo_frame_widget_configuration_show_date">Data</string>
+    <string name="photo_frame_widget_configuration_show_date_summary">Pokaż datę zrobienia zdjęcia</string>
+    <string name="extension_photo_frame_widget_name">Widżet Ramka na zdjęcia</string>
+    <string name="extension_photo_frame_widget_description">Przeglądaj losowe zdjęcia z biblioteki na ekranie głównym</string>
+    <string name="extension_store_item_acquire">Pobierz</string>
+    <string name="extension_store_disclaimer"><![CDATA[
+        Rozszerzenia galerii to dodatkowe funkcje aplikacji dostępne osobno, każde za niewielką opłatą.
+        Aktywują się za pomocą wieczystych kluczy offline – nie są wymagane konta ani subskrypcje.
+        <br/>
+        Rozszerzenia są bezpłatne dla <a href="#sponsors">sponsorów</a> i współtwórców z GitHub.
+    ]]></string>
+    <string name="extension_store_disclaimer_got_it">@string/got_it</string>
+    <string name="menu">Menu</string>
+    <string name="no_folders_found">Foldery nie znalezione</string>
+    <string name="failed_to_load_folders">Nie udało się wczytać folderów</string>
+    <string name="sort_preference">Sortowanie</string>
+    <string name="sort_order_name">Nazwa</string>
+    <string name="sort_order_name_desc">Nazwa, malejąco</string>
+    <string name="sort_order_newest_first">Najpierw nowe</string>
+    <string name="sort_order_oldest_first">Najpierw stare</string>
+    <string name="sort_order_recently_added">Niedawno dodane</string>
+    <string name="sort_favorites_first">Najpierw ulubione</string>
+    <string name="memory_deleting_confirmation">Usunąć to wspomnienie?</string>
+    <string name="live_photos_as_images">Zdjęcia Live jako obrazy</string>
+    <string name="live_photos_as_images_explanation">Nie animuj zdjęć Live w formatach JPEG lub HEIF</string>
+    <string name="activated_keys">Aktywowane klucze</string>
+    <string name="is_private">Prywatne</string>
+    <string name="add_to_album">Dodaj do albumu</string>
+    <string name="template_selected_added_to_album">Dodano do albumu %1$s</string>
+    <string name="favorites">Ulubione</string>
+    <string name="preference_enabled">Włączone</string>
+    <string name="extension_memories_max_entry_count_preference">Maksymalna liczba elementów</string>
+    <string name="calendar">Kalendarz</string>
+    <string name="failed_to_load_calendar">Nie udało się załadować kalendarza</string>
+    <string name="nothing_found">Nic nie znaleziono</string>
+    <string name="raw_sharing_preference">Wysyłać RAW jako</string>
+    <string name="raw_original">Oryginał</string>
+    <string name="raw_compatible_jpeg_if_present">Kompatybilny JPEG, jeśli jest</string>
+    <string-array name="raw_sharing_mode_array">
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string-array name="raw_download_mode_array">
+        <item>@string/raw_original</item>
+        <item>@string/raw_compatible_jpeg_if_present</item>
+    </string-array>
+    <string name="remove_from_album">Usuń z albumu</string>
+    <string name="download_preferences">Pobierania</string>
+    <string name="download_use_separate_folder_preference">Użyj oddzielnego folderu</string>
+    <string name="download_use_separate_folder_preference_summary">Zapisuj pliki w oddzielnym folderze w Pobrane</string>
+    <string name="download_separate_folder_name_preference">Nazwa folderu</string>
+    <string name="key_activation_renew">Aktualizuj</string>
+    <string name="key_renewal_subtitle">Jeśli masz klucz dla innego urządzenia, możesz uzyskać jego kopię dla tego. Klucz można odświeżyć raz dziennie</string>
+    <string name="key_renewal_current_key_title">Bieżący klucz</string>
+    <string name="key_renewal_new_key_title">Nowy klucz</string>
+    <string name="key_renewal_activate_new_key">Aktywuj</string>
+    <string name="key_renewal_error_failed">Nie udało się zaktualizować klucza</string>
+    <string name="key_renewal_error_not_available">Klucz można aktualizować raz dziennie. Spróbuj ponownie jutro</string>
+    <string name="key_renewal_title">Aktualizacja klucza</string>
+    <string name="extension_memories_people_to_forget_preference">@string/people</string>
+    <string name="extension_memories_people_to_forget_preference_summary">Kogo pokazywać we wspomnieniach, a kogo nie</string>
+    <string name="extension_catalog">Katalog rozszerzeń</string>
+    <string name="raw_download_preference">Pobieraj RAW jako</string>
+</resources>

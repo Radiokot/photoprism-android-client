@@ -26,7 +26,7 @@ android {
 
         // Must be aligned with @xml/locale_config and values-*.
         resConfigs "en", "cs", "de", "el", "es", "fr", "it", "ru", "tr", "uk",
-                "b+zh+Hans", "b+zh+Hant"
+                "b+zh+Hans", "b+zh+Hant", "pl"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
