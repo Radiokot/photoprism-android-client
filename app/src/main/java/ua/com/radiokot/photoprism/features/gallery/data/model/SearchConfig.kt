@@ -74,7 +74,7 @@ data class SearchConfig(
 
         // User query goes first, hence all the other params override the input.
         if (userQuery.isNotBlank()) {
-            queryBuilder.append(userQuery)
+            queryBuilder.append(userQuery.trim())
         }
 
         // If mediaTypes are not specified, all the types are allowed and no filter is added.
@@ -165,6 +165,15 @@ data class SearchConfig(
         ): SearchConfig =
             base.copy(
                 albumUid = albumUid,
+                includePrivate = true,
+            )
+
+        fun forLabel(
+            labelSlug: String,
+            base: SearchConfig = DEFAULT,
+        ): SearchConfig =
+            base.copy(
+                userQuery = base.userQuery + " label:$labelSlug",
                 includePrivate = true,
             )
     }
