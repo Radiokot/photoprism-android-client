@@ -9,6 +9,7 @@
     <locale android:name="es" /> <!-- Spanish -->
     <locale android:name="fr" /> <!-- French -->
     <locale android:name="it" /> <!-- Italian -->
+    <locale android:name="pl" /> <!-- Polish -->
     <locale android:name="ru" /> <!-- Russian -->
     <locale android:name="tr" /> <!-- Turkish -->
     <locale android:name="uk" /> <!-- Ukrainian -->

@@ -25,7 +25,7 @@ android {
         versionName "1.39.0"
 
         // Must be aligned with @xml/locale_config and values-*.
-        resConfigs "en", "cs", "de", "el", "es", "fr", "it", "ru", "tr", "uk",
+        resConfigs "en", "cs", "de", "el", "es", "fr", "it", "pl", "ru", "tr", "uk",
                 "b+zh+Hans", "b+zh+Hant"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="imported_search_bookmarks">
+        <item quantity="one">zaimportowana %1$d zakładka</item>
+        <item quantity="few">zaimportowano %1$d zakładki</item>
+        <item quantity="many">zaimportowano %1$d zakładek</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">%1$d rok temu</item>
+        <item quantity="few">%1$d lata temu</item>
+        <item quantity="many">%1$d lat temu</item>
+    </plurals>
+    <plurals name="activated_extensions">
+        <item quantity="one">%1$d włączone rozszerzenie</item>
+        <item quantity="few">%1$d włączone rozszerzenia</item>
+        <item quantity="many">%1$d włączonych rozszerzeń</item>
+    </plurals>
+    <plurals name="files">
+        <item quantity="one">%1$d plik</item>
+        <item quantity="few">%1$d pliki</item>
+        <item quantity="many">%1$d plików</item>
+    </plurals>
+</resources>
