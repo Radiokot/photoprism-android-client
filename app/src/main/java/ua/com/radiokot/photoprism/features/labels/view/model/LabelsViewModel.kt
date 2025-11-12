@@ -58,8 +58,6 @@ class LabelsViewModel(
         subscribeToRepositoryChanges()
         subscribeToSearch()
 
-        update()
-
         isInitialized = true
 
         log.debug {

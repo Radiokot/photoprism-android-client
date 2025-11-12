@@ -223,6 +223,12 @@
             android:label="@string/key_renewal_title"
             android:resizeableActivity="true" />
 
+        <activity
+            android:name=".features.labels.view.LabelsActivity"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"

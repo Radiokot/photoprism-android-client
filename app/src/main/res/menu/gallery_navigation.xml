@@ -24,6 +24,11 @@
         android:title="@string/calendar" />
 
     <item
+        android:id="@+id/labels"
+        android:icon="@drawable/ic_label"
+        android:title="@string/labels" />
+
+    <item
         android:id="@+id/folders"
         android:icon="@drawable/ic_folder"
         android:title="@string/folders" />

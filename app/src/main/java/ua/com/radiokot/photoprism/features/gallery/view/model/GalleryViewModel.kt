@@ -544,6 +544,14 @@ class GalleryViewModel(
         )
     }
 
+    fun onLabelsClicked() {
+        eventsSubject.onNext(
+            Event.OpenLabels(
+                defaultSearchConfig = getStateDefaultSearchConfig(),
+            )
+        )
+    }
+
     fun onDoneMultipleSelectionClicked() {
         val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
@@ -790,6 +798,10 @@ class GalleryViewModel(
 
         class OpenFavorites(
             val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
+
+        class OpenLabels(
+            val defaultSearchConfig: SearchConfig,
         ) : Event
 
         /**

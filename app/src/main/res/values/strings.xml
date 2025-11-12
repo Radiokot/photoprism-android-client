@@ -300,4 +300,7 @@
     <string name="extension_memories_people_to_forget_preference_summary">Who should be shown in the memories and who shouldn\'t</string>
     <string name="extension_catalog">Extension catalog</string>
     <string name="raw_download_preference">Download RAW as</string>
+    <string name="labels">Labels</string>
+    <string name="failed_to_load_labels">Failed to load labels</string>
+    <string name="no_labels_found">No labels found</string>
 </resources>
