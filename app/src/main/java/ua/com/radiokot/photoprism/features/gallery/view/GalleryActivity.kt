@@ -132,6 +132,11 @@ class GalleryActivity : BaseActivity() {
             lifecycleOwner = this,
         )
     }
+    private val navigationView: GalleryNavigationView by lazy {
+        GalleryNavigationView(
+            viewModel = viewModel,
+        )
+    }
     private val viewerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onViewerResult,
@@ -216,8 +221,8 @@ class GalleryActivity : BaseActivity() {
             initList(savedInstanceState)
         }
 
-        // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
+        onBackPressedDispatcher.addCallback(navigationView.backPressedCallback)
     }
 
     private fun subscribeToData() {
@@ -732,30 +737,26 @@ class GalleryActivity : BaseActivity() {
         )
     }
 
-    private fun initNavigation() {
-        GalleryNavigationView(
-            viewModel = viewModel,
-        ).apply {
-            val drawerLayout = rootView.root as? DrawerLayout
-            val navigationView = rootView.navigationView
-            val navigationRail = rootView.navigationRail
+    private fun initNavigation() = with(navigationView) {
+        val drawerLayout = rootView.root as? DrawerLayout
+        val navigationView = rootView.navigationView
+        val navigationRail = rootView.navigationRail
 
-            when {
-                drawerLayout != null && navigationView != null ->
-                    initWithDrawer(
-                        drawerLayout = drawerLayout,
-                        navigationView = navigationView,
-                        searchBarView = searchBarView,
-                    )
+        when {
+            drawerLayout != null && navigationView != null ->
+                initWithDrawer(
+                    drawerLayout = drawerLayout,
+                    navigationView = navigationView,
+                    searchBarView = searchBarView,
+                )
 
-                navigationRail != null ->
-                    initWithRail(
-                        navigationRail = navigationRail,
-                    )
+            navigationRail != null ->
+                initWithRail(
+                    navigationRail = navigationRail,
+                )
 
-                else ->
-                    error("The layout must have a navigation view")
-            }
+            else ->
+                error("The layout must have a navigation view")
         }
     }
 
