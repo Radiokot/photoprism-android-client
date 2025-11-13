@@ -303,4 +303,6 @@
     <string name="labels">Labels</string>
     <string name="failed_to_load_labels">Failed to load labels</string>
     <string name="no_labels_found">No labels found</string>
+    <string name="show_all_labels">Show all labels</string>
+    <string name="show_only_important_labels">Show important only</string>
 </resources>

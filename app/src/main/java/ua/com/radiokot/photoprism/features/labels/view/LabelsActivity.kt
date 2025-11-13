@@ -229,7 +229,7 @@ class LabelsActivity : BaseActivity() {
     )
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_overview, menu)
+        menuInflater.inflate(R.menu.labels, menu)
 
         // Set up the search.
         with(menu?.findItem(R.id.search_view)?.actionView as SearchView) {
@@ -237,6 +237,23 @@ class LabelsActivity : BaseActivity() {
             fixCloseButtonColor()
             hideUnderline()
             bindToViewModel(viewModel, this@LabelsActivity)
+        }
+
+        with(menu.findItem(R.id.show_all)) {
+            viewModel.isShowingAllLabels.observe(this@LabelsActivity) { isShowingAllLabels ->
+                if (isShowingAllLabels) {
+                    setTitle(R.string.show_only_important_labels)
+                    setIcon(R.drawable.ic_eye_off)
+                } else {
+                    setTitle(R.string.show_all_labels)
+                    setIcon(R.drawable.ic_eye)
+                }
+            }
+
+            setOnMenuItemClickListener {
+                viewModel.onShowAllClicked()
+                true
+            }
         }
 
         return super.onCreateOptionsMenu(menu)

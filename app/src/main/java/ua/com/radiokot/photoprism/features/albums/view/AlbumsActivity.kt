@@ -309,7 +309,7 @@ class AlbumsActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.gallery_folders, menu)
+        menuInflater.inflate(R.menu.albums, menu)
 
         // Set up the search.
         with(menu?.findItem(R.id.search_view)?.actionView as SearchView) {

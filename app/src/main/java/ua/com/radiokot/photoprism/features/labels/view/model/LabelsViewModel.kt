@@ -31,6 +31,7 @@ class LabelsViewModel(
     val isLoading = MutableLiveData(false)
     val itemsList = MutableLiveData<List<LabelListItem>>()
     val mainError = MutableLiveData<Error?>(null)
+    val isShowingAllLabels = MutableLiveData(false)
     val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = onBackPressed()
     }
@@ -49,11 +50,13 @@ class LabelsViewModel(
 
         this.defaultSearchConfig = defaultSearchConfig
 
-        repositoryChanges.onNext(
-            labelsRepositoryFactory.get(
-                isAllLabels = false,
+        isShowingAllLabels.observeForever { isShowingAllLabels ->
+            repositoryChanges.onNext(
+                labelsRepositoryFactory.get(
+                    isAllLabels = isShowingAllLabels,
+                )
             )
-        )
+        }
 
         subscribeToRepositoryChanges()
         subscribeToSearch()
@@ -212,6 +215,17 @@ class LabelsViewModel(
                 )
             )
         )
+    }
+
+    fun onShowAllClicked() {
+        val newValue = isShowingAllLabels.value != true
+
+        log.debug {
+            "onShowAllClicked(): toggling_show_all:" +
+                    "\nnewValue=$newValue"
+        }
+
+        isShowingAllLabels.value = newValue
     }
 
     private fun onBackPressed() {
