@@ -96,7 +96,7 @@
     <string name="albums">άλμπουμ</string>
     <string name="loading_albums_progress">@string/loading_data_progress</string>
     <string name="reload_albums">@string/reload</string>
-    <string name="no_albums_found">δε βρέθηκαν άλμπουμ</string>
+    <string name="no_albums_found">Δε βρέθηκαν άλμπουμ</string>
     <string name="clear_selection">καθαρισμος επιλογής</string>
     <string name="done_selecting">ολοκλήρωση</string>
     <string name="template_current_of">%1$d of %2$d</string>
@@ -295,5 +295,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Ποιον να εμφανίζετε στις αναμνήσεις και ποιον – όχι</string>
     <string name="extension_catalog">Κατάλογος επεκτάσεων</string>
     <string name="raw_download_preference">Λήψη RAW ως</string>
+    <string name="labels">Ετικέτες</string>
+    <string name="no_labels_found">Δεν βρέθηκαν ετικέτες</string>
+    <string name="show_all_labels">Εμφάνιση όλων των ετικετών</string>
+    <string name="show_only_important_labels">Εμφάνιση μόνο σημαντικών</string>
+    <string name="failed_to_load_labels">Αποτυχία φόρτωσης ετικετών</string>
 
 </resources>

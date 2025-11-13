@@ -296,5 +296,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Koho zobrazovat ve vzpomínkách a koho ne</string>
     <string name="extension_catalog">Katalog rozšíření</string>
     <string name="raw_download_preference">Stahovat RAW jako</string>
+    <string name="labels">Štítky</string>
+    <string name="no_labels_found">Nebyly nalezeny žádné štítky</string>
+    <string name="show_all_labels">Zobrazit všechny štítky</string>
+    <string name="show_only_important_labels">Zobrazit pouze důležité</string>
+    <string name="failed_to_load_labels">Nepodařilo se načíst štítky</string>
 
 </resources>

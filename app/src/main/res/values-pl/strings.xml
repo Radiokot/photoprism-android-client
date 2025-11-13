@@ -288,4 +288,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Kogo pokazywać we wspomnieniach, a kogo nie</string>
     <string name="extension_catalog">Katalog rozszerzeń</string>
     <string name="raw_download_preference">Pobieraj RAW jako</string>
+    <string name="labels">Etykiety</string>
+    <string name="no_labels_found">Etykiety nie znaleziono</string>
+    <string name="show_all_labels">Pokaż wszystkie etykiety</string>
+    <string name="show_only_important_labels">Pokaż tylko ważne</string>
+    <string name="failed_to_load_labels">Nie udało się załadować etykiet</string>
+
 </resources>

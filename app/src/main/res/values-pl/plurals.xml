@@ -20,4 +20,9 @@
         <item quantity="few">%1$d pliki</item>
         <item quantity="many">%1$d plików</item>
     </plurals>
+    <plurals name="items">
+        <item quantity="one">%1$d element</item>
+        <item quantity="few">%1$d elementy</item>
+        <item quantity="many">%1$d elementów</item>
+    </plurals>
 </resources>

@@ -295,5 +295,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Кого показывать в воспоминаниях, а кого – нет</string>
     <string name="extension_catalog">Каталог расширений</string>
     <string name="raw_download_preference">Скачивать RAW как</string>
+    <string name="labels">Метки</string>
+    <string name="no_labels_found">Метки не найдены</string>
+    <string name="show_all_labels">Показать все метки</string>
+    <string name="show_only_important_labels">Показать только важные</string>
+    <string name="failed_to_load_labels">Не удалось загрузить метки</string>
 
 </resources>

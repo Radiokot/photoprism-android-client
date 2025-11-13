@@ -16,4 +16,8 @@
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d file</item>
     </plurals>
+    <plurals name="items">
+        <item quantity="one">%1$d elemento</item>
+        <item quantity="other">%1$d elementi</item>
+    </plurals>
 </resources>

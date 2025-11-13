@@ -158,7 +158,7 @@
         <item>Accéléré</item>
         <item>Rapide</item>
     </string-array>
-    <string name="gallery_item_scale_preference">Taille des objets de la galerie</string>
+    <string name="gallery_item_scale_preference">Taille des éléments de la galerie</string>
     <string-array name="gallery_item_scale_array">
         <!-- Must be aligned with GalleryItemScale enum -->
         <item>Minuscule</item>
@@ -296,5 +296,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Qui afficher dans les souvenirs et qui – non</string>
     <string name="extension_catalog">Catalogue d\'extensions</string>
     <string name="raw_download_preference">Téléchargement du RAW en tant que</string>
+    <string name="labels">Étiquettes</string>
+    <string name="no_labels_found">Pas d\'étiquette trouvée</string>
+    <string name="show_all_labels">Afficher toutes les étiquettes</string>
+    <string name="show_only_important_labels">Afficher uniquement les éléments importants</string>
+    <string name="failed_to_load_labels">Échec du chargement des étiquettes</string>
 
 </resources>
