@@ -1,0 +1,9 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Polish translation
+- Ability to browse labels
+
+Fixed:
+- Inconsistencies in German, French, Turkish and Italian translations
+- Not closing the menu on back button press
