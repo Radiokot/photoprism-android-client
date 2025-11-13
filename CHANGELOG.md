@@ -10,10 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Polish translation
+- Ability to browse labels
 
 ### Fixed
 
-- Inconsistencies in German, Turkish and Italian translations
+- Inconsistencies in German, French, Turkish and Italian translations
 - Not closing the menu on back button press
 
 ## [1.39.0] - 2025-08-29
