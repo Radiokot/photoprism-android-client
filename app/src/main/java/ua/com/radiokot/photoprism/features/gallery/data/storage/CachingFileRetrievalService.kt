@@ -3,11 +3,14 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 import android.content.Context
 import android.net.Uri
 import android.util.Size
+import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.db.AppDatabase
+import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.CachedMediaItemRecord
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import java.io.File
@@ -22,6 +25,13 @@ class CachingFileRetrievalService(
     private val urlFactory: MediaPreviewUrlFactory,
     private val preferences: GalleryPreferences
 ) {
+    init {
+        preferences.clearCache
+            .observeOn(Schedulers.io())
+            .subscribe {
+                clearCache()
+            }
+    }
     private val log = kLogger("CachingFileRetrievalSvc")
 
     private val cacheDir by lazy {
@@ -53,45 +63,70 @@ class CachingFileRetrievalService(
                             return@forEach
                         }
 
-                        var remoteUrl: String? = null
-                        var localFileName: String
-                        if ((file.video ?: false)) {
-//                            return@forEach // skip video files
-                            remoteUrl = urlFactory.getVideoPreviewUrl(
-                                photo.hash,
-                                file.hash,
-                                file.codec
-                            )
-                            localFileName =
-                                "${photo.uid}-${file.hash}.mp4";
-                        } else {
-                            remoteUrl = urlFactory.getImagePreviewUrl(
-                                file.hash,
-                                1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
-                            )
-                            localFileName =
-                                "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
+
+                        val filesToCache: MutableList<Pair<String, String>> = mutableListOf()
+                        when (file.mediaType) {
+                            "video" -> {
+                                val remoteUrl = urlFactory.getVideoPreviewUrl(
+                                    photo.hash,
+                                    file.hash,
+                                    file.codec
+                                )
+                                val localFileName =
+                                    "${photo.uid}-${file.hash}.mp4";
+                                filesToCache.add(Pair(remoteUrl, localFileName))
+                            }
+                            "image" -> {
+                                val remoteUrl = urlFactory.getImagePreviewUrl(
+                                    file.hash,
+                                    1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
+                                )
+                                val localFileName =
+                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
+                                filesToCache.add(Pair(remoteUrl, localFileName))
+                            }
+                            "live" -> {
+                                val remoteUrl = urlFactory.getImagePreviewUrl(
+                                    file.hash,
+                                    1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
+                                )
+                                val localFileName =
+                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
+                                filesToCache.add(Pair(remoteUrl, localFileName))
+
+                                val videoRemoteUrl = urlFactory.getVideoPreviewUrl(
+                                    photo.hash,
+                                    file.hash,
+                                    file.codec,
+                                )
+                                val videoLocalFileName =
+                                    "${photo.uid}-${file.hash}.mp4"
+                                filesToCache.add(Pair(videoRemoteUrl, videoLocalFileName))
+
+                            }
                         }
 
                         manageCache(photos)
-                        val localFile =
-                            saveAndGetLocalUrl(shouldDownloadFile, remoteUrl, localFileName)
 
-                        // fill in the cached path to point to the local file.
-                        if (localFile != null) {
-                            file.cachedPath = Uri.fromFile(localFile).toString()
-                            // add new entry to db
-                            cachedMediaItemDao.insert(
-                                CachedMediaItemRecord(
-                                    hash = file.hash,
-                                    localPath = localFile.path ?: "",
-                                    cachedAt = System.currentTimeMillis(), // current time
-                                    size = localFile.length(),
-                                    lastHitAt = System.currentTimeMillis()
+                        filesToCache.forEach { (remoteUrl, localFileName) ->
+                            val localFile = saveAndGetLocalUrl(shouldDownloadFile, remoteUrl, localFileName)
+
+                            // fill in the cached path to point to the local file.
+                            if (localFile != null) {
+                                // not good for live as video and image has same hash / file record
+                                file.cachedPath = Uri.fromFile(localFile).toString()
+                                // add new entry to db
+                                cachedMediaItemDao.insert(
+                                    CachedMediaItemRecord(
+                                        hash = file.hash,
+                                        localPath = localFile.path,
+                                        cachedAt = System.currentTimeMillis(), // current time
+                                        size = localFile.length(),
+                                        lastHitAt = System.currentTimeMillis()
+                                    )
                                 )
-                            )
+                            }
                         }
-
                     } catch (e: Exception) {
                         log.error(e) { "cacheAndAssignLocalPaths(): failed to cache file: file=$file" }
                         // If caching fails, the original remote URL remains,
@@ -179,5 +214,19 @@ class CachingFileRetrievalService(
      */
     fun checkForCache(photos: Sequence<PhotoPrismMergedPhoto>) {
         cacheAndAssignCachePaths(photos, false)
+    }
+
+    fun clearCache() {
+        try {
+            cachedMediaItemDao.getAllByLastHit().forEach { record ->
+                val file = File(record.localPath)
+                if (file.exists() && !file.delete()) {
+                    log.warn { "clearCache(): failed to delete cached file: ${record.localPath}" }
+                }
+                cachedMediaItemDao.delete(record)
+            }
+        } catch (e: Exception) {
+            log.error(e) { "clearCache(): failed to clear cache" }
+        }
     }
 }

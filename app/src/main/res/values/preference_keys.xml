@@ -16,6 +16,7 @@
     <string name="pk_slideshow_speed" translatable="false">slideshow_speed</string>
     <string name="pk_gallery_item_scale" translatable="false">gallery_item_scale</string>
     <string name="pk_gallery_cache_size_in_mb" translatable="false">gallery_cache_size_in_mb</string>
+    <string name="pk_clear_cache_button" translatable="false">clear_cache_button</string>
     <string name="pk_live_photos_as_images" translatable="false">lp_as_images</string>
     <string name="pk_raw_sharing_mode" translatable="false">raw_sharing_mode</string>
     <string name="pk_language" translatable="false">language</string>

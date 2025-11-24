@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.internal.notify
 import okio.buffer
 import okio.sink
 import okio.source
@@ -68,6 +69,7 @@ import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptF
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.util.SafeCustomTabs
 import java.util.Locale
+import java.util.prefs.PreferenceChangeEvent
 
 class PreferencesFragment :
     PreferenceFragmentCompat(),
@@ -223,6 +225,13 @@ class PreferencesFragment :
                 val newCacheSize = newValue as Int
                 galleryPreferences.cacheSizeLimitInMb.onNext(newCacheSize)
                 summary = newCacheSize.toString()
+                true
+            }
+        }
+
+        with( requirePreference(R.string.pk_clear_cache_button)) {
+            this.setOnPreferenceClickListener {
+                galleryPreferences.clearCache.onNext(Unit)
                 true
             }
         }

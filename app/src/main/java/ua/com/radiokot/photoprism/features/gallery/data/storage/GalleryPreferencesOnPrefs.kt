@@ -2,7 +2,9 @@ package ua.com.radiokot.photoprism.features.gallery.data.storage
 
 import android.content.SharedPreferences
 import com.google.common.hash.Hashing
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.tryOrNull
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
@@ -60,6 +62,10 @@ class GalleryPreferencesOnPrefs(
             stringDeserializer = RawSharingMode::valueOf,
         )
 
+    override val clearCache: PublishSubject<Unit> =
+        PublishSubject.create()
+
+
     override val cacheSizeLimitInMb: BehaviorSubject<Int> =
         intPreferenceSubject(
             preferences = preferences,
@@ -73,6 +79,7 @@ class GalleryPreferencesOnPrefs(
             }
 
         )
+
 
     override fun getItemsOrderBySearchQuery(
         searchQuery: String?,

@@ -59,6 +59,11 @@
             app:persistent="false"
             app:title="@string/gallery_cache_size_in_mb" />
 
+        <Preference
+            app:title="Clear cache"
+            app:key="@string/pk_clear_cache_button"
+            app:summary="@string/clear_cache_button" />
+
         <ListPreference
             app:iconSpaceReserved="false"
             app:key="@string/pk_raw_sharing_mode"

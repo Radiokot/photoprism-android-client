@@ -18,6 +18,7 @@ sealed class MediaViewerPage(
     override var identifier: Long
         get() = (thumbnailUrl + type).hashCode().toLong()
         set(_) = error("Don't override my value")
+
     companion object {
         private const val FADE_END_PLAYBACK_DURATION_MS_SHORT =
             400L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
@@ -36,16 +37,20 @@ sealed class MediaViewerPage(
             return when {
                 source.media is GalleryMedia.TypeData.Live
                         && source.media.fullDurationMs != null -> {
+
+                    val imageUrl = source.files.first { it.hash == source.hash }.cachedPath
+                        ?: previewUrlFactory.getImagePreviewUrl(
+                            previewHash = source.hash,
+                            sizePx = max(
+                                imageViewSize.width,
+                                imageViewSize.height
+                            )
+                        )
+
                     if (livePhotosAsImages) {
+                        log.debug { "fromGalleryMedia: Live photo as image, image url $imageUrl" }
                         return ImageViewerPage(
-                            previewUrl = source.files.first { it.hash == source.hash }.cachedPath
-                                ?: previewUrlFactory.getImagePreviewUrl(
-                                    previewHash = source.hash,
-                                    sizePx = max(
-                                        imageViewSize.width,
-                                        imageViewSize.height
-                                    )
-                                ),
+                            previewUrl = imageUrl,
                             imageViewSize = imageViewSize,
                             thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                                 thumbnailHash = source.hash,
@@ -83,19 +88,16 @@ sealed class MediaViewerPage(
                                 null
                         }
 
+                    val videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
+                        ?: previewUrlFactory.getVideoPreviewUrl(
+                            galleryMedia = source,
+                        )
+
+                    log.debug { "fromGalleryMedia: Live photo viewer, image url $imageUrl, video URL $videoUrl" }
+
                     FadeEndLivePhotoViewerPage(
-                        photoPreviewUrl = source.files.first { it.hash == source.hash }.cachedPath
-                            ?: previewUrlFactory.getImagePreviewUrl(
-                                previewHash = source.hash,
-                                sizePx = max(
-                                    imageViewSize.width,
-                                    imageViewSize.height
-                                )
-                            ),
-                        videoPreviewUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
-                            ?: previewUrlFactory.getVideoPreviewUrl(
-                                galleryMedia = source,
-                            ),
+                        photoPreviewUrl = imageUrl,
+                        videoPreviewUrl = videoUrl,
 //                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
 //                                galleryMedia = source,
 //                            ),
@@ -111,11 +113,13 @@ sealed class MediaViewerPage(
                 }
 
                 source.media is Viewable.AsVideo -> {
-                    VideoViewerPage(
-                        previewUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
-                            ?: previewUrlFactory.getVideoPreviewUrl(
-                                galleryMedia = source,
-                            ),
+                    val videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
+                        ?: previewUrlFactory.getVideoPreviewUrl(
+                            galleryMedia = source,
+                        )
+
+                    log.debug { "fromGalleryMedia: Video viewer video URL $videoUrl" }
+                    VideoViewerPage( previewUrl = videoUrl,
 //                        previewUrl = previewUrlFactory.getVideoPreviewUrl(
 //                                galleryMedia = source,
 //                            ),
@@ -131,15 +135,18 @@ sealed class MediaViewerPage(
                 }
 
                 source.media is Viewable.AsImage -> {
+                    val imageUrl = source.files.first { it.hash == source.hash }.cachedPath
+                        ?: previewUrlFactory.getImagePreviewUrl(
+                            previewHash = source.hash,
+                            sizePx = max(
+                                imageViewSize.width,
+                                imageViewSize.height
+                            )
+                        )
+                    log.debug { "fromGalleryMedia: Image viewer video URL $imageUrl" }
+
                     ImageViewerPage(
-                        previewUrl = source.files.first { it.hash == source.hash }.cachedPath
-                            ?: previewUrlFactory.getImagePreviewUrl(
-                                previewHash = source.hash,
-                                sizePx = max(
-                                    imageViewSize.width,
-                                    imageViewSize.height
-                                )
-                            ),
+                        previewUrl = imageUrl,
                         imageViewSize = imageViewSize,
                         thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                             thumbnailHash = source.hash,
