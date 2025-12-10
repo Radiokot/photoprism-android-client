@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">Konnte Vorschaubild nicht laden</string>
     <string name="today">Heute</string>
     <string name="search_the_library">Durchsuchen</string>
-    <string name="use_mouse_to_search_the_library">Durchsuchen (Maus benutzen)</string>
     <string name="enter_the_query">Suchanfrage eingeben</string>
     <string name="media_type">Typ</string>
     <string name="apply_search">Anwenden</string>

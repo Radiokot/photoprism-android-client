@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">缩略图加载失败</string>
     <string name="today">今日</string>
     <string name="search_the_library">在图库中搜索</string>
-    <string name="use_mouse_to_search_the_library">在图库中搜索（使用鼠标）</string>
     <string name="enter_the_query">输入关键字搜索</string>
     <string name="media_type">类型</string>
     <string name="apply_search">应用</string>

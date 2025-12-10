@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">Не вдалося завантажити мініатюру</string>
     <string name="today">Сьогодні</string>
     <string name="search_the_library">Пошук у бібліотеці</string>
-    <string name="use_mouse_to_search_the_library">Пошук у бібліотеці (скористуйтеся мишкою)</string>
     <string name="enter_the_query">Введіть запит</string>
     <string name="media_type">Тип</string>
     <string name="apply_search">Застосувати</string>

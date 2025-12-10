@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">Küçük resim yüklenemedi</string>
     <string name="today">Bugün</string>
     <string name="search_the_library">Kitaplıkta ara</string>
-    <string name="use_mouse_to_search_the_library">Kitaplıkta ara (fareyi kullan)</string>
     <string name="enter_the_query">Sorgu gir</string>
     <string name="media_type">Tür</string>
     <string name="apply_search">Uygula</string>
