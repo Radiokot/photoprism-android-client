@@ -3,12 +3,9 @@ package ua.com.radiokot.photoprism.features.albums.view.model
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.squareup.picasso.Picasso
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
@@ -101,19 +98,6 @@ class AlbumListItem(
         override fun unbindView(item: AlbumListItem) {
             picasso.cancelRequest(view.imageView)
             isCachedSubscription?.dispose()
-        }
-    }
-
-    class CacheClickEvent(private val listener: (Album) -> Unit) : ClickEventHook<AlbumListItem>() {
-//        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-//            return (viewHolder as ViewHolder).view.cacheIcon
-//        }
-//        override fun onBind(viewHolder: FastAdapter.ViewHolder<AlbumListItem>): View? {
-//            return (viewHolder as ViewHolder).view.cacheIcon
-//        }
-
-        override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<AlbumListItem>, item: AlbumListItem) {
-            item.source?.also(listener)
         }
     }
 }
