@@ -59,10 +59,7 @@ class GallerySearchBarView(
 
     private fun initBar() = with(searchBar) {
         setHint(
-            if (tvDetector.isRunningOnTv)
-                R.string.use_mouse_to_search_the_library
-            else
-                R.string.search_the_library
+            R.string.search_the_library
         )
 
         textView.ellipsize = TextUtils.TruncateAt.END

@@ -30,7 +30,6 @@
     <string name="failed_to_load_the_thumbnail">Nepodařilo se načíst miniatury</string>
     <string name="today">Dnes</string>
     <string name="search_the_library">Vyhledávání v knihovně</string>
-    <string name="use_mouse_to_search_the_library">Vyhledávání v knihovně (použíjte myš)</string>
     <string name="enter_the_query">Zadejte dotaz</string>
     <string name="media_type">Typ</string>
     <string name="apply_search">Použít</string>

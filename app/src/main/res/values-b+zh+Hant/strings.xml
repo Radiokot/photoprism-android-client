@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">縮圖載入失敗</string>
     <string name="today">今天</string>
     <string name="search_the_library">在相簿中搜尋</string>
-    <string name="use_mouse_to_search_the_library">在相簿中搜尋（使用滑鼠）</string>
     <string name="enter_the_query">輸入關鍵字搜索</string>
     <string name="media_type">類別</string>
     <string name="apply_search">應用</string>

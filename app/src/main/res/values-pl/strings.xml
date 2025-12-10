@@ -30,7 +30,6 @@
     <string name="failed_to_load_the_thumbnail">Nie udało się załadować miniatury</string>
     <string name="today">Dziś</string>
     <string name="search_the_library">Szukaj w bibliotece</string>
-    <string name="use_mouse_to_search_the_library">Szukaj w bibliotece (użyj myszy)</string>
     <string name="enter_the_query">Wpisz zapytanie</string>
     <string name="media_type">Typ</string>
     <string name="apply_search">Zastosuj</string>

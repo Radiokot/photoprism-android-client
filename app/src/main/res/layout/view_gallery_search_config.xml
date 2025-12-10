@@ -54,6 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:nextFocusDown="@+id/reset_button"
                 android:text="@string/only_favorite_content"
                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
@@ -75,6 +76,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:nextFocusUp="@id/only_favorite_switch"
+        android:nextFocusRight="@id/search_button"
         android:text="@string/reset_search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/search_button"
@@ -88,6 +91,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
+        android:nextFocusUp="@id/only_favorite_switch"
+        android:nextFocusLeft="@id/reset_button"
         android:text="@string/apply_search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

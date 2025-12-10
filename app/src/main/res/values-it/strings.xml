@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">Caricamento della miniatura non riuscito</string>
     <string name="today">Oggi</string>
     <string name="search_the_library">Cerca nella libreria</string>
-    <string name="use_mouse_to_search_the_library">Cerca nella libreria (usa il mouse)</string>
     <string name="enter_the_query">Cerca</string>
     <string name="media_type">Tipo</string>
     <string name="apply_search">Applica</string>

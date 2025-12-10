@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">Не удалось загрузить миниатюру</string>
     <string name="today">Сегодня</string>
     <string name="search_the_library">Поиск в библиотеке</string>
-    <string name="use_mouse_to_search_the_library">Поиск в библиотеке (используйте мышь)</string>
     <string name="enter_the_query">Введите запрос</string>
     <string name="media_type">Тип</string>
     <string name="apply_search">Применить</string>

@@ -29,7 +29,6 @@
     <string name="failed_to_load_the_thumbnail">αδυναμία φόρτωσης προεπισκόπησης</string>
     <string name="today">σήμερα</string>
     <string name="search_the_library">αναζήτηση στη βιβλιοθήκη</string>
-    <string name="use_mouse_to_search_the_library">αναζήτηση στη βιβλιοθήκη (χρησιμοποιήστε το ποντίκι)</string>
     <string name="enter_the_query">εισαγωγή όρου αναζήτησης</string>
     <string name="media_type">τύπος</string>
     <string name="apply_search">εφαρμογή</string>
