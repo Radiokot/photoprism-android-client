@@ -295,5 +295,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Anıları kim göstermeli ve kim – göstermemeli</string>
     <string name="extension_catalog">Eklenti kataloğu</string>
     <string name="raw_download_preference">RAW olarak indir</string>
+    <string name="labels">Etiketler</string>
+    <string name="no_labels_found">Etiket bulunamadı</string>
+    <string name="show_all_labels">Tüm etiketleri göster</string>
+    <string name="show_only_important_labels">Yalnızca önemli göster</string>
+    <string name="failed_to_load_labels">Etiketler yüklenemedi</string>
 
 </resources>

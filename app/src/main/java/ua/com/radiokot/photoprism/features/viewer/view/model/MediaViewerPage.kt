@@ -26,7 +26,7 @@ sealed class MediaViewerPage(
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val THUMBNAIL_SIZE_PX = 500
 
-        private const val SHOULD_CACHE_VIDEO = false; // Caching videos does not yet seem to work
+        private const val SHOULD_CACHE_VIDEO = false // Caching videos does not yet seem to work
 
         private val log = kLogger("MediaVP")
 
@@ -90,7 +90,7 @@ sealed class MediaViewerPage(
                                 null
                         }
 
-                    var videoUrl = ""
+                    var videoUrl: String
                     if (SHOULD_CACHE_VIDEO)
                         videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
                             ?: previewUrlFactory.getVideoPreviewUrl(
@@ -118,7 +118,7 @@ sealed class MediaViewerPage(
                 }
 
                 source.media is Viewable.AsVideo -> {
-                    var videoUrl = ""
+                    var videoUrl: String
                     if (SHOULD_CACHE_VIDEO)
                         videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
                         ?: previewUrlFactory.getVideoPreviewUrl(

@@ -294,5 +294,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Chi mostrare nei ricordi e chi – no</string>
     <string name="extension_catalog">Catalogo delle estensioni</string>
     <string name="raw_download_preference">Scaricare RAW come</string>
+    <string name="labels">Etichette</string>
+    <string name="no_labels_found">Nessuna etichetta trovata</string>
+    <string name="show_all_labels">Mostra tutte le etichette</string>
+    <string name="show_only_important_labels">Mostra solo le cose importanti</string>
+    <string name="failed_to_load_labels">Impossibile caricare le etichette</string>
 
 </resources>

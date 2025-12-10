@@ -296,5 +296,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">A quién mostrar en los recuerdos y a quién – no</string>
     <string name="extension_catalog">Catálogo de extensiones</string>
     <string name="raw_download_preference">Descargar RAW como</string>
+    <string name="labels">Etiquetas</string>
+    <string name="no_labels_found">No se encontraron etiquetas</string>
+    <string name="show_all_labels">Mostrar todas las etiquetas</string>
+    <string name="show_only_important_labels">Mostrar sólo importante</string>
+    <string name="failed_to_load_labels">Error al cargar las etiquetas</string>
 
 </resources>

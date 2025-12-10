@@ -66,6 +66,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFoot
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.labels.view.LabelsActivity
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -129,6 +130,11 @@ class GalleryActivity : BaseActivity() {
         GalleryDragSelectionView(
             viewModel = viewModel,
             lifecycleOwner = this,
+        )
+    }
+    private val navigationView: GalleryNavigationView by lazy {
+        GalleryNavigationView(
+            viewModel = viewModel,
         )
     }
     private val viewerLauncher = registerForActivityResult(
@@ -215,8 +221,8 @@ class GalleryActivity : BaseActivity() {
             initList(savedInstanceState)
         }
 
-        // Allow the view model to intercept back press.
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
+        onBackPressedDispatcher.addCallback(navigationView.backPressedCallback)
     }
 
     private fun subscribeToData() {
@@ -409,6 +415,12 @@ class GalleryActivity : BaseActivity() {
                 is GalleryViewModel.Event.OpenFavorites -> {
                     openFavorites(
                         repositoryParams = event.repositoryParams,
+                    )
+                }
+
+                is GalleryViewModel.Event.OpenLabels -> {
+                    openLabels(
+                        defaultSearchConfig = event.defaultSearchConfig,
                     )
                 }
 
@@ -725,30 +737,26 @@ class GalleryActivity : BaseActivity() {
         )
     }
 
-    private fun initNavigation() {
-        GalleryNavigationView(
-            viewModel = viewModel,
-        ).apply {
-            val drawerLayout = rootView.root as? DrawerLayout
-            val navigationView = rootView.navigationView
-            val navigationRail = rootView.navigationRail
+    private fun initNavigation() = with(navigationView) {
+        val drawerLayout = rootView.root as? DrawerLayout
+        val navigationView = rootView.navigationView
+        val navigationRail = rootView.navigationRail
 
-            when {
-                drawerLayout != null && navigationView != null ->
-                    initWithDrawer(
-                        drawerLayout = drawerLayout,
-                        navigationView = navigationView,
-                        searchBarView = searchBarView,
-                    )
+        when {
+            drawerLayout != null && navigationView != null ->
+                initWithDrawer(
+                    drawerLayout = drawerLayout,
+                    navigationView = navigationView,
+                    searchBarView = searchBarView,
+                )
 
-                navigationRail != null ->
-                    initWithRail(
-                        navigationRail = navigationRail,
-                    )
+            navigationRail != null ->
+                initWithRail(
+                    navigationRail = navigationRail,
+                )
 
-                else ->
-                    error("The layout must have a navigation view")
-            }
+            else ->
+                error("The layout must have a navigation view")
         }
     }
 
@@ -937,6 +945,21 @@ class GalleryActivity : BaseActivity() {
                     GallerySingleRepositoryActivity.getBundle(
                         title = getString(R.string.favorites),
                         repositoryParams = repositoryParams,
+                    )
+                )
+                .setAction(intent.action)
+        )
+    }
+
+    private fun openLabels(
+        defaultSearchConfig: SearchConfig,
+    ) {
+        proxyOkResultLauncher.launch(
+            Intent(this, LabelsActivity::class.java)
+                .putExtras(intent.extras ?: Bundle())
+                .putExtras(
+                    LabelsActivity.getBundle(
+                        defaultSearchConfig = defaultSearchConfig,
                     )
                 )
                 .setAction(intent.action)

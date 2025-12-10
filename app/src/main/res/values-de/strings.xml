@@ -4,9 +4,7 @@
     <string name="script_code" />
     <string name="app_name">PhotoPrism Galerie</string>
 
-
     <string name="media_type_image">Bild</string>
-
     <string name="media_type_animated">Animation</string>
     <string name="media_type_live">Live Photo</string>
     <string name="media_type_video">Video</string>
@@ -106,8 +104,6 @@
     <string name="save_file_to_the_storage">Datei speichern</string>
     <string name="share_the_file">Datei teilen</string>
     <string name="download_is_completed">Herunterladen abgeschlossen</string>
-
-
     <string name="welcome_title">Willkommen</string>
     <string name="template_welcome_text">
         <![CDATA[
@@ -300,4 +296,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Wer in den Erinnerungen gezeigt werden sollte und wer nicht</string>
     <string name="extension_catalog">Erweiterungskatalog</string>
     <string name="raw_download_preference">RAW herunterladen als</string>
+    <string name="labels">Kategorien</string>
+    <string name="no_labels_found">Keine Kategorien gefunden</string>
+    <string name="show_all_labels">Alle Kategorien anzeigen</string>
+    <string name="show_only_important_labels">Nur wichtige anzeigen </string>
+    <string name="failed_to_load_labels">Fehler beim Laden der Labels</string>
+
 </resources>

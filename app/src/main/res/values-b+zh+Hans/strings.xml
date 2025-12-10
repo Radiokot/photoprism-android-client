@@ -295,5 +295,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">记忆中该显示谁，不该显示谁</string>
     <string name="extension_catalog">扩展目录</string>
     <string name="raw_download_preference">下载 RAW 为</string>
+    <string name="labels">标签</string>
+    <string name="no_labels_found">找不到标签</string>
+    <string name="show_all_labels">显示所有标签</string>
+    <string name="show_only_important_labels">只显示重要信息</string>
+    <string name="failed_to_load_labels">加载标签失败</string>
 
 </resources>

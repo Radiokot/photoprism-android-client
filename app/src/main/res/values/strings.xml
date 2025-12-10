@@ -303,4 +303,9 @@
     <string name="raw_download_preference">Download RAW as</string>
     <string name="offline_cache">Download for offline</string>
     <string name="clear_cache_button">Clear Cache</string>
+    <string name="labels">Labels</string>
+    <string name="no_labels_found">No labels found</string>
+    <string name="show_all_labels">Show all labels</string>
+    <string name="show_only_important_labels">Show important only</string>
+    <string name="failed_to_load_labels">Failed to load labels</string>
 </resources>

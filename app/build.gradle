@@ -21,11 +21,11 @@ android {
         minSdk 26
 
         applicationId "ua.com.radiokot.photoprism"
-        versionCode 59
-        versionName "1.39.0"
+        versionCode 60
+        versionName "1.40.0"
 
         // Must be aligned with @xml/locale_config and values-*.
-        resConfigs "en", "cs", "de", "el", "es", "fr", "it", "ru", "tr", "uk",
+        resConfigs "en", "cs", "de", "el", "es", "fr", "it", "pl", "ru", "tr", "uk",
                 "b+zh+Hans", "b+zh+Hant"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

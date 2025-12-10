@@ -37,6 +37,7 @@ import ua.com.radiokot.photoprism.features.gallery.galleryFeatureModule
 import ua.com.radiokot.photoprism.features.gallery.logic.SearchBookmarkShortcutsManager
 import ua.com.radiokot.photoprism.features.importt.importFeatureModule
 import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
+import ua.com.radiokot.photoprism.features.labels.labelsFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.mediaViewerFeatureModule
 import ua.com.radiokot.photoprism.features.viewer.slideshow.di.slideshowFeatureModule
 import ua.com.radiokot.photoprism.features.webview.di.webViewFeatureModule
@@ -85,6 +86,7 @@ class PhotoPrismGallery : Application() {
                         + galleryExtensionStoreModule
                         + importFeatureModule
                         + photoFrameWidgetFeatureModule
+                        + labelsFeatureModule
             )
             androidFileProperties("app.properties")
         }

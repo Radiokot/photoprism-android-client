@@ -295,5 +295,10 @@
     <string name="extension_memories_people_to_forget_preference_summary">Кого показувати у спогадах, а кого – ні</string>
     <string name="extension_catalog">Каталог розширень</string>
     <string name="raw_download_preference">Завантажувати RAW як</string>
+    <string name="labels">Мітки</string>
+    <string name="no_labels_found">Мітки не знайдено</string>
+    <string name="show_all_labels">Показати всі мітки</string>
+    <string name="show_only_important_labels">Показати тільки важливі</string>
+    <string name="failed_to_load_labels">Не вдалося завантажити мітки</string>
 
 </resources>
