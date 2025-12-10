@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.CachedMediaItemRecord
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
 import java.io.File
 import java.io.IOException
 import kotlin.math.max
@@ -73,8 +74,9 @@ class CachingFileRetrievalService(
                                     file.codec
                                 )
                                 val localFileName =
-                                    "${photo.uid}-${file.hash}.mp4";
-                                filesToCache.add(Pair(remoteUrl, localFileName))
+                                    "${photo.uid}-${file.hash}.mp4"
+                                if (MediaViewerPage.SHOULD_CACHE_VIDEO)
+                                    filesToCache.add(Pair(remoteUrl, localFileName))
                             }
                             "image" -> {
                                 val remoteUrl = urlFactory.getImagePreviewUrl(
@@ -82,7 +84,7 @@ class CachingFileRetrievalService(
                                     1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
                                 )
                                 val localFileName =
-                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
+                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}"
                                 filesToCache.add(Pair(remoteUrl, localFileName))
                             }
                             "live" -> {
@@ -91,7 +93,7 @@ class CachingFileRetrievalService(
                                     1920 // TODO: make it use the maximum size of the current device or at least add the size to the configuration
                                 )
                                 val localFileName =
-                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}";
+                                    "${photo.uid}-${file.hash}.${file.name.substringAfterLast('.')}"
                                 filesToCache.add(Pair(remoteUrl, localFileName))
 
                                 val videoRemoteUrl = urlFactory.getVideoPreviewUrl(
@@ -101,7 +103,8 @@ class CachingFileRetrievalService(
                                 )
                                 val videoLocalFileName =
                                     "${photo.uid}-${file.hash}.mp4"
-                                filesToCache.add(Pair(videoRemoteUrl, videoLocalFileName))
+                                if (MediaViewerPage.SHOULD_CACHE_VIDEO)
+                                    filesToCache.add(Pair(videoRemoteUrl, videoLocalFileName))
 
                             }
                         }
@@ -159,7 +162,7 @@ class CachingFileRetrievalService(
                 }
                 sizeToRemove -= record.size
                 if (sizeToRemove <= 0)
-                    break;
+                    break
             }
         }
     }
@@ -181,10 +184,10 @@ class CachingFileRetrievalService(
                 downloadFile(remoteUrl, localFile)
                 return localFile
             }
-            return null;
+            return null
         } else {
             log.debug { "cacheAndAssignLocalPaths(): already cached: localFile=$localFile" }
-            return localFile;
+            return localFile
         }
     }
 

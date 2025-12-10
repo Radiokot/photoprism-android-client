@@ -26,7 +26,7 @@ sealed class MediaViewerPage(
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val THUMBNAIL_SIZE_PX = 500
 
-        private const val SHOULD_CACHE_VIDEO = false // Caching videos does not yet seem to work
+        public const val SHOULD_CACHE_VIDEO = false // Caching videos does not yet seem to work
 
         private val log = kLogger("MediaVP")
 
