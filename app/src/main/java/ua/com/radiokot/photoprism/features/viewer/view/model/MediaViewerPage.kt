@@ -26,6 +26,8 @@ sealed class MediaViewerPage(
             1000L + FadeEndLivePhotoViewerPage.FADE_DURATION_MS
         private const val THUMBNAIL_SIZE_PX = 500
 
+        private const val SHOULD_CACHE_VIDEO = false; // Caching videos does not yet seem to work
+
         private val log = kLogger("MediaVP")
 
         fun fromGalleryMedia(
@@ -88,8 +90,14 @@ sealed class MediaViewerPage(
                                 null
                         }
 
-                    val videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
-                        ?: previewUrlFactory.getVideoPreviewUrl(
+                    var videoUrl = ""
+                    if (SHOULD_CACHE_VIDEO)
+                        videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
+                            ?: previewUrlFactory.getVideoPreviewUrl(
+                                galleryMedia = source,
+                            )
+                    else
+                        videoUrl = previewUrlFactory.getVideoPreviewUrl(
                             galleryMedia = source,
                         )
 
@@ -98,9 +106,6 @@ sealed class MediaViewerPage(
                     FadeEndLivePhotoViewerPage(
                         photoPreviewUrl = imageUrl,
                         videoPreviewUrl = videoUrl,
-//                        videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
-//                                galleryMedia = source,
-//                            ),
                         videoPreviewStartMs = videoPreviewStartMs,
                         videoPreviewEndMs = videoPreviewEndMs,
                         imageViewSize = imageViewSize,
@@ -113,16 +118,19 @@ sealed class MediaViewerPage(
                 }
 
                 source.media is Viewable.AsVideo -> {
-                    val videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
+                    var videoUrl = ""
+                    if (SHOULD_CACHE_VIDEO)
+                        videoUrl = source.files.first { it.hash == source.videoFile?.hash }.cachedPath
                         ?: previewUrlFactory.getVideoPreviewUrl(
+                            galleryMedia = source,
+                        )
+                    else
+                        videoUrl = previewUrlFactory.getVideoPreviewUrl(
                             galleryMedia = source,
                         )
 
                     log.debug { "fromGalleryMedia: Video viewer video URL $videoUrl" }
                     VideoViewerPage( previewUrl = videoUrl,
-//                        previewUrl = previewUrlFactory.getVideoPreviewUrl(
-//                                galleryMedia = source,
-//                            ),
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
