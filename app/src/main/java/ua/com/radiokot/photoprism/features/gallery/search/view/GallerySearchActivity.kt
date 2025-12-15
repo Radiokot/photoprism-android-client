@@ -4,9 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
-import com.google.android.material.textfield.TextInputEditText
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
@@ -15,7 +12,6 @@ import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
-import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 
 /**
@@ -24,44 +20,44 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
  */
 class GallerySearchActivity : BaseActivity() {
     private val log = kLogger("GallerySearchActivity")
-    
+
     private lateinit var view: ActivityGallerySearchBinding
     private val viewModel: GallerySearchViewModel by viewModel()
     private lateinit var searchConfigView: GallerySearchConfigView
-    private val tvDetector: TvDetector by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         view = ActivityGallerySearchBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        setSupportActionBar(view.toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setTitle(R.string.search_the_library)
-        }
-
         // Start in configuring state
-        viewModel.onSearchSummaryClicked()
+        @Suppress("DEPRECATION")
+        intent
+            .getParcelableExtra<SearchConfig?>(SEARCH_CONFIG_EXTRA)
+            ?.also(viewModel::applySearchConfig)
+        viewModel.switchToConfiguring()
 
+        initToolbar()
         initTextSearchButton()
         initSearchConfigView()
         subscribeToState()
         subscribeToUserQuery()
+
+        setResult(Activity.RESULT_CANCELED)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        // Handle back button in toolbar
-        finish()
-        return true
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.search_the_library)
     }
 
     private fun initTextSearchButton() {
         view.textSearchButton.setOnClickListener {
             showTextSearchDialog()
         }
-        
+
         view.clearTextButton.setOnClickListener {
             viewModel.userQuery.value = ""
         }
@@ -95,14 +91,14 @@ class GallerySearchActivity : BaseActivity() {
     private fun subscribeToUserQuery() {
         viewModel.userQuery.observe(this) { query ->
             val hasQuery = !query.isNullOrBlank()
-            
+
             // Update button text to show current query or placeholder
             view.textSearchButton.text = if (hasQuery) {
                 query
             } else {
                 getString(R.string.enter_the_query)
             }
-            
+
             // Show/hide clear button
             view.clearTextButton.visibility = if (hasQuery) View.VISIBLE else View.GONE
         }
@@ -110,13 +106,13 @@ class GallerySearchActivity : BaseActivity() {
 
     private fun initSearchConfigView() {
         val configBinding = ViewGallerySearchConfigBinding.bind(view.searchContent.root)
-        
+
         searchConfigView = GallerySearchConfigView(
             view = configBinding,
             viewModel = viewModel,
             activity = this,
         )
-        
+
         searchConfigView.initOnce()
     }
 
@@ -129,17 +125,20 @@ class GallerySearchActivity : BaseActivity() {
 
             when (state) {
                 is GallerySearchViewModel.State.Applied -> {
-                    // Search was applied, return the config to the calling activity
-                    val resultIntent = Intent().apply {
-                        putExtra(EXTRA_SEARCH_CONFIG, state.search.config)
-                    }
-                    setResult(Activity.RESULT_OK, resultIntent)
+                    // Search was applied,
+                    // return the config to the calling activity.
+                    setResult(
+                        Activity.RESULT_OK,
+                        Intent()
+                            .putExtra(SEARCH_CONFIG_EXTRA, state.search.config)
+                    )
                     finish()
                 }
 
                 is GallerySearchViewModel.State.NoSearch -> {
-                    // Search was reset, return with no result
-                    setResult(Activity.RESULT_CANCELED)
+                    // Search was reset,
+                    // return to the calling activity without applied config.
+                    setResult(Activity.RESULT_OK, null)
                     finish()
                 }
 
@@ -151,15 +150,18 @@ class GallerySearchActivity : BaseActivity() {
     }
 
     companion object {
-        const val EXTRA_SEARCH_CONFIG = "search_config"
-        
-        fun getSearchConfig(intent: Intent): SearchConfig? {
-            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(EXTRA_SEARCH_CONFIG, SearchConfig::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(EXTRA_SEARCH_CONFIG)
-            }
+        private const val SEARCH_CONFIG_EXTRA = "search-config"
+
+        fun getBundle(
+            alreadyAppliedSearchConfig: SearchConfig?,
+        ) = Bundle().apply {
+            putParcelable(SEARCH_CONFIG_EXTRA, alreadyAppliedSearchConfig)
         }
+
+        @Suppress("DEPRECATION")
+        fun getResult(
+            okResultIntent: Intent?,
+        ): SearchConfig? =
+            okResultIntent?.getParcelableExtra(SEARCH_CONFIG_EXTRA)
     }
 }

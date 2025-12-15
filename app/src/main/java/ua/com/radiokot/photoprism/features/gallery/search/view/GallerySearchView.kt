@@ -1,10 +1,12 @@
 package ua.com.radiokot.photoprism.features.gallery.search.view
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.widget.ImageButton
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
@@ -54,6 +56,17 @@ class GallerySearchView(
             searchView,
             com.google.android.material.R.attr.colorOnSurfaceVariant
         )
+    }
+    private val configScreenLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        result
+            .takeIf { it.resultCode == Activity.RESULT_OK }
+            ?.also { okResult ->
+                viewModel.onConfigurationScreenOkResult(
+                    searchConfigToApply = GallerySearchActivity.getResult(okResult.data),
+                )
+            }
     }
 
     fun init(
@@ -199,6 +212,11 @@ class GallerySearchView(
 
             is GallerySearchViewModel.Event.OpenSearchFiltersGuide ->
                 openSearchFiltersGuide()
+
+            is GallerySearchViewModel.Event.OpenConfigurationScreen ->
+                openConfigurationScreen(
+                    alreadyAppliedSearchConfig = event.alreadyAppliedSearchConfig,
+                )
         }
 
         log.debug {
@@ -213,6 +231,19 @@ class GallerySearchView(
 
     private fun openConfigurationView() {
         searchView.show()
+    }
+
+    private fun openConfigurationScreen(
+        alreadyAppliedSearchConfig: SearchConfig?,
+    ) {
+        configScreenLauncher.launch(
+            Intent(context, GallerySearchActivity::class.java)
+                .putExtras(
+                    GallerySearchActivity.getBundle(
+                        alreadyAppliedSearchConfig = alreadyAppliedSearchConfig,
+                    )
+                )
+        )
     }
 
     private fun openBookmarkDialog(

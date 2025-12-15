@@ -17,6 +17,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksRepository
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumsViewModel
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
+import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 
 class GallerySearchViewModel(
@@ -24,6 +25,7 @@ class GallerySearchViewModel(
     val albumsViewModel: GallerySearchAlbumsViewModel,
     val peopleViewModel: GallerySearchPeopleViewModel,
     private val searchPreferences: SearchPreferences,
+    private val tvDetector: TvDetector,
 ) : ViewModel() {
     private val log = kLogger("GallerySearchVM")
 
@@ -189,10 +191,22 @@ class GallerySearchViewModel(
     }
 
     fun onSearchSummaryClicked() {
-        switchToConfiguring()
+        // On TV, do not switch to configuring as the search is configured on a separate screen.
+        if (tvDetector.isRunningOnTv) {
+            eventsSubject.onNext(
+                Event.OpenConfigurationScreen(
+                    alreadyAppliedSearchConfig =
+                    (stateSubject.value as? State.Applied)
+                        ?.search
+                        ?.config
+                )
+            )
+        } else {
+            switchToConfiguring()
+        }
     }
 
-    private fun switchToConfiguring() {
+    fun switchToConfiguring() {
         when (val state = stateSubject.value!!) {
             is State.Applied -> {
                 // Set up the UI with the already applied configuration.
@@ -512,6 +526,14 @@ class GallerySearchViewModel(
         eventsSubject.onNext(Event.OpenSearchFiltersGuide)
     }
 
+    fun onConfigurationScreenOkResult(searchConfigToApply: SearchConfig?) {
+        if (searchConfigToApply != null) {
+            applySearchConfig(searchConfigToApply)
+        } else {
+            resetSearch()
+        }
+    }
+
     sealed interface State {
         object NoSearch : State
         data class Configuring(val alreadyAppliedSearch: AppliedGallerySearch?) : State
@@ -525,5 +547,9 @@ class GallerySearchViewModel(
         ) : Event
 
         object OpenSearchFiltersGuide : Event
+
+        class OpenConfigurationScreen(
+            val alreadyAppliedSearchConfig: SearchConfig?,
+        ) : Event
     }
 }
