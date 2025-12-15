@@ -68,28 +68,28 @@ class GallerySearchActivity : BaseActivity() {
     }
 
     private fun showTextSearchDialog() {
-        val dialogView = layoutInflater.inflate(
-            R.layout.dialog_text_input,
-            null
-        )
-        val editText = dialogView.findViewById<TextInputEditText>(R.id.text_input_edit_text)
-        editText.setText(viewModel.userQuery.value ?: "")
-        
-        AlertDialog.Builder(this)
-            .setTitle(R.string.enter_the_query)
-            .setView(dialogView)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.userQuery.value = editText.text?.toString() ?: ""
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-            .also {
-                // Request focus and show keyboard
-                editText.requestFocus()
-                editText.postDelayed({
-                    editText.requestFocus()
-                }, 100)
-            }
+//        val dialogView = layoutInflater.inflate(
+//            R.layout.dialog_text_input,
+//            null
+//        )
+//        val editText = dialogView.findViewById<TextInputEditText>(R.id.text_input_edit_text)
+//        editText.setText(viewModel.userQuery.value ?: "")
+//
+//        AlertDialog.Builder(this)
+//            .setTitle(R.string.enter_the_query)
+//            .setView(dialogView)
+//            .setPositiveButton(android.R.string.ok) { _, _ ->
+//                viewModel.userQuery.value = editText.text?.toString() ?: ""
+//            }
+//            .setNegativeButton(android.R.string.cancel, null)
+//            .show()
+//            .also {
+//                // Request focus and show keyboard
+//                editText.requestFocus()
+//                editText.postDelayed({
+//                    editText.requestFocus()
+//                }, 100)
+//            }
     }
 
     private fun subscribeToUserQuery() {

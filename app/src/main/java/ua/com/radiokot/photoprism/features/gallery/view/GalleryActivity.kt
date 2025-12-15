@@ -159,10 +159,6 @@ class GalleryActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult(),
         this::onAddingDestinationAlbumSelectionResult,
     )
-    private val searchActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-        this::onSearchActivityResult,
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -426,10 +422,6 @@ class GalleryActivity : BaseActivity() {
                     openLabels(
                         defaultSearchConfig = event.defaultSearchConfig,
                     )
-                }
-
-                is GalleryViewModel.Event.OpenSearchScreen -> {
-                    openSearchScreen()
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
@@ -972,23 +964,6 @@ class GalleryActivity : BaseActivity() {
                 )
                 .setAction(intent.action)
         )
-    }
-
-    private fun openSearchScreen() {
-        searchActivityLauncher.launch(
-            Intent(this, ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchActivity::class.java)
-        )
-    }
-
-    private fun onSearchActivityResult(result: ActivityResult) {
-        if (result.resultCode == Activity.RESULT_OK) {
-            val searchConfig = result.data?.let { 
-                ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchActivity.getSearchConfig(it)
-            }
-            if (searchConfig != null) {
-                viewModel.searchViewModel.applySearchConfig(searchConfig)
-            }
-        }
     }
 
     private fun resetScroll() {

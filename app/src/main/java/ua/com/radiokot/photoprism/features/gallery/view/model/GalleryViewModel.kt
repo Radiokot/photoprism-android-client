@@ -552,10 +552,6 @@ class GalleryViewModel(
         )
     }
 
-    fun onSearchClicked() {
-        eventsSubject.onNext(Event.OpenSearchScreen)
-    }
-
     fun onDoneMultipleSelectionClicked() {
         val currentState = this.currentState
         check(currentState is State.Selecting.ForOtherApp && currentState.allowMultiple) {
@@ -807,11 +803,6 @@ class GalleryViewModel(
         class OpenLabels(
             val defaultSearchConfig: SearchConfig,
         ) : Event
-
-        /**
-         * Open the standalone search screen for Android TV.
-         */
-        object OpenSearchScreen : Event
 
         /**
          * Close the screen and go to the connection,
