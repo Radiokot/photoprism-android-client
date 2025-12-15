@@ -3,12 +3,12 @@ package ua.com.radiokot.photoprism.features.gallery.search.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchBinding
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
+import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
@@ -39,10 +39,9 @@ class GallerySearchActivity : BaseActivity() {
         viewModel.switchToConfiguring()
 
         initToolbar()
-        initTextSearchButton()
+        initQueryInput()
         initSearchConfigView()
         subscribeToState()
-        subscribeToUserQuery()
 
         setResult(Activity.RESULT_CANCELED)
     }
@@ -53,54 +52,13 @@ class GallerySearchActivity : BaseActivity() {
         setTitle(R.string.search_the_library)
     }
 
-    private fun initTextSearchButton() {
-        view.textSearchButton.setOnClickListener {
-            showTextSearchDialog()
-        }
+    private fun initQueryInput() {
+        view.queryTextInput.editText!!.bindTextTwoWay(viewModel.userQuery, this)
+        view.queryTextInput.editText!!.setOnEditorActionListener { _, _, _ ->
+            viewModel.onSearchClicked()
 
-        view.clearTextButton.setOnClickListener {
-            viewModel.userQuery.value = ""
-        }
-    }
-
-    private fun showTextSearchDialog() {
-//        val dialogView = layoutInflater.inflate(
-//            R.layout.dialog_text_input,
-//            null
-//        )
-//        val editText = dialogView.findViewById<TextInputEditText>(R.id.text_input_edit_text)
-//        editText.setText(viewModel.userQuery.value ?: "")
-//
-//        AlertDialog.Builder(this)
-//            .setTitle(R.string.enter_the_query)
-//            .setView(dialogView)
-//            .setPositiveButton(android.R.string.ok) { _, _ ->
-//                viewModel.userQuery.value = editText.text?.toString() ?: ""
-//            }
-//            .setNegativeButton(android.R.string.cancel, null)
-//            .show()
-//            .also {
-//                // Request focus and show keyboard
-//                editText.requestFocus()
-//                editText.postDelayed({
-//                    editText.requestFocus()
-//                }, 100)
-//            }
-    }
-
-    private fun subscribeToUserQuery() {
-        viewModel.userQuery.observe(this) { query ->
-            val hasQuery = !query.isNullOrBlank()
-
-            // Update button text to show current query or placeholder
-            view.textSearchButton.text = if (hasQuery) {
-                query
-            } else {
-                getString(R.string.enter_the_query)
-            }
-
-            // Show/hide clear button
-            view.clearTextButton.visibility = if (hasQuery) View.VISIBLE else View.GONE
+            // Do not close the keyboard.
+            true
         }
     }
 
