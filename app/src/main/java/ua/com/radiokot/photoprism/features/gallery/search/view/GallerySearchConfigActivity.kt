@@ -6,7 +6,7 @@ import android.os.Bundle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
-import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchBinding
+import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -18,17 +18,17 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
  * A standalone activity for configuring gallery search on Android TV.
  * This prevents D-pad interference with gallery content in the background.
  */
-class GallerySearchActivity : BaseActivity() {
-    private val log = kLogger("GallerySearchActivity")
+class GallerySearchConfigActivity : BaseActivity() {
+    private val log = kLogger("GallerySearchConfigActivity")
 
-    private lateinit var view: ActivityGallerySearchBinding
+    private lateinit var view: ActivityGallerySearchConfigBinding
     private val viewModel: GallerySearchViewModel by viewModel()
     private lateinit var searchConfigView: GallerySearchConfigView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = ActivityGallerySearchBinding.inflate(layoutInflater)
+        view = ActivityGallerySearchConfigBinding.inflate(layoutInflater)
         setContentView(view.root)
 
         // Start in configuring state

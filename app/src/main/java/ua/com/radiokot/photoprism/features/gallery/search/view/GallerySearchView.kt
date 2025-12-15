@@ -64,7 +64,7 @@ class GallerySearchView(
             .takeIf { it.resultCode == Activity.RESULT_OK }
             ?.also { okResult ->
                 viewModel.onConfigurationScreenOkResult(
-                    searchConfigToApply = GallerySearchActivity.getResult(okResult.data),
+                    searchConfigToApply = GallerySearchConfigActivity.getResult(okResult.data),
                 )
             }
     }
@@ -237,9 +237,9 @@ class GallerySearchView(
         alreadyAppliedSearchConfig: SearchConfig?,
     ) {
         configScreenLauncher.launch(
-            Intent(context, GallerySearchActivity::class.java)
+            Intent(context, GallerySearchConfigActivity::class.java)
                 .putExtras(
-                    GallerySearchActivity.getBundle(
+                    GallerySearchConfigActivity.getBundle(
                         alreadyAppliedSearchConfig = alreadyAppliedSearchConfig,
                     )
                 )

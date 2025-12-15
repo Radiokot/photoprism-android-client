@@ -118,7 +118,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".features.gallery.search.view.GallerySearchActivity"
+            android:name=".features.gallery.search.view.GallerySearchConfigActivity"
             android:exported="false"
             android:label="@string/search_the_library"
             android:resizeableActivity="true"

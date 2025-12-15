@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".features.gallery.search.view.GallerySearchActivity">
+    tools:context=".features.gallery.search.view.GallerySearchConfigActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
