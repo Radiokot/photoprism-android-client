@@ -44,6 +44,7 @@
             android:layout_width="@dimen/search_bar_width"
             android:layout_height="48dp"
             android:focusable="true"
+            android:focusableInTouchMode="true"
             android:hint="@string/search_the_library"
             android:minHeight="0dp"
             app:layout_scrollFlags="enterAlways"

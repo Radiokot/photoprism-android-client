@@ -735,6 +735,7 @@ class GalleryActivity : BaseActivity() {
         searchBarView.init(
             searchBar = view.searchBar,
         )
+        searchBarView.setFocusDownView(view.swipeRefreshLayout)
     }
 
     private fun initNavigation() = with(navigationView) {
@@ -743,17 +744,21 @@ class GalleryActivity : BaseActivity() {
         val navigationRail = rootView.navigationRail
 
         when {
-            drawerLayout != null && navigationView != null ->
+            drawerLayout != null && navigationView != null -> {
                 initWithDrawer(
                     drawerLayout = drawerLayout,
                     navigationView = navigationView,
                     searchBarView = searchBarView,
                 )
+                searchBarView.setFocusLeftView(navigationView)
+            }
 
-            navigationRail != null ->
+            navigationRail != null -> {
                 initWithRail(
                     navigationRail = navigationRail,
                 )
+                searchBarView.setFocusLeftView(navigationRail)
+            }
 
             else ->
                 error("The layout must have a navigation view")

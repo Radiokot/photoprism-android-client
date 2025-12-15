@@ -2,6 +2,8 @@ package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
+import android.view.KeyEvent
+import android.view.View
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
@@ -38,6 +40,8 @@ class GallerySearchBarView(
     private val tvDetector: TvDetector by inject()
     private val picasso: Picasso by inject()
     private lateinit var searchSummaryFactory: AppliedGallerySearchSummaryFactory
+    private var viewToFocusDown: View? = null
+    private var viewToFocusLeft: View? = null
 
     fun init(
         searchBar: SearchBar,
@@ -91,6 +95,22 @@ class GallerySearchBarView(
                 }
                 true
             }
+        }
+
+        searchBar.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode){
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        viewToFocusLeft?.requestFocus()
+                        return@setOnKeyListener true
+                    }
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        viewToFocusDown?.requestFocus()
+                        return@setOnKeyListener true
+                    }
+                }
+            }
+            false
         }
     }
 
@@ -146,11 +166,19 @@ class GallerySearchBarView(
         }
     }
 
-    fun addNavigationMenuIcon(onClicked: () -> Unit) = with(searchBar){
+    fun addNavigationMenuIcon(onClicked: () -> Unit) = with(searchBar) {
         navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_menu)
         navigationContentDescription = context.getString(R.string.menu)
         setNavigationOnClickListener {
             onClicked()
         }
+    }
+
+    fun setFocusDownView(view: View) {
+        this.viewToFocusDown = view
+    }
+
+    fun setFocusLeftView(view: View) {
+        this.viewToFocusLeft = view
     }
 }
