@@ -1,0 +1,3 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed inability to focus the search bar on TV. When the "Library" navigation entry is focused, press "Right" to focus the search bar. You can also press the "Channel up" button to enter the search screen.

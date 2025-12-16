@@ -5,12 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.40.1] - 2025-12-16
 
 ### Fixed
 
-- Inability to focus the search bar (and so use search) on TV.
-  When the "Library" navigation entry is focused, press "Right" to focus the search bar
+- Inability to focus the search bar on TV.
+  When the "Library" navigation entry is focused, press "Right" to focus the search bar.
+  You can also press the "Channel up" button to enter the search screen
 
 ## [1.40.0] - 2025-11-13
 
@@ -979,4 +980,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.40.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.39.0(59)...1.40.0(60)
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.40.0(60)...HEAD
+[1.40.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.40.0(60)...1.40.1(61)
+
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.40.1(61)...HEAD

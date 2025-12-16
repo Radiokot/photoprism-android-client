@@ -12,7 +12,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Connection to both private and public libraries
 - Endless session without the need to re-enter the password
 - Support for mTLS (mutual TLS), HTTP basic auth and SSO like Authelia, Cloudflare Access, etc.
-- Basic TV compatibility that lets you browse the timeline with a remote-control
+- Basic TV compatibility that lets you browse and search the timeline with a remote-control
   (Not available in Google Play on TV, install as APK)
 - ⭐ Extensions:
   - Memories – get a daily collection of photos and videos from the same day in past years
