@@ -18,7 +18,6 @@ import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.subscribe
-import ua.com.radiokot.photoprism.features.gallery.search.logic.TvDetector
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
 
@@ -37,7 +36,6 @@ class GallerySearchBarView(
     private val log = kLogger("GallerySearchBarView")
 
     private lateinit var searchBar: SearchBar
-    private val tvDetector: TvDetector by inject()
     private val picasso: Picasso by inject()
     private lateinit var searchSummaryFactory: AppliedGallerySearchSummaryFactory
     private var viewToFocusDown: View? = null

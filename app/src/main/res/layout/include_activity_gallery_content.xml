@@ -45,10 +45,13 @@
             android:layout_height="48dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:foreground="@drawable/search_bar_foreground"
             android:hint="@string/search_the_library"
             android:minHeight="0dp"
             app:layout_scrollFlags="enterAlways"
-            app:navigationIconTint="?colorOnSurfaceVariant" />
+            app:navigationIconTint="?colorOnSurfaceVariant"
+            tools:targetApi="m"
+            tools:ignore="UnusedAttribute" />
 
         <!-- enterAlways scroll flag keeps the search bar fixed -->
 

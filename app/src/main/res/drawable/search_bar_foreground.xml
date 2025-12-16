@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp"/>
+            <stroke android:width="@dimen/list_item_gallery_media_margin_double" android:color="?colorOnSurface" />
+        </shape>
+    </item>
+</selector>
