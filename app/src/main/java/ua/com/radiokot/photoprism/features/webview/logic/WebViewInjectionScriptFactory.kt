@@ -104,6 +104,8 @@ class WebViewInjectionScriptFactory {
                         .mt-4 {
                             margin-top: 0px !important;
                             padding-top: 4px !important;
+                            padding-left: 8px !important;
+                            padding-right: 8px !important;
                         }
                         
                         /* Make the background match window color */
