@@ -37,4 +37,16 @@
         android:title="@string/delete"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/add_to_favorites"
+        android:icon="@drawable/ic_favorite"
+        android:title="@string/add_to_favorites"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/remove_from_favorites"
+        android:icon="@drawable/ic_favorite"
+        android:title="@string/remove_from_favorites"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never" />
 </menu>

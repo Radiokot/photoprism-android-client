@@ -635,7 +635,7 @@ class GalleryActivity : BaseActivity() {
                             R.layout.list_item_gallery_small_header,
                             R.layout.list_item_gallery_large_header,
                             GalleryMemoriesListView.RECYCLER_VIEW_TYPE,
-                            ->
+                                ->
                                 spanCount
 
                             else ->
@@ -793,6 +793,12 @@ class GalleryActivity : BaseActivity() {
 
                     R.id.delete ->
                         viewModel.onDeleteMultipleSelectionClicked()
+
+                    R.id.add_to_favorites ->
+                        viewModel.onAddToFavoritesMultipleSelectionClicked()
+
+                    R.id.remove_from_favorites ->
+                        viewModel.onRemoveFromFavoritesMultipleSelectionClicked()
                 }
 
                 true
@@ -831,6 +837,10 @@ class GalleryActivity : BaseActivity() {
             forEach { menuItem ->
                 menuItem.isVisible = areUserSelectionItemsVisible
             }
+            findItem(R.id.add_to_favorites).isVisible =
+                areUserSelectionItemsVisible && viewModel.canAddSelectedToFavorites
+            findItem(R.id.remove_from_favorites).isVisible =
+                areUserSelectionItemsVisible && viewModel.canRemoveSelectedFromFavorites
             findItem(R.id.remove_from_album).isVisible = false
         }
     }

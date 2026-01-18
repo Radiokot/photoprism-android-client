@@ -36,6 +36,10 @@ class GalleryListViewModelImpl(
         BehaviorSubject.createDefault(0)
     override val selectedMediaByUid =
         linkedMapOf<String, GalleryMedia>()
+    override val canAddSelectedToFavorites: Boolean
+        get() = !selectedMediaByUid.values.all(GalleryMedia::isFavorite)
+    override val canRemoveSelectedFromFavorites: Boolean
+        get() = selectedMediaByUid.values.all(GalleryMedia::isFavorite)
 
     private val currentState: State
         get() = itemListState.value!!

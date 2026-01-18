@@ -434,6 +434,44 @@ class GallerySingleRepositoryViewModel(
         )
     }
 
+    fun onAddToFavoritesMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Adding multiple selection to favorites button is only clickable when selecting"
+        }
+
+        check(canAddSelectedToFavorites) {
+            "Adding multiple selection to favorites button is only clickable when allowed"
+        }
+
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUids = selectedMediaByUid.keys.toList(),
+            isFavorite = true,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to add items to favorites from"
+            },
+            onStarted = ::switchToViewing,
+        )
+    }
+
+    fun onRemoveFromFavoritesMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Removing multiple selection from favorites button is only clickable when selecting"
+        }
+
+        check(canRemoveSelectedFromFavorites) {
+            "Removing multiple selection from favorites button is only clickable when allowed"
+        }
+
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUids = selectedMediaByUid.keys.toList(),
+            isFavorite = false,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to remove items from favorites from"
+            },
+            onStarted = ::switchToViewing,
+        )
+    }
+
     private fun switchToViewing() {
         assert(currentState is State.Selecting.ForUser) {
             "Switching to viewing is only possible while selecting to share"
@@ -454,7 +492,7 @@ class GallerySingleRepositoryViewModel(
         val currentOrder = itemsOrder.value!!
 
         val newOrder =
-            GalleryItemsOrder.values()[(currentOrder.ordinal + 1) % GalleryItemsOrder.values().size]
+            GalleryItemsOrder.entries[(currentOrder.ordinal + 1) % GalleryItemsOrder.entries.size]
 
         log.debug {
             "onSortClicked(): changing_order:" +

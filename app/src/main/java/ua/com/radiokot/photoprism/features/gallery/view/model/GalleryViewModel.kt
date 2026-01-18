@@ -652,6 +652,44 @@ class GalleryViewModel(
         )
     }
 
+    fun onAddToFavoritesMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Adding multiple selection to favorites button is only clickable when selecting"
+        }
+
+        check(canAddSelectedToFavorites) {
+            "Adding multiple selection to favorites button is only clickable when allowed"
+        }
+
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUids = selectedMediaByUid.keys.toList(),
+            isFavorite = true,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to add items to favorites from"
+            },
+            onStarted = ::switchToViewing,
+        )
+    }
+
+    fun onRemoveFromFavoritesMultipleSelectionClicked() {
+        check(currentState is State.Selecting.ForUser) {
+            "Removing multiple selection from favorites button is only clickable when selecting"
+        }
+
+        check(canRemoveSelectedFromFavorites) {
+            "Removing multiple selection from favorites button is only clickable when allowed"
+        }
+
+        galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
+            mediaUids = selectedMediaByUid.keys.toList(),
+            isFavorite = false,
+            currentMediaRepository = currentMediaRepository.checkNotNull {
+                "There must be a media repository to remove items from favorites from"
+            },
+            onStarted = ::switchToViewing,
+        )
+    }
+
     fun onScreenResumedAfterMovedBackWithBackButton() {
         log.debug {
             "onScreenResumedAfterMovedBackWithBackButton(): invalidate_all_cached_repos"

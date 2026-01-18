@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to add or remove from favorites items selected with a long press.
+  This only works since the PhotoPrism release of November 30, 2025
+
 ### Fixed
 
 - Too big horizontal padding on guide and extension details screens

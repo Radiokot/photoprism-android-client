@@ -13,6 +13,8 @@ interface GalleryListViewModel {
     val itemScale: BehaviorSubject<GalleryItemScale>
     val selectedItemsCount: BehaviorSubject<Int>
     val selectedMediaByUid: LinkedHashMap<String, GalleryMedia>
+    val canAddSelectedToFavorites: Boolean
+    val canRemoveSelectedFromFavorites: Boolean
 
     fun postGalleryItemsAsync(repository: SimpleGalleryMediaRepository)
     fun postGalleryItems(repository: SimpleGalleryMediaRepository)

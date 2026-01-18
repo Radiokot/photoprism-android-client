@@ -215,6 +215,12 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
                     R.id.delete ->
                         viewModel.onDeleteMultipleSelectionClicked()
+
+                    R.id.add_to_favorites ->
+                        viewModel.onAddToFavoritesMultipleSelectionClicked()
+
+                    R.id.remove_from_favorites ->
+                        viewModel.onRemoveFromFavoritesMultipleSelectionClicked()
                 }
 
                 true
@@ -287,9 +293,12 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             forEach { menuItem ->
                 menuItem.isVisible = areUserSelectionItemsVisible
             }
+            findItem(R.id.add_to_favorites).isVisible =
+                areUserSelectionItemsVisible && viewModel.canAddSelectedToFavorites
+            findItem(R.id.remove_from_favorites).isVisible =
+                areUserSelectionItemsVisible && viewModel.canRemoveSelectedFromFavorites
             findItem(R.id.remove_from_album).isVisible =
-                areUserSelectionItemsVisible
-                        && (state as GallerySingleRepositoryViewModel.State.Selecting.ForUser).canRemoveFromAlbum
+                areUserSelectionItemsVisible && state.canRemoveFromAlbum
         }
     }
 
