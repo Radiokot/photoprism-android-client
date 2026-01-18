@@ -8,6 +8,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoEdit
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhotoUpdate
@@ -51,5 +52,15 @@ interface PhotoPrismPhotosService {
     fun updatePhoto(
         @Path("photoUid") photoUid: String,
         @Body update: PhotoPrismPhotoUpdate,
+    ): Any // There must be some non-void return type because of Retrofit assertions.
+
+    /**
+     * Available since the PhotoPrism release of November 30, 2025.
+     */
+    @kotlin.jvm.Throws(IOException::class)
+    @Headers("Accept: application/json")
+    @POST("v1/batch/photos/edit")
+    fun batchEdit(
+        @Body edit: PhotoPrismBatchPhotoEdit
     ): Any // There must be some non-void return type because of Retrofit assertions.
 }

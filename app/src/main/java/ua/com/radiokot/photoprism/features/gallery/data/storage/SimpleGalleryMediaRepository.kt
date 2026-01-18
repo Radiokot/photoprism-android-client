@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.kotlin.toCompletable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.parcelize.Parcelize
 import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
+import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoEdit
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismBatchPhotoUids
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismPhotoUpdate
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
@@ -247,6 +248,7 @@ class SimpleGalleryMediaRepository(
         }
     }
 
+    // Keep for backward compatibility.
     fun updateAttributes(
         itemUid: String,
         isFavorite: Boolean? = null,
@@ -271,6 +273,34 @@ class SimpleGalleryMediaRepository(
 
                     broadcast()
                 }
+        }
+
+    /**
+     * Available since the PhotoPrism release of November 30, 2025.
+     */
+    fun updateAttributes(
+        itemUids: Collection<String>,
+        isFavorite: Boolean? = null,
+        isPrivate: Boolean? = null,
+    ): Completable = {
+        photoPrismPhotosService.batchEdit(
+            edit = PhotoPrismBatchPhotoEdit(
+                photoUids = itemUids,
+                isFavorite = isFavorite,
+                isPrivate = isPrivate,
+            )
+        )
+    }
+        .toCompletable()
+        .doOnComplete {
+            itemsList
+                .filter { it.uid in itemUids }
+                .forEach { itemToChange ->
+                    // Update the state locally.
+                    isFavorite?.also(itemToChange::isFavorite::set)
+                    isPrivate?.also(itemToChange::isPrivate::set)
+                }
+                .also { broadcast() }
         }
 
     fun archive(
