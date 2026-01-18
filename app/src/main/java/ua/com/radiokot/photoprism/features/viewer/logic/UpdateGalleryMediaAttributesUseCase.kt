@@ -9,18 +9,27 @@ class UpdateGalleryMediaAttributesUseCase {
      * which will be updated on successful update.
      *
      * @param isFavorite to update favorite state, **null** to omit
-     * @param  isFavorite to update private state, **null** to omit
+     * @param isPrivate to update private state, **null** to omit
      */
     operator fun invoke(
-        mediaUid: String,
+        mediaUids: Collection<String>,
         currentGalleryMediaRepository: SimpleGalleryMediaRepository,
         isFavorite: Boolean? = null,
         isPrivate: Boolean? = null,
     ): Completable =
-        currentGalleryMediaRepository
-            .updateAttributes(
-                itemUid = mediaUid,
-                isFavorite = isFavorite,
-                isPrivate = isPrivate,
-            )
+        // Use more compatible method for single item update.
+        if (mediaUids.size == 1)
+            currentGalleryMediaRepository
+                .updateAttributes(
+                    itemUid = mediaUids.first(),
+                    isFavorite = isFavorite,
+                    isPrivate = isPrivate,
+                )
+        else
+            currentGalleryMediaRepository
+                .updateAttributes(
+                    itemUids = mediaUids,
+                    isFavorite = isFavorite,
+                    isPrivate = isPrivate,
+                )
 }

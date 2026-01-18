@@ -427,7 +427,7 @@ class GalleryMediaViewerViewModel(
         val toSetFavorite = isFavorite.value != true
 
         galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
-            mediaUid = item.uid,
+            mediaUids = listOf(item.uid),
             currentMediaRepository = galleryMediaRepository,
             isFavorite = toSetFavorite,
             onStarted = {
@@ -450,7 +450,7 @@ class GalleryMediaViewerViewModel(
         val toSetPrivate = isPrivate.value != true
 
         galleryMediaRemoteActionsViewModel.updateGalleryMediaAttributes(
-            mediaUid = item.uid,
+            mediaUids = listOf(item.uid),
             currentMediaRepository = galleryMediaRepository,
             isPrivate = toSetPrivate,
             onUpdated = {

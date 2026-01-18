@@ -196,7 +196,7 @@ class GalleryMediaRemoteActionsViewModelDelegateImpl(
     }
 
     override fun updateGalleryMediaAttributes(
-        mediaUid: String,
+        mediaUids: Collection<String>,
         currentMediaRepository: SimpleGalleryMediaRepository,
         isFavorite: Boolean?,
         isPrivate: Boolean?,
@@ -205,7 +205,7 @@ class GalleryMediaRemoteActionsViewModelDelegateImpl(
     ) {
         updateGalleryMediaAttributesUseCase
             .invoke(
-                mediaUid = mediaUid,
+                mediaUids = mediaUids,
                 isFavorite = isFavorite,
                 isPrivate = isPrivate,
                 currentGalleryMediaRepository = currentMediaRepository,
@@ -215,7 +215,7 @@ class GalleryMediaRemoteActionsViewModelDelegateImpl(
             .doOnSubscribe {
                 log.debug {
                     "updateGalleryMediaAttributes(): start_updating:" +
-                            "\nitem=$mediaUid," +
+                            "\nitems=${mediaUids.size}," +
                             "\nisFavorite=$isFavorite," +
                             "\nisPrivate=$isPrivate"
                 }

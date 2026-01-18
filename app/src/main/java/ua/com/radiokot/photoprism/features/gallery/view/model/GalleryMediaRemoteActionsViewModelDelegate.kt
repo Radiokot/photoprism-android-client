@@ -28,7 +28,7 @@ interface GalleryMediaRemoteActionsViewModelDelegate : GalleryMediaRemoteActions
     )
 
     fun updateGalleryMediaAttributes(
-        mediaUid: String,
+        mediaUids: Collection<String>,
         currentMediaRepository: SimpleGalleryMediaRepository,
         isFavorite: Boolean? = null,
         isPrivate: Boolean? = null,
