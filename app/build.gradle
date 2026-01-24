@@ -149,6 +149,7 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.10.0'
     // Update to 2.10.0 causes instability of widget update worker.
     // https://issuetracker.google.com/issues/400028868
+    //noinspection GradleDependency
     implementation 'androidx.work:work-rxjava3:2.9.0!!'
 
     // If there is a need to update the preferences library,
@@ -191,7 +192,11 @@ dependencies {
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
     implementation 'com.github.Radiokot:offline-license-key:1.0.0'
     // Must be 4.3 for Java 8 compatibility.
+    //noinspection NewerVersionAvailable
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
+    // Must be 11.13.5 for minSdk 21
+    //noinspection NewerVersionAvailable
+    implementation 'org.maplibre.gl:android-sdk:11.13.5!!'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).

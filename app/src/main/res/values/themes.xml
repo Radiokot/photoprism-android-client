@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="BaseLightAppTheme" parent="Theme.Material3.Light.NoActionBar">
+    <style name="LightAppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -35,7 +35,7 @@
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
-    <style name="AppTheme" parent="BaseLightAppTheme" />
+    <style name="AppTheme" parent="LightAppTheme" />
 
     <style name="DarkAppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
@@ -103,6 +103,12 @@
         <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
         <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="MapTheme" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
 </resources>

@@ -523,6 +523,12 @@ class GalleryViewModel(
         )
     }
 
+    fun onPlacesClicked() {
+        eventsSubject.onNext(
+            Event.OpenPlaces
+        )
+    }
+
     fun onCalendarClicked() {
         eventsSubject.onNext(
             Event.OpenAlbums(
@@ -841,6 +847,8 @@ class GalleryViewModel(
         class OpenLabels(
             val defaultSearchConfig: SearchConfig,
         ) : Event
+
+        object OpenPlaces : Event
 
         /**
          * Close the screen and go to the connection,

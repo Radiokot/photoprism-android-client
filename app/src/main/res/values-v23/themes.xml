@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="BaseLightAppTheme">
+    <style name="AppTheme" parent="LightAppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>

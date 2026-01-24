@@ -67,6 +67,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownlo
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 import ua.com.radiokot.photoprism.features.labels.view.LabelsActivity
+import ua.com.radiokot.photoprism.features.map.view.MapActivity
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
@@ -422,6 +423,10 @@ class GalleryActivity : BaseActivity() {
                     openLabels(
                         defaultSearchConfig = event.defaultSearchConfig,
                     )
+                }
+
+                is GalleryViewModel.Event.OpenPlaces -> {
+                    openPlaces()
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
@@ -931,6 +936,10 @@ class GalleryActivity : BaseActivity() {
 
     private fun openPreferences() {
         startActivity(Intent(this, PreferencesActivity::class.java))
+    }
+
+    private fun openPlaces() {
+        startActivity(Intent(this, MapActivity::class.java))
     }
 
     private fun openAlbums(

@@ -19,6 +19,11 @@
         android:title="@string/favorites" />
 
     <item
+        android:id="@+id/places"
+        android:icon="@drawable/ic_earth"
+        android:title="@string/places" />
+
+    <item
         android:id="@+id/calendar"
         android:icon="@drawable/ic_calendar"
         android:title="@string/calendar" />

@@ -304,4 +304,5 @@
     <string name="show_all_labels">Show all labels</string>
     <string name="show_only_important_labels">Show important only</string>
     <string name="failed_to_load_labels">Failed to load labels</string>
+    <string name="places">Places</string>
 </resources>

@@ -236,6 +236,12 @@
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".features.map.view.MapActivity"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:theme="@style/MapTheme" />
+
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
             android:authorities="${fileProviderAuthority}"
