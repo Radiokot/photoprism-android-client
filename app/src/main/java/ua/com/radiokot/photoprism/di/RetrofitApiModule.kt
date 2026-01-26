@@ -5,6 +5,7 @@ import org.koin.core.qualifier._q
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.api.faces.service.PhotoPrismFacesService
@@ -39,6 +40,7 @@ val retrofitApiModule = module {
         params as EnvRetrofitParams
         Retrofit.Builder()
             .baseUrl(params.apiUrl)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(JacksonConverterFactory.create(get()))
             .addCallAdapterFactory(SyncCallAdapter.Factory)
             .client(params.httpClient)
