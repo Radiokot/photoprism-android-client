@@ -8,6 +8,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import ua.com.radiokot.photoprism.api.albums.service.PhotoPrismAlbumsService
 import ua.com.radiokot.photoprism.api.config.service.PhotoPrismClientConfigService
 import ua.com.radiokot.photoprism.api.faces.service.PhotoPrismFacesService
+import ua.com.radiokot.photoprism.api.geo.service.PhotoPrismGeoService
 import ua.com.radiokot.photoprism.api.labels.service.PhotoPrismLabelsService
 import ua.com.radiokot.photoprism.api.photos.service.PhotoPrismPhotosService
 import ua.com.radiokot.photoprism.api.session.service.PhotoPrismSessionService
@@ -115,6 +116,11 @@ val retrofitApiModule = module {
         scoped<PhotoPrismUploadService> {
             get<Retrofit>()
                 .create(PhotoPrismUploadService::class.java)
+        }
+
+        scoped<PhotoPrismGeoService> {
+            get<Retrofit>()
+                .create(PhotoPrismGeoService::class.java)
         }
 
         // Session service instance under the session scope
