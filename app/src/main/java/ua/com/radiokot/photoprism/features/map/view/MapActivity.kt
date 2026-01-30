@@ -23,18 +23,30 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.constants.MapLibreConstants
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.expressions.Expression.accumulated
 import org.maplibre.android.style.expressions.Expression.coalesce
 import org.maplibre.android.style.expressions.Expression.concat
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.has
 import org.maplibre.android.style.expressions.Expression.image
+import org.maplibre.android.style.expressions.Expression.length
 import org.maplibre.android.style.expressions.Expression.literal
+import org.maplibre.android.style.expressions.Expression.lt
 import org.maplibre.android.style.expressions.Expression.not
+import org.maplibre.android.style.expressions.Expression.switchCase
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonOptions
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
+import org.maplibre.geojson.Point
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityMapBinding
@@ -123,11 +135,19 @@ class MapActivity : BaseActivity() {
 
         map.getStyle { style ->
             viewModel
-                .source
-                .observe(this@MapActivity) { source ->
-                    // TODO: Fix crash on config change.
-                    style.addSource(source)
-                    // TODO: Set camera position corresponding to the source bounding box.
+                .featureCollection
+                .observe(this@MapActivity) { featureCollection ->
+                    style.addSource(createClusteredSource(featureCollection))
+
+                    val boundingBox = checkNotNull(featureCollection.bbox()) {
+                        "There must be the bounding box"
+                    }
+                    map.easeCamera(
+                        CameraUpdateFactory.newLatLngBounds(
+                            bounds = boundingBox.toLatLngBounds(),
+                            padding = thumbnailSizePx / 2,
+                        )
+                    )
                 }
 
             style.addImage(
@@ -140,7 +160,7 @@ class MapActivity : BaseActivity() {
             )
 
             val clusterLayer =
-                SymbolLayer("pp-clusters", MapViewModel.SOURCE_ID)
+                SymbolLayer("pp-clusters", SOURCE_ID)
                     .withProperties(
                         PropertyFactory.iconImage(
                             coalesce(
@@ -162,7 +182,7 @@ class MapActivity : BaseActivity() {
                     .also(style::addLayer)
 
             val photoLayer =
-                SymbolLayer("pp-photos", MapViewModel.SOURCE_ID)
+                SymbolLayer("pp-photos", SOURCE_ID)
                     .withProperties(
                         PropertyFactory.iconImage(
                             coalesce(
@@ -241,6 +261,35 @@ class MapActivity : BaseActivity() {
             "initMap(): map_initialized"
         }
     }
+
+    private fun createClusteredSource(featureCollection: FeatureCollection): GeoJsonSource =
+        GeoJsonSource(
+            id = SOURCE_ID,
+            features = featureCollection,
+            options =
+                GeoJsonOptions()
+                    .withCluster(true)
+                    // Setting this to max zoom prevents declustering hundreds of photos
+                    // taken at the same location.
+                    .withClusterMaxZoom(MapLibreConstants.MAXIMUM_ZOOM.toInt())
+                    .withClusterRadius(80)
+                    // This expression collects enough photo hashes
+                    // from the cluster to create a thumbnail.
+                    // The hashes are comma separated, with a trailing comma.
+                    // The magic number ✨ is obtained through trial and error.
+                    .withClusterProperty(
+                        "Hashes",
+                        switchCase(
+                            lt(length(accumulated()), 150),
+                            concat(accumulated(), get("Hashes")),
+                            accumulated()
+                        ),
+                        concat(
+                            get("Hash"),
+                            literal(",")
+                        ),
+                    ),
+        )
 
     private fun getPhotoThumbnailBitmap(
         thumbnailHash: String,
@@ -452,5 +501,18 @@ class MapActivity : BaseActivity() {
 
     private fun SymbolLayer.invalidate() {
         setProperties(PropertyFactory.iconSize(iconSize.value!! + 0.0001f))
+    }
+
+    private fun Point.toLatLng(): LatLng =
+        LatLng(latitude(), longitude())
+
+    private fun BoundingBox.toLatLngBounds(): LatLngBounds =
+        LatLngBounds.Builder()
+            .include(southwest().toLatLng())
+            .include(northeast().toLatLng())
+            .build()
+
+    private companion object {
+        private const val SOURCE_ID = "pp-clustered-photos"
     }
 }
