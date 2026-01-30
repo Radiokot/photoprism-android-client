@@ -195,11 +195,9 @@ dependencies {
     // Must be 4.3 for Java 8 compatibility.
     //noinspection NewerVersionAvailable
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
-
     // Must be 11.13.5 for minSdk 21
     //noinspection NewerVersionAvailable
     implementation 'org.maplibre.gl:android-sdk:11.13.5!!'
-    implementation 'org.maplibre.gl:android-plugin-annotation-v9:3.0.2'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).

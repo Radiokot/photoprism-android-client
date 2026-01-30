@@ -43,6 +43,8 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class MapActivity : BaseActivity() {
@@ -84,6 +86,10 @@ class MapActivity : BaseActivity() {
             isAntiAlias = true
             style = Paint.Style.FILL
         }
+    }
+    private val locale: Locale by inject()
+    private val decimalSeparator: Char by lazy {
+        DecimalFormatSymbols.getInstance(locale).decimalSeparator
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,7 +146,7 @@ class MapActivity : BaseActivity() {
                             coalesce(
                                 image(
                                     concat(
-                                        get("point_count"),
+                                        get("point_count_abbreviated"),
                                         literal(":"),
                                         get("Hashes")
                                     )
@@ -193,7 +199,7 @@ class MapActivity : BaseActivity() {
                     visibleFeatures
                         .mapTo(mutableSetOf()) { feature ->
                             if (feature.hasProperty("Hashes"))
-                                feature.getNumberProperty("point_count").toString() +
+                                feature.getStringProperty("point_count_abbreviated") +
                                         ":" +
                                         feature.getStringProperty("Hashes")
                             else
@@ -253,21 +259,40 @@ class MapActivity : BaseActivity() {
     private fun getClusterThumbnailBitmap(
         thumbnailId: String
     ): Single<Bitmap> {
-        val thumbnailHashes =
+        var thumbnailHashes =
             thumbnailId
                 .substringAfter(':')
                 .split(',')
                 .filter(String::isNotEmpty)
-        val photoCount =
+
+        thumbnailHashes =
+            if (thumbnailHashes.size >= 4)
+                thumbnailHashes.take(4)
+            else
+                thumbnailHashes.take(2)
+
+
+        var photoCountAbbreviated =
             thumbnailId
                 .substringBefore(':')
-                .toInt()
+
+        // Abbreviated count is formatted with the dot,
+        // and it also can be nonsense like "10.411000k",
+        // so it must be cleaned up.
+        if (photoCountAbbreviated.contains('.')) {
+            val integerPart = photoCountAbbreviated.substringBefore('.')
+            val decimalPartWithLetter = photoCountAbbreviated.substringAfter('.')
+            val shortenDecimalPart = decimalPartWithLetter.take(1)
+            val letter = decimalPartWithLetter.last()
+
+            photoCountAbbreviated =
+                "${integerPart}${decimalSeparator}${shortenDecimalPart}${letter}"
+        }
 
         val composeTiles =
-            if (thumbnailHashes.size >= 4) {
+            if (thumbnailHashes.size == 4) {
                 val tileSize = thumbnailSizePx / 2
                 thumbnailHashes
-                    .take(4)
                     .map { thumbnailHash ->
                         picasso
                             .load(
@@ -284,7 +309,6 @@ class MapActivity : BaseActivity() {
                     .map(::composeFourTiles)
             } else {
                 thumbnailHashes
-                    .take(2)
                     .map { thumbnailHash ->
                         picasso
                             .load(
@@ -305,7 +329,7 @@ class MapActivity : BaseActivity() {
             .map {
                 addPhotoCount(
                     source = it,
-                    count = photoCount,
+                    countAbbreviated = photoCountAbbreviated,
                 )
             }
             .map(roundedCornersTransformation::transform)
@@ -343,16 +367,9 @@ class MapActivity : BaseActivity() {
 
     private fun addPhotoCount(
         source: Bitmap,
-        count: Int,
+        countAbbreviated: String,
     ): Bitmap {
-        val canvas = Canvas(source)
-
-        val text =
-            if (count >= 1000)
-                "${count / 1000}k"
-            else
-                count.toString()
-
+        val text = countAbbreviated
         val textPaddingHorizontal = source.width * 0.06f
         val textWidth = clusterPhotoCountPaint.measureText(text) + textPaddingHorizontal * 2f
         val textPaddingVertical = source.width * 0.02f
@@ -363,8 +380,8 @@ class MapActivity : BaseActivity() {
         val textDescent =
             clusterPhotoCountPaint.fontMetrics.descent
 
-        val textLeft = (canvas.width - textWidth) / 2f
-        val textTop = (canvas.height - textHeight) / 2f
+        val textLeft = (source.width - textWidth) / 2f
+        val textTop = (source.height - textHeight) / 2f
         val textBackgroundRect =
             RectF(
                 textLeft,
@@ -372,15 +389,15 @@ class MapActivity : BaseActivity() {
                 textLeft + textWidth,
                 textTop + textHeight
             )
-
         val textBackgroundCornerRadius = source.width * 0.05f
+
+        val canvas = Canvas(source)
         canvas.drawRoundRect(
             textBackgroundRect,
             textBackgroundCornerRadius,
             textBackgroundCornerRadius,
             clusterPhotoCountBackgroundPaint
         )
-
         canvas.drawText(
             text,
             textBackgroundRect.left + textPaddingHorizontal,
