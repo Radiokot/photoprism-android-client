@@ -4,6 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+import org.maplibre.android.style.expressions.Expression.accumulated
+import org.maplibre.android.style.expressions.Expression.concat
+import org.maplibre.android.style.expressions.Expression.get
+import org.maplibre.android.style.expressions.Expression.length
+import org.maplibre.android.style.expressions.Expression.literal
+import org.maplibre.android.style.expressions.Expression.lt
+import org.maplibre.android.style.expressions.Expression.switchCase
 import org.maplibre.android.style.sources.GeoJsonOptions
 import org.maplibre.android.style.sources.GeoJsonSource
 import ua.com.radiokot.photoprism.extension.autoDispose
@@ -50,18 +57,34 @@ class MapViewModel(
                 if (source.value != null) {
                     source.value!!.setGeoJson(geoJson)
                 } else {
-                    source.value =
-                        GeoJsonSource(
-                            id = SOURCE_ID,
-                            geoJson = geoJson,
-                            options =
-                                GeoJsonOptions()
-                                    .withCluster(true),
-                        )
+                    source.value = createClusteredSource(geoJson)
                 }
             }
             .autoDispose(this)
     }
+
+    private fun createClusteredSource(geoJson: String): GeoJsonSource =
+        GeoJsonSource(
+            id = SOURCE_ID,
+            geoJson = geoJson,
+            options =
+                GeoJsonOptions()
+                    .withCluster(true)
+                    // This expression collects up to 4 photo hashes from the cluster, separated by a comma.
+                    // 80 is a magic ✨ number obtained through trial and error.
+                    .withClusterProperty(
+                        "Hashes",
+                        switchCase(
+                            lt(length(accumulated()), 80),
+                            concat(accumulated(), get("Hashes")),
+                            accumulated()
+                        ),
+                        concat(
+                            get("Hash"),
+                            literal(",")
+                        ),
+                    ),
+        )
 
     private fun update(force: Boolean = false) {
         log.debug {
