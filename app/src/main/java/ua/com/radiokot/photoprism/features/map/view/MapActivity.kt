@@ -1,13 +1,20 @@
 package ua.com.radiokot.photoprism.features.map.view
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -48,7 +55,36 @@ class MapActivity : BaseActivity() {
     }
     private val picasso by inject<Picasso>()
     private val previewUrlFactory by inject<PhotoPrismMediaPreviewUrlFactory>()
-    private val thumbnailSizePx = 150
+    private val thumbnailSizePx = 200
+    private val roundedCornersTransformation: Transformation by lazy {
+        ImageTransformations.roundedCorners(
+            cornerRadiusDp = 8,
+            context = this,
+        )
+    }
+    private val clusterPhotoCountPaint: Paint by lazy {
+        Paint().apply {
+            color = MaterialColors.getColor(
+                this@MapActivity,
+                com.google.android.material.R.attr.colorOnPrimaryContainer,
+                Color.RED
+            )
+            textSize = thumbnailSizePx * 0.18f
+            isAntiAlias = true
+            style = Paint.Style.FILL
+        }
+    }
+    private val clusterPhotoCountBackgroundPaint: Paint by lazy {
+        Paint().apply {
+            color = MaterialColors.getColor(
+                this@MapActivity,
+                com.google.android.material.R.attr.colorPrimaryContainer,
+                Color.RED
+            )
+            isAntiAlias = true
+            style = Paint.Style.FILL
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,131 +110,129 @@ class MapActivity : BaseActivity() {
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
-    private fun initMap() {
-        val thumbnailSizePx = 150
+    private fun initMap() = view.map.getMapAsync { map ->
+        map.setMaxZoomPreference(20.0)
+        map.setStyle("https://cdn.photoprism.app/maps/default.json")
+        map.cameraPosition = CameraPosition.DEFAULT
 
-        view.map.getMapAsync { map ->
-            map.setStyle("https://cdn.photoprism.app/maps/default.json")
-            map.cameraPosition = CameraPosition.DEFAULT
-
-            map.getStyle { style ->
-                viewModel
-                    .source
-                    .observe(this@MapActivity) { source ->
-                        style.addSource(source)
-                        // TODO: Set camera position corresponding to the source bounding box.
-                    }
-
-                style.addImage(
-                    "placeholder",
-                    ContextCompat.getDrawable(this, R.drawable.image_placeholder_circle)!!
-                        .toBitmap(
-                            width = thumbnailSizePx,
-                            height = thumbnailSizePx,
-                        )
-                )
-
-                val clusterLayer =
-                    SymbolLayer("pp-clusters", MapViewModel.SOURCE_ID)
-                        .withProperties(
-                            PropertyFactory.iconImage(
-                                coalesce(
-                                    image(
-                                        concat(
-                                            get("point_count"),
-                                            literal(":"),
-                                            get("Hashes")
-                                        )
-                                    ),
-                                    image(Expression.literal("placeholder"))
-                                )
-                            ),
-                            PropertyFactory.iconSize(1f),
-                            PropertyFactory.iconAllowOverlap(true),
-                            PropertyFactory.iconIgnorePlacement(true)
-                        )
-                        .withFilter(has("point_count"))
-                        .also(style::addLayer)
-
-                val photoLayer =
-                    SymbolLayer("pp-photos", MapViewModel.SOURCE_ID)
-                        .withProperties(
-                            PropertyFactory.iconImage(
-                                coalesce(
-                                    image(get("Hash")),
-                                    image(Expression.literal("placeholder"))
-                                )
-                            ),
-                            PropertyFactory.iconSize(1f),
-                            PropertyFactory.iconAllowOverlap(true),
-                            PropertyFactory.iconIgnorePlacement(true)
-                        )
-                        .withFilter(not(has("point_count")))
-                        .also(style::addLayer)
-
-                val markerUpdateEvents = PublishSubject.create<Unit>()
-                view.map.addOnDidFinishRenderingFrameListener { fully, _, _ ->
-                    if (fully) {
-                        markerUpdateEvents.onNext(Unit)
-                    }
+        map.getStyle { style ->
+            viewModel
+                .source
+                .observe(this@MapActivity) { source ->
+                    // TODO: Fix crash on config change.
+                    style.addSource(source)
+                    // TODO: Set camera position corresponding to the source bounding box.
                 }
 
-                markerUpdateEvents
-                    .throttleLast(100, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map {
-                        map.queryRenderedFeatures(
-                            map.projection.visibleRegion.latLngBounds.toRectF(map),
-                            photoLayer.id,
-                            clusterLayer.id,
-                        )
-                    }
-                    .distinctUntilChanged()
-                    .map { visibleFeatures ->
-                        visibleFeatures
-                            .mapTo(mutableSetOf()) { feature ->
-                                if (feature.hasProperty("Hashes"))
-                                    feature.getNumberProperty("point_count").toString() +
-                                            ":" +
-                                            feature.getStringProperty("Hashes")
-                                else
-                                    feature.getStringProperty("Hash")
-                            }
-                            .filter { style.getImage(it) == null }
-                    }
-                    .subscribe { thumbnailsToLoad ->
-                        thumbnailsToLoad.forEach { thumbnailId ->
-                            val isCluster = thumbnailId.contains(':')
+            style.addImage(
+                "placeholder",
+                ContextCompat.getDrawable(this, R.drawable.image_placeholder_circle)!!
+                    .toBitmap(
+                        width = thumbnailSizePx / 2,
+                        height = thumbnailSizePx / 2,
+                    )
+            )
 
-                            val getThumbnailBitmapBitmap =
-                                if (isCluster)
-                                    getClusterThumbnailBitmap(thumbnailId)
-                                else
-                                    getPhotoThumbnailBitmap(thumbnailId)
+            val clusterLayer =
+                SymbolLayer("pp-clusters", MapViewModel.SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.iconImage(
+                            coalesce(
+                                image(
+                                    concat(
+                                        get("point_count"),
+                                        literal(":"),
+                                        get("Hashes")
+                                    )
+                                ),
+                                image(Expression.literal("placeholder"))
+                            )
+                        ),
+                        PropertyFactory.iconSize(1f),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.iconIgnorePlacement(true)
+                    )
+                    .withFilter(has("point_count"))
+                    .also(style::addLayer)
 
-                            getThumbnailBitmapBitmap
-                                .subscribeBy { thumbnailBitmap ->
-                                    log.debug { "thumbnail loaded $thumbnailId" }
-                                    style.addImage(thumbnailId, thumbnailBitmap)
-                                    if (isCluster) {
-                                        clusterLayer.invalidate()
-                                    } else {
-                                        photoLayer.invalidate()
-                                    }
-                                }
-                                .autoDispose(this)
-                        }
-                    }
-                    .autoDispose(this)
+            val photoLayer =
+                SymbolLayer("pp-photos", MapViewModel.SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.iconImage(
+                            coalesce(
+                                image(get("Hash")),
+                                image(Expression.literal("placeholder"))
+                            )
+                        ),
+                        PropertyFactory.iconSize(1f),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.iconIgnorePlacement(true)
+                    )
+                    .withFilter(not(has("point_count")))
+                    .also(style::addLayer)
 
-                log.debug {
-                    "initMap(): style_initialized"
+            val markerUpdateEvents = PublishSubject.create<Unit>()
+            view.map.addOnDidFinishRenderingFrameListener { fully, _, _ ->
+                if (fully) {
+                    markerUpdateEvents.onNext(Unit)
                 }
             }
+
+            markerUpdateEvents
+                .throttleLast(100, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .map {
+                    map.queryRenderedFeatures(
+                        map.projection.visibleRegion.latLngBounds.toRectF(map),
+                        photoLayer.id,
+                        clusterLayer.id,
+                    )
+                }
+                .distinctUntilChanged()
+                .map { visibleFeatures ->
+                    visibleFeatures
+                        .mapTo(mutableSetOf()) { feature ->
+                            if (feature.hasProperty("Hashes"))
+                                feature.getNumberProperty("point_count").toString() +
+                                        ":" +
+                                        feature.getStringProperty("Hashes")
+                            else
+                                feature.getStringProperty("Hash")
+                        }
+                        .filter { style.getImage(it) == null }
+                }
+                .subscribe { thumbnailsToLoad ->
+                    thumbnailsToLoad.forEach { thumbnailId ->
+                        val isCluster = thumbnailId.contains(':')
+
+                        val getThumbnailBitmap =
+                            if (isCluster)
+                                getClusterThumbnailBitmap(thumbnailId)
+                            else
+                                getPhotoThumbnailBitmap(thumbnailId)
+
+                        getThumbnailBitmap
+                            .subscribeBy { thumbnailBitmap ->
+                                log.debug { "thumbnail loaded $thumbnailId" }
+                                style.addImage(thumbnailId, thumbnailBitmap)
+                                if (isCluster) {
+                                    clusterLayer.invalidate()
+                                } else {
+                                    photoLayer.invalidate()
+                                }
+                            }
+                            .autoDispose(this)
+                    }
+                }
+                .autoDispose(this)
 
             log.debug {
-                "initMap(): map_initialized"
+                "initMap(): style_initialized"
             }
+        }
+
+        log.debug {
+            "initMap(): map_initialized"
         }
     }
 
@@ -213,29 +247,148 @@ class MapActivity : BaseActivity() {
                 )
             )
             .resize(thumbnailSizePx, thumbnailSizePx)
-            .transform(ImageTransformations.circle)
+            .transform(roundedCornersTransformation)
             .intoSingle()
 
     private fun getClusterThumbnailBitmap(
         thumbnailId: String
     ): Single<Bitmap> {
-        // TODO create thumbnail from 2 or 4 images, with count
-        val hash =
+        val thumbnailHashes =
             thumbnailId
-                .split(':')[1]
+                .substringAfter(':')
                 .split(',')
-                .first()
+                .filter(String::isNotEmpty)
+        val photoCount =
+            thumbnailId
+                .substringBefore(':')
+                .toInt()
 
-        return picasso
-            .load(
-                previewUrlFactory.getThumbnailUrl(
-                    thumbnailHash = hash,
-                    sizePx = thumbnailSizePx,
+        val composeTiles =
+            if (thumbnailHashes.size >= 4) {
+                val tileSize = thumbnailSizePx / 2
+                thumbnailHashes
+                    .take(4)
+                    .map { thumbnailHash ->
+                        picasso
+                            .load(
+                                previewUrlFactory.getThumbnailUrl(
+                                    thumbnailHash = thumbnailHash,
+                                    sizePx = tileSize,
+                                )
+                            )
+                            .resize(tileSize, tileSize)
+                            .intoSingle()
+                    }
+                    .let(Single<Bitmap>::concatDelayError)
+                    .toList()
+                    .map(::composeFourTiles)
+            } else {
+                thumbnailHashes
+                    .take(2)
+                    .map { thumbnailHash ->
+                        picasso
+                            .load(
+                                previewUrlFactory.getThumbnailUrl(
+                                    thumbnailHash = thumbnailHash,
+                                    sizePx = thumbnailSizePx,
+                                )
+                            )
+                            .resize(thumbnailSizePx, thumbnailSizePx)
+                            .intoSingle()
+                    }
+                    .let(Single<Bitmap>::concatDelayError)
+                    .toList()
+                    .map(::composeTwoTiles)
+            }
+
+        return composeTiles
+            .map {
+                addPhotoCount(
+                    source = it,
+                    count = photoCount,
                 )
+            }
+            .map(roundedCornersTransformation::transform)
+    }
+
+    private fun composeFourTiles(fourTiles: List<Bitmap>): Bitmap {
+        val size = fourTiles[0].width
+        val resultBitmap = createBitmap(size * 2, size * 2)
+        val canvas = Canvas(resultBitmap)
+
+        canvas.drawBitmap(fourTiles[0], 0f, 0f, null)
+        canvas.drawBitmap(fourTiles[1], size.toFloat(), 0f, null)
+        canvas.drawBitmap(fourTiles[2], 0f, size.toFloat(), null)
+        canvas.drawBitmap(fourTiles[3], size.toFloat(), size.toFloat(), null)
+
+        return resultBitmap
+    }
+
+    private fun composeTwoTiles(twoTiles: List<Bitmap>): Bitmap {
+        val tileSize = twoTiles[0].width
+        val resultSize = tileSize
+        val resultBitmap = createBitmap(resultSize, resultSize)
+        val canvas = Canvas(resultBitmap)
+
+        val cropAmount = tileSize / 4
+        val srcRect = Rect(cropAmount, 0, tileSize - cropAmount, tileSize)
+        val dstRectLeft = RectF(0f, 0f, resultSize / 2f, resultSize.toFloat())
+        val dstRectRight = RectF(resultSize / 2f, 0f, resultSize.toFloat(), resultSize.toFloat())
+
+        canvas.drawBitmap(twoTiles[0], srcRect, dstRectLeft, null)
+        canvas.drawBitmap(twoTiles[1], srcRect, dstRectRight, null)
+
+        return resultBitmap
+    }
+
+    private fun addPhotoCount(
+        source: Bitmap,
+        count: Int,
+    ): Bitmap {
+        val canvas = Canvas(source)
+
+        val text =
+            if (count >= 1000)
+                "${count / 1000}k"
+            else
+                count.toString()
+
+        val textPaddingHorizontal = source.width * 0.06f
+        val textWidth = clusterPhotoCountPaint.measureText(text) + textPaddingHorizontal * 2f
+        val textPaddingVertical = source.width * 0.02f
+        val textHeight =
+            clusterPhotoCountPaint.fontMetrics.bottom -
+                    clusterPhotoCountPaint.fontMetrics.top +
+                    textPaddingVertical * 2f
+        val textDescent =
+            clusterPhotoCountPaint.fontMetrics.descent
+
+        val textLeft = (canvas.width - textWidth) / 2f
+        val textTop = (canvas.height - textHeight) / 2f
+        val textBackgroundRect =
+            RectF(
+                textLeft,
+                textTop,
+                textLeft + textWidth,
+                textTop + textHeight
             )
-            .resize(thumbnailSizePx, thumbnailSizePx)
-            .transform(ImageTransformations.buba(this))
-            .intoSingle()
+
+        val textBackgroundCornerRadius = source.width * 0.05f
+        canvas.drawRoundRect(
+            textBackgroundRect,
+            textBackgroundCornerRadius,
+            textBackgroundCornerRadius,
+            clusterPhotoCountBackgroundPaint
+        )
+
+        canvas.drawText(
+            text,
+            textBackgroundRect.left + textPaddingHorizontal,
+            textBackgroundRect.bottom - textDescent - textPaddingVertical,
+            clusterPhotoCountPaint
+        )
+
+        return source
     }
 
     override fun onStart() {

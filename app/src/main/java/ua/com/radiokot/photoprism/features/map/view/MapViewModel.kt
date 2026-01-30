@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.style.expressions.Expression.accumulated
 import org.maplibre.android.style.expressions.Expression.concat
 import org.maplibre.android.style.expressions.Expression.get
@@ -13,6 +14,7 @@ import org.maplibre.android.style.expressions.Expression.lt
 import org.maplibre.android.style.expressions.Expression.switchCase
 import org.maplibre.android.style.sources.GeoJsonOptions
 import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.FeatureCollection
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
@@ -63,19 +65,30 @@ class MapViewModel(
             .autoDispose(this)
     }
 
-    private fun createClusteredSource(geoJson: String): GeoJsonSource =
-        GeoJsonSource(
+    private fun createClusteredSource(geoJson: String): GeoJsonSource {
+        val featureCollection =
+            FeatureCollection.fromJson(geoJson)
+        val newestFirstFeatureCollection =
+            FeatureCollection.fromFeatures(featureCollection.features()!!.reversed())
+
+        return GeoJsonSource(
             id = SOURCE_ID,
-            geoJson = geoJson,
+            features = newestFirstFeatureCollection,
             options =
                 GeoJsonOptions()
                     .withCluster(true)
-                    // This expression collects up to 4 photo hashes from the cluster, separated by a comma.
-                    // 80 is a magic ✨ number obtained through trial and error.
+                    // Setting this to max zoom prevents declustering hundreds of photos
+                    // taken at the same location.
+                    .withClusterMaxZoom(MapLibreConstants.MAXIMUM_ZOOM.toInt())
+                    .withClusterRadius(80)
+                    // This expression collects enough photo hashes
+                    // from the cluster to create a thumbnail.
+                    // The hashes are comma separated, with a trailing comma.
+                    // The magic number ✨ is obtained through trial and error.
                     .withClusterProperty(
                         "Hashes",
                         switchCase(
-                            lt(length(accumulated()), 80),
+                            lt(length(accumulated()), 150),
                             concat(accumulated(), get("Hashes")),
                             accumulated()
                         ),
@@ -85,6 +98,7 @@ class MapViewModel(
                         ),
                     ),
         )
+    }
 
     private fun update(force: Boolean = false) {
         log.debug {
