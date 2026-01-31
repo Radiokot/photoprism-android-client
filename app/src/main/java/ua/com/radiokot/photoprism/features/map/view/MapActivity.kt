@@ -18,6 +18,7 @@ import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.kotlin.toObservable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,10 +29,14 @@ import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.expressions.Expression.NumberFormatOption.locale
+import org.maplibre.android.style.expressions.Expression.NumberFormatOption.maxFractionDigits
 import org.maplibre.android.style.expressions.Expression.accumulated
 import org.maplibre.android.style.expressions.Expression.coalesce
 import org.maplibre.android.style.expressions.Expression.concat
+import org.maplibre.android.style.expressions.Expression.division
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.has
 import org.maplibre.android.style.expressions.Expression.image
@@ -39,6 +44,7 @@ import org.maplibre.android.style.expressions.Expression.length
 import org.maplibre.android.style.expressions.Expression.literal
 import org.maplibre.android.style.expressions.Expression.lt
 import org.maplibre.android.style.expressions.Expression.not
+import org.maplibre.android.style.expressions.Expression.numberFormat
 import org.maplibre.android.style.expressions.Expression.switchCase
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
@@ -55,7 +61,8 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
-import java.text.DecimalFormatSymbols
+import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -70,7 +77,7 @@ class MapActivity : BaseActivity() {
     private val picasso by inject<Picasso>()
     private val previewUrlFactory by inject<PhotoPrismMediaPreviewUrlFactory>()
     private val thumbnailSizePx = 200
-    private val roundedCornersTransformation: Transformation by lazy {
+    private val thumbnailTransformation: Transformation by lazy {
         ImageTransformations.roundedCorners(
             cornerRadiusDp = 8,
             context = this,
@@ -100,8 +107,19 @@ class MapActivity : BaseActivity() {
         }
     }
     private val locale: Locale by inject()
-    private val decimalSeparator: Char by lazy {
-        DecimalFormatSymbols.getInstance(locale).decimalSeparator
+
+    // This format must strictly correspond
+    // to the layer iconImage expression.
+    private val clusterThousandsPhotoCountNumberFormat: NumberFormat by lazy {
+        NumberFormat
+            .getInstance(locale)
+            .apply {
+                this as DecimalFormat
+                positiveSuffix = "k"
+                isGroupingUsed = false
+                maximumFractionDigits = 1
+                roundingMode
+            }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,21 +170,43 @@ class MapActivity : BaseActivity() {
 
             style.addImage(
                 "placeholder",
-                ContextCompat.getDrawable(this, R.drawable.image_placeholder_circle)!!
+                ContextCompat.getDrawable(this, R.drawable.image_placeholder)!!
                     .toBitmap(
-                        width = thumbnailSizePx / 2,
-                        height = thumbnailSizePx / 2,
+                        width = thumbnailSizePx,
+                        height = thumbnailSizePx,
                     )
+                    .let(thumbnailTransformation::transform)
             )
 
             val clusterLayer =
                 SymbolLayer("pp-clusters", SOURCE_ID)
                     .withProperties(
+                        // Cluster thumbnail – abbreviatedCount + ':' + a few comma-separated photo hashes
+                        // from the 'Hashes' cluster property defined during the source creation.
                         PropertyFactory.iconImage(
                             coalesce(
                                 image(
                                     concat(
-                                        get("point_count_abbreviated"),
+                                        // 'point_count_abbreviated' has improper format,
+                                        // so a custom expression is used instead.
+                                        // This expression must strictly correspond to
+                                        // clusterThousandsPhotoCountNumberFormat
+                                        // and thumbnailId calculation.
+                                        switchCase(
+                                            lt(get("point_count"), 1000),
+                                            get("point_count"),
+                                            concat(
+                                                numberFormat(
+                                                    division(
+                                                        get("point_count"),
+                                                        literal(1000)
+                                                    ),
+                                                    locale(locale.toString()),
+                                                    maxFractionDigits(1),
+                                                ),
+                                                literal("k"),
+                                            )
+                                        ),
                                         literal(":"),
                                         get("Hashes")
                                     )
@@ -197,60 +237,12 @@ class MapActivity : BaseActivity() {
                     .withFilter(not(has("point_count")))
                     .also(style::addLayer)
 
-            val markerUpdateEvents = PublishSubject.create<Unit>()
-            view.map.addOnDidFinishRenderingFrameListener { fully, _, _ ->
-                if (fully) {
-                    markerUpdateEvents.onNext(Unit)
-                }
-            }
-
-            markerUpdateEvents
-                .throttleLast(100, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .map {
-                    map.queryRenderedFeatures(
-                        map.projection.visibleRegion.latLngBounds.toRectF(map),
-                        photoLayer.id,
-                        clusterLayer.id,
-                    )
-                }
-                .distinctUntilChanged()
-                .map { visibleFeatures ->
-                    visibleFeatures
-                        .mapTo(mutableSetOf()) { feature ->
-                            if (feature.hasProperty("Hashes"))
-                                feature.getStringProperty("point_count_abbreviated") +
-                                        ":" +
-                                        feature.getStringProperty("Hashes")
-                            else
-                                feature.getStringProperty("Hash")
-                        }
-                        .filter { style.getImage(it) == null }
-                }
-                .subscribe { thumbnailsToLoad ->
-                    thumbnailsToLoad.forEach { thumbnailId ->
-                        val isCluster = thumbnailId.contains(':')
-
-                        val getThumbnailBitmap =
-                            if (isCluster)
-                                getClusterThumbnailBitmap(thumbnailId)
-                            else
-                                getPhotoThumbnailBitmap(thumbnailId)
-
-                        getThumbnailBitmap
-                            .subscribeBy { thumbnailBitmap ->
-                                log.debug { "thumbnail loaded $thumbnailId" }
-                                style.addImage(thumbnailId, thumbnailBitmap)
-                                if (isCluster) {
-                                    clusterLayer.invalidate()
-                                } else {
-                                    photoLayer.invalidate()
-                                }
-                            }
-                            .autoDispose(this)
-                    }
-                }
-                .autoDispose(this)
+            initThumbnailsLoading(
+                map = map,
+                style = style,
+                photoLayer = photoLayer,
+                clusterLayer = clusterLayer,
+            )
 
             log.debug {
                 "initMap(): style_initialized"
@@ -260,6 +252,114 @@ class MapActivity : BaseActivity() {
         log.debug {
             "initMap(): map_initialized"
         }
+    }
+
+    private fun initThumbnailsLoading(
+        map: MapLibreMap,
+        style: Style,
+        photoLayer: SymbolLayer,
+        clusterLayer: SymbolLayer,
+    ) {
+        val thumbnailsBeingLoaded = mutableSetOf<String>()
+        val contentUpdates = PublishSubject.create<Unit>()
+        val photoLayerInvalidations = PublishSubject.create<Unit>()
+        val clusterLayerInvalidations = PublishSubject.create<Unit>()
+
+        view.map.addOnDidFinishRenderingFrameListener { fully, _, _ ->
+            if (fully) {
+                contentUpdates.onNext(Unit)
+            }
+        }
+
+        contentUpdates
+            .throttleLast(100, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {
+                map.queryRenderedFeatures(
+                    map.projection.visibleRegion.latLngBounds.toRectF(map),
+                    photoLayer.id,
+                    clusterLayer.id,
+                )
+            }
+            .distinctUntilChanged()
+            .flatMap { visibleFeatures ->
+                log.debug {
+                    "initThumbnailsLoading(): visible_features_changed"
+                }
+
+                visibleFeatures
+                    .mapTo(mutableSetOf()) { feature ->
+                        if (feature.hasProperty("Hashes")) {
+                            // This calculation must strictly correspond
+                            // to the layer iconImage expression.
+                            val pointCount = feature.getNumberProperty("point_count").toInt()
+                            val abbreviatedPointCount =
+                                if (pointCount < 1000)
+                                    pointCount.toString()
+                                else
+                                    clusterThousandsPhotoCountNumberFormat.format(
+                                        pointCount / 1000.0
+                                    )
+
+                            "${abbreviatedPointCount}:${feature.getStringProperty("Hashes")}"
+                        } else {
+                            feature.getStringProperty("Hash")
+                        }
+                    }
+                    .filter { thumbnailId ->
+                        style.getImage(thumbnailId) == null
+                                && thumbnailId !in thumbnailsBeingLoaded
+                    }
+                    .toObservable()
+            }
+            .subscribe { thumbnailId ->
+                thumbnailsBeingLoaded += thumbnailId
+
+                log.debug {
+                    "initThumbnailsLoading(): start_loading:" +
+                            "\nid=$thumbnailId"
+                }
+
+                val isCluster = thumbnailId.contains(':')
+
+                val getThumbnailBitmap =
+                    if (isCluster)
+                        getClusterThumbnailBitmap(thumbnailId)
+                    else
+                        getPhotoThumbnailBitmap(thumbnailId)
+
+                getThumbnailBitmap
+                    .doOnEvent { _, error ->
+                        thumbnailsBeingLoaded -= thumbnailId
+                        log.debug {
+                            "initThumbnailsLoading(): loading_finished:" +
+                                    "\nid=$thumbnailId," +
+                                    "\nsuccess=${error == null}"
+                        }
+                    }
+                    .subscribeBy { thumbnailBitmap ->
+                        style.addImage(thumbnailId, thumbnailBitmap)
+                        if (isCluster) {
+                            clusterLayerInvalidations.onNext(Unit)
+                        } else {
+                            photoLayerInvalidations.onNext(Unit)
+                        }
+                    }
+                    .autoDispose(this)
+            }
+            .autoDispose(this)
+
+        photoLayerInvalidations
+            .throttleLast(100, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { photoLayer.invalidate() }
+            .autoDispose(this)
+
+        clusterLayerInvalidations
+            .throttleLast(100, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { clusterLayer.invalidate() }
+            .autoDispose(this)
     }
 
     private fun createClusteredSource(featureCollection: FeatureCollection): GeoJsonSource =
@@ -302,7 +402,7 @@ class MapActivity : BaseActivity() {
                 )
             )
             .resize(thumbnailSizePx, thumbnailSizePx)
-            .transform(roundedCornersTransformation)
+            .transform(thumbnailTransformation)
             .intoSingle()
 
     private fun getClusterThumbnailBitmap(
@@ -321,22 +421,9 @@ class MapActivity : BaseActivity() {
                 thumbnailHashes.take(2)
 
 
-        var photoCountAbbreviated =
+        val photoCountAbbreviated =
             thumbnailId
                 .substringBefore(':')
-
-        // Abbreviated count is formatted with the dot,
-        // and it also can be nonsense like "10.411000k",
-        // so it must be cleaned up.
-        if (photoCountAbbreviated.contains('.')) {
-            val integerPart = photoCountAbbreviated.substringBefore('.')
-            val decimalPartWithLetter = photoCountAbbreviated.substringAfter('.')
-            val shortenDecimalPart = decimalPartWithLetter.take(1)
-            val letter = decimalPartWithLetter.last()
-
-            photoCountAbbreviated =
-                "${integerPart}${decimalSeparator}${shortenDecimalPart}${letter}"
-        }
 
         val composeTiles =
             if (thumbnailHashes.size == 4) {
@@ -381,7 +468,7 @@ class MapActivity : BaseActivity() {
                     countAbbreviated = photoCountAbbreviated,
                 )
             }
-            .map(roundedCornersTransformation::transform)
+            .map(thumbnailTransformation::transform)
     }
 
     private fun composeFourTiles(fourTiles: List<Bitmap>): Bitmap {
