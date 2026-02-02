@@ -76,7 +76,6 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
-import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
@@ -160,7 +159,7 @@ class MapActivity : BaseActivity() {
             initMapStyle(map, style)
         }
 
-        initMapAttributionMargins(map)
+        initMapInsets(map)
 
         log.debug {
             "initMap(): initialized"
@@ -310,7 +309,7 @@ class MapActivity : BaseActivity() {
         }
     }
 
-    private fun initMapAttributionMargins(
+    private fun initMapInsets(
         map: MapLibreMap,
     ) = view.map.doOnPreDraw {
         val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(view.map)
@@ -330,6 +329,16 @@ class MapActivity : BaseActivity() {
                 attributionMargin,
                 attributionMargin + insets.right,
                 attributionMargin + insets.bottom,
+            )
+
+            val compassMargin =
+                resources.getDimensionPixelSize(R.dimen.map_compass_margin)
+            compassGravity = Gravity.TOP or Gravity.END
+            setCompassMargins(
+                compassMargin + insets.left,
+                compassMargin + insets.top,
+                compassMargin + insets.right,
+                compassMargin,
             )
         }
     }
