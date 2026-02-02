@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.geometry.LatLng
@@ -121,6 +120,8 @@ class MapActivity : BaseActivity() {
 
         initToolbar()
         initFullScreen()
+
+        view.map.onCreate(savedInstanceState)
         initMap()
 
         subscribeToEvents()
@@ -153,7 +154,6 @@ class MapActivity : BaseActivity() {
     private fun initMap() = view.map.getMapAsync { map ->
         map.setMaxZoomPreference(20.0)
         map.setStyle(getKoin().getProperty<String>("defaultMapStyleUrl"))
-        map.cameraPosition = CameraPosition.DEFAULT
 
         map.getStyle { style ->
             initMapStyle(map, style)
@@ -175,15 +175,18 @@ class MapActivity : BaseActivity() {
             .observe(this@MapActivity) { featureCollection ->
                 style.addSource(createClusteredSource(featureCollection))
 
-                val boundingBox = checkNotNull(featureCollection.bbox()) {
-                    "There must be the bounding box"
-                }
-                map.easeCamera(
-                    CameraUpdateFactory.newLatLngBounds(
-                        bounds = boundingBox.toLatLngBounds(),
-                        padding = thumbnailSizePx / 2,
+                if (viewModel.shouldMoveCameraToSource) {
+                    val boundingBox = checkNotNull(featureCollection.bbox()) {
+                        "There must be the bounding box"
+                    }
+                    map.easeCamera(
+                        CameraUpdateFactory.newLatLngBounds(
+                            bounds = boundingBox.toLatLngBounds(),
+                            padding = thumbnailSizePx / 2,
+                        )
                     )
-                )
+                    viewModel.onMovedCameraToSource()
+                }
             }
 
         // Localization of names.

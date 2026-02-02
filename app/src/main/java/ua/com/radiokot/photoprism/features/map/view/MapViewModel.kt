@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.map.view
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.room.util.query
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -28,6 +27,9 @@ class MapViewModel(
     val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
     val featureCollection = MutableLiveData<FeatureCollection>()
+    private var hasEverMovedCameraToSource = false
+    val shouldMoveCameraToSource: Boolean
+        get() = !hasEverMovedCameraToSource
 
     init {
         subscribeToRepository()
@@ -108,6 +110,10 @@ class MapViewModel(
         } else {
             geoJsonRepository.updateIfNotFresh()
         }
+    }
+
+    fun onMovedCameraToSource() {
+        hasEverMovedCameraToSource = true
     }
 
     fun onPhotoClicked(uid: String) {
