@@ -19,9 +19,9 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.kotlin.toObservable
 import io.reactivex.rxjava3.subjects.PublishSubject
+import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.constants.MapLibreConstants
@@ -106,7 +106,7 @@ class MapActivity : BaseActivity() {
         }
 
         // Must be initialized before inflating the view.
-        MapLibre.getInstance(this)
+        viewModel.onPreparingForMapCreation()
 
         view = ActivityMapBinding.inflate(layoutInflater)
         setContentView(view.root)
@@ -124,147 +124,155 @@ class MapActivity : BaseActivity() {
 
     private fun initMap() = view.map.getMapAsync { map ->
         map.setMaxZoomPreference(20.0)
-        map.setStyle("https://cdn.photoprism.app/maps/default.json")
+        map.setStyle(getKoin().getProperty<String>("defaultMapStyleUrl"))
         map.cameraPosition = CameraPosition.DEFAULT
 
         map.getStyle { style ->
-            viewModel
-                .featureCollection
-                .observe(this@MapActivity) { featureCollection ->
-                    style.addSource(createClusteredSource(featureCollection))
+            initMapStyle(map, style)
+        }
 
-                    val boundingBox = checkNotNull(featureCollection.bbox()) {
-                        "There must be the bounding box"
-                    }
-                    map.easeCamera(
-                        CameraUpdateFactory.newLatLngBounds(
-                            bounds = boundingBox.toLatLngBounds(),
-                            padding = thumbnailSizePx / 2,
-                        )
-                    )
-                }
+        initMapAttributionMargins(map)
 
-            // Localization of names.
-            style.layers.forEach { layer ->
-                if (layer is SymbolLayer && layer.textField.toString().contains("name:")) {
-                    layer.setProperties(
-                        textField(
-                            switchCase(
-                                neq(
-                                    coalesce(
-                                        get("name:${locale.language}"),
-                                        get("name")
-                                    ),
-                                    get("name")
-                                ),
-                                format(
-                                    formatEntry(get("name:${locale.language}")),
-                                    formatEntry("\n"),
-                                    formatEntry(
-                                        get("name"),
-                                        formatFontScale(0.8)
-                                    )
-                                ),
-                                get("name")
-                            )
-                        )
-                    )
+        log.debug {
+            "initMap(): initialized"
+        }
+    }
+
+    private fun initMapStyle(
+        map: MapLibreMap,
+        style: Style,
+    ) {
+        viewModel
+            .featureCollection
+            .observe(this@MapActivity) { featureCollection ->
+                style.addSource(createClusteredSource(featureCollection))
+
+                val boundingBox = checkNotNull(featureCollection.bbox()) {
+                    "There must be the bounding box"
                 }
+                map.easeCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                        bounds = boundingBox.toLatLngBounds(),
+                        padding = thumbnailSizePx / 2,
+                    )
+                )
             }
 
-            style.addImage(
-                "placeholder",
-                ContextCompat.getDrawable(this, R.drawable.image_placeholder)!!
-                    .toBitmap(
-                        width = thumbnailSizePx,
-                        height = thumbnailSizePx,
-                    )
-                    .let(thumbnailTransformation::transform)
-            )
-
-            val clusterLayer =
-                SymbolLayer("pp-clusters", SOURCE_ID)
-                    .withProperties(
-                        // Cluster thumbnail – abbreviatedCount + ':' + a few comma-separated photo hashes
-                        // from the 'Hashes' cluster property defined during the source creation.
-                        iconImage(
-                            coalesce(
-                                image(get("Hashes")),
-                                image(Expression.literal("placeholder"))
-                            )
-                        ),
-                        iconSize(1f),
-                        iconAllowOverlap(true),
-                        iconIgnorePlacement(true),
-                        textField(
-                            // 'point_count_abbreviated' has improper format,
-                            // so a custom expression is used instead.
-                            switchCase(
-                                lt(get("point_count"), 1000),
-                                get("point_count"),
-                                concat(
-                                    numberFormat(
-                                        division(
-                                            get("point_count"),
-                                            literal(1000)
-                                        ),
-                                        locale(locale.toString()),
-                                        maxFractionDigits(1),
-                                    ),
-                                    literal("k"),
+        // Localization of names.
+        style.layers.forEach { layer ->
+            if (layer is SymbolLayer && layer.textField.toString().contains("name:")) {
+                layer.setProperties(
+                    textField(
+                        switchCase(
+                            neq(
+                                coalesce(
+                                    get("name:${locale.language}"),
+                                    get("name")
+                                ),
+                                get("name")
+                            ),
+                            format(
+                                formatEntry(get("name:${locale.language}")),
+                                formatEntry("\n"),
+                                formatEntry(
+                                    get("name"),
+                                    formatFontScale(0.8)
                                 )
-                            )
-                        ),
-                        textFont(arrayOf("Noto Sans Regular")),
-                        textSize(15f),
-                        textColor(
-                            ContextCompat.getColor(
-                                this,
-                                R.color.md_theme_light_background
-                            )
-                        ),
-                        textHaloColor(
-                            ContextCompat.getColor(
-                                this,
-                                R.color.md_theme_light_outline
-                            )
-                        ),
-                        textHaloWidth(1.25f),
+                            ),
+                            get("name")
+                        )
                     )
-                    .withFilter(has("point_count"))
-                    .also(style::addLayer)
-
-            val photoLayer =
-                SymbolLayer("pp-photos", SOURCE_ID)
-                    .withProperties(
-                        iconImage(
-                            coalesce(
-                                image(get("Hash")),
-                                image(Expression.literal("placeholder"))
-                            )
-                        ),
-                        iconSize(1f),
-                        iconAllowOverlap(true),
-                        iconIgnorePlacement(true)
-                    )
-                    .withFilter(not(has("point_count")))
-                    .also(style::addLayer)
-
-            initMapAttributionMargins(map)
-            initThumbnailsLoading(
-                map = map,
-                style = style,
-                photoLayer = photoLayer,
-                clusterLayer = clusterLayer,
-            )
-
-            log.debug {
-                "initMap(): style_initialized"
+                )
             }
         }
 
+        style.addImage(
+            "placeholder",
+            ContextCompat.getDrawable(this, R.drawable.image_placeholder)!!
+                .toBitmap(
+                    width = thumbnailSizePx,
+                    height = thumbnailSizePx,
+                )
+                .let(thumbnailTransformation::transform)
+        )
+
+        val clusterLayer =
+            SymbolLayer("pp-clusters", SOURCE_ID)
+                .withProperties(
+                    // Cluster thumbnail – abbreviatedCount + ':' + a few comma-separated photo hashes
+                    // from the 'Hashes' cluster property defined during the source creation.
+                    iconImage(
+                        coalesce(
+                            image(get("Hashes")),
+                            image(Expression.literal("placeholder"))
+                        )
+                    ),
+                    iconSize(1f),
+                    iconAllowOverlap(true),
+                    iconIgnorePlacement(true),
+                    textField(
+                        // 'point_count_abbreviated' has improper format,
+                        // so a custom expression is used instead.
+                        switchCase(
+                            lt(get("point_count"), 1000),
+                            get("point_count"),
+                            concat(
+                                numberFormat(
+                                    division(
+                                        get("point_count"),
+                                        literal(1000)
+                                    ),
+                                    locale(locale.toString()),
+                                    maxFractionDigits(1),
+                                ),
+                                literal("k"),
+                            )
+                        )
+                    ),
+                    textFont(arrayOf("Noto Sans Regular")),
+                    textSize(15f),
+                    textColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.md_theme_light_background
+                        )
+                    ),
+                    textHaloColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.md_theme_light_outline
+                        )
+                    ),
+                    textHaloWidth(1.25f),
+                )
+                .withFilter(has("point_count"))
+                .also(style::addLayer)
+
+        val photoLayer =
+            SymbolLayer("pp-photos", SOURCE_ID)
+                .withProperties(
+                    iconImage(
+                        coalesce(
+                            image(get("Hash")),
+                            image(Expression.literal("placeholder"))
+                        )
+                    ),
+                    iconSize(1f),
+                    iconAllowOverlap(true),
+                    iconIgnorePlacement(true)
+                )
+                .withFilter(not(has("point_count")))
+                .also(style::addLayer)
+
+        initThumbnailsLoading(
+            map = map,
+            style = style,
+            photoLayer = photoLayer,
+            clusterLayer = clusterLayer,
+        )
+
         log.debug {
-            "initMap(): map_initialized"
+            "initMapStyle(): initialized"
         }
     }
 

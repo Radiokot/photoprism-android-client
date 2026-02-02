@@ -40,6 +40,7 @@ const val INTERNAL_DOWNLOADS_DIRECTORY = "internal-downloads"
 const val INTERNAL_EXPORT_DIRECTORY = "internal-export"
 const val VIDEO_CACHE_DIRECTORY = "video-cache"
 const val IMAGE_CACHE_DIRECTORY = "image-cache"
+const val MAP_CACHE_DIRECTORY = "map-cache"
 const val APP_NO_BACKUP_PREFERENCES = "app-no-backup-preferences"
 
 val ioModules: List<Module> = listOf(
@@ -137,6 +138,10 @@ val ioModules: List<Module> = listOf(
         single(named(IMAGE_CACHE_DIRECTORY)) {
             // Directory name matches Picasso default cache for backward compatibility.
             File(androidApplication().cacheDir, "picasso-cache")
+        } bind File::class
+
+        single(named(MAP_CACHE_DIRECTORY)) {
+            File(androidApplication().cacheDir, "map-cache")
         } bind File::class
     },
 

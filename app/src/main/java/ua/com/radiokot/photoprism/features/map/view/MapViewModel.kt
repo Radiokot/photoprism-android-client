@@ -1,19 +1,30 @@
 package ua.com.radiokot.photoprism.features.map.view
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import org.maplibre.android.MapLibre
+import org.maplibre.android.storage.FileSource
 import org.maplibre.geojson.FeatureCollection
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.map.data.storage.MapGeoJsonRepository
+import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class MapViewModel(
     private val geoJsonRepository: MapGeoJsonRepository,
-) : ViewModel() {
+    private val mapCacheDirectory: File,
+    application: Application,
+) : AndroidViewModel(application) {
 
     private val log = kLogger("MapVM")
     private val eventsSubject = PublishSubject.create<Event>()
@@ -23,8 +34,34 @@ class MapViewModel(
 
     init {
         subscribeToRepository()
-
         update()
+    }
+
+    fun onPreparingForMapCreation() {
+        MapLibre.getInstance(getApplication())
+
+        if (!mapCacheDirectory.exists()) {
+            mapCacheDirectory.mkdirs()
+        }
+
+        FileSource.setResourcesCachePath(
+            mapCacheDirectory.path,
+            object : FileSource.ResourcesCachePathChangeCallback {
+                override fun onSuccess(path: String) {
+                    log.debug {
+                        "onPreparingForMapCreation(): cache_path_set:" +
+                                "\npath=$path"
+                    }
+                }
+
+                override fun onError(message: String) {
+                    log.error {
+                        "onPreparingForMapCreation(): failed_setting_cache_path:" +
+                                "\nmessage=$message"
+                    }
+                }
+            }
+        )
     }
 
     private fun subscribeToRepository() {
