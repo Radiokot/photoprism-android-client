@@ -29,6 +29,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.parsePhotoPrismDate
 import ua.com.radiokot.photoprism.features.people.data.model.Person
 import ua.com.radiokot.photoprism.util.LocalDate
+import java.lang.ref.WeakReference
 
 /**
  * Turned out to be not that simple after all...
@@ -392,6 +393,8 @@ class SimpleGalleryMediaRepository(
         private val photoPrismPhotosService: PhotoPrismPhotosService,
     ) {
         private val cache = LruCache<String, SimpleGalleryMediaRepository>(10)
+        private val weakReferences =
+            mutableMapOf<String, WeakReference<SimpleGalleryMediaRepository>>()
 
         fun get(searchConfig: SearchConfig) =
             get(Params(searchConfig))
@@ -401,13 +404,19 @@ class SimpleGalleryMediaRepository(
         ): SimpleGalleryMediaRepository {
             val key = params.asKey()
             return cache[key]
-                ?: create(params).also {
+                ?: (weakReferences[key]?.get() ?: create(params)).also {
                     cache.put(key, it)
+                    weakReferences.put(key, WeakReference(it))
                 }
         }
 
-        fun getCreated(params: Params): SimpleGalleryMediaRepository? =
-            cache[params.asKey()]
+        fun getCreated(params: Params): SimpleGalleryMediaRepository? {
+            val key = params.asKey()
+            return cache[key]
+                ?: weakReferences[key]?.get()?.also {
+                    cache.put(key, it)
+                }
+        }
 
         fun create(
             params: Params = Params(),
@@ -421,6 +430,7 @@ class SimpleGalleryMediaRepository(
          */
         fun invalidateAllCached() {
             cache.snapshot().values.onEach(Repository::invalidate)
+            weakReferences.values.onEach { it.get()?.invalidate() }
         }
 
         private fun Params.asKey(): String =
