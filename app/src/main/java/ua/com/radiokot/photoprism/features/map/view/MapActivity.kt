@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.map.view
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -7,6 +8,7 @@ import android.graphics.RectF
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
@@ -73,7 +75,10 @@ import ua.com.radiokot.photoprism.databinding.ActivityMapBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
+import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.albums.view.model.AlbumsViewModel
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
 import java.util.Locale
@@ -118,6 +123,8 @@ class MapActivity : BaseActivity() {
         initToolbar()
         initFullScreen()
         initMap()
+
+        subscribeToEvents()
     }
 
     private fun initToolbar() {
@@ -571,7 +578,46 @@ class MapActivity : BaseActivity() {
                         "\nfeature=$clickedFeature"
             }
 
+            if (clickedFeature.hasProperty("UID")) {
+                viewModel.onPhotoClicked(
+                    uid = clickedFeature.getStringProperty("UID")
+                )
+            }
+
             return@addOnMapClickListener true
+        }
+    }
+
+    private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->
+        log.debug {
+            "subscribeToEvents(): received_new_event:" +
+                    "\nevent=$event"
+        }
+
+        when (event) {
+            MapViewModel.Event.ShowFloatingLoadingFailedError ->
+                Toast.makeText(
+                    this,
+                    R.string.failed_to_load_data,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            is MapViewModel.Event.OpenViewer -> {
+                startActivity(
+                    Intent(this, MediaViewerActivity::class.java)
+                        .putExtras(
+                            MediaViewerActivity.getBundle(
+                                mediaIndex = 0,
+                                repositoryParams = event.repositoryParams,
+                            )
+                        )
+                )
+            }
+        }
+
+        log.debug {
+            "subscribeToEvents(): handled_new_event:" +
+                    "\nevent=$event"
         }
     }
 
