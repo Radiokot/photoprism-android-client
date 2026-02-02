@@ -20,8 +20,8 @@
 
     <item
         android:id="@+id/places"
-        android:icon="@drawable/ic_earth"
-        android:title="@string/places" />
+        android:icon="@drawable/ic_map"
+        android:title="@string/map" />
 
     <item
         android:id="@+id/calendar"

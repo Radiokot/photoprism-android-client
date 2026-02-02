@@ -21,7 +21,7 @@
 
     <item
         android:id="@+id/open_in_web_viewer"
-        android:icon="@drawable/ic_web"
+        android:icon="@drawable/ic_earth"
         android:title="@string/open_in_web_viewer"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="never"

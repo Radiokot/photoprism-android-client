@@ -525,7 +525,7 @@ class GalleryViewModel(
 
     fun onPlacesClicked() {
         eventsSubject.onNext(
-            Event.OpenPlaces
+            Event.OpenMap
         )
     }
 
@@ -848,7 +848,7 @@ class GalleryViewModel(
             val defaultSearchConfig: SearchConfig,
         ) : Event
 
-        object OpenPlaces : Event
+        object OpenMap : Event
 
         /**
          * Close the screen and go to the connection,

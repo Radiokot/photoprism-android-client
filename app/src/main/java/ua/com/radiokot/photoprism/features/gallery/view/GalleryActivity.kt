@@ -425,8 +425,8 @@ class GalleryActivity : BaseActivity() {
                     )
                 }
 
-                is GalleryViewModel.Event.OpenPlaces -> {
-                    openPlaces()
+                is GalleryViewModel.Event.OpenMap -> {
+                    openMap()
                 }
 
                 is GalleryViewModel.Event.GoToEnvConnection -> {
@@ -938,7 +938,7 @@ class GalleryActivity : BaseActivity() {
         startActivity(Intent(this, PreferencesActivity::class.java))
     }
 
-    private fun openPlaces() {
+    private fun openMap() {
         startActivity(Intent(this, MapActivity::class.java))
     }
 
