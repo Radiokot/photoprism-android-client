@@ -5,11 +5,13 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
+import android.view.Gravity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.doOnPreDraw
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -70,6 +72,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -247,6 +250,7 @@ class MapActivity : BaseActivity() {
                     .withFilter(not(has("point_count")))
                     .also(style::addLayer)
 
+            initMapAttributionMargins(map)
             initThumbnailsLoading(
                 map = map,
                 style = style,
@@ -261,6 +265,30 @@ class MapActivity : BaseActivity() {
 
         log.debug {
             "initMap(): map_initialized"
+        }
+    }
+
+    private fun initMapAttributionMargins(
+        map: MapLibreMap,
+    ) = view.map.doOnPreDraw {
+        val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(view.map)
+        with(map.uiSettings) {
+            val attributionMargin =
+                resources.getDimensionPixelSize(R.dimen.map_attribution_margin)
+            logoGravity = Gravity.BOTTOM or Gravity.START
+            setLogoMargins(
+                attributionMargin + insets.left,
+                attributionMargin,
+                attributionMargin + insets.right,
+                attributionMargin + insets.bottom,
+            )
+            attributionGravity = Gravity.BOTTOM or Gravity.END
+            setAttributionMargins(
+                attributionMargin + insets.left,
+                attributionMargin,
+                attributionMargin + insets.right,
+                attributionMargin + insets.bottom,
+            )
         }
     }
 

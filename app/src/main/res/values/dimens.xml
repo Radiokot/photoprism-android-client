@@ -49,4 +49,5 @@
     <dimen name="list_item_label_width">128dp</dimen>
     <dimen name="list_item_label_margin_end">12dp</dimen>
     <dimen name="map_image_width">64dp</dimen>
+    <dimen name="map_attribution_margin">8dp</dimen>
 </resources>
