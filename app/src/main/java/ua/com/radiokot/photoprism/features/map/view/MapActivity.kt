@@ -6,12 +6,14 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
 import android.view.Gravity
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updateLayoutParams
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -113,8 +115,28 @@ class MapActivity : BaseActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        initToolbar()
         initFullScreen()
         initMap()
+    }
+
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = ""
+
+        view.toolbar.doOnPreDraw {
+            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(view.toolbar)
+            view.toolbar.updateLayoutParams {
+                this as ViewGroup.MarginLayoutParams
+                setMargins(
+                    insets.left,
+                    insets.top,
+                    insets.right,
+                    this.bottomMargin,
+                )
+            }
+        }
     }
 
     private fun initFullScreen() {
@@ -267,6 +289,11 @@ class MapActivity : BaseActivity() {
         initThumbnailsLoading(
             map = map,
             style = style,
+            photoLayer = photoLayer,
+            clusterLayer = clusterLayer,
+        )
+        initMapClicks(
+            map = map,
             photoLayer = photoLayer,
             clusterLayer = clusterLayer,
         )
@@ -521,6 +548,31 @@ class MapActivity : BaseActivity() {
         canvas.drawBitmap(twoTiles[1], srcRect, dstRectRight, null)
 
         return resultBitmap
+    }
+
+    private fun initMapClicks(
+        map: MapLibreMap,
+        photoLayer: SymbolLayer,
+        clusterLayer: SymbolLayer,
+    ) {
+        map.addOnMapClickListener { latLng ->
+            val clickedFeature =
+                map
+                    .queryRenderedFeatures(
+                        map.projection.toScreenLocation(latLng),
+                        photoLayer.id,
+                        clusterLayer.id,
+                    )
+                    .firstOrNull()
+                    ?: return@addOnMapClickListener false
+
+            log.debug {
+                "initMapClicks:onMapClick(): clicked_feature:" +
+                        "\nfeature=$clickedFeature"
+            }
+
+            return@addOnMapClickListener true
+        }
     }
 
     override fun onStart() {

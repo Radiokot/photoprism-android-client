@@ -19,7 +19,7 @@ object FullscreenInsetsCompat {
         val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
         return ViewCompat.getRootWindowInsets(viewToObtainInsets)
-            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
+            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
             .let { insets ->
                 val left = insets?.left
                     ?: if (Build.VERSION.SDK_INT in
