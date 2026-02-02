@@ -2,8 +2,6 @@ package ua.com.radiokot.photoprism.features.map.view
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
@@ -12,7 +10,6 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -31,22 +28,35 @@ import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.expressions.Expression.FormatOption.formatFontScale
 import org.maplibre.android.style.expressions.Expression.NumberFormatOption.locale
 import org.maplibre.android.style.expressions.Expression.NumberFormatOption.maxFractionDigits
 import org.maplibre.android.style.expressions.Expression.accumulated
 import org.maplibre.android.style.expressions.Expression.coalesce
 import org.maplibre.android.style.expressions.Expression.concat
 import org.maplibre.android.style.expressions.Expression.division
+import org.maplibre.android.style.expressions.Expression.format
+import org.maplibre.android.style.expressions.Expression.formatEntry
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.has
 import org.maplibre.android.style.expressions.Expression.image
 import org.maplibre.android.style.expressions.Expression.length
 import org.maplibre.android.style.expressions.Expression.literal
 import org.maplibre.android.style.expressions.Expression.lt
+import org.maplibre.android.style.expressions.Expression.neq
 import org.maplibre.android.style.expressions.Expression.not
 import org.maplibre.android.style.expressions.Expression.numberFormat
 import org.maplibre.android.style.expressions.Expression.switchCase
-import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.PropertyFactory.iconAllowOverlap
+import org.maplibre.android.style.layers.PropertyFactory.iconIgnorePlacement
+import org.maplibre.android.style.layers.PropertyFactory.iconImage
+import org.maplibre.android.style.layers.PropertyFactory.iconSize
+import org.maplibre.android.style.layers.PropertyFactory.textColor
+import org.maplibre.android.style.layers.PropertyFactory.textField
+import org.maplibre.android.style.layers.PropertyFactory.textFont
+import org.maplibre.android.style.layers.PropertyFactory.textHaloColor
+import org.maplibre.android.style.layers.PropertyFactory.textHaloWidth
+import org.maplibre.android.style.layers.PropertyFactory.textSize
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonOptions
 import org.maplibre.android.style.sources.GeoJsonSource
@@ -61,8 +71,6 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
-import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -76,51 +84,16 @@ class MapActivity : BaseActivity() {
     }
     private val picasso by inject<Picasso>()
     private val previewUrlFactory by inject<PhotoPrismMediaPreviewUrlFactory>()
-    private val thumbnailSizePx = 200
+    private val thumbnailSizePx: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.map_image_width)
+    }
     private val thumbnailTransformation: Transformation by lazy {
         ImageTransformations.roundedCorners(
             cornerRadiusDp = 8,
             context = this,
         )
     }
-    private val clusterPhotoCountPaint: Paint by lazy {
-        Paint().apply {
-            color = MaterialColors.getColor(
-                this@MapActivity,
-                com.google.android.material.R.attr.colorOnPrimaryContainer,
-                Color.RED
-            )
-            textSize = thumbnailSizePx * 0.18f
-            isAntiAlias = true
-            style = Paint.Style.FILL
-        }
-    }
-    private val clusterPhotoCountBackgroundPaint: Paint by lazy {
-        Paint().apply {
-            color = MaterialColors.getColor(
-                this@MapActivity,
-                com.google.android.material.R.attr.colorPrimaryContainer,
-                Color.RED
-            )
-            isAntiAlias = true
-            style = Paint.Style.FILL
-        }
-    }
     private val locale: Locale by inject()
-
-    // This format must strictly correspond
-    // to the layer iconImage expression.
-    private val clusterThousandsPhotoCountNumberFormat: NumberFormat by lazy {
-        NumberFormat
-            .getInstance(locale)
-            .apply {
-                this as DecimalFormat
-                positiveSuffix = "k"
-                isGroupingUsed = false
-                maximumFractionDigits = 1
-                roundingMode
-            }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -168,6 +141,34 @@ class MapActivity : BaseActivity() {
                     )
                 }
 
+            // Localization of names.
+            style.layers.forEach { layer ->
+                if (layer is SymbolLayer && layer.textField.toString().contains("name:")) {
+                    layer.setProperties(
+                        textField(
+                            switchCase(
+                                neq(
+                                    coalesce(
+                                        get("name:${locale.language}"),
+                                        get("name")
+                                    ),
+                                    get("name")
+                                ),
+                                format(
+                                    formatEntry(get("name:${locale.language}")),
+                                    formatEntry("\n"),
+                                    formatEntry(
+                                        get("name"),
+                                        formatFontScale(0.8)
+                                    )
+                                ),
+                                get("name")
+                            )
+                        )
+                    )
+                }
+            }
+
             style.addImage(
                 "placeholder",
                 ContextCompat.getDrawable(this, R.drawable.image_placeholder)!!
@@ -183,40 +184,49 @@ class MapActivity : BaseActivity() {
                     .withProperties(
                         // Cluster thumbnail – abbreviatedCount + ':' + a few comma-separated photo hashes
                         // from the 'Hashes' cluster property defined during the source creation.
-                        PropertyFactory.iconImage(
+                        iconImage(
                             coalesce(
-                                image(
-                                    concat(
-                                        // 'point_count_abbreviated' has improper format,
-                                        // so a custom expression is used instead.
-                                        // This expression must strictly correspond to
-                                        // clusterThousandsPhotoCountNumberFormat
-                                        // and thumbnailId calculation.
-                                        switchCase(
-                                            lt(get("point_count"), 1000),
-                                            get("point_count"),
-                                            concat(
-                                                numberFormat(
-                                                    division(
-                                                        get("point_count"),
-                                                        literal(1000)
-                                                    ),
-                                                    locale(locale.toString()),
-                                                    maxFractionDigits(1),
-                                                ),
-                                                literal("k"),
-                                            )
-                                        ),
-                                        literal(":"),
-                                        get("Hashes")
-                                    )
-                                ),
+                                image(get("Hashes")),
                                 image(Expression.literal("placeholder"))
                             )
                         ),
-                        PropertyFactory.iconSize(1f),
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconIgnorePlacement(true)
+                        iconSize(1f),
+                        iconAllowOverlap(true),
+                        iconIgnorePlacement(true),
+                        textField(
+                            // 'point_count_abbreviated' has improper format,
+                            // so a custom expression is used instead.
+                            switchCase(
+                                lt(get("point_count"), 1000),
+                                get("point_count"),
+                                concat(
+                                    numberFormat(
+                                        division(
+                                            get("point_count"),
+                                            literal(1000)
+                                        ),
+                                        locale(locale.toString()),
+                                        maxFractionDigits(1),
+                                    ),
+                                    literal("k"),
+                                )
+                            )
+                        ),
+                        textFont(arrayOf("Noto Sans Regular")),
+                        textSize(15f),
+                        textColor(
+                            ContextCompat.getColor(
+                                this,
+                                R.color.md_theme_light_background
+                            )
+                        ),
+                        textHaloColor(
+                            ContextCompat.getColor(
+                                this,
+                                R.color.md_theme_light_outline
+                            )
+                        ),
+                        textHaloWidth(1.25f),
                     )
                     .withFilter(has("point_count"))
                     .also(style::addLayer)
@@ -224,15 +234,15 @@ class MapActivity : BaseActivity() {
             val photoLayer =
                 SymbolLayer("pp-photos", SOURCE_ID)
                     .withProperties(
-                        PropertyFactory.iconImage(
+                        iconImage(
                             coalesce(
                                 image(get("Hash")),
                                 image(Expression.literal("placeholder"))
                             )
                         ),
-                        PropertyFactory.iconSize(1f),
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconIgnorePlacement(true)
+                        iconSize(1f),
+                        iconAllowOverlap(true),
+                        iconIgnorePlacement(true)
                     )
                     .withFilter(not(has("point_count")))
                     .also(style::addLayer)
@@ -289,22 +299,10 @@ class MapActivity : BaseActivity() {
 
                 visibleFeatures
                     .mapTo(mutableSetOf()) { feature ->
-                        if (feature.hasProperty("Hashes")) {
-                            // This calculation must strictly correspond
-                            // to the layer iconImage expression.
-                            val pointCount = feature.getNumberProperty("point_count").toInt()
-                            val abbreviatedPointCount =
-                                if (pointCount < 1000)
-                                    pointCount.toString()
-                                else
-                                    clusterThousandsPhotoCountNumberFormat.format(
-                                        pointCount / 1000.0
-                                    )
-
-                            "${abbreviatedPointCount}:${feature.getStringProperty("Hashes")}"
-                        } else {
+                        if (feature.hasProperty("Hashes"))
+                            feature.getStringProperty("Hashes")
+                        else
                             feature.getStringProperty("Hash")
-                        }
                     }
                     .filter { thumbnailId ->
                         style.getImage(thumbnailId) == null
@@ -320,7 +318,7 @@ class MapActivity : BaseActivity() {
                             "\nid=$thumbnailId"
                 }
 
-                val isCluster = thumbnailId.contains(':')
+                val isCluster = thumbnailId.contains(',')
 
                 val getThumbnailBitmap =
                     if (isCluster)
@@ -410,7 +408,6 @@ class MapActivity : BaseActivity() {
     ): Single<Bitmap> {
         var thumbnailHashes =
             thumbnailId
-                .substringAfter(':')
                 .split(',')
                 .filter(String::isNotEmpty)
 
@@ -419,11 +416,6 @@ class MapActivity : BaseActivity() {
                 thumbnailHashes.take(4)
             else
                 thumbnailHashes.take(2)
-
-
-        val photoCountAbbreviated =
-            thumbnailId
-                .substringBefore(':')
 
         val composeTiles =
             if (thumbnailHashes.size == 4) {
@@ -462,12 +454,6 @@ class MapActivity : BaseActivity() {
             }
 
         return composeTiles
-            .map {
-                addPhotoCount(
-                    source = it,
-                    countAbbreviated = photoCountAbbreviated,
-                )
-            }
             .map(thumbnailTransformation::transform)
     }
 
@@ -499,49 +485,6 @@ class MapActivity : BaseActivity() {
         canvas.drawBitmap(twoTiles[1], srcRect, dstRectRight, null)
 
         return resultBitmap
-    }
-
-    private fun addPhotoCount(
-        source: Bitmap,
-        countAbbreviated: String,
-    ): Bitmap {
-        val text = countAbbreviated
-        val textPaddingHorizontal = source.width * 0.06f
-        val textWidth = clusterPhotoCountPaint.measureText(text) + textPaddingHorizontal * 2f
-        val textPaddingVertical = source.width * 0.02f
-        val textHeight =
-            clusterPhotoCountPaint.fontMetrics.bottom -
-                    clusterPhotoCountPaint.fontMetrics.top +
-                    textPaddingVertical * 2f
-        val textDescent =
-            clusterPhotoCountPaint.fontMetrics.descent
-
-        val textLeft = (source.width - textWidth) / 2f
-        val textTop = (source.height - textHeight) / 2f
-        val textBackgroundRect =
-            RectF(
-                textLeft,
-                textTop,
-                textLeft + textWidth,
-                textTop + textHeight
-            )
-        val textBackgroundCornerRadius = source.width * 0.05f
-
-        val canvas = Canvas(source)
-        canvas.drawRoundRect(
-            textBackgroundRect,
-            textBackgroundCornerRadius,
-            textBackgroundCornerRadius,
-            clusterPhotoCountBackgroundPaint
-        )
-        canvas.drawText(
-            text,
-            textBackgroundRect.left + textPaddingHorizontal,
-            textBackgroundRect.bottom - textDescent - textPaddingVertical,
-            clusterPhotoCountPaint
-        )
-
-        return source
     }
 
     override fun onStart() {
@@ -587,7 +530,7 @@ class MapActivity : BaseActivity() {
     }
 
     private fun SymbolLayer.invalidate() {
-        setProperties(PropertyFactory.iconSize(iconSize.value!! + 0.0001f))
+        setProperties(iconSize(iconSize.value!! + 0.0001f))
     }
 
     private fun Point.toLatLng(): LatLng =

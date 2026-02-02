@@ -48,4 +48,5 @@
     <dimen name="drag_select_scroll_hotspot_height" tools:ignore="InOrMmUsage">16mm</dimen>
     <dimen name="list_item_label_width">128dp</dimen>
     <dimen name="list_item_label_margin_end">12dp</dimen>
+    <dimen name="map_image_width">64dp</dimen>
 </resources>

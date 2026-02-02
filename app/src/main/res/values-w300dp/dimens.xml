@@ -9,4 +9,5 @@
     <dimen name="list_item_memory_width">120dp</dimen>
     <dimen name="list_item_gallery_album_width">144dp</dimen>
     <dimen name="list_item_label_width">144dp</dimen>
+    <dimen name="map_image_width">76dp</dimen>
 </resources>
