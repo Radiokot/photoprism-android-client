@@ -76,6 +76,7 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
+import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
 import ua.com.radiokot.photoprism.util.FullscreenInsetsCompat
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
@@ -290,7 +291,7 @@ class MapActivity : BaseActivity() {
                     ),
                     iconSize(1f),
                     iconAllowOverlap(true),
-                    iconIgnorePlacement(true)
+                    iconIgnorePlacement(true),
                 )
                 .withFilter(not(has("point_count")))
                 .also(style::addLayer)
@@ -468,6 +469,27 @@ class MapActivity : BaseActivity() {
                             get("Hash"),
                             literal(",")
                         ),
+                    )
+                    // Cluster bounds.
+                    .withClusterProperty(
+                        "LatNorth",
+                        Expression.max(accumulated(), get("LatNorth")),
+                        get("Lat")
+                    )
+                    .withClusterProperty(
+                        "LngEast",
+                        Expression.max(accumulated(), get("LngEast")),
+                        get("Lng")
+                    )
+                    .withClusterProperty(
+                        "LatSouth",
+                        Expression.min(accumulated(), get("LatSouth")),
+                        get("Lat")
+                    )
+                    .withClusterProperty(
+                        "LngWest",
+                        Expression.min(accumulated(), get("LngWest")),
+                        get("Lng")
                     ),
         )
 
@@ -594,6 +616,13 @@ class MapActivity : BaseActivity() {
                 viewModel.onPhotoClicked(
                     uid = clickedFeature.getStringProperty("UID")
                 )
+            } else {
+                viewModel.onClusterClicked(
+                    latNorth = clickedFeature.getNumberProperty("LatNorth").toDouble(),
+                    lngEast = clickedFeature.getNumberProperty("LngEast").toDouble(),
+                    latSouth = clickedFeature.getNumberProperty("LatSouth").toDouble(),
+                    lngWest = clickedFeature.getNumberProperty("LngWest").toDouble(),
+                )
             }
 
             return@addOnMapClickListener true
@@ -621,6 +650,18 @@ class MapActivity : BaseActivity() {
                             MediaViewerActivity.getBundle(
                                 mediaIndex = 0,
                                 repositoryParams = event.repositoryParams,
+                            )
+                        )
+                )
+            }
+
+            is MapViewModel.Event.OpenCluster -> {
+                startActivity(
+                    Intent(this, GallerySingleRepositoryActivity::class.java)
+                        .putExtras(
+                            GallerySingleRepositoryActivity.getBundle(
+                                repositoryParams = event.repositoryParams,
+                                title = getString(R.string.in_this_place),
                             )
                         )
                 )

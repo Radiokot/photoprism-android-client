@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import org.maplibre.android.MapLibre
 import org.maplibre.android.storage.FileSource
 import org.maplibre.geojson.FeatureCollection
+import org.maplibre.geojson.Point
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
@@ -85,12 +86,19 @@ class MapViewModel(
             .subscribe { geoJson ->
                 val originalFeatureCollection = FeatureCollection.fromJson(geoJson)
                 featureCollection.postValue(
-                    // Reverse the features to see newest photos first
-                    // in cluster thumbnails.
                     FeatureCollection.fromFeatures(
                         originalFeatureCollection
                             .features()!!
-                            .reversed(),
+                            // Reverse the features to see newest photos first
+                            // in cluster thumbnails.
+                            .reversed()
+                            // Assign latitude and longitude as properties
+                            // to later calculate cluster bounds.
+                            .onEach { feature ->
+                                val geometry = feature.geometry() as Point
+                                feature.addNumberProperty("Lat", geometry.latitude())
+                                feature.addNumberProperty("Lng", geometry.longitude())
+                            },
                         originalFeatureCollection.bbox(),
                     )
                 )
@@ -131,6 +139,29 @@ class MapViewModel(
         )
     }
 
+    fun onClusterClicked(
+        latNorth: Double,
+        lngEast: Double,
+        latSouth: Double,
+        lngWest: Double,
+    ) {
+        log.debug {
+            "onClusterClicked(): opening_cluster:" +
+                    "\nlatNorth=$latNorth" +
+                    "\nlngEast=$lngEast" +
+                    "\nlatSouth=$latSouth" +
+                    "\nlngWest=$lngWest"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenCluster(
+                repositoryParams = SimpleGalleryMediaRepository.Params(
+                    query = "latlng:$latNorth,$lngEast,$latSouth,$lngWest"
+                ),
+            )
+        )
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
@@ -138,6 +169,10 @@ class MapViewModel(
         object ShowFloatingLoadingFailedError : Event
 
         class OpenViewer(
+            val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
+
+        class OpenCluster(
             val repositoryParams: SimpleGalleryMediaRepository.Params,
         ) : Event
     }
