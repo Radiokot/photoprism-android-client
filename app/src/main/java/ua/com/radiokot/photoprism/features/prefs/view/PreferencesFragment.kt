@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.InputType
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -23,6 +24,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okio.buffer
 import okio.sink
 import okio.source
@@ -51,7 +53,6 @@ import ua.com.radiokot.photoprism.features.ext.prefs.view.GalleryExtensionPrefer
 import ua.com.radiokot.photoprism.features.ext.store.view.GalleryExtensionStoreActivity
 import ua.com.radiokot.photoprism.features.gallery.ImportSearchBookmarksUseCaseParams
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawDownloadMode
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
 import ua.com.radiokot.photoprism.features.gallery.data.model.RawSharingMode
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -59,6 +60,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPre
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ExportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.ImportSearchBookmarksUseCase
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchBookmarksBackup
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryItemScale
+import ua.com.radiokot.photoprism.features.map.data.storage.MapPreferences
 import ua.com.radiokot.photoprism.features.prefs.extension.bindToSubject
 import ua.com.radiokot.photoprism.features.prefs.extension.requirePreference
 import ua.com.radiokot.photoprism.features.viewer.slideshow.data.model.SlideshowSpeed
@@ -105,6 +108,7 @@ class PreferencesFragment :
     )
     private val featureFlags: FeatureFlags by inject()
     private val locale: Locale by inject()
+    private val mapPreferences: MapPreferences by inject()
 
     private val issueReportingUrl: String = getKoin()
         .getProperty<String>("issueReportingUrl")
@@ -291,6 +295,34 @@ class PreferencesFragment :
             setOnPreferenceClickListener {
                 exportBookmarks()
                 true
+            }
+        }
+
+        with(requirePreference(R.string.pk_custom_map_style)) {
+            this as EditTextPreference
+            setOnBindEditTextListener { editText ->
+                editText.setText(mapPreferences.customStyleUrl ?: "")
+                editText.inputType =
+                    InputType.TYPE_CLASS_TEXT or
+                            InputType.TYPE_TEXT_VARIATION_URI or
+                            InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                editText.isSingleLine = false
+                editText.maxLines = 5
+                editText.setSelection(editText.text.length)
+            }
+            setOnPreferenceChangeListener { _, newValue ->
+                val cleanedNewValue =
+                    newValue
+                        .toString()
+                        .trim()
+                        .takeIf(String::isNotEmpty)
+
+                if (cleanedNewValue == null || cleanedNewValue.toHttpUrlOrNull() != null) {
+                    mapPreferences.customStyleUrl = cleanedNewValue
+                    true
+                } else {
+                    false
+                }
             }
         }
 

@@ -146,6 +146,18 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/map">
+
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            app:key="@string/pk_custom_map_style"
+            app:persistent="false"
+            app:summary="@string/custom_map_style_preference_summary"
+            app:title="@string/custom_map_style_preference" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/about">
 
         <Preference

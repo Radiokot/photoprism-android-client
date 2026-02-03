@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.kotlin.toObservable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -154,9 +153,8 @@ class MapActivity : BaseActivity() {
 
     private fun initMap() = view.map.getMapAsync { map ->
         map.setMaxZoomPreference(20.0)
-        map.setStyle(getKoin().getProperty<String>("defaultMapStyleUrl"))
 
-        map.getStyle { style ->
+        map.setStyle(viewModel.styleUrl) { style ->
             initMapStyle(map, style)
         }
 
@@ -608,7 +606,7 @@ class MapActivity : BaseActivity() {
                     ?: return@addOnMapClickListener false
 
             log.debug {
-                "initMapClicks:onMapClick(): clicked_feature:" +
+                "initMapClicks::onMapClick(): clicked_feature:" +
                         "\nfeature=$clickedFeature"
             }
 

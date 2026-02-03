@@ -15,11 +15,14 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.map.data.storage.MapGeoJsonRepository
+import ua.com.radiokot.photoprism.features.map.data.storage.MapPreferences
 import java.io.File
 
 class MapViewModel(
     private val geoJsonRepository: MapGeoJsonRepository,
     private val mapCacheDirectory: File,
+    private val mapPreferences: MapPreferences,
+    private val defaultMapStyleUrl: String,
     application: Application,
 ) : AndroidViewModel(application) {
 
@@ -31,6 +34,10 @@ class MapViewModel(
     private var hasEverMovedCameraToSource = false
     val shouldMoveCameraToSource: Boolean
         get() = !hasEverMovedCameraToSource
+    val styleUrl: String
+        get() =
+            mapPreferences.customStyleUrl
+                ?: defaultMapStyleUrl
 
     init {
         subscribeToRepository()
