@@ -114,3 +114,4 @@ In a world where copyright monopolies are violently enforced, I choose GPLv3 for
 - Picasso for images & ExoPlayer for videos
 - FastAdapter for lists
 - Offline License Key for extensions activation
+- MapLibre for maps
