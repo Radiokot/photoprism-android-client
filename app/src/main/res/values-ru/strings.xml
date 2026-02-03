@@ -255,7 +255,6 @@
     <string name="live_photos_as_images">Живые фото как изображения</string>
     <string name="live_photos_as_images_explanation">Не анимировать живые фото в форматах JPEG или HEIF</string>
     <string name="activated_keys">Активированные ключи</string>
-    <string name="is_private">Приватный</string>
     <string name="add_to_album">Добавить в альбом</string>
     <string name="template_selected_added_to_album">Добавлено в альбом %1$s</string>
     <string name="favorites">Избранное</string>
@@ -305,5 +304,6 @@
     <string name="custom_map_style_preference">Собственный URL стиля</string>
     <string name="custom_map_style_preference_summary">Использовать собственный стиль MapLibre/MapTiler</string>
     <string name="see_photos_nearby_action">Фото рядом</string>
+    <string name="is_private">Приватное</string>
 
 </resources>

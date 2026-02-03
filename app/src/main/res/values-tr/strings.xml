@@ -255,7 +255,6 @@
     <string name="live_photos_as_images">Fotoğrafları resim olarak görüntüle</string>
     <string name="live_photos_as_images_explanation">JPEG veya HEIF canlı fotoğrafları oynatma</string>
     <string name="activated_keys">Etkinleştirilmiş anahtarlar</string>
-    <string name="is_private">Gizlenmiş</string>
     <string name="add_to_album">Albüme ekle</string>
     <string name="template_selected_added_to_album">%1$s albümüne eklendi</string>
     <string name="favorites">Favoriler</string>
@@ -305,5 +304,6 @@
     <string name="custom_map_style_preference">Kendi stil URL\'si</string>
     <string name="custom_map_style_preference_summary">Kendi MapLibre/MapTiler stilinizi kullanmak</string>
     <string name="see_photos_nearby_action">Yakın fotoğraflar</string>
+    <string name="is_private">Özel</string>
 
 </resources>

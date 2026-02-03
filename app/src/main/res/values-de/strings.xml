@@ -256,7 +256,6 @@
     <string name="live_photos_as_images">Live-Fotos als Bilder</string>
     <string name="live_photos_as_images_explanation">JPEG/HEIF-Live-Fotos nicht animieren</string>
     <string name="activated_keys">Aktivierte Schlüssel</string>
-    <string name="is_private">Privat</string>
     <string name="add_to_album">Zum Album hinzufügen</string>
     <string name="template_selected_added_to_album">Hinzugefügt zu %1$s</string>
     <string name="favorites">Favoriten</string>
@@ -306,5 +305,6 @@
     <string name="custom_map_style_preference">Eigene Stil-URL</string>
     <string name="custom_map_style_preference_summary">Eigene MapLibre/MapTiler-Stil-URL verwenden</string>
     <string name="see_photos_nearby_action">Fotos in der Nähe</string>
+    <string name="is_private">Privat</string>
 
 </resources>

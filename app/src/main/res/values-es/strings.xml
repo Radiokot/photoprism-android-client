@@ -256,7 +256,6 @@
     <string name="live_photos_as_images">Fotos en vivo como imágenes</string>
     <string name="live_photos_as_images_explanation">No animar fotos en vivo en JPEG o HEIF</string>
     <string name="activated_keys">Claves activadas</string>
-    <string name="is_private">Privado</string>
     <string name="add_to_album">Añadir al álbum</string>
     <string name="template_selected_added_to_album">Añadido a %1$s</string>
     <string name="favorites">Favoritos</string>
@@ -306,5 +305,6 @@
     <string name="custom_map_style_preference">URL de estilo propio</string>
     <string name="custom_map_style_preference_summary">Usar tu propio estilo de MapLibre/MapTiler</string>
     <string name="see_photos_nearby_action">Fotos cercanos</string>
+    <string name="is_private">Privado</string>
 
 </resources>

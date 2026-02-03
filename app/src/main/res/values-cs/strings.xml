@@ -256,7 +256,6 @@
     <string name="live_photos_as_images">Živá fota jako obrázky</string>
     <string name="live_photos_as_images_explanation">Neanimažovat živá fota ve formátech JPEG nebo HEIF</string>
     <string name="activated_keys">Aktivované klíče</string>
-    <string name="is_private">Soukromé</string>
     <string name="add_to_album">Přidat do alba</string>
     <string name="template_selected_added_to_album">Přidáno do %1$s</string>
     <string name="favorites">Oblíbené</string>
@@ -306,5 +305,6 @@
     <string name="custom_map_style_preference">Vlastní URL stylu</string>
     <string name="custom_map_style_preference_summary">Použít vlastní styl MapLibre/MapTiler</string>
     <string name="see_photos_nearby_action">Fotky v okolí</string>
+    <string name="is_private">Soukromé</string>
 
 </resources>
