@@ -300,5 +300,11 @@
     <string name="show_all_labels">Alle Kategorien anzeigen</string>
     <string name="show_only_important_labels">Nur wichtige anzeigen </string>
     <string name="failed_to_load_labels">Fehler beim Laden der Labels</string>
+    <string name="map">Karte</string>
+    <string name="failed_to_load_data">Fehler beim Laden der Daten</string>
+    <string name="in_this_place">An diesem Ort</string>
+    <string name="custom_map_style_preference">Eigene Stil-URL</string>
+    <string name="custom_map_style_preference_summary">Eigene MapLibre/MapTiler-Stil-URL verwenden</string>
+    <string name="see_photos_nearby_action">Fotos in der Nähe</string>
 
 </resources>

@@ -299,5 +299,11 @@
     <string name="show_all_labels">显示所有标签</string>
     <string name="show_only_important_labels">只显示重要信息</string>
     <string name="failed_to_load_labels">加载标签失败</string>
+    <string name="map">地图</string>
+    <string name="failed_to_load_data">无法加载数据</string>
+    <string name="in_this_place">在这个地方</string>
+    <string name="custom_map_style_preference">自己的样式URL</string>
+    <string name="custom_map_style_preference_summary">使用自己的 MapLibre/MapTiler 样式</string>
+    <string name="see_photos_nearby_action">附近照片</string>
 
 </resources>

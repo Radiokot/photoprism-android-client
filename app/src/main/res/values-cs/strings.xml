@@ -300,5 +300,11 @@
     <string name="show_all_labels">Zobrazit všechny štítky</string>
     <string name="show_only_important_labels">Zobrazit pouze důležité</string>
     <string name="failed_to_load_labels">Nepodařilo se načíst štítky</string>
+    <string name="map">Mapa</string>
+    <string name="failed_to_load_data">Nepodařilo se načíst data</string>
+    <string name="in_this_place">Na tomto místě</string>
+    <string name="custom_map_style_preference">Vlastní URL stylu</string>
+    <string name="custom_map_style_preference_summary">Použít vlastní styl MapLibre/MapTiler</string>
+    <string name="see_photos_nearby_action">Fotky v okolí</string>
 
 </resources>

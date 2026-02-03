@@ -292,5 +292,11 @@
     <string name="show_all_labels">Pokaż wszystkie etykiety</string>
     <string name="show_only_important_labels">Pokaż tylko ważne</string>
     <string name="failed_to_load_labels">Nie udało się załadować etykiet</string>
+    <string name="map">Mapa</string>
+    <string name="failed_to_load_data">Nie udało się wczytać danych</string>
+    <string name="in_this_place">W tym miejscu</string>
+    <string name="custom_map_style_preference">Własny adres URL stylu</string>
+    <string name="custom_map_style_preference_summary">Używać własnego stylu MapLibre/MapTiler</string>
+    <string name="see_photos_nearby_action">Foto w pobliżu</string>
 
 </resources>

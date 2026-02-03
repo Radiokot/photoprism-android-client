@@ -299,5 +299,11 @@
     <string name="show_all_labels">Εμφάνιση όλων των ετικετών</string>
     <string name="show_only_important_labels">Εμφάνιση μόνο σημαντικών</string>
     <string name="failed_to_load_labels">Αποτυχία φόρτωσης ετικετών</string>
+    <string name="map">Χάρτης</string>
+    <string name="failed_to_load_data">Αποτυχία φόρτωσης δεδομένων</string>
+    <string name="in_this_place">Σε αυτό το μέρος</string>
+    <string name="custom_map_style_preference">Δικό σας URL στυλ</string>
+    <string name="custom_map_style_preference_summary">Χρήση του δικού σας στυλ MapLibre/MapTiler</string>
+    <string name="see_photos_nearby_action">Φωτο κοντά</string>
 
 </resources>

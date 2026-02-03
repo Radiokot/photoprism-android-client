@@ -299,5 +299,11 @@
     <string name="show_all_labels">Показать все метки</string>
     <string name="show_only_important_labels">Показать только важные</string>
     <string name="failed_to_load_labels">Не удалось загрузить метки</string>
+    <string name="map">Карта</string>
+    <string name="failed_to_load_data">Не удалось загрузить данные</string>
+    <string name="in_this_place">В этом месте</string>
+    <string name="custom_map_style_preference">Собственный URL стиля</string>
+    <string name="custom_map_style_preference_summary">Использовать собственный стиль MapLibre/MapTiler</string>
+    <string name="see_photos_nearby_action">Фото рядом</string>
 
 </resources>

@@ -299,5 +299,11 @@
     <string name="show_all_labels">Tüm etiketleri göster</string>
     <string name="show_only_important_labels">Yalnızca önemli göster</string>
     <string name="failed_to_load_labels">Etiketler yüklenemedi</string>
+    <string name="map">Harita</string>
+    <string name="failed_to_load_data">Veriler yüklenemedi</string>
+    <string name="in_this_place">Bu yerde</string>
+    <string name="custom_map_style_preference">Kendi stil URL\'si</string>
+    <string name="custom_map_style_preference_summary">Kendi MapLibre/MapTiler stilinizi kullanmak</string>
+    <string name="see_photos_nearby_action">Yakın fotoğraflar</string>
 
 </resources>

@@ -299,5 +299,11 @@
     <string name="show_all_labels">Показати всі мітки</string>
     <string name="show_only_important_labels">Показати тільки важливі</string>
     <string name="failed_to_load_labels">Не вдалося завантажити мітки</string>
+    <string name="map">Мапа</string>
+    <string name="failed_to_load_data">Не вдалося завантажити дані</string>
+    <string name="in_this_place">У цьому місці</string>
+    <string name="custom_map_style_preference">Власний URL стилю</string>
+    <string name="custom_map_style_preference_summary">Використовувати власний стиль MapLibre/MapTiler</string>
+    <string name="see_photos_nearby_action">Фото поруч</string>
 
 </resources>
