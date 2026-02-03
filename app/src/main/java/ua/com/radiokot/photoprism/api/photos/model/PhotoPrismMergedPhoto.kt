@@ -33,33 +33,11 @@ constructor(
     val quality: Int,
     @JsonProperty("Private")
     val private: Boolean,
+    @JsonProperty("Lat")
+    val lat: Double,
+    @JsonProperty("Lng")
+    val lng: Double,
 ) {
-    val mainFile: File?
-        // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L520
-        get() = files.find {
-            it.primary == true
-        } ?: files.find {
-            it.fileType == "jpg" || it.fileType == "png"
-        } ?: files.find {
-            it.sidecar == false
-        }
-
-    val videoFile: File?
-        // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L459
-        get() = files.find {
-            it.codec == "avc1"
-        } ?: files.find {
-            it.fileType == "mp4"
-        } ?: files.find {
-            it.video == true
-        } ?: animatedFile
-
-    private val animatedFile: File?
-        // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L481
-        get() = files.find {
-            it.fileType == "gif" || it.duration != null || it.frames != null
-        }
-
     /**
      * [file.go](https://github.com/photoprism/photoprism/blob/47e9b20929e44bd63d32cb50a393371d24bcaff8/internal/entity/file.go#L40)
      */

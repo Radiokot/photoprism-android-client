@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
@@ -60,6 +59,7 @@ import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
+import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.FileReturnIntentCreator
@@ -68,6 +68,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoad
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryContentLoadingErrorResources
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
+import ua.com.radiokot.photoprism.features.map.view.MapActivity
 import ua.com.radiokot.photoprism.features.viewer.slideshow.view.SlideshowActivity
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
@@ -267,18 +268,18 @@ class MediaViewerActivity : BaseActivity() {
 
         recyclerView.addOnScrollListener(
             ViewerEndlessScrollListener(
-            recyclerView = recyclerView,
-            isLoadingLiveData = viewModel.isLoading,
-            visibleThreshold = 6,
-            onLoadMore = { currentPage ->
-                log.debug {
-                    "onLoadMore(): load_more:" +
-                            "\npage=$currentPage"
-                }
+                recyclerView = recyclerView,
+                isLoadingLiveData = viewModel.isLoading,
+                visibleThreshold = 6,
+                onLoadMore = { currentPage ->
+                    log.debug {
+                        "onLoadMore(): load_more:" +
+                                "\npage=$currentPage"
+                    }
 
-                viewModel.loadMore()
-            }
-        ))
+                    viewModel.loadMore()
+                }
+            ))
 
         var lastSelectedPageId = -1L
         var lastSelectedPagePosition = -1
@@ -561,16 +562,30 @@ class MediaViewerActivity : BaseActivity() {
             menu.findItem(R.id.archive),
             menu.findItem(R.id.delete),
             menu.findItem(R.id.is_private),
+            menu.findItem(R.id.photos_nearby),
         )
         viewModel.areActionsVisible.observe(this) { areActionsVisible ->
-            actionItems.forEach { it.isVisible = areActionsVisible }
-            menu.findItem(R.id.remove_from_album).isVisible =
-                areActionsVisible && viewModel.canRemoveFromAlbum
+            actionItems.forEach {
+                it.isVisible = areActionsVisible
+                when (it.itemId) {
+                    R.id.remove_from_album ->
+                        it.isVisible = it.isVisible && viewModel.canRemoveFromAlbum
+
+                    R.id.photos_nearby ->
+                        it.isVisible = it.isVisible && viewModel.canSeePhotosNearby.value == true
+                }
+            }
         }
 
         with(menu.findItem(R.id.is_private)) {
             viewModel.isPrivate.observe(this@MediaViewerActivity) { isPrivate ->
                 isChecked = isPrivate
+            }
+        }
+
+        with(menu.findItem(R.id.photos_nearby)) {
+            viewModel.canSeePhotosNearby.observe(this@MediaViewerActivity) { canSeePhotosNearby ->
+                isVisible = canSeePhotosNearby && viewModel.areActionsVisible.value == true
             }
         }
 
@@ -630,6 +645,13 @@ class MediaViewerActivity : BaseActivity() {
         R.id.is_private -> {
             viewModel.onPrivateClicked(
                 position = view.viewPager.currentItem
+            )
+            true
+        }
+
+        R.id.photos_nearby -> {
+            viewModel.onPhotosNearbyClicked(
+                position = view.viewPager.currentItem,
             )
             true
         }
@@ -916,6 +938,11 @@ class MediaViewerActivity : BaseActivity() {
 
                 is GalleryMediaViewerViewModel.Event.ShowFloatingError ->
                     showFloatingError(event.error)
+
+                is GalleryMediaViewerViewModel.Event.OpenMap ->
+                    openMap(
+                        startPosition = event.startPosition,
+                    )
             }
 
             log.debug {
@@ -1037,6 +1064,18 @@ class MediaViewerActivity : BaseActivity() {
         )
     }
 
+    private fun openMap(
+        startPosition: LatLngPair,
+    ) {
+        startActivity(
+            Intent(this, MapActivity::class.java).putExtras(
+                MapActivity.getBundle(
+                    startPosition = startPosition,
+                )
+            )
+        )
+    }
+
     private fun openDeletingConfirmationDialog() {
         MaterialAlertDialogBuilder(this)
             .setMessage(R.string.media_viewer_deleting_confirmation)
@@ -1061,7 +1100,7 @@ class MediaViewerActivity : BaseActivity() {
 
     private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
-        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+        if (result.resultCode == RESULT_OK && bundle != null) {
             viewModel.onAlbumForAddingGalleryMediaSelected(
                 selectedAlbum = DestinationAlbumSelectionActivity
                     .getSelectedAlbums(bundle)
@@ -1127,7 +1166,7 @@ class MediaViewerActivity : BaseActivity() {
 
     override fun finish() {
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
         )
         super.finish()
@@ -1175,7 +1214,7 @@ class MediaViewerActivity : BaseActivity() {
          */
         fun getResult(result: ActivityResult): Int? =
             result
-                .takeIf { it.resultCode == Activity.RESULT_OK }
+                .takeIf { it.resultCode == RESULT_OK }
                 ?.data
                 ?.getIntExtra(MEDIA_INDEX_KEY, -1)
                 ?.takeIf { it >= 0 }

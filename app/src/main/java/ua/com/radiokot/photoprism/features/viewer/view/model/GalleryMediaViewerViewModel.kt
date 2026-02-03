@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
@@ -67,6 +68,7 @@ class GalleryMediaViewerViewModel(
     val isPrivate: MutableLiveData<Boolean> = MutableLiveData()
     val canRemoveFromAlbum: Boolean
         get() = albumUid != null
+    val canSeePhotosNearby: MutableLiveData<Boolean> = MutableLiveData()
 
     /**
      * Size of the image viewing area in px.
@@ -459,6 +461,23 @@ class GalleryMediaViewerViewModel(
         )
     }
 
+    fun onPhotosNearbyClicked(position: Int) {
+        val item = galleryMediaRepository.itemsList.getOrNull(position)
+
+        if (item == null) {
+            log.warn {
+                "onPhotosNearbyClicked(): position_out_of_range"
+            }
+            return
+        }
+
+        eventsSubject.onNext(
+            Event.OpenMap(
+                startPosition = item.latLng!!,
+            )
+        )
+    }
+
     fun onPageClicked() {
         log.debug { "onPageClicked(): toggling_full_screen" }
 
@@ -543,6 +562,7 @@ class GalleryMediaViewerViewModel(
         updateTitleAndSubtitle(item)
         isFavorite.value = item.isFavorite
         isPrivate.value = item.isPrivate
+        canSeePhotosNearby.value = item.latLng != null
 
         // When switching to a video (not live photo or GIF), go full screen if currently is not.
         if (item.media is GalleryMedia.TypeData.Video && isFullScreen.value == false) {
@@ -643,6 +663,10 @@ class GalleryMediaViewerViewModel(
         @JvmInline
         value class ShowFloatingError(
             val error: GalleryContentLoadingError,
+        ) : Event
+
+        class OpenMap(
+            val startPosition: LatLngPair,
         ) : Event
     }
 }

@@ -59,9 +59,17 @@
 
     <item
         android:id="@+id/is_private"
-        android:icon="@drawable/ic_eye_off"
         android:checkable="true"
+        android:icon="@drawable/ic_eye_off"
         android:title="@string/is_private"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="never"
+        tools:ignore="PrivateResource" />
+
+    <item
+        android:id="@+id/photos_nearby"
+        android:icon="@drawable/ic_map"
+        android:title="@string/see_photos_nearby_action"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="never"
         tools:ignore="PrivateResource" />

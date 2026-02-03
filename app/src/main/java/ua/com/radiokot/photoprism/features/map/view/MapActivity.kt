@@ -74,6 +74,7 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
 import ua.com.radiokot.photoprism.features.gallery.logic.PhotoPrismMediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.GallerySingleRepositoryActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
@@ -110,8 +111,10 @@ class MapActivity : BaseActivity() {
             return
         }
 
-        // Must be initialized before inflating the view.
-        viewModel.onPreparingForMapCreation()
+        @Suppress("UNCHECKED_CAST", "DEPRECATION")
+        viewModel.initOnce(
+            startPosition = intent.getSerializableExtra(START_POSITION_EXTRA) as? LatLngPair
+        )
 
         view = ActivityMapBinding.inflate(layoutInflater)
         setContentView(view.root)
@@ -122,7 +125,7 @@ class MapActivity : BaseActivity() {
         initFullScreen()
 
         view.map.onCreate(savedInstanceState)
-        initMap()
+        initMap(savedInstanceState)
 
         subscribeToEvents()
     }
@@ -151,11 +154,23 @@ class MapActivity : BaseActivity() {
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
-    private fun initMap() = view.map.getMapAsync { map ->
+    private fun initMap(savedInstanceState: Bundle?) = view.map.getMapAsync { map ->
         map.setMaxZoomPreference(20.0)
 
+        if (savedInstanceState == null) {
+            val startPosition = viewModel.startPosition
+            if (startPosition != null) {
+                map.easeCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        latLng = startPosition,
+                        zoom = 14.0,
+                    )
+                )
+            }
+        }
+
         map.setStyle(viewModel.styleUrl) { style ->
-            initMapStyle(map, style)
+            initMapStyle(map, style, savedInstanceState)
         }
 
         initMapInsets(map)
@@ -168,13 +183,16 @@ class MapActivity : BaseActivity() {
     private fun initMapStyle(
         map: MapLibreMap,
         style: Style,
+        savedInstanceState: Bundle?,
     ) {
         viewModel
             .featureCollection
             .observe(this@MapActivity) { featureCollection ->
                 style.addSource(createClusteredSource(featureCollection))
 
-                if (viewModel.shouldMoveCameraToSource) {
+                // Move camera closer to the photos once,
+                // if there's no explicit start position.
+                if (viewModel.startPosition == null && savedInstanceState == null) {
                     val boundingBox = checkNotNull(featureCollection.bbox()) {
                         "There must be the bounding box"
                     }
@@ -184,7 +202,6 @@ class MapActivity : BaseActivity() {
                             padding = thumbnailSizePx / 2,
                         )
                     )
-                    viewModel.onMovedCameraToSource()
                 }
             }
 
@@ -727,7 +744,14 @@ class MapActivity : BaseActivity() {
             .include(northeast().toLatLng())
             .build()
 
-    private companion object {
+    companion object {
         private const val SOURCE_ID = "pp-clustered-photos"
+        private const val START_POSITION_EXTRA = "start_position"
+
+        fun getBundle(
+            startPosition: LatLngPair?,
+        ): Bundle = Bundle().apply {
+            putSerializable(START_POSITION_EXTRA, startPosition)
+        }
     }
 }

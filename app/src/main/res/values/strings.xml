@@ -309,4 +309,5 @@
     <string name="in_this_place">In this place</string>
     <string name="custom_map_style_preference">Custom map style URL</string>
     <string name="custom_map_style_preference_summary">Use your own MapLibre/MapTiler style</string>
+    <string name="see_photos_nearby_action">Photos nearby</string>
 </resources>

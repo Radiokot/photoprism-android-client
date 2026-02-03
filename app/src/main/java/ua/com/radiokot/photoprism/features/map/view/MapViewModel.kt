@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import org.maplibre.android.MapLibre
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.storage.FileSource
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
@@ -31,20 +32,41 @@ class MapViewModel(
     val events = eventsSubject.observeOnMain()
     val isLoading = MutableLiveData(false)
     val featureCollection = MutableLiveData<FeatureCollection>()
-    private var hasEverMovedCameraToSource = false
-    val shouldMoveCameraToSource: Boolean
-        get() = !hasEverMovedCameraToSource
+    var startPosition: LatLng? = null
+        private set
     val styleUrl: String
         get() =
             mapPreferences.customStyleUrl
                 ?: defaultMapStyleUrl
+    private var isInitialized = false
 
-    init {
+    fun initOnce(
+        startPosition: Pair<Double, Double>?,
+    ) {
+        if (isInitialized) {
+            return
+        }
+
+        if (startPosition != null) {
+            this.startPosition = LatLng(
+                latitude = startPosition.first,
+                longitude = startPosition.second,
+            )
+        }
+
+        initMapLibre()
         subscribeToRepository()
         update()
+
+        isInitialized = true
+
+        log.debug {
+            "initOnce(): initialized:" +
+                    "\nstartPosition=${this.startPosition}"
+        }
     }
 
-    fun onPreparingForMapCreation() {
+    fun initMapLibre() {
         MapLibre.getInstance(getApplication())
 
         if (!mapCacheDirectory.exists()) {
@@ -125,10 +147,6 @@ class MapViewModel(
         } else {
             geoJsonRepository.updateIfNotFresh()
         }
-    }
-
-    fun onMovedCameraToSource() {
-        hasEverMovedCameraToSource = true
     }
 
     fun onPhotoClicked(uid: String) {

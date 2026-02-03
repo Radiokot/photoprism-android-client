@@ -2,6 +2,7 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.maplibre.android.geometry.LatLng
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit
@@ -50,6 +51,7 @@ class GalleryMedia(
      * Whether the entry is hidden (marked as private) or not.
      */
     var isPrivate: Boolean,
+    val latLng: LatLngPair?,
     val hash: String,
     files: List<File>,
 ) {
@@ -131,10 +133,16 @@ class GalleryMedia(
                 uid = source.uid,
                 width = source.width,
                 height = source.height,
-                takenAtLocal = LocalDate(localDate = parsePhotoPrismDate(source.takenAtLocal)!!),
+                takenAtLocal =
+                    LocalDate(localDate = parsePhotoPrismDate(source.takenAtLocal)!!),
                 title = source.title,
                 isFavorite = source.favorite,
                 isPrivate = source.private,
+                latLng =
+                    if (source.lat != 0.0 && source.lng != 0.0)
+                        source.lat to source.lng
+                    else
+                        null,
                 files = files,
                 hash = source.hash,
             )
