@@ -556,28 +556,14 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        val actionItems = listOf(
-            menu.findItem(R.id.add_to_album),
-            menu.findItem(R.id.remove_from_album),
-            menu.findItem(R.id.archive),
-            menu.findItem(R.id.delete),
-            menu.findItem(R.id.is_private),
-            menu.findItem(R.id.photos_nearby),
-        )
-        viewModel.areActionsVisible.observe(this) { areActionsVisible ->
-            actionItems.forEach {
-                it.isVisible = areActionsVisible
-                when (it.itemId) {
-                    R.id.remove_from_album ->
-                        it.isVisible = it.isVisible && viewModel.canRemoveFromAlbum
-
-                    R.id.photos_nearby ->
-                        it.isVisible = it.isVisible && viewModel.canSeePhotosNearby.value == true
-                }
-            }
-        }
+        menu.findItem(R.id.add_to_album).isVisible = viewModel.areActionsEnabled
+        menu.findItem(R.id.remove_from_album).isVisible =
+            viewModel.areActionsEnabled && viewModel.canRemoveFromAlbum
+        menu.findItem(R.id.archive).isVisible = viewModel.areActionsEnabled
+        menu.findItem(R.id.delete).isVisible = viewModel.areActionsEnabled
 
         with(menu.findItem(R.id.is_private)) {
+            isVisible = viewModel.areActionsEnabled
             viewModel.isPrivate.observe(this@MediaViewerActivity) { isPrivate ->
                 isChecked = isPrivate
             }
@@ -585,7 +571,7 @@ class MediaViewerActivity : BaseActivity() {
 
         with(menu.findItem(R.id.photos_nearby)) {
             viewModel.canSeePhotosNearby.observe(this@MediaViewerActivity) { canSeePhotosNearby ->
-                isVisible = canSeePhotosNearby && viewModel.areActionsVisible.value == true
+                isVisible = canSeePhotosNearby && viewModel.areActionsEnabled
             }
         }
 
@@ -667,11 +653,11 @@ class MediaViewerActivity : BaseActivity() {
         val playerControlsView = viewHolder.playerControlsLayout
 
         if (playerControlsView != null) {
-            viewModel.areActionsVisible.observe(this@MediaViewerActivity) { areActionsVisible ->
+            viewModel.areBottomControlsVisible.observe(this@MediaViewerActivity) { areBottomControlsVisible ->
                 // Use fade animation rather than videoPlayer controller visibility methods
                 // for consistency.
                 playerControlsView.root.clearAnimation()
-                playerControlsView.root.fadeVisibility(isVisible = areActionsVisible)
+                playerControlsView.root.fadeVisibility(areBottomControlsVisible)
             }
 
             // Apply insets.
@@ -737,7 +723,7 @@ class MediaViewerActivity : BaseActivity() {
             }
         }
 
-        viewModel.areActionsVisible.observe(
+        viewModel.areBottomControlsVisible.observe(
             this,
             view.buttonsLayout::fadeVisibility
         )

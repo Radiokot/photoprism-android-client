@@ -42,7 +42,8 @@ class GalleryMediaViewerViewModel(
     private val log = kLogger("MediaViewerVM")
     private lateinit var galleryMediaRepository: SimpleGalleryMediaRepository
     private var isInitialized = false
-    private var areActionsEnabled = false
+    var areActionsEnabled = false
+        private set
     private var isPageIndicatorEnabled = false
     private var staticSubtitle: String? = null
     private val currentLocalDate = LocalDate()
@@ -55,7 +56,7 @@ class GalleryMediaViewerViewModel(
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
     val events: Observable<Event> = eventsSubject.observeOnMain()
-    val areActionsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
+    val areBottomControlsVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isPageIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isToolbarVisible: MutableLiveData<Boolean> = MutableLiveData(true)
     val isFullScreen: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -141,7 +142,7 @@ class GalleryMediaViewerViewModel(
 
     private fun initControlsVisibility() {
         fun updateControlsVisibility(isFullScreen: Boolean) {
-            areActionsVisible.value = !isFullScreen && areActionsEnabled
+            areBottomControlsVisible.value = !isFullScreen && areActionsEnabled
             isToolbarVisible.value = !isFullScreen
             isPageIndicatorVisible.value = !isFullScreen && isPageIndicatorEnabled
         }

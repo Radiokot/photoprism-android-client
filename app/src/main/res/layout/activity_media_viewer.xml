@@ -58,12 +58,12 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/media_viewer_buttons_layout_horizontal_spacing"
         android:layout_marginBottom="24dp"
-        android:visibility="gone"
+        android:alpha="0"
         app:flexWrap="wrap"
         app:justifyContent="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:visibility="visible">
+        tools:alpha="1"
+        tools:ignore="MissingConstraints">
 
         <FrameLayout
             android:id="@+id/cancel_download_button_layout"
