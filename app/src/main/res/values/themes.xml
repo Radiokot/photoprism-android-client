@@ -105,10 +105,11 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
-    <style name="MapTheme" parent="AppTheme">
+    <style name="MapTheme" parent="LightAppTheme">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
     </style>
 
 </resources>

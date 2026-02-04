@@ -16,6 +16,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
+import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -156,6 +157,12 @@ class MapActivity : BaseActivity() {
 
     private fun initMap(savedInstanceState: Bundle?) = view.map.getMapAsync { map ->
         map.setMaxZoomPreference(20.0)
+        map.uiSettings.setAttributionTintColor(
+            MaterialColors.getColor(
+                view.map,
+                com.google.android.material.R.attr.colorOnSurfaceVariant
+            )
+        )
 
         if (savedInstanceState == null) {
             val startPosition = viewModel.startPosition
