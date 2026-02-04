@@ -61,4 +61,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="media_viewer_toolbar_gradient_start">#99000000</color>
     <color name="image_placeholder">#CCCCCC</color>
+    <color name="maplibre_blue">@color/md_theme_light_primary</color>
 </resources>
