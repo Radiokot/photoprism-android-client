@@ -160,18 +160,19 @@ class MapViewModel(
                 repositoryParams = SimpleGalleryMediaRepository.Params(
                     query = "uid:$uid"
                 ),
+                isPageIndicatorEnabled = false,
             )
         )
     }
 
-    fun onClusterClicked(
+    fun onBigClusterClicked(
         latNorth: Double,
         lngEast: Double,
         latSouth: Double,
         lngWest: Double,
     ) {
         log.debug {
-            "onClusterClicked(): opening_cluster:" +
+            "onClusterClicked(): opening_big_cluster:" +
                     "\nlatNorth=$latNorth" +
                     "\nlngEast=$lngEast" +
                     "\nlatSouth=$latSouth" +
@@ -187,6 +188,29 @@ class MapViewModel(
         )
     }
 
+    fun onSmallClusterClicked(
+        photoUids: Collection<String>,
+    ) {
+        log.debug {
+            "onClusterClicked(): opening_small_cluster_viewer:" +
+                    "\nphotoUids=$photoUids"
+        }
+
+        val query = photoUids.joinToString(
+            separator = "|",
+            prefix = "uid:",
+        )
+
+        eventsSubject.onNext(
+            Event.OpenViewer(
+                repositoryParams = SimpleGalleryMediaRepository.Params(
+                    query = query,
+                ),
+                isPageIndicatorEnabled = true,
+            )
+        )
+    }
+
     sealed interface Event {
         /**
          * Show a dismissible floating error saying that the loading is failed.
@@ -195,6 +219,7 @@ class MapViewModel(
 
         class OpenViewer(
             val repositoryParams: SimpleGalleryMediaRepository.Params,
+            val isPageIndicatorEnabled: Boolean,
         ) : Event
 
         class OpenCluster(

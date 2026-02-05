@@ -8,9 +8,7 @@ import android.graphics.RectF
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
@@ -19,7 +17,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -33,7 +30,6 @@ import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
-import org.maplibre.android.maps.AttributionDialogManager
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
@@ -333,6 +329,7 @@ class MapActivity : BaseActivity() {
         )
         initMapClicks(
             map = map,
+            style = style,
             photoLayer = photoLayer,
             clusterLayer = clusterLayer,
         )
@@ -622,6 +619,7 @@ class MapActivity : BaseActivity() {
 
     private fun initMapClicks(
         map: MapLibreMap,
+        style: Style,
         photoLayer: SymbolLayer,
         clusterLayer: SymbolLayer,
     ) {
@@ -646,12 +644,28 @@ class MapActivity : BaseActivity() {
                     uid = clickedFeature.getStringProperty("UID")
                 )
             } else {
-                viewModel.onClusterClicked(
-                    latNorth = clickedFeature.getNumberProperty("LatNorth").toDouble(),
-                    lngEast = clickedFeature.getNumberProperty("LngEast").toDouble(),
-                    latSouth = clickedFeature.getNumberProperty("LatSouth").toDouble(),
-                    lngWest = clickedFeature.getNumberProperty("LngWest").toDouble(),
-                )
+                val pointCount = clickedFeature.getNumberProperty("point_count").toInt()
+                if (pointCount > BIG_CLUSTER_MIN_SIZE) {
+                    viewModel.onBigClusterClicked(
+                        latNorth = clickedFeature.getNumberProperty("LatNorth").toDouble(),
+                        lngEast = clickedFeature.getNumberProperty("LngEast").toDouble(),
+                        latSouth = clickedFeature.getNumberProperty("LatSouth").toDouble(),
+                        lngWest = clickedFeature.getNumberProperty("LngWest").toDouble(),
+                    )
+                } else {
+                    viewModel.onSmallClusterClicked(
+                        photoUids =
+                            style
+                                .getSourceAs<GeoJsonSource>(SOURCE_ID)!!
+                                .getClusterLeaves(
+                                    cluster = clickedFeature,
+                                    limit = BIG_CLUSTER_MIN_SIZE - 1L,
+                                    offset = 0,
+                                )
+                                .features()!!
+                                .map { it.getStringProperty("UID") }
+                    )
+                }
             }
 
             return@addOnMapClickListener true
@@ -679,6 +693,7 @@ class MapActivity : BaseActivity() {
                             MediaViewerActivity.getBundle(
                                 mediaIndex = 0,
                                 repositoryParams = event.repositoryParams,
+                                isPageIndicatorEnabled = event.isPageIndicatorEnabled,
                             )
                         )
                 )
@@ -760,6 +775,7 @@ class MapActivity : BaseActivity() {
 
     companion object {
         private const val SOURCE_ID = "pp-clustered-photos"
+        private const val BIG_CLUSTER_MIN_SIZE = 5
         private const val START_POSITION_EXTRA = "start_position"
 
         fun getBundle(
