@@ -18,6 +18,8 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.shortSummary
+import ua.com.radiokot.photoprism.featureflags.extension.hasMap
+import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.memories.view.model.GalleryMemoriesListViewModel
@@ -38,6 +40,7 @@ class GalleryViewModel(
     private val listViewModel: GalleryListViewModelImpl,
     private val galleryMediaDownloadActionsViewModel: GalleryMediaDownloadActionsViewModelDelegate,
     private val galleryMediaRemoteActionsViewModel: GalleryMediaRemoteActionsViewModelDelegate,
+    private val featureFlags: FeatureFlags,
 ) : ViewModel(),
     GalleryListViewModel by listViewModel,
     GalleryMediaDownloadActionsViewModel by galleryMediaDownloadActionsViewModel,
@@ -61,6 +64,8 @@ class GalleryViewModel(
     val mainError = MutableLiveData<Error?>(null)
     var canLoadMore = true
         private set
+    val canSeePlaces: Boolean
+        get() = featureFlags.hasMap
 
     private val backPressActionsStack = BackPressActionsStack()
     val backPressedCallback: OnBackPressedCallback =

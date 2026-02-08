@@ -12,6 +12,8 @@ import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.featureflags.extension.hasMap
+import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
 import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
@@ -35,6 +37,7 @@ class GalleryMediaViewerViewModel(
     private val galleryPreferences: GalleryPreferences,
     private val webUrlFactory: MediaWebUrlFactory,
     private val previewUrlFactory: MediaPreviewUrlFactory,
+    private val featureFlags: FeatureFlags,
 ) : ViewModel(),
     GalleryMediaDownloadActionsViewModel by galleryMediaDownloadActionsViewModel,
     GalleryMediaRemoteActionsViewModel by galleryMediaRemoteActionsViewModel {
@@ -563,7 +566,7 @@ class GalleryMediaViewerViewModel(
         updateTitleAndSubtitle(item)
         isFavorite.value = item.isFavorite
         isPrivate.value = item.isPrivate
-        canSeePhotosNearby.value = item.latLng != null
+        canSeePhotosNearby.value = featureFlags.hasMap && item.latLng != null
 
         // When switching to a video (not live photo or GIF), go full screen if currently is not.
         if (item.media is GalleryMedia.TypeData.Video && isFullScreen.value == false) {

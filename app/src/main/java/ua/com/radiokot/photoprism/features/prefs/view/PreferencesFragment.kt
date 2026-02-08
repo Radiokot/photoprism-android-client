@@ -46,6 +46,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.shortSummary
 import ua.com.radiokot.photoprism.featureflags.extension.hasExtensionStore
+import ua.com.radiokot.photoprism.featureflags.extension.hasMap
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.envconnection.logic.DisconnectFromEnvUseCase
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
@@ -298,32 +299,37 @@ class PreferencesFragment :
             }
         }
 
-        with(requirePreference(R.string.pk_custom_map_style)) {
-            this as EditTextPreference
-            setOnBindEditTextListener { editText ->
-                editText.setText(mapPreferences.customStyleUrl ?: "")
-                editText.inputType =
-                    InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_TEXT_VARIATION_URI or
-                            InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                editText.isSingleLine = false
-                editText.maxLines = 5
-                editText.setSelection(editText.text.length)
-            }
-            setOnPreferenceChangeListener { _, newValue ->
-                val cleanedNewValue =
-                    newValue
-                        .toString()
-                        .trim()
-                        .takeIf(String::isNotEmpty)
+        if (featureFlags.hasMap) {
+            requirePreference(R.string.pk_map).isVisible = true
+            with(requirePreference(R.string.pk_custom_map_style)) {
+                this as EditTextPreference
+                setOnBindEditTextListener { editText ->
+                    editText.setText(mapPreferences.customStyleUrl ?: "")
+                    editText.inputType =
+                        InputType.TYPE_CLASS_TEXT or
+                                InputType.TYPE_TEXT_VARIATION_URI or
+                                InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                    editText.isSingleLine = false
+                    editText.maxLines = 5
+                    editText.setSelection(editText.text.length)
+                }
+                setOnPreferenceChangeListener { _, newValue ->
+                    val cleanedNewValue =
+                        newValue
+                            .toString()
+                            .trim()
+                            .takeIf(String::isNotEmpty)
 
-                if (cleanedNewValue == null || cleanedNewValue.toHttpUrlOrNull() != null) {
-                    mapPreferences.customStyleUrl = cleanedNewValue
-                    true
-                } else {
-                    false
+                    if (cleanedNewValue == null || cleanedNewValue.toHttpUrlOrNull() != null) {
+                        mapPreferences.customStyleUrl = cleanedNewValue
+                        true
+                    } else {
+                        false
+                    }
                 }
             }
+        } else {
+            requirePreference(R.string.pk_map).isVisible = false
         }
 
         with(requirePreference(R.string.pk_app_version)) {

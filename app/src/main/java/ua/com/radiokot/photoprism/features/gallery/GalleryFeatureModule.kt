@@ -162,6 +162,7 @@ val galleryFeatureModule = module {
                 listViewModel = get(),
                 galleryMediaDownloadActionsViewModel = get(),
                 galleryMediaRemoteActionsViewModel = get(),
+                featureFlags = get(),
             )
         }
 

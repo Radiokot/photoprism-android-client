@@ -18,6 +18,7 @@ android {
         targetSdk 35
         //noinspection GradleDependency
         compileSdk 35
+        // Also set in the manifest with an override.
         minSdk 21
 
         applicationId "ua.com.radiokot.photoprism"
@@ -195,9 +196,7 @@ dependencies {
     // Must be 4.3 for Java 8 compatibility.
     //noinspection NewerVersionAvailable
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
-    // Must be 11.13.5 for minSdk 21
-    //noinspection NewerVersionAvailable
-    implementation 'org.maplibre.gl:android-sdk:11.13.5!!'
+    implementation 'org.maplibre.gl:android-sdk:12.3.1'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).

@@ -19,6 +19,7 @@
     <string name="pk_raw_sharing_mode" translatable="false">raw_sharing_mode</string>
     <string name="pk_language" translatable="false">language</string>
     <string name="pk_extensions" translatable="false">extensions</string>
+    <string name="pk_map" translatable="false">map</string>
     <string name="pk_custom_map_style" translatable="false">custom_map_style</string>
 
     <string name="pk_ext_summary" translatable="false">ext_summary</string>

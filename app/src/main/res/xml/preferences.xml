@@ -146,6 +146,7 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:key="@string/pk_map"
         app:title="@string/map">
 
         <EditTextPreference
