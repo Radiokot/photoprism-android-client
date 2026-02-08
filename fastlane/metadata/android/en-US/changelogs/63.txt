@@ -1,4 +1,0 @@
-Full: https://radiokot.com.ua/pp-changes
-
-Added:
-- Ability to see photos on a map

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.42.1] - 2026-02-08
 
 ### Fixed
 
@@ -1016,4 +1016,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.42.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.41.0(62)...1.42.0(63)
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.0(63)...HEAD
+[1.43.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.0(63)...1.43.0(64)
+
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.43.0(64)...HEAD
