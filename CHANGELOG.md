@@ -1016,6 +1016,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.42.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.41.0(62)...1.42.0(63)
 
-[1.43.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.0(63)...1.43.0(64)
+[1.42.1]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.0(63)...1.42.1(64)
 
 [Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.43.0(64)...HEAD
