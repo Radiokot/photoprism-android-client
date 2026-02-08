@@ -89,7 +89,7 @@ class LabelsActivity : BaseActivity() {
                     }
 
             val minItemWidthPx =
-                resources.getDimensionPixelSize(R.dimen.list_item_label_width)
+                resources.getDimensionPixelSize(R.dimen.list_item_collection_width)
             val spanCount = (listWidth / minItemWidthPx).coerceAtLeast(1)
 
             log.debug {
@@ -113,7 +113,7 @@ class LabelsActivity : BaseActivity() {
             // by overriding the layout manager layout params factory.
             layoutManager = object : GridLayoutManager(context, spanCount) {
                 val rowSpacing: Int =
-                    resources.getDimensionPixelSize(R.dimen.list_item_label_margin_end)
+                    resources.getDimensionPixelSize(R.dimen.list_item_collection_margin_end)
 
                 override fun generateLayoutParams(
                     c: Context,

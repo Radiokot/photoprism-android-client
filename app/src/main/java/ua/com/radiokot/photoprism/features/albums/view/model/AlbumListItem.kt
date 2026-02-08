@@ -11,7 +11,7 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ListItemAlbumBinding
+import ua.com.radiokot.photoprism.databinding.ListItemCollectionBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.capitalized
@@ -48,10 +48,10 @@ class AlbumListItem(
     )
 
     override val layoutRes: Int =
-        R.layout.list_item_album
+        R.layout.list_item_collection
 
     override val type: Int =
-        R.layout.list_item_album
+        R.layout.list_item_collection
 
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
@@ -64,7 +64,7 @@ class AlbumListItem(
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view = ListItemAlbumBinding.bind(itemView)
+        private val view = ListItemCollectionBinding.bind(itemView)
         private val picasso: Picasso by inject()
         private val monthYearDateFormat: DateFormat by inject(named(UTC_MONTH_YEAR_DATE_FORMAT))
 

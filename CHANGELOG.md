@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now the viewer is opened instead of a grid when clicking a small group of photos on the map
 - Updated the map library. If you're having issues with the map, consider checking out this version
 - Disabled the map on Android older than Marshmallow (6.0)
+- Increased visibility of an album item selected with a remote control
 
 ## [1.42.0] - 2026-02-05
 

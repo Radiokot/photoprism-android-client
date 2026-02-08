@@ -9,7 +9,7 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.databinding.ListItemLabelBinding
+import ua.com.radiokot.photoprism.databinding.ListItemCollectionBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
@@ -36,10 +36,10 @@ class LabelListItem(
     )
 
     override val type: Int =
-        R.layout.list_item_label
+        R.layout.list_item_collection
 
     override val layoutRes: Int =
-        R.layout.list_item_label
+        R.layout.list_item_collection
 
     override var identifier: Long =
         source?.hashCode()?.toLong() ?: -1L
@@ -54,7 +54,7 @@ class LabelListItem(
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
-        private val view: ListItemLabelBinding = ListItemLabelBinding.bind(itemView)
+        private val view = ListItemCollectionBinding.bind(itemView)
         private val picasso: Picasso by inject()
 
         override fun bindView(item: LabelListItem, payloads: List<Any>) {
@@ -68,7 +68,7 @@ class LabelListItem(
                 .centerCrop()
                 .into(view.imageView)
 
-            view.nameTextView.text = item.name
+            view.titleTextView.text = item.name
 
             view.descriptionTextView.text =
                 view.root.context.resources.getQuantityString(

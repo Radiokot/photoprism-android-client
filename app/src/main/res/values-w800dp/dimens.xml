@@ -6,7 +6,6 @@
     <dimen name="slideshow_guide_text_size">24sp</dimen>
     <dimen name="slideshow_guide_prev_next_margin">24dp</dimen>
     <dimen name="list_item_memory_width">160dp</dimen>
-    <dimen name="list_item_gallery_album_width">160dp</dimen>
-    <dimen name="list_item_label_width">160dp</dimen>
+    <dimen name="list_item_collection_width">160dp</dimen>
     <dimen name="map_image_width">88dp</dimen>
 </resources>
