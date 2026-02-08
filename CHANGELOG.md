@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Crash on large landscape devices
+
 ### Changed
 
 - Now the viewer is opened instead of a grid when clicking a small group of photos on the map

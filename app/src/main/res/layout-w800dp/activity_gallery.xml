@@ -9,14 +9,22 @@
 
     <!-- There's also a thin (default) version. -->
 
-    <com.google.android.material.navigationrail.NavigationRailView
-        android:id="@+id/navigation_rail"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:fadingEdge="vertical"
+        android:fillViewport="true"
         android:fitsSystemWindows="true"
-        app:itemPaddingTop="24dp"
-        app:menu="@menu/gallery_navigation"
-        app:menuGravity="center" />
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="none">
+
+        <ua.com.radiokot.photoprism.view.UnlimitedNavigationRailView
+            android:id="@+id/navigation_rail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:menu="@menu/gallery_navigation"
+            app:menuGravity="center" />
+    </ScrollView>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/content_layout"
