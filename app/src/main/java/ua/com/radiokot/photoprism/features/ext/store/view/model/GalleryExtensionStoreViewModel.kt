@@ -57,7 +57,7 @@ class GalleryExtensionStoreViewModel(
         ) { extensionsOnSaleByIndex: Map<Int, GalleryExtensionOnSale>,
             activatedExtensions: Set<GalleryExtension> ->
 
-            GalleryExtension.values().mapNotNull { galleryExtension ->
+            GalleryExtension.entries.mapNotNull { galleryExtension ->
                 // Do not show extensions not on sale.
                 val onSale = extensionsOnSaleByIndex[galleryExtension.ordinal]
                     ?: return@mapNotNull null

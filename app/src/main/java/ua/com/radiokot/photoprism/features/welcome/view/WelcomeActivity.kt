@@ -1,8 +1,8 @@
 package ua.com.radiokot.photoprism.features.welcome.view
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -64,6 +64,6 @@ class WelcomeActivity : BaseActivity() {
 
     private fun safeView(url: String) = tryOrNull {
         // Do not use internal webviewer here, as it may of course have issues too.
-        startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)))
+        startActivity(Intent(Intent.ACTION_VIEW).setData(url.toUri()))
     }
 }

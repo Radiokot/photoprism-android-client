@@ -1,6 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.slideshow.di
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module

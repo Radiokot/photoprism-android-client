@@ -1,10 +1,8 @@
 package ua.com.radiokot.photoprism.features.webview.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +12,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.koin.android.ext.android.inject
@@ -49,13 +48,13 @@ class WebViewActivity : BaseActivity() {
     }
     private val pageStartedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> by lazy {
         intent.getIntArrayExtra(PAGE_STARTED_SCRIPTS_EXTRA)
-            ?.map(WebViewInjectionScriptFactory.Script.values()::get)
+            ?.map(WebViewInjectionScriptFactory.Script.entries::get)
             ?.toSet()
             ?: emptySet()
     }
     private val pageFinishedInjectionScripts: Set<WebViewInjectionScriptFactory.Script> by lazy {
         intent.getIntArrayExtra(PAGE_FINISHED_SCRIPTS_EXTRA)
-            ?.map(WebViewInjectionScriptFactory.Script.values()::get)
+            ?.map(WebViewInjectionScriptFactory.Script.entries::get)
             ?.toSet()
             ?: emptySet()
     }
@@ -163,7 +162,7 @@ class WebViewActivity : BaseActivity() {
                     // Ensure cookies are saved to the persistent storage.
                     cookieManager.flush()
 
-                    setResult(Activity.RESULT_OK)
+                    setResult(RESULT_OK)
                     finish()
                 }
 
@@ -212,7 +211,7 @@ class WebViewActivity : BaseActivity() {
         }
 
         try {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)))
+            startActivity(Intent(Intent.ACTION_VIEW).setData(url.toUri()))
             finish()
 
             log.debug {

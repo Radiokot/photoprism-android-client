@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.envconnection.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -324,7 +323,7 @@ class EnvConnectionActivity : BaseActivity() {
         )
 
     private fun onWebViewerRedirectHandlingResult(result: ActivityResult) {
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             viewModel.onWebViewerHandledRedirect()
         }
     }

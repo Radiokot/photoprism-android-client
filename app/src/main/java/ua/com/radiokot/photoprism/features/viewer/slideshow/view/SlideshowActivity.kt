@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.viewer.slideshow.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
@@ -354,7 +353,7 @@ class SlideshowActivity : BaseActivity() {
 
     override fun finish() {
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtra(MEDIA_INDEX_KEY, view.viewPager.currentItem)
         )
         super.finish()
@@ -385,7 +384,7 @@ class SlideshowActivity : BaseActivity() {
          */
         fun getResult(result: ActivityResult): Int? =
             result
-                .takeIf { it.resultCode == Activity.RESULT_OK }
+                .takeIf { it.resultCode == RESULT_OK }
                 ?.data
                 ?.getIntExtra(MEDIA_INDEX_KEY, -1)
                 ?.takeIf { it >= 0 }

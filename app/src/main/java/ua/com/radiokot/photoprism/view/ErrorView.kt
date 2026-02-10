@@ -15,35 +15,35 @@ import java.lang.ref.WeakReference
 class ErrorView
 @JvmOverloads
 constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null,
 ) : FrameLayout(context, attrs) {
-    private val viewBinding: ViewErrorBinding
-
+    private val viewBinding: ViewErrorBinding =
+        ViewErrorBinding.inflate(LayoutInflater.from(context), this, true)
     private var currentError: Error? = null
     private var viewsToReplace = mutableListOf<WeakReference<View>>()
 
     init {
-        viewBinding = ViewErrorBinding.inflate(LayoutInflater.from(context), this, true)
         hide()
     }
 
     fun showError(error: Error) {
-        visibility = View.VISIBLE
+        visibility = VISIBLE
         currentError?.unbindView(viewBinding)
         currentError = error
 
         viewsToReplace.forEach { reference ->
-            reference.get()?.visibility = View.INVISIBLE
+            reference.get()?.visibility = INVISIBLE
         }
 
         error.bindView(viewBinding)
     }
 
     fun hide() {
-        visibility = View.GONE
+        visibility = GONE
 
         viewsToReplace.forEach { reference ->
-            reference.get()?.visibility = View.VISIBLE
+            reference.get()?.visibility = VISIBLE
         }
 
         currentError?.unbindView(viewBinding)
@@ -95,10 +95,10 @@ constructor(
                     with(retryButton) {
                         text = retryButtonText
                         if (retryButtonClickListener != null) {
-                            visibility = View.VISIBLE
+                            visibility = VISIBLE
                             setOnClickListener { retryButtonClickListener.invoke() }
                         } else {
-                            visibility = View.GONE
+                            visibility = GONE
                             setOnClickListener(null)
                         }
                     }
@@ -127,7 +127,7 @@ constructor(
             override fun bindView(view: ViewErrorBinding) {
                 with(view) {
                     messageTextView.text = message
-                    retryButton.visibility = View.GONE
+                    retryButton.visibility = GONE
                     imageView.setImageDrawable(
                         ContextCompat.getDrawable(
                             imageView.context,

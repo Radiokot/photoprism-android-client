@@ -34,12 +34,12 @@ class AlbumSortDialogFragment :
             requireContext(),
             R.layout.select_dialog_singlechoice_material,
             android.R.id.text1,
-            AlbumSort.Order.values().map { order ->
+            AlbumSort.Order.entries.map { order ->
                 getString(AlbumSortResources.getName(order))
             }
         )
         setItemChecked(
-            AlbumSort.Order.values().indexOf(initialSort.order),
+            AlbumSort.Order.entries.indexOf(initialSort.order),
             true
         )
     }

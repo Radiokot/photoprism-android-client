@@ -19,10 +19,10 @@ class SearchBookmarksRepository(
     override fun getCollection(): Single<List<SearchBookmark>> = {
         bookmarksDbDao.getAll()
             .map(::SearchBookmark)
-            .also {
+            .also { bookmarks ->
                 log.debug {
                     "getCollection(): bookmark_positions:" +
-                            "\npositions=${it.map { "${it.id}:${it.position}" }}"
+                            "\npositions=${bookmarks.map { "${it.id}:${it.position}" }}"
                 }
             }
     }.toSingle()

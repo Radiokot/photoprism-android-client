@@ -13,7 +13,7 @@ data class ParsedKey(
     constructor(source: OfflineLicenseKey) : this(
         subject = source.subject,
         extensions = source.features
-            .mapNotNullTo(mutableSetOf(), GalleryExtension.values()::getOrNull),
+            .mapNotNullTo(mutableSetOf(), GalleryExtension.entries::getOrNull),
         expiresAt = source.expiresAt,
         encoded = source.encode(),
     )

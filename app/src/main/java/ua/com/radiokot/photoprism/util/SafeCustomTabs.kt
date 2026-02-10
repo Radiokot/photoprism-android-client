@@ -2,10 +2,10 @@ package ua.com.radiokot.photoprism.util
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 
@@ -54,7 +54,7 @@ object SafeCustomTabs {
                         "\ncustomTabsPackageName=$customTabsPackageName"
             }
 
-            intent.launchUrl(context, Uri.parse(url))
+            intent.launchUrl(context, url.toUri())
         } catch (e1: Exception) {
             log.debug(e1) { "launchWithFallback(): falling_back_to_web_viewer" }
 

@@ -56,6 +56,7 @@ class PhotoPrismGallery : Application() {
         kLogger("App")
     }
 
+    @Suppress("KotlinConstantConditions")
     override fun onCreate() {
         super.onCreate()
 
@@ -70,7 +71,7 @@ class PhotoPrismGallery : Application() {
                             BuildConfig.DEBUG ->
                                 devFeatureFlagsModule
 
-                            BuildConfig.BUILD_TYPE.equals("releasePlay", true) ->
+                            BuildConfig.BUILD_TYPE == "releasePlay" ->
                                 playReleaseFeatureFlagsModule
 
                             else ->

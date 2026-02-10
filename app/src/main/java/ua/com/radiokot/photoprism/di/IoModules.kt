@@ -72,6 +72,7 @@ val ioModules: List<Module> = listOf(
         single {
             val logger = KotlinLogging.logger("HTTP")
             HttpLoggingInterceptor(logger::info).apply {
+                @Suppress("KotlinConstantConditions")
                 if (BuildConfig.DEBUG) {
                     level = HttpLoggingInterceptor.Level.BODY
 
@@ -102,7 +103,7 @@ val ioModules: List<Module> = listOf(
                     HeaderInterceptor.userAgent(
                         name = "PhotoPrismAndroid",
                         version = BuildConfig.VERSION_NAME,
-                        extension = okhttp3.internal.userAgent,
+                        extension = "okhttp/${okhttp3.OkHttp.VERSION}",
                     )
                 )
                 .cookieJar(get())

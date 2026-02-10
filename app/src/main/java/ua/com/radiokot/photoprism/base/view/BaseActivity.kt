@@ -3,11 +3,11 @@ package ua.com.radiokot.photoprism.base.view
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.ConfigurationCompat
 import com.google.android.material.color.MaterialColors
 import org.koin.android.ext.android.getKoin
@@ -119,7 +119,7 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
             if (windowBackgroundColor == Color.TRANSPARENT)
                 null
             else
-                ColorDrawable(windowBackgroundColor)
+                windowBackgroundColor.toDrawable()
         )
 
         super.onCreate(savedInstanceState)

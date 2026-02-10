@@ -1,10 +1,10 @@
 package ua.com.radiokot.photoprism.features.gallery
 
 import android.net.Uri
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -16,10 +16,10 @@ import ua.com.radiokot.photoprism.di.SelfParameterHolder
 import ua.com.radiokot.photoprism.di.dateFormatModule
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.envconnection.di.envConnectionFeatureModule
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
-import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferences
 import ua.com.radiokot.photoprism.features.gallery.data.storage.DownloadPreferencesOnPrefs
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferences
+import ua.com.radiokot.photoprism.features.gallery.data.storage.GalleryPreferencesOnPrefs
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
 import ua.com.radiokot.photoprism.features.gallery.logic.AddGalleryMediaToAlbumUseCase
 import ua.com.radiokot.photoprism.features.gallery.logic.ArchiveGalleryMediaUseCase
@@ -41,12 +41,12 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryFastScrollViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryListViewModelImpl
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegate
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.gallery.view.model.GallerySingleRepositoryViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegate
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModelDelegateImpl
 import ua.com.radiokot.photoprism.features.viewer.logic.BackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.features.viewer.logic.ThreadPoolBackgroundMediaFileDownloadManager
 import ua.com.radiokot.photoprism.util.downloader.ObservableDownloader

@@ -4,7 +4,6 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 import ua.com.radiokot.photoprism.api.faces.model.PhotoPrismFace
-import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import java.io.IOException
 
 interface PhotoPrismFacesService {

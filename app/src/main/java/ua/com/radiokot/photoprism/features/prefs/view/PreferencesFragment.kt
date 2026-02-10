@@ -200,7 +200,7 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_gallery_item_scale)) {
             this as ListPreference
             entries = resources.getStringArray(R.array.gallery_item_scale_array)
-            entryValues = GalleryItemScale.values().map(GalleryItemScale::name).toTypedArray()
+            entryValues = GalleryItemScale.entries.map(GalleryItemScale::name).toTypedArray()
             value = galleryPreferences.itemScale.value!!.name
             setOnPreferenceChangeListener { _, newValue ->
                 galleryPreferences.itemScale.onNext(GalleryItemScale.valueOf(newValue as String))
@@ -211,7 +211,7 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_slideshow_speed)) {
             this as ListPreference
             entries = resources.getStringArray(R.array.slideshow_speed_array)
-            entryValues = SlideshowSpeed.values().map(SlideshowSpeed::name).toTypedArray()
+            entryValues = SlideshowSpeed.entries.map(SlideshowSpeed::name).toTypedArray()
             value = slideshowPreferences.speed.name
             setOnPreferenceChangeListener { _, newValue ->
                 slideshowPreferences.speed = SlideshowSpeed.valueOf(newValue as String)
@@ -227,7 +227,7 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_raw_sharing_mode)) {
             this as ListPreference
             entries = resources.getStringArray(R.array.raw_sharing_mode_array)
-            entryValues = RawSharingMode.values().map(RawSharingMode::name).toTypedArray()
+            entryValues = RawSharingMode.entries.map(RawSharingMode::name).toTypedArray()
             value = galleryPreferences.rawSharingMode.value!!.name
             setOnPreferenceChangeListener { _, newValue ->
                 galleryPreferences.rawSharingMode.onNext(RawSharingMode.valueOf(newValue as String))
@@ -277,7 +277,7 @@ class PreferencesFragment :
         with(requirePreference(R.string.pk_download_raw_mode)) {
             this as ListPreference
             entries = resources.getStringArray(R.array.raw_download_mode_array)
-            entryValues = RawDownloadMode.values().map(RawDownloadMode::name).toTypedArray()
+            entryValues = RawDownloadMode.entries.map(RawDownloadMode::name).toTypedArray()
             value = downloadPreferences.rawDownloadMode.value!!.name
             setOnPreferenceChangeListener { _, newValue ->
                 downloadPreferences.rawDownloadMode.onNext(RawDownloadMode.valueOf(newValue as String))

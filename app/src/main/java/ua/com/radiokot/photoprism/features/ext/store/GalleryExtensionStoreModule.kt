@@ -2,8 +2,8 @@ package ua.com.radiokot.photoprism.features.ext.store
 
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -36,7 +36,7 @@ val galleryExtensionStoreModule = module {
 
     factory(named(CURRENCY_NUMBER_FORMAT)) {
         NumberFormat.getCurrencyInstance(get())
-    } bind java.text.NumberFormat::class
+    } bind NumberFormat::class
 
     single {
         GalleryExtensionStorePreferencesOnPrefs(

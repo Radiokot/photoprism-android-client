@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.webview.logic
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.google.common.hash.Hashing
-import ua.com.radiokot.photoprism.features.webview.logic.WebViewInjectionScriptFactory.Script
 
 /**
  * A factory of JS to be injected to the WebView.

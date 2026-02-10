@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.search.albums.view
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -207,7 +206,7 @@ class GallerySearchAlbumSelectionActivity : BaseActivity() {
         }
 
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 createResult(selectedAlbumUid)
             )

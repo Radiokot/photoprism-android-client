@@ -101,7 +101,7 @@ class LabelsActivity : BaseActivity() {
 
             adapter = FastAdapter.with(labelsAdapter).apply {
                 stateRestorationPolicy =
-                    androidx.recyclerview.widget.RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                    RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
                 onClickListener = { _, _, item: LabelListItem, _ ->
                     viewModel.onLabelItemClicked(item)

@@ -1,9 +1,9 @@
 package ua.com.radiokot.photoprism.util.images
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 
@@ -18,7 +18,7 @@ class TextViewWrappedDrawableTarget(
     private val wrappedDrawable: SimpleWrappedDrawable,
 ) : Target {
     override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-        wrappedDrawable.wrapped = BitmapDrawable(textView.context.resources, bitmap)
+        wrappedDrawable.wrapped = bitmap.toDrawable(textView.context.resources)
         postTextUpdate()
     }
 

@@ -3,6 +3,7 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.net.Uri
 import android.util.Size
 import android.view.View
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -32,7 +33,7 @@ class FadeEndLivePhotoViewerPage(
     thumbnailUrl: String,
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
-    val videoPreviewUri: Uri = Uri.parse(videoPreviewUrl)
+    val videoPreviewUri: Uri = videoPreviewUrl.toUri()
     val mediaId: String = identifier.toString()
 
     override val type: Int

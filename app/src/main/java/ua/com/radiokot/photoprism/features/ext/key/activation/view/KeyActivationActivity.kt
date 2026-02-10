@@ -45,9 +45,9 @@ class KeyActivationActivity : BaseActivity() {
         intent.data?.also(::onIntentData)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.data?.also(::onIntentData)
+        intent.data?.also(::onIntentData)
     }
 
     private fun subscribeToState() = viewModel.state.subscribe(this) { state ->

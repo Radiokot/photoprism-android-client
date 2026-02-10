@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -708,7 +707,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
 
     private fun onAddingDestinationAlbumSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
-        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+        if (result.resultCode == RESULT_OK && bundle != null) {
             viewModel.onAlbumForAddingGalleryMediaSelected(
                 selectedAlbum = DestinationAlbumSelectionActivity
                     .getSelectedAlbums(bundle)

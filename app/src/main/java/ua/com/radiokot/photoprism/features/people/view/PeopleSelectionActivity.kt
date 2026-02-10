@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.people.view
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -234,7 +233,7 @@ class PeopleSelectionActivity : BaseActivity() {
         }
 
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 createResult(
                     selectedPersonIds = selectedPersonIds,

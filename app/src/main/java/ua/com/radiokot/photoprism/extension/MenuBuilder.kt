@@ -30,5 +30,6 @@ fun MenuBuilder.showOverflowItemIcons(isBottomBar: Boolean) {
     }
 }
 
+@SuppressLint("RestrictedApi")
 fun Menu.showOverflowItemIcons(isBottomBar: Boolean) =
     (this as? MenuBuilder)?.showOverflowItemIcons(isBottomBar)

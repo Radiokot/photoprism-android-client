@@ -8,7 +8,6 @@ import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.ext.api.OfflineLicenseKeyService
 import ua.com.radiokot.photoprism.features.ext.api.model.KeyRenewalRequest
 import ua.com.radiokot.photoprism.features.ext.key.logic.HardwareIdentifier
-import ua.com.radiokot.photoprism.features.ext.key.renewal.logic.RenewEnteredKeyUseCase.RenewalNotAvailableException
 import java.net.HttpURLConnection
 
 /**

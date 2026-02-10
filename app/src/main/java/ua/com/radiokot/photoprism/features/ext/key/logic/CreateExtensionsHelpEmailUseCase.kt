@@ -1,7 +1,7 @@
 package ua.com.radiokot.photoprism.features.ext.key.logic
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 
 /**
  * Creates an intent launching the email client
@@ -25,6 +25,6 @@ class CreateExtensionsHelpEmailUseCase(
             .apply {
                 // This allows selecting only email clients
                 // while keeping the text from extras which gets lost with SENDTO.
-                selector = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
+                selector = Intent(Intent.ACTION_SENDTO, "mailto:".toUri())
             }
 }

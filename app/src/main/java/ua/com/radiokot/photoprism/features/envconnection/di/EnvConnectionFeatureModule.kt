@@ -3,7 +3,7 @@ package ua.com.radiokot.photoprism.features.envconnection.di
 import android.content.Context
 import android.content.SharedPreferences
 import org.koin.android.ext.koin.androidApplication
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

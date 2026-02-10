@@ -1,7 +1,7 @@
 package ua.com.radiokot.photoprism.features.people
 
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.features.gallery.search.logic.SearchPredicates
@@ -13,7 +13,6 @@ val peopleFeatureModule = module {
 
     scope<EnvSession> {
         scopedOf(::PeopleRepository)
-
 
         viewModel {
             PeopleSelectionViewModel(

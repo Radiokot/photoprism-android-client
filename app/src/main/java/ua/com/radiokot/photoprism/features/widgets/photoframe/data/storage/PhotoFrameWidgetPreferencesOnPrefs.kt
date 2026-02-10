@@ -33,7 +33,7 @@ class PhotoFrameWidgetPreferencesOnPrefs(
         LruCache<Int, ObjectPersistence<PhotoFrameWidgetPhoto>>(10)
 
     private fun getPhotoPersistence(widgetId: Int) =
-        photoPersistenceCache.get(widgetId)
+        photoPersistenceCache[widgetId]
             ?: ObjectPersistenceOnPrefs.forType<PhotoFrameWidgetPhoto>(
                 key = getPhotoKey(widgetId),
                 preferences = preferences,
@@ -58,7 +58,7 @@ class PhotoFrameWidgetPreferencesOnPrefs(
         LruCache<Int, ObjectPersistence<SearchConfig>>(10)
 
     private fun getSearchConfigPersistence(widgetId: Int) =
-        searchConfigPersistenceCache.get(widgetId)
+        searchConfigPersistenceCache[widgetId]
             ?: SearchConfigPersistenceOnPrefs(
                 key = getSearchConfigKey(widgetId),
                 preferences = preferences,

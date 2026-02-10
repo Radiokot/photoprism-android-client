@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -201,7 +200,7 @@ class ImportActivity : BaseActivity() {
 
     private fun onAlbumSelectionResult(result: ActivityResult) {
         val bundle = result.data?.extras
-        if (result.resultCode == Activity.RESULT_OK && bundle != null) {
+        if (result.resultCode == RESULT_OK && bundle != null) {
             viewModel.onAlbumSelectionResult(
                 selectedAlbums = DestinationAlbumSelectionActivity.getSelectedAlbums(bundle)
             )

@@ -11,7 +11,6 @@ import android.webkit.WebViewClient
 import androidx.annotation.ColorInt
 import com.google.android.material.color.MaterialColors
 import ua.com.radiokot.photoprism.extension.kLogger
-import ua.com.radiokot.photoprism.features.webview.logic.WebViewWVClient.Factory
 import kotlin.concurrent.thread
 
 /**

@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.widgets.photoframe.view
 
-import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.Color
@@ -244,7 +243,7 @@ class PhotoFrameWidgetConfigurationActivity : BaseActivity() {
             is PhotoFrameWidgetConfigurationViewModel.Event.Finish -> {
                 if (event.isConfigurationSuccessful) {
                     setResult(
-                        Activity.RESULT_OK,
+                        RESULT_OK,
                         Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     )
                 }

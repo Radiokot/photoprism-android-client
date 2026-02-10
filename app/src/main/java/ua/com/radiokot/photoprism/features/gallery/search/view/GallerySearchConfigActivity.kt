@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.gallery.search.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -43,7 +42,7 @@ class GallerySearchConfigActivity : BaseActivity() {
         initSearchConfigView()
         subscribeToState()
 
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
     }
 
     private fun initToolbar() {
@@ -86,7 +85,7 @@ class GallerySearchConfigActivity : BaseActivity() {
                     // Search was applied,
                     // return the config to the calling activity.
                     setResult(
-                        Activity.RESULT_OK,
+                        RESULT_OK,
                         Intent()
                             .putExtra(SEARCH_CONFIG_EXTRA, state.search.config)
                     )
@@ -96,7 +95,7 @@ class GallerySearchConfigActivity : BaseActivity() {
                 is GallerySearchViewModel.State.NoSearch -> {
                     // Search was reset,
                     // return to the calling activity without applied config.
-                    setResult(Activity.RESULT_OK, null)
+                    setResult(RESULT_OK, null)
                     finish()
                 }
 

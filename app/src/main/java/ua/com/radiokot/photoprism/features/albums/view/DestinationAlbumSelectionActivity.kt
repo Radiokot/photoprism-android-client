@@ -1,6 +1,5 @@
 package ua.com.radiokot.photoprism.features.albums.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
@@ -160,7 +159,7 @@ class DestinationAlbumSelectionActivity : BaseActivity() {
         }
 
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 createResult(selectedAlbums)
             )

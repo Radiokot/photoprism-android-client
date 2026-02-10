@@ -2,7 +2,6 @@ package ua.com.radiokot.photoprism.features.gallery.data.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.maplibre.android.geometry.LatLng
 import ua.com.radiokot.photoprism.api.photos.model.PhotoPrismMergedPhoto
 import ua.com.radiokot.photoprism.util.LocalDate
 import java.util.concurrent.TimeUnit

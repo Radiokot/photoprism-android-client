@@ -7,6 +7,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Shader
+import androidx.core.graphics.createBitmap
 import com.squareup.picasso.Transformation
 import kotlin.math.min
 
@@ -34,10 +35,10 @@ class ShapeMaskImageTransformation(
             isAntiAlias = true
         }
 
-        val resultBitmap = Bitmap.createBitmap(
-            shapeMaskRect.width(),
-            shapeMaskRect.height(),
-            source.config!!
+        val resultBitmap = createBitmap(
+            width = shapeMaskRect.width(),
+            height = shapeMaskRect.height(),
+            config = source.config!!,
         )
         val resultCanvas = Canvas(resultBitmap)
 

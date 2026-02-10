@@ -14,7 +14,7 @@ class GalleryExtensionOnSale(
 ) {
     constructor(featureOnSale: FeaturesOnSaleResponse.FeatureOnSale) : this(
         extension = featureOnSale.id.toInt().let { featureIndex ->
-            GalleryExtension.values().getOrNull(featureIndex).checkNotNull {
+            GalleryExtension.entries.getOrNull(featureIndex).checkNotNull {
                 "Extension for index '$featureIndex' not found"
             }
         },

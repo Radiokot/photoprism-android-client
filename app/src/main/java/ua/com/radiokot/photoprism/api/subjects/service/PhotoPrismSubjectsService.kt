@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.api.subjects.service
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
-import ua.com.radiokot.photoprism.api.model.PhotoPrismOrder
 import ua.com.radiokot.photoprism.api.subjects.model.PhotoPrismSubject
 import java.io.IOException
 

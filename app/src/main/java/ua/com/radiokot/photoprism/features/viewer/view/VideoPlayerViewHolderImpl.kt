@@ -1,12 +1,14 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.view.View
+import androidx.annotation.OptIn
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.decoder.DecoderException
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.ui.PlayerView
@@ -102,6 +104,7 @@ class VideoPlayerViewHolderImpl(
     private class TheOnlyPlayerFatalPlaybackExceptionListener(
         private val onError: (Throwable) -> Unit,
     ) : Player.Listener {
+        @OptIn(UnstableApi::class)
         override fun onPlayerError(error: PlaybackException) {
             when (val cause = error.cause) {
                 is DecoderException,
