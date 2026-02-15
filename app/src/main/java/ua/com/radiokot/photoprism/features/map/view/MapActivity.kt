@@ -645,7 +645,7 @@ class MapActivity : BaseActivity() {
                 )
             } else {
                 val pointCount = clickedFeature.getNumberProperty("point_count").toInt()
-                if (pointCount > BIG_CLUSTER_MIN_SIZE) {
+                if (pointCount >= BIG_CLUSTER_MIN_SIZE) {
                     viewModel.onBigClusterClicked(
                         latNorth = clickedFeature.getNumberProperty("LatNorth").toDouble(),
                         lngEast = clickedFeature.getNumberProperty("LngEast").toDouble(),
