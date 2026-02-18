@@ -2,7 +2,7 @@
 
 [![GitHub discussions](https://img.shields.io/github/discussions/Radiokot/photoprism-android-client?label=Discussions&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/discussions) 
 [![GitHub contributors](https://img.shields.io/github/contributors/Radiokot/photoprism-android-client?label=Contributors&color=e2e0f6&style=flat-square)](https://github.com/Radiokot/photoprism-android-client/graphs/contributors) 
-[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=58&color=e2e0f6&style=flat-square)](#sponsors) 
+[![Sponsors](https://img.shields.io/static/v1?label=Sponsors&message=59&color=e2e0f6&style=flat-square)](#sponsors) 
 
 This Android app brings a convenient mobile gallery experience for [PhotoPrism](https://www.photoprism.app/).
 
@@ -51,6 +51,7 @@ Compatibility with older PhotoPrism versions may be partial.
 [<img src="repository-assets/icon-gplay.svg" alt="Google Play" style="height: 1em;"/> Google Play](https://play.google.com/store/apps/details?id=ua.com.radiokot.photoprism) (has no [extension catalog](https://github.com/Radiokot/photoprism-android-client/wiki/Gallery-extensions))
 
 ## Sponsors
+[<img src="https://avatars.githubusercontent.com/u/34504819?s=100" alt="fucnim17" title="fucnim17" height=70 />](https://github.com/fucnim17)
 [<img src="https://avatars.githubusercontent.com/u/29051079?s=100" alt="Jaskaran Sarkaria" title="Jaskaran Sarkaria" height=70 />](https://github.com/jaskaransarkaria)
 [<img src="https://avatars.githubusercontent.com/u/161218251?s=100" alt="pawelcd" title="pawelcd" height=70 />](https://github.com/pawelcd)
 [<img src="https://avatars.githubusercontent.com/u/110915809?s=100" alt="Stefan" title="Stefan" height=70 />](https://github.com/mousey85)
