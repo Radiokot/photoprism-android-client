@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Showing 4 photos when clicking a group of 5 photos on the map
+- Not focusing album content on TV in some cases
 
 ## [1.42.1] - 2026-02-08
 

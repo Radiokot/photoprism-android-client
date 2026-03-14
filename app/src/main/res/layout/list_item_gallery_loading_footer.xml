@@ -5,6 +5,7 @@
     android:id="@+id/list_item_gallery_loading_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusable="false"
     android:padding="4dp"
     tools:layout_width="160dp">
 
