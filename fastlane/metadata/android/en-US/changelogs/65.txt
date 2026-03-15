@@ -1,0 +1,5 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed:
+- Showing 4 photos when clicking a group of 5 photos on the map
+- Not focusing album content on TV in some cases
