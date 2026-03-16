@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/list_item_collection_width"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_collection_background"
     android:layout_marginEnd="@dimen/list_item_collection_margin_end"
+    android:background="@drawable/list_item_collection_background"
+    android:clickable="true"
+    android:focusable="true"
     android:foreground="@drawable/list_item_collection_foreground">
 
     <com.google.android.material.card.MaterialCardView

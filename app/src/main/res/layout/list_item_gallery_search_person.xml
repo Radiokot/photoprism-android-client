@@ -5,6 +5,8 @@
     android:layout_width="@dimen/list_item_person_width"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/list_item_person_margin_end"
+    android:clickable="true"
+    android:focusable="true"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="8dp"
     app:strokeWidth="0dp"
