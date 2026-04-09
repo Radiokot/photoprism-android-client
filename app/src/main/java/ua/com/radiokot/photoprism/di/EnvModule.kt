@@ -111,7 +111,9 @@ val envModule = module {
             .build()
     } bind HttpClient::class
 
-    single {
+    // Must be a factory, otherwise `get()` invocations inside the Factory
+    // keep calling the session scope even when it is already closed.
+    factory {
         SessionCreator.Factory { envConnectionParams: EnvConnectionParams ->
             PhotoPrismSessionCreator(
                 sessionService = get(_q<EnvPhotoPrismSessionServiceParams>()) {
