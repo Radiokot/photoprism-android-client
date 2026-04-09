@@ -1,0 +1,5 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed:
+- Not focusing albums and folders on Android TV 7
+- Inability to connect to a library right after disconnecting from one
