@@ -1,9 +1,11 @@
 package ua.com.radiokot.photoprism
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
 import ua.com.radiokot.photoprism.di.UTC_DATE_TIME_DATE_FORMAT
@@ -20,6 +22,7 @@ class UtcDateFormatTest {
     @Test
     fun ensureTimeZones() {
         val koin = koinApplication {
+            androidContext(ApplicationProvider.getApplicationContext<PhotoPrismGallery>())
             modules(dateFormatModule)
         }.koin
 
