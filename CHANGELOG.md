@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.43.0] - 2026-06-06
+
+### Added
+
+- Ability to play videos without borders (zoom to fill)
+
 ## [1.42.3] - 2026-04-09
 
 ### Fixed
@@ -95,10 +101,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- All the Live entries, including short videos previously identified as Lives, 
+- All the Live entries, including short videos previously identified as Lives,
   are now presented in the enhanced live photo viewer
 - Live entries are now shown when picking images for another app
-- Live entries can now be shown in a [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension) (as still images, of course)
+- Live entries can now be shown in
+  a [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension) (
+  as still images, of course)
 - When sharing or downloading Lives, the image file is now returned
 
 ## [1.37.1] - 2025-06-04
@@ -1036,4 +1044,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.42.3]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.2(65)...1.42.3(66)
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.3(66)...HEAD
+[1.43.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.3(66)...1.43.0(67)
+
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.43.0(67)...HEAD
