@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player_controls_layout"
@@ -11,7 +11,7 @@
         android:id="@id/exo_play_pause"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:background="@drawable/video_play_pause_button_background"
         android:nextFocusDown="@id/exo_progress"
         android:tint="?colorOnSecondaryContainer"
@@ -21,47 +21,67 @@
         androidx.media3.ui.PlayerControlView -->
     </androidx.appcompat.widget.AppCompatImageButton>
 
-    <!-- Horizontal margins are programmatically extended with insets -->
-    <LinearLayout
-        android:id="@+id/player_progress_layout"
+    <androidx.media3.ui.DefaultTimeBar
+        android:id="@id/exo_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginHorizontal="4dp"
-        android:layout_marginBottom="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        tools:background="@android:color/holo_orange_dark">
+        android:layout_alignParentBottom="true"
+        app:bar_height="2dp"
+        app:buffered_color="?colorSecondaryContainer"
+        app:played_color="?colorOnSecondaryContainer"
+        app:scrubber_color="?colorOnSecondaryContainer"
+        app:unplayed_color="@android:color/transparent"
+        tools:background="@android:color/holo_orange_light" />
 
-        <TextView
-            android:id="@id/exo_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="?colorOnSecondaryContainer"
-            tools:text="00:05" />
+    <TextView
+        android:id="@id/exo_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/exo_progress"
+        android:layout_alignStart="@id/exo_progress"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="4dp"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textColor="?colorOnSecondaryContainer"
+        tools:text="00:05" />
 
-        <androidx.media3.ui.DefaultTimeBar
-            android:id="@id/exo_progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
-            android:layout_weight="1"
-            app:bar_height="2dp"
-            app:buffered_color="?colorSecondaryContainer"
-            app:played_color="?colorOnSecondaryContainer"
-            app:scrubber_color="?colorOnSecondaryContainer"
-            app:unplayed_color="@android:color/transparent" />
+    <TextView
+        android:id="@+id/le_slash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/exo_position"
+        android:layout_toEndOf="@id/exo_position"
+        android:includeFontPadding="false"
+        android:text=" / "
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textColor="?colorSecondary"
+        tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@id/exo_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="?colorOnSecondaryContainer"
-            tools:text="00:55" />
+    <TextView
+        android:id="@id/exo_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/exo_position"
+        android:layout_toEndOf="@id/le_slash"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textColor="?colorSecondary"
+        tools:text="00:55" />
 
-    </LinearLayout>
-</FrameLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/borderless_video_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@id/exo_progress"
+        android:layout_alignEnd="@id/exo_progress"
+        android:layout_marginEnd="-8dp"
+        android:layout_marginBottom="-13dp"
+        android:background="@drawable/focusable_list_item_background"
+        android:padding="17dp"
+        app:tint="?colorOnSecondaryContainer"
+        tools:srcCompat="@drawable/ic_arrows_expand">
+
+        <!-- The image is set programmatically-->
+    </androidx.appcompat.widget.AppCompatImageView>
+</RelativeLayout>

@@ -52,9 +52,6 @@ class GalleryMediaViewerViewModel(
     private val currentLocalDate = LocalDate()
     private var albumUid: String? = null
 
-    // Media that turned to be not viewable.
-    private val afterAllNotViewableMedia = mutableSetOf<GalleryMedia>()
-
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val itemsList: MutableLiveData<List<MediaViewerPage>?> = MutableLiveData(null)
     private val eventsSubject = PublishSubject.create<Event>()
@@ -200,13 +197,14 @@ class GalleryMediaViewerViewModel(
         itemsList.value = galleryMediaRepository
             .itemsList
             .map { galleryMedia ->
-                if (galleryMedia in afterAllNotViewableMedia)
+                if (galleryMedia.uid in notViewableMediaUids)
                     MediaViewerPage.unsupported(galleryMedia, previewUrlFactory)
                 else
                     MediaViewerPage.fromGalleryMedia(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
                         livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
+                        borderlessVideo = isVideoBorderless,
                         previewUrlFactory = previewUrlFactory,
                     )
             }
@@ -499,6 +497,16 @@ class GalleryMediaViewerViewModel(
         }
     }
 
+    fun onBorderlessVideoToggleClicked() {
+        log.debug {
+            "onBorderlessVideoToggleClicked(): toggling_borderless_video"
+        }
+
+        isVideoBorderless = !isVideoBorderless
+
+        broadcastItemsFromRepository()
+    }
+
     fun onVideoPlayerFatalPlaybackError(page: MediaViewerPage) {
         val source = page.source
 
@@ -508,7 +516,7 @@ class GalleryMediaViewerViewModel(
         }
 
         if (source != null) {
-            afterAllNotViewableMedia.add(source)
+            notViewableMediaUids += source.uid
             log.debug {
                 "onVideoPlayerFatalPlaybackError(): added_media_to_not_viewable:" +
                         "\nmedia=$source"
@@ -672,5 +680,12 @@ class GalleryMediaViewerViewModel(
         class OpenMap(
             val startPosition: LatLngPair,
         ) : Event
+    }
+
+    private companion object {
+        // Media that turned to be not viewable.
+        private val notViewableMediaUids = mutableSetOf<String>()
+
+        private var isVideoBorderless = false
     }
 }

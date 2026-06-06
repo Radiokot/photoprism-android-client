@@ -31,6 +31,7 @@ sealed class MediaViewerPage(
             source: GalleryMedia,
             imageViewSize: Size,
             livePhotosAsImages: Boolean,
+            borderlessVideo: Boolean,
             previewUrlFactory: MediaPreviewUrlFactory,
         ): MediaViewerPage {
             return when {
@@ -113,6 +114,7 @@ sealed class MediaViewerPage(
                         isLooped = source.media is GalleryMedia.TypeData.Live
                                 || source.media is GalleryMedia.TypeData.Animated,
                         needsVideoControls = source.media is GalleryMedia.TypeData.Video,
+                        isVideoBorderless = borderlessVideo,
                         thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                             thumbnailHash = source.hash,
                             sizePx = THUMBNAIL_SIZE_PX,

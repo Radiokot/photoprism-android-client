@@ -11,14 +11,14 @@ class MediaViewerPageDiffCallback : DiffCallback<MediaViewerPage> {
 
     override fun areItemsTheSame(
         oldItem: MediaViewerPage,
-        newItem: MediaViewerPage
+        newItem: MediaViewerPage,
     ): Boolean =
         oldItem::class == newItem::class
                 && oldItem.identifier == newItem.identifier
 
     override fun areContentsTheSame(
         oldItem: MediaViewerPage,
-        newItem: MediaViewerPage
+        newItem: MediaViewerPage,
     ): Boolean = when {
 
         oldItem is ImageViewerPage
@@ -32,6 +32,7 @@ class MediaViewerPageDiffCallback : DiffCallback<MediaViewerPage> {
         oldItem is VideoViewerPage
                 && newItem is VideoViewerPage ->
             oldItem.needsVideoControls == newItem.needsVideoControls
+                    && oldItem.isVideoBorderless == newItem.isVideoBorderless
 
         oldItem is UnsupportedNoticePage
                 && newItem is UnsupportedNoticePage ->
@@ -45,6 +46,6 @@ class MediaViewerPageDiffCallback : DiffCallback<MediaViewerPage> {
         oldItem: MediaViewerPage,
         oldItemPosition: Int,
         newItem: MediaViewerPage,
-        newItemPosition: Int
+        newItemPosition: Int,
     ): Any? = null
 }

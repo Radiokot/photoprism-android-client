@@ -465,7 +465,8 @@ class MediaViewerActivity : BaseActivity() {
             }
 
             KeyEvent.KEYCODE_ENTER,
-            KeyEvent.KEYCODE_DPAD_CENTER -> {
+            KeyEvent.KEYCODE_DPAD_CENTER,
+                -> {
                 log.debug {
                     "initKeyboardNavigation(): click_page_by_enter"
                 }
@@ -694,6 +695,10 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         viewHolder.setOnFatalPlaybackErrorListener(viewModel::onVideoPlayerFatalPlaybackError)
+
+        viewHolder.playerControlsLayout?.borderlessVideoButton?.setOnClickListener {
+            viewModel.onBorderlessVideoToggleClicked()
+        }
     }
 
     private fun subscribeToData() {

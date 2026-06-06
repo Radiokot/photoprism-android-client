@@ -136,6 +136,7 @@ class SlideshowViewModel(
                         source = galleryMedia,
                         imageViewSize = imageViewSize,
                         livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
+                        borderlessVideo = false,
                         previewUrlFactory = previewUrlFactory,
                     )
             }

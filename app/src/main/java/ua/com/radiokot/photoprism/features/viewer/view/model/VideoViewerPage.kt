@@ -3,10 +3,12 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.net.Uri
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.AspectRatioFrameLayout
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerVideoBinding
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
@@ -18,6 +20,7 @@ class VideoViewerPage(
     previewUrl: String,
     val isLooped: Boolean,
     val needsVideoControls: Boolean,
+    val isVideoBorderless: Boolean,
     thumbnailUrl: String,
     source: GalleryMedia?,
 ) : MediaViewerPage(thumbnailUrl, source) {
@@ -33,6 +36,7 @@ class VideoViewerPage(
     override fun getViewHolder(v: View): ViewHolder =
         ViewHolder(PagerItemMediaViewerVideoBinding.bind(v))
 
+    @OptIn(UnstableApi::class)
     class ViewHolder(
         val view: PagerItemMediaViewerVideoBinding,
     ) : MediaViewerPageViewHolder<VideoViewerPage>(view.root),
@@ -88,7 +92,7 @@ class VideoViewerPage(
         override fun bindView(
             item: VideoViewerPage,
             payloads: List<Any>,
-        ) = with(playerCache.getPlayer(key = item.mediaId)) {
+        ): Unit = with(playerCache.getPlayer(key = item.mediaId)) {
             super.bindView(item, payloads)
 
             view.videoView.player = this
@@ -124,6 +128,25 @@ class VideoViewerPage(
                 // but prevent playback start until attached to the window.
                 prepare()
                 playWhenReady = false
+            }
+
+            val borderlessVideoButton = playerControlsLayout?.borderlessVideoButton
+            if (item.isVideoBorderless) {
+                view.videoView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                borderlessVideoButton?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        view.videoView.context,
+                        R.drawable.ic_arrows_shrink
+                    )
+                )
+            } else {
+                view.videoView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                borderlessVideoButton?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        view.videoView.context,
+                        R.drawable.ic_arrows_expand
+                    )
+                )
             }
         }
 
