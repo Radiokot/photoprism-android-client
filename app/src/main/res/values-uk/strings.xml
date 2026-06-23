@@ -123,6 +123,9 @@
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Людей не знайдено</string>
+    <string name="match_people">Збіг</string>
+    <string name="match_all_people">Усі</string>
+    <string name="match_any_people">Будь-хто</string>
     <string name="reload">Перезавантажити</string>
     <string name="loading_data_progress">Завантаження даних…</string>
     <string name="search_preferences">Пошук</string>

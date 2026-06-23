@@ -123,6 +123,9 @@
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Δεν βρέθηκαν άτομα</string>
+    <string name="match_people">Ταίριασμα</string>
+    <string name="match_all_people">Όλα</string>
+    <string name="match_any_people">Οποιοδήποτε</string>
     <string name="reload">Φορτώστε ξανά</string>
     <string name="loading_data_progress">φόρτωση δεδομένων…</string>
     <string name="search_preferences">αναζήτηση</string>

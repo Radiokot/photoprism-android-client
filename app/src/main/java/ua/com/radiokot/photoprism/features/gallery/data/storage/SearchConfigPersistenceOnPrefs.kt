@@ -54,6 +54,8 @@ class SearchConfigPersistenceOnPrefs(
         val albumUid: String?,
         @JsonProperty("pe")
         val personIds: Set<String>,
+        @JsonProperty("po")
+        val personFilterOperator: SearchConfig.PersonFilterOperator?,
     ) {
         constructor(source: SearchConfig) : this(
             userQuery = source.userQuery,
@@ -63,6 +65,7 @@ class SearchConfigPersistenceOnPrefs(
             onlyFavorite = source.onlyFavorite,
             albumUid = source.albumUid,
             personIds = source.personIds,
+            personFilterOperator = source.personFilterOperator,
         )
 
         fun toSource() = SearchConfig(
@@ -76,6 +79,8 @@ class SearchConfigPersistenceOnPrefs(
             afterLocal = null,
             albumUid = albumUid,
             personIds = personIds,
+            personFilterOperator = personFilterOperator
+                ?: SearchConfig.PersonFilterOperator.ALL,
         )
     }
 }
