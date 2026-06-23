@@ -46,6 +46,50 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/list_item_gallery_search_person" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/match_people"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/person_filter_operator_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/person_filter_operator_all_button"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="64dp"
+                android:minHeight="0dp"
+                android:paddingVertical="0dp"
+                android:text="@string/match_all_people" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/person_filter_operator_any_button"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="64dp"
+                android:minHeight="0dp"
+                android:paddingVertical="0dp"
+                android:text="@string/match_any_people" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/loading_people_text_view"
         android:layout_width="match_parent"

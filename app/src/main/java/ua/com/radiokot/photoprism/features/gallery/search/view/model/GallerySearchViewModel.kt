@@ -64,6 +64,7 @@ class GallerySearchViewModel(
     val onlyFavorite = MutableLiveData<Boolean>()
     private val selectedAlbumUid = albumsViewModel.selectedAlbumUid
     private val selectedPersonIds = peopleViewModel.selectedPersonIds
+    private val selectedPersonFilterOperator = peopleViewModel.selectedPersonFilterOperator
 
     init {
         val updateApplyButtonEnabled = { _: Any? ->
@@ -76,6 +77,7 @@ class GallerySearchViewModel(
         onlyFavorite.observeForever(updateApplyButtonEnabled)
         selectedAlbumUid.observeForever(updateApplyButtonEnabled)
         selectedPersonIds.observeForever(updateApplyButtonEnabled)
+        selectedPersonFilterOperator.observeForever(updateApplyButtonEnabled)
 
         subscribeToBookmarks()
 
@@ -92,6 +94,8 @@ class GallerySearchViewModel(
                     || onlyFavorite.value != searchDefaults.onlyFavorite
                     || selectedAlbumUid.value != searchDefaults.albumUid
                     || selectedPersonIds.value != searchDefaults.personIds
+                    || (selectedPersonIds.value!!.isNotEmpty()
+                            && selectedPersonFilterOperator.value != searchDefaults.personFilterOperator)
         }
 
     private val areBookmarksCurrentlyMoving = MutableLiveData(false)
@@ -256,6 +260,7 @@ class GallerySearchViewModel(
         onlyFavorite.value = searchConfig.onlyFavorite
         selectedAlbumUid.value = searchConfig.albumUid
         selectedPersonIds.value = searchConfig.personIds
+        selectedPersonFilterOperator.value = searchConfig.personFilterOperator
     }
 
     fun updateExternalData(force: Boolean = false) {
@@ -290,11 +295,17 @@ class GallerySearchViewModel(
             "The search can only be applied while configuring"
         }
 
+        val personIds = selectedPersonIds.value!!
         val config = SearchConfig(
             mediaTypes = selectedMediaTypes.value,
             userQuery = userQuery.value!!.trim(),
             albumUid = selectedAlbumUid.value,
-            personIds = selectedPersonIds.value!!,
+            personIds = personIds,
+            personFilterOperator = if (personIds.isNotEmpty()) {
+                selectedPersonFilterOperator.value!!
+            } else {
+                searchDefaults.personFilterOperator
+            },
             beforeLocal = null,
             afterLocal = null,
             includePrivate = includePrivateContent.value == true,

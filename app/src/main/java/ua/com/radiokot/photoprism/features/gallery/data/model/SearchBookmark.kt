@@ -20,6 +20,9 @@ data class SearchBookmark(
                 ?.toSet(),
             albumUid = dbEntity.albumUid,
             personIds = dbEntity.personIds.toSet(),
+            personFilterOperator = SearchConfig.PersonFilterOperator.valueOf(
+                dbEntity.personFilterOperator
+            ),
             beforeLocal = null,
             afterLocal = null,
             userQuery = dbEntity.userQuery ?: "",
@@ -38,6 +41,7 @@ data class SearchBookmark(
         onlyFavorite = searchConfig.onlyFavorite,
         albumUid = searchConfig.albumUid,
         personIds = searchConfig.personIds.toList(),
+        personFilterOperator = searchConfig.personFilterOperator.name,
     )
 
     override fun compareTo(other: SearchBookmark): Int = position.compareTo(other.position)

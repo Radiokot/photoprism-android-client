@@ -10,7 +10,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.SearchBookmarksDbE
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SearchBookmarksDbDao
 
 @Database(
-    version = 7,
+    version = 8,
     entities = [
         SearchBookmarksDbEntity::class,
         MemoryDbEntity::class,

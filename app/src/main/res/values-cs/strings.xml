@@ -124,6 +124,9 @@
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Nebyly nalezeny žádné osoby</string>
+    <string name="match_people">Shoda</string>
+    <string name="match_all_people">Všichni</string>
+    <string name="match_any_people">Kdokoli</string>
     <string name="reload">Znovu načíst</string>
     <string name="loading_data_progress">Načítání dat…</string>
     <string name="search_preferences">Hledání</string>

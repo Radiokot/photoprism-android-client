@@ -37,7 +37,7 @@ class JsonSearchBookmarksBackup(
             jsonObjectMapper.readValue(input, BookmarksBackup::class.java)
 
         return when (val version = backup.version) {
-            VERSION ->
+            VERSION, 3 ->
                 readBackupData(backup.data).bookmarks.map(BackupData.Bookmark::toSource)
 
             2 ->
@@ -100,6 +100,8 @@ class JsonSearchBookmarksBackup(
             val albumUid: String?,
             @JsonProperty("pe")
             val personIds: Set<String>,
+            @JsonProperty("po")
+            val personFilterOperator: SearchConfig.PersonFilterOperator?,
         ) {
             constructor(source: SearchBookmark) : this(
                 id = source.id,
@@ -112,6 +114,7 @@ class JsonSearchBookmarksBackup(
                 onlyFavorite = source.searchConfig.onlyFavorite,
                 albumUid = source.searchConfig.albumUid,
                 personIds = source.searchConfig.personIds,
+                personFilterOperator = source.searchConfig.personFilterOperator,
             )
 
             fun toSource() = SearchBookmark(
@@ -129,6 +132,8 @@ class JsonSearchBookmarksBackup(
                     afterLocal = null,
                     albumUid = albumUid,
                     personIds = personIds,
+                    personFilterOperator = personFilterOperator
+                        ?: SearchConfig.PersonFilterOperator.ALL,
                 )
             )
         }
@@ -224,6 +229,6 @@ class JsonSearchBookmarksBackup(
     }
 
     private companion object {
-        private const val VERSION = 3
+        private const val VERSION = 4
     }
 }
