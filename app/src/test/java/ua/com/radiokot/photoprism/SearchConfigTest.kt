@@ -43,4 +43,22 @@ class SearchConfigTest {
             SearchConfig.DEFAULT.getPhotoPrismQuery()
         )
     }
+
+    @Test
+    fun shouldBuildQueryWithAnyPersonFilterOperator() {
+        SearchConfig.DEFAULT.copy(
+            personIds = setOf(
+                "s222222222222222",
+                "s333333333333333",
+                "p2222222222222222222222222222222",
+                "p3333333333333333333333333333333",
+            ),
+            personFilterOperator = SearchConfig.PersonFilterOperator.ANY,
+        ).apply {
+            Assert.assertEquals(
+                "public:true subject:s222222222222222|s333333333333333 face:p2222222222222222222222222222222|p3333333333333333333333333333333",
+                getPhotoPrismQuery()
+            )
+        }
+    }
 }

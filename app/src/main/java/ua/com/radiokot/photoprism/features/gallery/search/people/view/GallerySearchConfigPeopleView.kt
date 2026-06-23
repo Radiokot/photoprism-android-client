@@ -14,6 +14,7 @@ import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigPeopleBindi
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.model.GallerySearchPeopleViewModel
 import ua.com.radiokot.photoprism.features.people.view.PeopleSelectionActivity
 import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
@@ -61,6 +62,25 @@ class GallerySearchConfigPeopleView(
             viewModel.onSeeAllClicked()
         }
 
+        view.personFilterOperatorToggle.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) {
+                return@addOnButtonCheckedListener
+            }
+
+            viewModel.onPersonFilterOperatorClicked(
+                when (checkedId) {
+                    view.personFilterOperatorAllButton.id ->
+                        SearchConfig.PersonFilterOperator.ALL
+
+                    view.personFilterOperatorAnyButton.id ->
+                        SearchConfig.PersonFilterOperator.ANY
+
+                    else ->
+                        return@addOnButtonCheckedListener
+                }
+            )
+        }
+
         subscribeToState()
         subscribeToEvents()
 
@@ -100,6 +120,18 @@ class GallerySearchConfigPeopleView(
         }
 
         viewModel.isViewVisible.subscribe(this, view.root::isVisible::set)
+
+        viewModel.selectedPersonFilterOperator.observe(this) { operator ->
+            view.personFilterOperatorToggle.check(
+                when (operator) {
+                    SearchConfig.PersonFilterOperator.ALL ->
+                        view.personFilterOperatorAllButton.id
+
+                    SearchConfig.PersonFilterOperator.ANY ->
+                        view.personFilterOperatorAnyButton.id
+                }
+            )
+        }
     }
 
     private fun subscribeToEvents() = viewModel.events.subscribe(this) { event ->

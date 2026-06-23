@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
+import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.search.data.storage.SearchPreferences
 import ua.com.radiokot.photoprism.features.people.data.model.Person
@@ -30,6 +31,9 @@ class GallerySearchPeopleViewModel(
      * Non-null set of the selected person IDs, **empty** if nothing is selected.
      */
     val selectedPersonIds = MutableLiveData<Set<String>>(emptySet())
+    val selectedPersonFilterOperator = MutableLiveData(
+        SearchConfig.PersonFilterOperator.ALL
+    )
 
     init {
         subscribeToRepository()
@@ -138,6 +142,15 @@ class GallerySearchPeopleViewModel(
                 selectedPersonIds.value = currentlySelectedPersonIds + id
             }
         }
+    }
+
+    fun onPersonFilterOperatorClicked(operator: SearchConfig.PersonFilterOperator) {
+        log.debug {
+            "onPersonFilterOperatorClicked(): operator_clicked:" +
+                    "\noperator=$operator"
+        }
+
+        selectedPersonFilterOperator.value = operator
     }
 
     fun onReloadPeopleClicked() {

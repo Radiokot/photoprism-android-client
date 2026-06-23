@@ -123,6 +123,9 @@
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
     <string name="no_people_found">Kimse bulunamadı</string>
+    <string name="match_people">Eşleşme</string>
+    <string name="match_all_people">Tümü</string>
+    <string name="match_any_people">Herhangi</string>
     <string name="reload">Tekrar yükle</string>
     <string name="loading_data_progress">Veri yükleniyor…</string>
     <string name="search_preferences">Arama</string>

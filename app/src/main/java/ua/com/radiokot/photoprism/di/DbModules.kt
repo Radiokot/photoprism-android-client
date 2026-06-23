@@ -41,6 +41,9 @@ val appDbModule = module {
                         "`media_types`=?",
                         arrayOf("[]")
                     )
+                },
+                roomMigration(from = 7, to = 8) {
+                    execSQL("ALTER TABLE `bookmarks` ADD COLUMN `person_filter_operator` TEXT NOT NULL DEFAULT 'ALL'")
                 }
             )
             .build()

@@ -30,4 +30,6 @@ data class SearchBookmarksDbEntity(
     val albumUid: String?,
     @ColumnInfo("person_ids", defaultValue = "[]")
     val personIds: List<String>,
+    @ColumnInfo("person_filter_operator", defaultValue = "'ALL'")
+    val personFilterOperator: String,
 )

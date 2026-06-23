@@ -16,10 +16,11 @@ data class SearchConfig(
     val albumUid: String?,
     /**
      * A set of [Person.id] which may be subjects or faces,
-     * to find only items with them together.
+     * to find only items with all/any of them.
      * If empty, no subject/face filters are applied.
      */
     val personIds: Set<String>,
+    val personFilterOperator: PersonFilterOperator = PersonFilterOperator.ALL,
     /**
      * Local date to find media taken before it.
      * Local post filtering by [GalleryMedia.takenAtLocal]
@@ -129,13 +130,13 @@ data class SearchConfig(
             val subjectUids = personIds
                 .filter(Person::isSubjectUid)
             if (subjectUids.isNotEmpty()) {
-                queryBuilder.append(" subject:${subjectUids.joinToString("&")}")
+                queryBuilder.append(" subject:${subjectUids.joinToString(personFilterOperator.photoPrismOperator)}")
             }
 
             val faceIds = personIds
                 .filter(Person::isFaceId)
             if (faceIds.isNotEmpty()) {
-                queryBuilder.append(" face:${faceIds.joinToString("&")}")
+                queryBuilder.append(" face:${faceIds.joinToString(personFilterOperator.photoPrismOperator)}")
             }
         }
 
@@ -150,6 +151,7 @@ data class SearchConfig(
             mediaTypes = null,
             albumUid = null,
             personIds = emptySet(),
+            personFilterOperator = PersonFilterOperator.ALL,
             beforeLocal = null,
             afterLocal = null,
             userQuery = "",
@@ -176,5 +178,12 @@ data class SearchConfig(
                 userQuery = base.userQuery + " label:$labelSlug",
                 includePrivate = true,
             )
+    }
+
+    enum class PersonFilterOperator(
+        val photoPrismOperator: String,
+    ) {
+        ALL("&"),
+        ANY("|"),
     }
 }
