@@ -70,6 +70,7 @@ android {
 
         release {
             minifyEnabled false
+            //noinspection NotShrinkingResources
             shrinkResources false
             debuggable false
 
@@ -130,16 +131,32 @@ android {
         includeInBundle false
     }
 
-    packagingOptions {
-        exclude "META-INF/versions/**"
-        doNotStrip "**/*.so"
-    }
-
     licenseReport {
         generateHtmlReport = true
         generateJsonReport = false
         generateCsvReport = false
         copyHtmlReportToAssets = true
+    }
+}
+
+androidComponents {
+    onVariants(selector().withBuildType("debug")) { variant ->
+        variant.packaging.jniLibs.keepDebugSymbols.add("**/*.so")
+    }
+
+    ["release", "releasePlay", "releaseClone"].each { buildType ->
+        onVariants(selector().withBuildType(buildType)) { variant ->
+            variant.packaging.resources.excludes.addAll([
+                    "DebugProbesKt.bin",
+                    "META-INF/DEPENDENCIES",
+                    "**/LICENSE*",
+                    "META-INF/NOTICE*",
+                    "META-INF/COPYRIGHT",
+                    "META-INF/versions/**",
+                    "META-INF/*.version",
+                    "**.kotlin_module"
+            ])
+        }
     }
 }
 
