@@ -1,0 +1,7 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to search for content with any of the selected people, rather than only with all of them at once
+
+Fixed:
+- Not being able to download or share files with the July 28th server update

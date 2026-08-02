@@ -1,4 +1,0 @@
-Full: https://radiokot.com.ua/pp-changes
-
-Added:
-- Ability to play videos without borders (zoom to fill)

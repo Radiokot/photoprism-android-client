@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.44.0] - 2026-08-02
 
 ### Added
 
-- The ability to find photos with any of the selected people, rather than only with all of them at once
+- Ability to search for content with any of the selected people, rather than only with all of them at once
 
 ### Fixed
 
@@ -1056,4 +1056,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.43.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.42.3(66)...1.43.0(67)
 
-[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.43.0(67)...HEAD
+[1.44.0]: https://github.com/Radiokot/photoprism-android-client/compare/1.43.0(67)...1.44.0(68)
+
+[Unreleased]: https://github.com/Radiokot/photoprism-android-client/compare/1.44.0(68)...HEAD
