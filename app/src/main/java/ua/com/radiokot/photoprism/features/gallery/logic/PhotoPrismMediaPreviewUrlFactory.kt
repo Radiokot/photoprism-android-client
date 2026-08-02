@@ -1,12 +1,14 @@
 package ua.com.radiokot.photoprism.features.gallery.logic
 
+import ua.com.radiokot.photoprism.env.data.model.EnvSession
+
 class PhotoPrismMediaPreviewUrlFactory(
-    apiUrl: String,
-    private val previewToken: String,
+    private val session: EnvSession,
     private val videoFormatSupport: VideoFormatSupport,
 ) : MediaPreviewUrlFactory {
 
-    private val previewUrlBase = "${apiUrl}v1"
+    private val previewUrlBase = "${session.envConnectionParams.apiUrl}v1"
+    private val previewToken: String by session::previewToken
 
     override fun getThumbnailUrl(
         thumbnailHash: String,
@@ -57,7 +59,7 @@ class PhotoPrismMediaPreviewUrlFactory(
     override fun getVideoPreviewUrl(
         previewHash: String,
         videoFileHash: String?,
-        videoFileCodec: String?
+        videoFileCodec: String?,
     ): String {
         // https://github.com/photoprism/photoprism/blob/2f9792e5411f6bb47a84b638dfc42d51b7790853/frontend/src/model/photo.js#L489
 

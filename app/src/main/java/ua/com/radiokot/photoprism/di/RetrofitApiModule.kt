@@ -74,6 +74,7 @@ val retrofitApiModule = module {
                         sessionAwareness = EnvHttpClientParams.SessionAwareness(
                             sessionIdProvider = { params.sessionId },
                             renewal = null,
+                            onFreshTokensReceived = null,
                         ),
                         clientCertificateAlias = params.envConnectionParams.clientCertificateAlias,
                         authorization = params.envConnectionParams.httpAuth,

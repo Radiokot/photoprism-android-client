@@ -85,21 +85,15 @@ val galleryFeatureModule = module {
 
     scope<EnvSession> {
         scoped {
-            val session = get<EnvSession>()
-
             PhotoPrismMediaPreviewUrlFactory(
-                apiUrl = session.envConnectionParams.apiUrl.toString(),
-                previewToken = session.previewToken,
+                session = get(),
                 videoFormatSupport = MediaCodecVideoFormatSupport()
             )
         } bind MediaPreviewUrlFactory::class
 
         scoped {
-            val session = get<EnvSession>()
-
             PhotoPrismMediaFileDownloadUrlFactory(
-                apiUrl = session.envConnectionParams.apiUrl.toString(),
-                downloadToken = session.downloadToken,
+                session = get(),
             )
         } bind MediaFileDownloadUrlFactory::class
 

@@ -21,6 +21,8 @@ import ua.com.radiokot.photoprism.env.data.model.EnvConnectionParams
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
 import ua.com.radiokot.photoprism.env.logic.PhotoPrismSessionCreator
 import ua.com.radiokot.photoprism.env.logic.SessionCreator
+import ua.com.radiokot.photoprism.env.logic.UpdateExistingSessionAndPersistenceOnRenewal
+import ua.com.radiokot.photoprism.env.logic.UpdateExistingSessionAndPersistenceWithFreshTokens
 import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.util.CacheConstraints
 import java.io.File
@@ -34,6 +36,10 @@ class EnvHttpClientParams(
 ) : SelfParameterHolder() {
     class SessionAwareness(
         val sessionIdProvider: () -> String,
+        val onFreshTokensReceived: ((
+            previewToken: String?,
+            downloadToken: String?,
+        ) -> Unit)?,
         val renewal: Renewal?,
     ) {
         class Renewal(
@@ -71,7 +77,7 @@ val envModule = module {
             builder.addInterceptor(
                 SessionAwarenessInterceptor(
                     sessionIdProvider = sessionAwareness.sessionIdProvider,
-                    sessionIdHeaderName = "X-Session-ID"
+                    onFreshTokensReceived = sessionAwareness.onFreshTokensReceived,
                 )
             )
         }
@@ -144,12 +150,11 @@ val envModule = module {
                         sessionCreator = get<SessionCreator.Factory>().get(
                             envConnectionParams = session.envConnectionParams,
                         ),
-                        onSessionRenewed = { newSession ->
-                            session.id = newSession.id
-                            session.downloadToken = newSession.downloadToken
-                            session.previewToken = newSession.previewToken
-                            sessionPersistence?.saveItem(session)
-                        }
+                        onSessionRenewed =
+                            UpdateExistingSessionAndPersistenceOnRenewal(
+                                existingSession = session,
+                                sessionPersistence = sessionPersistence,
+                            )::invoke
                     )
                 else
                     null
@@ -159,6 +164,11 @@ val envModule = module {
                     sessionAwareness = EnvHttpClientParams.SessionAwareness(
                         sessionIdProvider = session::id,
                         renewal = renewal,
+                        onFreshTokensReceived =
+                            UpdateExistingSessionAndPersistenceWithFreshTokens(
+                                existingSession = session,
+                                sessionPersistence = sessionPersistence,
+                            )::invoke
                     ),
                     clientCertificateAlias = session.envConnectionParams.clientCertificateAlias,
                     authorization = session.envConnectionParams.httpAuth,
