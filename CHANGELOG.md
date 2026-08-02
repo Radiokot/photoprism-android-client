@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The ability to find photos with any of the selected people, rather than only with all of them at once
+
 ### Fixed
 
 - Not being able to download or share files with the July 28th server update

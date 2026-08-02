@@ -123,6 +123,8 @@
     <string name="loading_people_progress">@string/loading_data_progress</string>
     <string name="reload_people">@string/reload</string>
     <string name="no_people_found">找不到人物</string>
+    <string name="match_all_people">所有人</string>
+    <string name="match_any_people">任一人</string>
     <string name="reload">重新載入</string>
     <string name="loading_data_progress">載入數據中…</string>
     <string name="search_preferences">搜索</string>
