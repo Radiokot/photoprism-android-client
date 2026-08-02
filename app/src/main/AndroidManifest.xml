@@ -23,8 +23,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
-    <!-- MapLibre unnecessary permissions
-         to be removed from the merged manifest-->
+    <!-- ==========MapLibre========== -->
+    <!-- Unnecessary permissions to be removed from the merged manifest -->
     <uses-permission
         android:name="android.permission.ACCESS_WIFI_STATE"
         tools:node="remove" />
@@ -35,6 +35,12 @@
         android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="PermissionImpliesUnsupportedHardware"
         tools:node="remove" />
+
+    <!-- Replaced with a runtime check -->
+    <uses-feature
+        android:name="android.hardware.vulkan.version"
+        tools:node="remove" />
+    <!-- ==========MapLibre========== -->
 
     <uses-feature
         android:name="android.software.leanback"

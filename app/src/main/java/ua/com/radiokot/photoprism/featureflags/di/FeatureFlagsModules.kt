@@ -11,7 +11,7 @@ val devFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags {
             add(FeatureFlags.Feature.EXTENSION_STORE)
-            addMapOnSdk23AndNewer()
+            addMapIfDeviceSupports()
         } + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
@@ -20,7 +20,7 @@ val releaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags {
             add(FeatureFlags.Feature.EXTENSION_STORE)
-            addMapOnSdk23AndNewer()
+            addMapIfDeviceSupports()
         } + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
@@ -28,13 +28,14 @@ val releaseFeatureFlagsModule = module {
 val playReleaseFeatureFlagsModule = module {
     single {
         FeatureSetFeatureFlags {
-            addMapOnSdk23AndNewer()
+            addMapIfDeviceSupports()
         } + get<GalleryExtensionsStateRepository>()
     } bind FeatureFlags::class
 }
 
-private fun MutableSet<FeatureFlags.Feature>.addMapOnSdk23AndNewer() {
-    if (Build.VERSION.SDK_INT >= 23) {
+private fun MutableSet<FeatureFlags.Feature>.addMapIfDeviceSupports() {
+    // MapLibre minSDK is 23, but it also requires Vulkan 1.0.
+    if (Build.VERSION.SDK_INT >= 24) {
         add(FeatureFlags.Feature.MAP)
     }
 }

@@ -230,7 +230,11 @@ dependencies {
     // Must be 4.3 for Java 8 compatibility.
     //noinspection NewerVersionAvailable
     implementation 'com.tbuonomo:dotsindicator:4.3!!'
-    implementation 'org.maplibre.gl:android-sdk:13.3.1'
+
+    // When updating MapLibre,
+    // check if anything new is added to the merged manifest,
+    // eliminate it and update the MAP feature flag accordingly.
+    implementation 'org.maplibre.gl:android-sdk:13.4.1'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).
