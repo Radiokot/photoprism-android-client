@@ -88,6 +88,8 @@ class MediaViewerActivity : BaseActivity() {
     private val log = kLogger("MMediaViewerActivity")
     private lateinit var view: ActivityMediaViewerBinding
     private val viewModel: GalleryMediaViewerViewModel by viewModel()
+    // 👇 ESTA VARIABLE CONTROLA SI EL SHUFFLE ESTÁ ACTIVO O NO 👇
+    private var isRandomActive = false
     private val videoPlayerCacheViewModel: VideoPlayerCacheViewModel by viewModel()
     private val fileReturnIntentCreator: FileReturnIntentCreator by inject()
     private val dateTimeDateFormat: DateFormat by inject(named(UTC_DATE_TIME_DATE_FORMAT))
@@ -154,6 +156,9 @@ class MediaViewerActivity : BaseActivity() {
         view = ActivityMediaViewerBinding.inflate(layoutInflater)
         setContentView(view.root)
 
+        // 👇 AÑADE ESTA LÍNEA AQUÍ (o donde se configure view.viewPager)
+        view.viewPager.orientation = androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL
+
         supportActionBar?.hide()
 
         val mediaIndex = intent.getIntExtra(MEDIA_INDEX_KEY, -1)
@@ -201,6 +206,121 @@ class MediaViewerActivity : BaseActivity() {
         downloadProgressView.init()
         initFullScreenToggle()
         initKeyboardNavigation()
+
+        // 1. Extraemos los colores nativos correctos para lograr homogeneidad total
+        val initialTypedValue = android.util.TypedValue()
+
+        // Buscamos el color oficial de los iconos de la app (Grisáceo Material3)
+        theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, initialTypedValue, true)
+        val defaultIconColor = initialTypedValue.data
+
+        // Fuerza el estado estético inicial idéntico a los otros 3 botones
+        view.randomButton.iconTint = android.content.res.ColorStateList.valueOf(defaultIconColor)
+
+        // 2. Configuración del comportamiento del botón al hacer clic
+        view.randomButton.setOnClickListener {
+            isRandomActive = !isRandomActive
+
+            val typedValue = android.util.TypedValue()
+
+            if (isRandomActive) {
+                // MODO ACTIVADO: Fondo Morado + Icono Blanco
+                theme.resolveAttribute(
+                    com.google.android.material.R.attr.colorPrimary,
+                    typedValue,
+                    true
+                )
+                val primaryColor = typedValue.data
+
+                view.randomButton.setBackgroundColor(primaryColor)
+                view.randomButton.iconTint =
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+
+                com.google.android.material.snackbar.Snackbar.make(
+                    view.root,
+                    "Modo Aleatorio: ACTIVADO",
+                    com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                ).show()
+            } else {
+                // MODO DESACTIVADO: Fondo Neutral + Icono Gris Oficial (Igual a los otros 3)
+                theme.resolveAttribute(
+                    com.google.android.material.R.attr.colorSurface,
+                    typedValue,
+                    true
+                )
+                val surfaceColor = typedValue.data
+
+                view.randomButton.setBackgroundColor(surfaceColor)
+                // Usamos el color grisáceo que extrajimos al principio para el icono
+                view.randomButton.iconTint =
+                    android.content.res.ColorStateList.valueOf(defaultIconColor)
+
+                com.google.android.material.snackbar.Snackbar.make(
+                    view.root,
+                    "Modo Aleatorio: DESACTIVADO",
+                    com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                ).show()
+            }// 1. Extraemos los colores nativos correctos para lograr homogeneidad total
+            val initialTypedValue = android.util.TypedValue()
+
+            // Buscamos el color oficial de los iconos de la app (Grisáceo Material3)
+            theme.resolveAttribute(
+                com.google.android.material.R.attr.colorOnSurfaceVariant,
+                initialTypedValue,
+                true
+            )
+            val defaultIconColor = initialTypedValue.data
+
+            // Fuerza el estado estético inicial idéntico a los otros 3 botones
+            view.randomButton.iconTint =
+                android.content.res.ColorStateList.valueOf(defaultIconColor)
+
+            // 2. Configuración del comportamiento del botón al hacer clic
+            view.randomButton.setOnClickListener {
+                isRandomActive = !isRandomActive
+
+                val typedValue = android.util.TypedValue()
+
+                if (isRandomActive) {
+                    // MODO ACTIVADO: Fondo Morado + Icono Blanco
+                    theme.resolveAttribute(
+                        com.google.android.material.R.attr.colorPrimary,
+                        typedValue,
+                        true
+                    )
+                    val primaryColor = typedValue.data
+
+                    view.randomButton.setBackgroundColor(primaryColor)
+                    view.randomButton.iconTint =
+                        android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+
+                    com.google.android.material.snackbar.Snackbar.make(
+                        view.root,
+                        "Modo Aleatorio: ACTIVADO",
+                        com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // MODO DESACTIVADO: Fondo Neutral + Icono Gris Oficial (Igual a los otros 3)
+                    theme.resolveAttribute(
+                        com.google.android.material.R.attr.colorSurface,
+                        typedValue,
+                        true
+                    )
+                    val surfaceColor = typedValue.data
+
+                    view.randomButton.setBackgroundColor(surfaceColor)
+                    // Usamos el color grisáceo que extrajimos al principio para el icono
+                    view.randomButton.iconTint =
+                        android.content.res.ColorStateList.valueOf(defaultIconColor)
+
+                    com.google.android.material.snackbar.Snackbar.make(
+                        view.root,
+                        "Modo Aleatorio: DESACTIVADO",
+                        com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun initPager(
@@ -1126,9 +1246,34 @@ class MediaViewerActivity : BaseActivity() {
                 // for possible further swipe.
                 swipeToDismissHandler.onTouch(view.root, event)
             } else if (swipeDirectionDetector.detectedDirection in SWIPE_TO_DISMISS_DIRECTIONS) {
+                // 👇 AÑADE ESTA LÍNEA: Desactiva temporalmente el scroll vertical del ViewPager
+                // para que no intente cambiar de foto mientras el usuario arrastra hacia los lados para cerrar.
+                view.viewPager.isUserInputEnabled = false
                 // When dragging and the swipe in required direction is detected,
                 // dispatch further touch events to the handler.
                 return swipeToDismissHandler.onTouch(view.root, event)
+            }
+        }
+        // 🚀 SALTO ALEATORIO CONTROLADO POR EL BOTÓN INFERIOR
+        if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+            view.viewPager.isUserInputEnabled = true
+
+            if (isRandomActive && !isZoomed &&
+                (swipeDirectionDetector.detectedDirection == SwipeDirection.UP ||
+                        swipeDirectionDetector.detectedDirection == SwipeDirection.DOWN)) {
+
+                val totalItems = viewerPagesAdapter.adapterItemCount
+                if (totalItems > 1) {
+                    val currentPos = view.viewPager.currentItem
+                    var randomPosition = (0 until totalItems).random()
+
+                    if (randomPosition == currentPos) {
+                        randomPosition = (currentPos + 1) % totalItems
+                    }
+
+                    view.viewPager.setCurrentItem(randomPosition, false)
+                    return true
+                }
             }
         }
 
@@ -1172,8 +1317,8 @@ class MediaViewerActivity : BaseActivity() {
         private const val IS_PAGE_INDICATOR_ENABLED_KEY = "is-page-indicator-enabled"
 
         private val SWIPE_TO_DISMISS_DIRECTIONS = setOf(
-            SwipeDirection.DOWN,
-            SwipeDirection.UP,
+            SwipeDirection.LEFT,
+            SwipeDirection.RIGHT,
         )
 
         /**

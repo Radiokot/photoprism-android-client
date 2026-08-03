@@ -141,6 +141,17 @@
             app:icon="@drawable/ic_favorite"
             tools:targetApi="o" />
 
+        <!-- Botón de Modo Aleatorio con el icono oficial de Shuffle -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/random_button"
+            style="?materialIconButtonFilledTonalStyle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="@dimen/media_viewer_buttons_horizontal_spacing"
+            android:contentDescription="Modo Aleatorio"
+            app:icon="@drawable/ic_shuffle"
+            tools:ignore="MissingConstraints" />
+
     </com.google.android.flexbox.FlexboxLayout>
 
     <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
