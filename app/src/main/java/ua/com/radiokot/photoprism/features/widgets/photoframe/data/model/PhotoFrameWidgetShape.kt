@@ -45,7 +45,7 @@ enum class PhotoFrameWidgetShape {
 
     BUBA {
         override val innerTextGravity: Int =
-            Gravity.CENTER
+            Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
 
         override fun getTransformation(context: Context): Transformation =
             ImageTransformations.buba(context)
@@ -85,11 +85,27 @@ enum class PhotoFrameWidgetShape {
 
     HSAUCE {
         override val innerTextGravity: Int =
-            Gravity.CENTER
+            Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
 
         override fun getTransformation(context: Context): Transformation =
             ImageTransformations.hSauce
     },
+
+    BATONIUM {
+        override val innerTextGravity: Int =
+            Gravity.CENTER
+
+        override fun getTransformation(context: Context): Transformation =
+            ImageTransformations.batonium(context)
+    },
+
+    SQUARETS {
+        override val innerTextGravity: Int =
+            Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+
+        override fun getTransformation(context: Context): Transformation =
+            ImageTransformations.squarets(context)
+    }
 
     ;
 

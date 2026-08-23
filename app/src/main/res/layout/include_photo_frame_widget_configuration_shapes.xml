@@ -205,4 +205,40 @@
         app:layout_constraintStart_toStartOf="@id/hsauce_image_view"
         app:layout_constraintTop_toTopOf="@id/hsauce_image_view"
         tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/batonium_image_view"
+        style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
+        android:tag="BATONIUM"
+        app:layout_constraintEnd_toStartOf="@id/center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hsauce_image_view"
+        tools:srcCompat="@drawable/image_shape_batonium" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
+        android:tag="BATONIUM"
+        app:layout_constraintBottom_toBottomOf="@id/batonium_image_view"
+        app:layout_constraintEnd_toEndOf="@id/batonium_image_view"
+        app:layout_constraintStart_toStartOf="@id/batonium_image_view"
+        app:layout_constraintTop_toTopOf="@id/batonium_image_view"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/squarets_image_view"
+        style="@style/PhotoFrameWidgetConfigurationShapeImageButton"
+        android:tag="SQUARETS"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/center"
+        app:layout_constraintTop_toBottomOf="@id/hsauce_image_view"
+        tools:srcCompat="@drawable/image_shape_squarets" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        style="@style/PhotoFrameWidgetConfigurationShapeCheckView"
+        android:tag="SQUARETS"
+        app:layout_constraintBottom_toBottomOf="@id/squarets_image_view"
+        app:layout_constraintEnd_toEndOf="@id/squarets_image_view"
+        app:layout_constraintStart_toStartOf="@id/squarets_image_view"
+        app:layout_constraintTop_toTopOf="@id/squarets_image_view"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

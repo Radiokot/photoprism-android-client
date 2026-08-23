@@ -126,6 +126,20 @@ object ImageTransformations {
             context = context,
         )
 
+    fun batonium(context: Context) =
+        getSquareShapeMaskDrawableTransformation(
+            name = "batonium",
+            shapeMaskDrawableId = R.drawable.image_shape_batonium,
+            context = context,
+        )
+
+    fun squarets(context: Context) =
+        getSquareShapeMaskDrawableTransformation(
+            name = "squarets",
+            shapeMaskDrawableId = R.drawable.image_shape_squarets,
+            context = context,
+        )
+
     fun roundedCorners(
         cornerRadiusDp: Int,
         context: Context,
