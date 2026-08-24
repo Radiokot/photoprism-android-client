@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Now the date in certain Photo frame widget shapes is aligned to the bottom
 
+### Fixed
+
+- Enabling the map for devices without Vulkan graphics, like an emulator
+
 ## [1.44.0] - 2026-08-02
 
 ### Added

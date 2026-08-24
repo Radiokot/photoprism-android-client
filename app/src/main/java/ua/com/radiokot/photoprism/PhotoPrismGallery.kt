@@ -63,6 +63,9 @@ class PhotoPrismGallery : Application() {
         startKoin {
             androidLogger()
             androidContext(this@PhotoPrismGallery)
+            androidFileProperties("app.properties")
+
+            @Suppress("SimplifyBooleanWithConstants")
             modules(
                 retrofitApiModule
                         + appDbModule
@@ -91,7 +94,6 @@ class PhotoPrismGallery : Application() {
                         + labelsFeatureModule
                         + mapFeatureModule
             )
-            androidFileProperties("app.properties")
         }
 
         initRxErrorHandler()
@@ -194,7 +196,7 @@ class PhotoPrismGallery : Application() {
     private fun clearInternalDownloads() {
         thread {
             try {
-                // Used to be the internal downloads directory.
+                // Used to be the internal Downloads directory.
                 File(filesDir.absolutePath + "/downloads")
                     .takeIf(File::exists)
                     ?.listFiles()

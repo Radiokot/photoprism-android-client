@@ -40,6 +40,9 @@
     <uses-feature
         android:name="android.hardware.vulkan.version"
         tools:node="remove" />
+    <uses-feature
+        android:name="android.hardware.vulkan.compute"
+        android:required="false" />
     <!-- ==========MapLibre========== -->
 
     <uses-feature
