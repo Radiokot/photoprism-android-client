@@ -192,6 +192,7 @@
         android:tag="HSAUCE"
         app:layout_constraintDimensionRatio="H,7:3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vsauce_image_view"
         tools:scaleType="fitXY"
@@ -241,4 +242,9 @@
         app:layout_constraintStart_toStartOf="@id/squarets_image_view"
         app:layout_constraintTop_toTopOf="@id/squarets_image_view"
         tools:visibility="visible" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
+        app:layout_constraintTop_toBottomOf="@id/batonium_image_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,6 @@
             android:layout_marginHorizontal="12dp"
             android:clipToPadding="false"
             android:paddingTop="16dp"
-            android:paddingBottom="@dimen/photo_frame_widget_configuration_shape_margin_vertical"
             tools:ignore="ContentDescription">
 
             <androidx.appcompat.widget.AppCompatTextView
