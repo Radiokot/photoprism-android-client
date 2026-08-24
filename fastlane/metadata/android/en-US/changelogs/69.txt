@@ -1,0 +1,10 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Two new shapes for the Photo frame widget
+
+Changed:
+- Now the date in certain Photo frame widget shapes is at the bottom
+
+Fixed:
+- Enabling the map for devices without Vulkan graphics, like an emulator
