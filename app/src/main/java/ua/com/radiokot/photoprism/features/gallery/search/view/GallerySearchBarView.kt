@@ -7,7 +7,11 @@ import android.view.View
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.search.SearchBar
 import com.squareup.picasso.Picasso
 import org.koin.core.component.KoinScopeComponent
@@ -15,6 +19,7 @@ import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -58,6 +63,16 @@ class GallerySearchBarView(
     }
 
     private fun initBar() = with(searchBar) {
+        ViewCompat.setOnApplyWindowInsetsListener(this.parent as AppBarLayout) { view, insets ->
+            val safeContent = insets.barsAndCutout()
+            view.updatePadding(
+                top = safeContent.top,
+                left = safeContent.left,
+                right = safeContent.right,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
         setHint(
             R.string.search_the_library
         )
@@ -76,7 +91,7 @@ class GallerySearchBarView(
         @SuppressLint("RestrictedApi")
         if (menuRes != null) {
             // Important. The external inflater is used to avoid setting SearchBar.menuResId
-            // Otherwise, this ding dong tries to animate the menu which makes
+            // Otherwise, this ding-dong tries to animate the menu which makes
             // all the items visible during the animation 🤦🏻‍
             SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
             searchBar.setOnMenuItemClickListener { menuItem ->
@@ -96,11 +111,12 @@ class GallerySearchBarView(
 
         searchBar.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
-                when (keyCode){
+                when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
                         viewToFocusLeft?.requestFocus()
                         return@setOnKeyListener true
                     }
+
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         viewToFocusDown?.requestFocus()
                         return@setOnKeyListener true

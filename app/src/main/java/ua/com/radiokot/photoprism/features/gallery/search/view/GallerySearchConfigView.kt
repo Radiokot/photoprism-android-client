@@ -1,9 +1,13 @@
 package ua.com.radiokot.photoprism.features.gallery.search.view
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.LifecycleOwner
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.extension.bindCheckedTwoWay
+import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.GallerySearchConfigAlbumsView
 import ua.com.radiokot.photoprism.features.gallery.search.people.view.GallerySearchConfigPeopleView
@@ -41,6 +45,18 @@ class GallerySearchConfigView(
         viewModel = viewModel,
         lifecycleOwner = this,
     )
+
+    init {
+        ViewCompat.setOnApplyWindowInsetsListener(view.root) { view, insets ->
+            val safeContent = insets.barsAndCutout()
+            view.updatePadding(
+                left = safeContent.left,
+                right = safeContent.right,
+                bottom = safeContent.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+    }
 
     private var isInitialized = false
     fun initOnce() {

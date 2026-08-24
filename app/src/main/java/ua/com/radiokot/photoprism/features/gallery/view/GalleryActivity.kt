@@ -10,9 +10,12 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -43,6 +46,7 @@ import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.proxyOkResult
+import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -244,7 +248,8 @@ class GalleryActivity : BaseActivity() {
 
             val errorToShow: ErrorView.Error = when (error) {
                 GalleryViewModel.Error.NoMediaFound,
-                GalleryViewModel.Error.SearchDoesNotFitAllowedTypes ->
+                GalleryViewModel.Error.SearchDoesNotFitAllowedTypes,
+                    ->
                     ErrorView.Error.EmptyView(
                         message = error.localizedMessage,
                     )
@@ -252,7 +257,8 @@ class GalleryActivity : BaseActivity() {
                 is GalleryViewModel.Error.ContentLoadingError ->
                     when (error.contentLoadingError) {
                         GalleryContentLoadingError.CredentialsHaveBeenChanged,
-                        GalleryContentLoadingError.SessionHasBeenExpired ->
+                        GalleryContentLoadingError.SessionHasBeenExpired,
+                            ->
                             ErrorView.Error.General(
                                 message = error.localizedMessage,
                                 imageRes = R.drawable.image_melting,
@@ -591,12 +597,20 @@ class GalleryActivity : BaseActivity() {
             .coerceAtLeast(1)
 
         with(view.galleryRecyclerView) {
-            setPadding(
-                paddingLeft,
-                view.searchBar.bottom,
-                paddingRight,
-                paddingBottom
-            )
+            val initialPaddingLeft = paddingLeft
+            val initialPaddingRight = paddingRight
+            val initialPaddingBottom = paddingBottom
+
+            ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+                val safeContent = insets.barsAndCutout()
+                updatePadding(
+                    left = initialPaddingLeft + safeContent.left,
+                    top = view.searchBar.bottom,
+                    right = initialPaddingRight + safeContent.right,
+                    bottom = initialPaddingBottom + safeContent.bottom,
+                )
+                WindowInsetsCompat.CONSUMED
+            }
 
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
@@ -821,13 +835,17 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
-        setProgressViewOffset(
-            false,
-            progressViewStartOffset
-                    + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_start_offset),
-            progressViewEndOffset
-                    + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_end_offset),
-        )
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+            val safeContent = insets.barsAndCutout()
+            setProgressViewOffset(
+                false,
+                safeContent.top
+                        + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_start_offset),
+                safeContent.top
+                        + resources.getDimensionPixelSize(R.dimen.gallery_swipe_refresh_end_offset),
+            )
+            insets
+        }
         setOnRefreshListener(viewModel::onSwipeRefreshPulled)
     }
 
@@ -1123,7 +1141,8 @@ class GalleryActivity : BaseActivity() {
             KeyEvent.KEYCODE_BOOKMARK,
             KeyEvent.KEYCODE_TV_INPUT_COMPOSITE_1, // "Context menu" button
             KeyEvent.KEYCODE_CHANNEL_DOWN,
-        ) -> {
+        ),
+            -> {
             viewModel.onPreferencesClicked()
             true
         }
@@ -1131,7 +1150,8 @@ class GalleryActivity : BaseActivity() {
         in setOf(
             KeyEvent.KEYCODE_SEARCH,
             KeyEvent.KEYCODE_CHANNEL_UP,
-        ) -> {
+        ),
+            -> {
             view.searchBar.callOnClick()
             true
         }

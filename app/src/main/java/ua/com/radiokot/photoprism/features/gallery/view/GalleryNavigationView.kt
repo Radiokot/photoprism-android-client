@@ -4,11 +4,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigationrail.NavigationRailView
 import ua.com.radiokot.photoprism.R
+import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.features.gallery.search.view.GallerySearchBarView
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
 
@@ -45,6 +49,16 @@ class GalleryNavigationView(
                 backPressedCallback.isEnabled = slideOffset >= 0.4f
             }
         })
+
+        ViewCompat.setOnApplyWindowInsetsListener(navigationView) { _, insets ->
+            val safeContent = insets.barsAndCutout()
+            navigationView.updatePadding(
+                top = safeContent.top,
+                left = safeContent.left,
+                bottom = safeContent.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     fun initWithRail(

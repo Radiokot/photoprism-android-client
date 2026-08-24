@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
@@ -120,8 +119,6 @@ class MapActivity : BaseActivity() {
         view = ActivityMapBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         initToolbar()
         initFullScreen()
 
@@ -137,7 +134,7 @@ class MapActivity : BaseActivity() {
         title = ""
 
         view.toolbar.doOnPreDraw {
-            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(view.toolbar)
+            val insets = FullscreenInsetsCompat.barsAndCutout(view.toolbar)
             view.toolbar.updateLayoutParams {
                 this as ViewGroup.MarginLayoutParams
                 setMargins(
@@ -342,7 +339,7 @@ class MapActivity : BaseActivity() {
     private fun initMapInsets(
         map: MapLibreMap,
     ) = view.map.doOnPreDraw {
-        val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(view.map)
+        val insets = FullscreenInsetsCompat.barsAndCutout(view.map)
         with(map.uiSettings) {
             val attributionMargin =
                 resources.getDimensionPixelSize(R.dimen.map_attribution_margin)

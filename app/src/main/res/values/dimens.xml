@@ -22,7 +22,7 @@
     <dimen name="list_item_person_overview_min_width">100dp</dimen>
     <dimen name="list_item_person_margin_end">8dp</dimen>
     <dimen name="list_item_person_image_size">72dp</dimen>
-    <dimen name="selection_bottom_app_bar_height">56dp</dimen>
+    <dimen name="selection_bottom_app_bar_height">72dp</dimen>
     <dimen name="selected_gallery_item_corner_radius">
         11.5dp
         <!-- Should match the radius of round buttons on the view -->
@@ -34,8 +34,8 @@
          When the distance is fixed and not calculated as a view height fraction,
          doesn't matter whether you run the app on a large tablet or a small phone. -->
     </dimen>
-    <dimen name="gallery_swipe_refresh_start_offset">64dp</dimen>
-    <dimen name="gallery_swipe_refresh_end_offset">32dp</dimen>
+    <dimen name="gallery_swipe_refresh_start_offset">24dp</dimen>
+    <dimen name="gallery_swipe_refresh_end_offset">96dp</dimen>
     <dimen name="menu_icon_margin_horizontal">8dp</dimen>
     <dimen name="slideshow_guide_text_size">16sp</dimen>
     <dimen name="slideshow_guide_prev_next_margin">4dp</dimen>

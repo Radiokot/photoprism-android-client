@@ -352,7 +352,7 @@ class MediaViewerActivity : BaseActivity() {
         }
 
         view.buttonsLayout.doOnPreDraw { buttonsLayout ->
-            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(window.decorView)
+            val insets = FullscreenInsetsCompat.barsAndCutout(window.decorView)
 
             buttonsLayout.updateLayoutParams {
                 this as MarginLayoutParams

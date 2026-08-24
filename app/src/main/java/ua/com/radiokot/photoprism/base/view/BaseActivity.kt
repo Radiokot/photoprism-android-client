@@ -3,12 +3,14 @@ package ua.com.radiokot.photoprism.base.view
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.ConfigurationCompat
+import androidx.core.view.WindowCompat
 import com.google.android.material.color.MaterialColors
 import org.koin.android.ext.android.getKoin
 import org.koin.android.scope.AndroidScopeComponent
@@ -121,6 +123,10 @@ abstract class BaseActivity : AppCompatActivity(), AndroidScopeComponent {
             else
                 windowBackgroundColor.toDrawable()
         )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowCompat.enableEdgeToEdge(window)
+        }
 
         super.onCreate(savedInstanceState)
 

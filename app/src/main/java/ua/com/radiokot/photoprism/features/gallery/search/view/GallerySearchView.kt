@@ -248,7 +248,7 @@ class GallerySearchView(
 
     private fun openBookmarkDialog(
         searchConfig: SearchConfig,
-        existingBookmark: SearchBookmark?
+        existingBookmark: SearchBookmark?,
     ) {
         val fragment =
             (fragmentManager.findFragmentByTag(BOOKMARK_DIALOG_TAG) as? SearchBookmarkDialogFragment)

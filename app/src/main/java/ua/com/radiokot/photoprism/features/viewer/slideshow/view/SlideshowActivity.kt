@@ -108,7 +108,7 @@ class SlideshowActivity : BaseActivity() {
         }
 
         view.endSideArea.doOnPreDraw {
-            val insets = FullscreenInsetsCompat.getForTranslucentSystemBars(window.decorView)
+            val insets = FullscreenInsetsCompat.barsAndCutout(window.decorView)
             val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
             view.startSideArea.updateLayoutParams {

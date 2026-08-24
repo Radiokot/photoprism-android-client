@@ -49,8 +49,8 @@
             android:minHeight="0dp"
             app:layout_scrollFlags="enterAlways"
             app:navigationIconTint="?colorOnSurfaceVariant"
-            tools:targetApi="m"
-            tools:ignore="UnusedAttribute" />
+            tools:ignore="UnusedAttribute"
+            tools:targetApi="m" />
 
         <!-- enterAlways scroll flag keeps the search bar fixed -->
 
@@ -93,7 +93,7 @@
         android:id="@+id/selection_bottom_app_bar"
         style="@style/Widget.Material3.BottomAppBar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/selection_bottom_app_bar_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:visibility="invisible"
         app:elevation="0dp"

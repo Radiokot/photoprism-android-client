@@ -13,13 +13,16 @@ object FullscreenInsetsCompat {
      * @return a [Rect] of insets considering default system bar heights
      * on old SDK versions where translucent bars are already available.
      */
-    fun getForTranslucentSystemBars(viewToObtainInsets: View): Rect {
+    fun barsAndCutout(viewToObtainInsets: View): Rect {
         val resources = viewToObtainInsets.resources
         val orientation = resources.configuration.orientation
         val isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
         return ViewCompat.getRootWindowInsets(viewToObtainInsets)
-            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
+            ?.getInsetsIgnoringVisibility(
+                WindowInsetsCompat.Type.displayCutout() or
+                        WindowInsetsCompat.Type.systemBars()
+            )
             .let { insets ->
                 val left = insets?.left
                     ?: if (Build.VERSION.SDK_INT in
