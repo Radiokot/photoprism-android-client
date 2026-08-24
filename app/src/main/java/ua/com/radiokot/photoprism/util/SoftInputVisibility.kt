@@ -11,6 +11,7 @@ object SoftInputVisibility {
     /**
      * Shows a soft keyboard on the currently focused view of the given [window]
      */
+    @Suppress("DEPRECATION")
     fun show(window: Window) {
         val view = window.currentFocus
             ?: return

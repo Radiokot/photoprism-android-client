@@ -6,11 +6,10 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-parcelize'
-    id 'kotlin-kapt'
-    id 'com.jaredsburrows.license'
+    id "com.android.application"
+    id "com.google.devtools.ksp"
+    id "kotlin-parcelize"
+    id "com.jaredsburrows.license"
 }
 
 def ciSigningKeystoreFile = project.file("ci-signing.jks")
@@ -20,13 +19,14 @@ def fileProviderAuthority = ""
 android {
     namespace "ua.com.radiokot.photoprism"
 
+    //noinspection GradleDependency
+    compileSdkVersion 37
+
     defaultConfig {
-        //noinspection OldTargetApi
-        targetSdk 35
-        //noinspection GradleDependency
-        compileSdk 36
         // Also set in the manifest with an override.
         minSdk 21
+        //noinspection OldTargetApi
+        targetSdk 36
 
         applicationId "ua.com.radiokot.photoprism"
         versionCode 69
@@ -39,15 +39,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         fileProviderAuthority = applicationId + ".files"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                        "room.schemaLocation": "$projectDir/db-schema".toString(),
-                        "room.incremental"   : "true"
-                ]
-            }
-        }
     }
 
     signingConfigs {
@@ -114,10 +105,8 @@ android {
         }
     }
 
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.add("-Xannotation-default-target=param-property")
-        }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/db-schema")
     }
 
     buildFeatures {
@@ -133,8 +122,9 @@ android {
 
     licenseReport {
         generateHtmlReport = true
-        generateJsonReport = false
         generateCsvReport = false
+        generateJsonReport = false
+        generateTextReport = false
         copyHtmlReportToAssets = true
     }
 }
@@ -156,6 +146,14 @@ androidComponents {
                     "META-INF/*.version",
                     "**.kotlin_module"
             ])
+        }
+    }
+
+    onVariants(selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            def versionName = output.versionName.getOrElse(variant.name)
+            def applicationId = variant.applicationId.get()
+            output.outputFileName.set("${applicationId}-${versionName}.apk")
         }
     }
 }
@@ -221,8 +219,7 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
-    //noinspection KaptUsageInsteadOfKsp
-    kapt "androidx.room:room-compiler:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 
     implementation 'androidx.browser:browser:1.9.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
@@ -259,13 +256,6 @@ configurations.testImplementation {
     exclude module: 'slf4j-handroid'
 }
 
-// Make the built APKs have a release-style name.
-android.applicationVariants.all { variant ->
-    variant.outputs.all { output ->
-        outputFileName = "${variant.applicationId}-${variant.versionName}.apk"
-    }
-}
-
 // F-Droid reproducible builds fix: https://gist.github.com/obfusk/61046e09cee352ae6dd109911534b12e
 // Android Studio can't find the imports; this does not affect the actual build
 // since Gradle can find them just fine.
@@ -298,6 +288,10 @@ project.afterEvaluate {
 // Pretty license report.
 project.afterEvaluate {
     Task licenseReportTask = tasks.findByName("licenseReleaseReport")
+    licenseReportTask.configure {
+        // https://github.com/jaredsburrows/gradle-license-plugin/issues/368
+        notCompatibleWithConfigurationCache("LicenseReportTask uses Task.project at execution time")
+    }
     licenseReportTask.outputs.upToDateWhen { false }
     licenseReportTask.doLast {
         def report = file("src/main/assets/open_source_licenses.html")

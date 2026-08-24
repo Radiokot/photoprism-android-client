@@ -250,7 +250,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
 
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
 
-        val responseBody = response.body!!
+        val responseBody = response.body
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
         logger.log(

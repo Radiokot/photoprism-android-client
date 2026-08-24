@@ -68,7 +68,7 @@ class GalleryFastScrollView(
                     override fun onDraw(
                         c: Canvas,
                         parent: RecyclerView,
-                        state: RecyclerView.State
+                        state: RecyclerView.State,
                     ) {
                         onPreDraw.run()
                     }
@@ -84,7 +84,7 @@ class GalleryFastScrollView(
                     RecyclerView.SimpleOnItemTouchListener() {
                     override fun onInterceptTouchEvent(
                         rv: RecyclerView,
-                        e: MotionEvent
+                        e: MotionEvent,
                     ): Boolean {
                         return onTouchEvent.test(e)
                     }
@@ -163,8 +163,10 @@ class GalleryFastScrollView(
             }
 
             else -> {
-                "subscribeToFastScroll(): skipped_new_event:" +
-                        "\nevent=$event"
+                log.debug {
+                    "subscribeToFastScroll(): skipped_new_event:" +
+                            "\nevent=$event"
+                }
 
                 return@subscribe
             }

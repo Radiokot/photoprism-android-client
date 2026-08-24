@@ -101,6 +101,7 @@ class WebViewActivity : BaseActivity() {
             domStorageEnabled = true
             userAgentString =
                 "Mozilla/5.0 (Linux; Android 10; Google Pixel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 EdgA/114.0.1823.43"
+            @Suppress("DEPRECATION")
             databaseEnabled = true
         }
 

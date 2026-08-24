@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk
-        android:minSdkVersion="21"
-        tools:overrideLibrary="org.maplibre.android" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION">
@@ -43,6 +39,8 @@
     <uses-feature
         android:name="android.hardware.vulkan.compute"
         android:required="false" />
+
+    <uses-sdk tools:overrideLibrary="org.maplibre.android" />
     <!-- ==========MapLibre========== -->
 
     <uses-feature

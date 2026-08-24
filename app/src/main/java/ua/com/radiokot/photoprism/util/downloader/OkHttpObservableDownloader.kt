@@ -23,7 +23,6 @@ class OkHttpObservableDownloader(
                 val emitterKey = chain.request().tag() as Int
                 val originalResponse = chain.proceed(chain.request())
                 val originalBody = originalResponse.body
-                    ?: return@addNetworkInterceptor originalResponse
                 val contentLength = originalBody.contentLength()
 
                 return@addNetworkInterceptor originalResponse
