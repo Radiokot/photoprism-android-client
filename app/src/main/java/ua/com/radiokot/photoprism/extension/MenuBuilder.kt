@@ -17,7 +17,7 @@ fun MenuBuilder.showOverflowItemIcons(isBottomBar: Boolean) {
         val iconMarginHorizontal =
             context.resources.getDimensionPixelSize(R.dimen.menu_icon_margin_horizontal)
         visibleItems.forEach { menuItem ->
-            if ((isBottomBar && menuItem.requestsActionButton()
+            if ((isBottomBar && !menuItem.requiresActionButton()
                 || !isBottomBar && !menuItem.requestsActionButton())
                 && menuItem.icon !is InsetDrawable
             ) {
