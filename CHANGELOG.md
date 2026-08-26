@@ -5,11 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Too small icon spacing in the selection menu 
+
+### Changed
+
+- Navigation and status bar made transparent on primary screens (edge-to-edge)
+
 ## [1.45.0] - 2026-08-24
 
 ### Added
 
-- Two new shapes for the [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
+- Two new shapes for
+  the [Photo frame widget](https://github.com/Radiokot/photoprism-android-client/wiki/Photo-frame-widget-extension)
 
 ### Changed
 
@@ -23,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Ability to search for content with any of the selected people, rather than only with all of them at once
+- Ability to search for content with any of the selected people, rather than only with all of them
+  at once
 
 ### Fixed
 
