@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
@@ -42,11 +41,11 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryBinding
 import ua.com.radiokot.photoprism.databinding.IncludeActivityGalleryContentBinding
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.extension.proxyOkResult
-import ua.com.radiokot.photoprism.extension.barsAndCutout
 import ua.com.radiokot.photoprism.extension.setBetter
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -597,19 +596,13 @@ class GalleryActivity : BaseActivity() {
             .coerceAtLeast(1)
 
         with(view.galleryRecyclerView) {
-            val initialPaddingLeft = paddingLeft
-            val initialPaddingRight = paddingRight
-            val initialPaddingBottom = paddingBottom
-
-            ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
-                val safeContent = insets.barsAndCutout()
+            ViewCompat.getRootWindowInsets(this)?.barsAndCutout().also { safe ->
                 updatePadding(
-                    left = initialPaddingLeft + safeContent.left,
                     top = view.searchBar.bottom,
-                    right = initialPaddingRight + safeContent.right,
-                    bottom = initialPaddingBottom + safeContent.bottom,
+                    left = paddingLeft + (safe?.left ?: 0),
+                    right = paddingRight + (safe?.right ?: 0),
+                    bottom = paddingBottom + (safe?.bottom ?: 0),
                 )
-                WindowInsetsCompat.CONSUMED
             }
 
             // Safe dimensions of the list keeping from division by 0.

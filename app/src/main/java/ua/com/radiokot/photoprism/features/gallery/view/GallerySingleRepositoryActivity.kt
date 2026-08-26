@@ -9,9 +9,11 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -34,6 +36,8 @@ import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGallerySingleRepositoryBinding
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.autoDispose
+import ua.com.radiokot.photoprism.extension.barsAndCutout
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.capitalized
 import ua.com.radiokot.photoprism.extension.ensureItemIsVisible
 import ua.com.radiokot.photoprism.extension.kLogger
@@ -145,6 +149,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
         (intent.getSerializableExtra(MONTH_TITLE_EXTRA) as? LocalDate)?.also {
             setTitle(monthYearDateFormat.format(it).capitalized())
         }
+        view.toolbar.barsAndCutoutPadding()
     }
 
     private fun initSwipeRefresh() = with(view.swipeRefreshLayout) {
@@ -391,6 +396,14 @@ class GallerySingleRepositoryActivity : BaseActivity() {
             .coerceAtLeast(1)
 
         with(view.galleryRecyclerView) {
+            ViewCompat.getRootWindowInsets(this)?.barsAndCutout()?.also { safe ->
+                updatePadding(
+                    left = paddingLeft + safe.left,
+                    right = paddingRight + safe.right,
+                    bottom = paddingBottom + safe.bottom,
+                )
+            }
+
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
             // as it means initializing of a not laid out list.
@@ -431,7 +444,7 @@ class GallerySingleRepositoryActivity : BaseActivity() {
                             R.id.list_item_gallery_loading_footer,
                             R.layout.list_item_gallery_small_header,
                             R.layout.list_item_gallery_large_header,
-                            ->
+                                ->
                                 spanCount
 
                             else ->

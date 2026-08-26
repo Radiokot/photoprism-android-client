@@ -10,6 +10,7 @@
         android:id="@+id/toolbar"
         style="@style/Widget.Material3.Toolbar"
         android:layout_width="match_parent"
+        app:buttonGravity="center_vertical"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -7,6 +7,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
@@ -16,6 +19,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityExtensionStoreBinding
+import ua.com.radiokot.photoprism.extension.barsAndCutout
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.ext.key.activation.view.KeyActivationActivity
@@ -39,9 +44,7 @@ class GalleryExtensionStoreActivity : BaseActivity() {
         view = ActivityExtensionStoreBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        setSupportActionBar(view.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+        initToolbar()
         initList()
         initErrorView()
         initSwipeRefresh()
@@ -49,6 +52,12 @@ class GalleryExtensionStoreActivity : BaseActivity() {
 
         subscribeToData()
         subscribeToEvents()
+    }
+
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        view.toolbar.barsAndCutoutPadding()
     }
 
     private fun initList() {
@@ -105,6 +114,17 @@ class GalleryExtensionStoreActivity : BaseActivity() {
             )
 
             view.itemsRecyclerView.adapter = this
+        }
+
+        val initialPaddingBottom = view.itemsRecyclerView.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(view.itemsRecyclerView) { view, insets ->
+            val safe = insets.barsAndCutout()
+            view.updatePadding(
+                left = safe.left,
+                right = safe.right,
+                bottom = initialPaddingBottom + safe.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
         }
     }
 

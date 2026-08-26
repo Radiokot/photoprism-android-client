@@ -8,7 +8,10 @@ import android.view.Menu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -19,6 +22,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGalleryAlbumsBinding
+import ua.com.radiokot.photoprism.extension.barsAndCutout
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -93,6 +98,7 @@ class AlbumsActivity : BaseActivity() {
             Album.TypeName.ALBUM ->
                 getString(R.string.albums)
         }
+        view.toolbar.barsAndCutoutPadding()
     }
 
     private fun initList() {
@@ -101,6 +107,14 @@ class AlbumsActivity : BaseActivity() {
         viewModel.itemsList.observe(this, albumsAdapter::setNewList)
 
         with(view.albumsRecyclerView) {
+            ViewCompat.getRootWindowInsets(this)?.barsAndCutout()?.also { safe ->
+                updatePadding(
+                    left = safe.left,
+                    right = safe.right,
+                    bottom = safe.bottom,
+                )
+            }
+
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
             // as it means initializing of a not laid out list.
@@ -140,7 +154,7 @@ class AlbumsActivity : BaseActivity() {
 
                 override fun generateLayoutParams(
                     c: Context,
-                    attrs: AttributeSet
+                    attrs: AttributeSet,
                 ): RecyclerView.LayoutParams {
                     return super.generateLayoutParams(c, attrs).apply {
                         width = RecyclerView.LayoutParams.MATCH_PARENT
@@ -181,16 +195,16 @@ class AlbumsActivity : BaseActivity() {
                         ErrorView.Error.General(
                             context = view.errorView.context,
                             messageRes =
-                            when (viewModel.albumType) {
-                                Album.TypeName.FOLDER ->
-                                    R.string.failed_to_load_folders
+                                when (viewModel.albumType) {
+                                    Album.TypeName.FOLDER ->
+                                        R.string.failed_to_load_folders
 
-                                Album.TypeName.ALBUM ->
-                                    R.string.failed_to_load_albums
+                                    Album.TypeName.ALBUM ->
+                                        R.string.failed_to_load_albums
 
-                                Album.TypeName.MONTH ->
-                                    R.string.failed_to_load_calendar
-                            },
+                                    Album.TypeName.MONTH ->
+                                        R.string.failed_to_load_calendar
+                                },
                             retryButtonTextRes = R.string.try_again,
                             retryButtonClickListener = viewModel::onRetryClicked
                         )
@@ -201,16 +215,16 @@ class AlbumsActivity : BaseActivity() {
                         ErrorView.Error.EmptyView(
                             context = view.errorView.context,
                             messageRes =
-                            when (viewModel.albumType) {
-                                Album.TypeName.FOLDER ->
-                                    R.string.no_folders_found
+                                when (viewModel.albumType) {
+                                    Album.TypeName.FOLDER ->
+                                        R.string.no_folders_found
 
-                                Album.TypeName.ALBUM ->
-                                    R.string.no_albums_found
+                                    Album.TypeName.ALBUM ->
+                                        R.string.no_albums_found
 
-                                Album.TypeName.MONTH ->
-                                    R.string.nothing_found
-                            },
+                                    Album.TypeName.MONTH ->
+                                        R.string.nothing_found
+                                },
                         )
                     )
 

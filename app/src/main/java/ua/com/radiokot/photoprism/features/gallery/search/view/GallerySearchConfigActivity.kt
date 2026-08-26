@@ -7,6 +7,7 @@ import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchConfigBinding
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigBinding
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.bindTextTwoWay
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -49,6 +50,7 @@ class GallerySearchConfigActivity : BaseActivity() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.search_the_library)
+        view.toolbar.barsAndCutoutPadding()
     }
 
     private fun initQueryInput() {

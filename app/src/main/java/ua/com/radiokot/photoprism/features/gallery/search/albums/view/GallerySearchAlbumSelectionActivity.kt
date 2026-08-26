@@ -7,7 +7,9 @@ import android.util.AttributeSet
 import android.view.Menu
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -18,6 +20,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityGallerySearchAlbumSelectionBinding
+import ua.com.radiokot.photoprism.extension.barsAndCutout
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.gallery.search.albums.view.model.GallerySearchAlbumListItem
@@ -39,11 +43,9 @@ class GallerySearchAlbumSelectionActivity : BaseActivity() {
         view = ActivityGallerySearchAlbumSelectionBinding.inflate(layoutInflater)
         setContentView(view.root)
 
-        setSupportActionBar(view.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         viewModel.selectedAlbumUid.value = intent.getStringExtra(SELECTED_ALBUM_UID_EXTRA)
 
+        initToolbar()
         // Init the list once it is laid out.
         view.albumsRecyclerView.doOnPreDraw {
             initList()
@@ -58,6 +60,12 @@ class GallerySearchAlbumSelectionActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
     }
 
+    private fun initToolbar() {
+        setSupportActionBar(view.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        view.toolbar.barsAndCutoutPadding()
+    }
+
     private fun initList() {
         val albumsAdapter = FastAdapter.with(adapter).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -69,6 +77,14 @@ class GallerySearchAlbumSelectionActivity : BaseActivity() {
         }
 
         with(view.albumsRecyclerView) {
+            ViewCompat.getRootWindowInsets(this)?.barsAndCutout()?.also { safe ->
+                updatePadding(
+                    left = paddingLeft + safe.left,
+                    right = paddingRight + safe.right,
+                    bottom = paddingBottom + safe.bottom,
+                )
+            }
+
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
             // as it means initializing of a not laid out list.
@@ -100,7 +116,7 @@ class GallerySearchAlbumSelectionActivity : BaseActivity() {
 
                 override fun generateLayoutParams(
                     c: Context,
-                    attrs: AttributeSet
+                    attrs: AttributeSet,
                 ): RecyclerView.LayoutParams {
                     return super.generateLayoutParams(c, attrs).apply {
                         width = RecyclerView.LayoutParams.MATCH_PARENT

@@ -7,7 +7,9 @@ import android.util.AttributeSet
 import android.view.Menu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -18,6 +20,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityLabelsBinding
+import ua.com.radiokot.photoprism.extension.barsAndCutout
+import ua.com.radiokot.photoprism.extension.barsAndCutoutPadding
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.proxyOkResult
 import ua.com.radiokot.photoprism.extension.subscribe
@@ -69,8 +73,8 @@ class LabelsActivity : BaseActivity() {
     private fun initToolbar() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        view.toolbar.barsAndCutoutPadding()
     }
-
 
     private fun initList() {
         val labelsAdapter = ItemAdapter<LabelListItem>()
@@ -78,6 +82,14 @@ class LabelsActivity : BaseActivity() {
         viewModel.itemsList.observe(this, labelsAdapter::setNewList)
 
         with(view.labelsRecyclerView) {
+            ViewCompat.getRootWindowInsets(this)?.barsAndCutout()?.also { safe ->
+                updatePadding(
+                    left = paddingLeft + safe.left,
+                    right = paddingRight + safe.right,
+                    bottom = paddingBottom + safe.bottom,
+                )
+            }
+
             // Safe dimensions of the list keeping from division by 0.
             // The fallback size is not supposed to be taken,
             // as it means initializing of a not laid out list.

@@ -8,3 +8,8 @@ fun WindowInsetsCompat.barsAndCutout(): Insets =
         WindowInsetsCompat.Type.displayCutout() or
                 WindowInsetsCompat.Type.systemBars()
     )
+
+fun WindowInsetsCompat.ime(): Insets =
+    getInsets(
+        WindowInsetsCompat.Type.ime()
+    )

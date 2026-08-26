@@ -100,7 +100,7 @@ class WebViewInjectionScriptFactory {
                         }
                         
                         /* Remove content extra spacing */
-                        .mt-4 {
+                        .mt-4, .tmp-mt-4 {
                             margin-top: 0px !important;
                             padding-top: 4px !important;
                             padding-left: 8px !important;

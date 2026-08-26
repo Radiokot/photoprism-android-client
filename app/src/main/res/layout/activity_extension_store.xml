@@ -11,6 +11,7 @@
         style="@style/Widget.Material3.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:buttonGravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/extension_store_title" />
@@ -30,10 +31,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/items_recycler_view"
             android:layout_width="match_parent"
-            android:paddingBottom="24dp"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"
+            android:paddingBottom="24dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="2"
             tools:listitem="@layout/list_item_gallery_extension_store_item" />
