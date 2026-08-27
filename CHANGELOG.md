@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Too small icon spacing in the selection menu 
+- Not importing files with actual size different from the reported one (rare case) 
 
 ### Changed
 

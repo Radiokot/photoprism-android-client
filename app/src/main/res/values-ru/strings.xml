@@ -216,7 +216,7 @@
     <string name="import_notification_success_title">Успешно загружено</string>
     <string name="import_start">Начать импорт</string>
     <string name="import_title">@string/importt</string>
-    <string name="template_import_files_size">%1$s, %2$.2f Мб</string>
+    <string name="template_import_files_size">%1$s, ~%2$.2f Мб</string>
     <string name="import_to_be_uploaded">К загрузке</string>
     <string name="import_started_in_background">Начато в фоне</string>
     <string name="import_notifications_permission_rationale">Разрешение на отправку уведомлений обеспечивает надежную работу импорта в фоне</string>

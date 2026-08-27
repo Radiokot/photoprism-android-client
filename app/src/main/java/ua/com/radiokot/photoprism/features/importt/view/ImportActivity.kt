@@ -145,7 +145,7 @@ class ImportActivity : BaseActivity() {
             content = getString(
                 R.string.template_import_files_size,
                 resources.getQuantityString(R.plurals.files, summary.fileCount, summary.fileCount),
-                summary.sizeMb,
+                summary.reportedSizeMb,
             ),
             summary = R.string.import_to_be_uploaded,
         )

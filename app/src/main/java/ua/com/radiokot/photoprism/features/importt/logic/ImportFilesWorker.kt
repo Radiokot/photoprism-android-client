@@ -21,7 +21,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
-import ua.com.radiokot.photoprism.features.importt.model.sizeMb
+import ua.com.radiokot.photoprism.features.importt.model.reportedSizeMb
 import ua.com.radiokot.photoprism.features.importt.view.ImportNotificationsManager
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -127,7 +127,7 @@ class ImportFilesWorker(
                     importNotificationsManager.notifySuccessfulImport(
                         uploadToken = uploadToken,
                         fileCount = files.size,
-                        sizeMb = files.sizeMb,
+                        sizeMb = files.reportedSizeMb,
                     )
                 }
             }

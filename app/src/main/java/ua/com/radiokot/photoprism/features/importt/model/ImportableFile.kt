@@ -14,8 +14,19 @@ constructor(
     val contentUri: String,
     val displayName: String,
     val mimeType: String?,
-    val size: Long,
+
+    /**
+     * Size reported by the content provider,
+     * which can't be trusted.
+     */
+    val reportedSize: Long?,
 ) {
+    init {
+        require(reportedSize == null || reportedSize > 0) {
+            "Reported size, if defined, must be positive"
+        }
+    }
+
     @SuppressLint("Recycle")
     fun source(contentResolver: ContentResolver): Source =
         contentResolver.openInputStream(contentUri.toUri())
@@ -23,5 +34,8 @@ constructor(
             .source()
 }
 
-val Iterable<ImportableFile>.sizeMb: Double
-    get() = sumOf(ImportableFile::size).toDouble() / (1024 * 1024)
+val Iterable<ImportableFile>.reportedSizeMb: Double
+    get() =
+        asSequence()
+            .mapNotNull(ImportableFile::reportedSize)
+            .sumOf { it.toDouble() / (1024 * 1024) }

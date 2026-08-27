@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore.MediaColumns
+import androidx.core.database.getLongOrNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 
@@ -39,7 +40,7 @@ class ParseImportIntentUseCase(
 
         return uris.mapNotNull { uri ->
             val mimeType: String? = contentResolver.getType(uri)
-            val size: Long
+            val reportedSize: Long?
             val displayName: String
 
             val queryCursor = contentResolver.query(
@@ -72,8 +73,13 @@ class ParseImportIntentUseCase(
                     return@mapNotNull null
                 }
 
-                size =
-                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaColumns.SIZE))
+                val sizeColumnIndex = cursor.getColumnIndex(MediaColumns.SIZE)
+                reportedSize =
+                    if (sizeColumnIndex != -1)
+                        cursor.getLongOrNull(sizeColumnIndex)
+                    else
+                        null
+
                 displayName =
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME))
             }
@@ -81,7 +87,7 @@ class ParseImportIntentUseCase(
             ImportableFile(
                 contentUri = uri.toString(),
                 mimeType = mimeType,
-                size = size,
+                reportedSize = reportedSize,
                 displayName = displayName,
             )
         }

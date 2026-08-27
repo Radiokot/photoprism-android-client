@@ -15,9 +15,9 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.retryWithDelay
 import ua.com.radiokot.photoprism.extension.toSingle
 import ua.com.radiokot.photoprism.features.albums.data.model.DestinationAlbum
+import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFile
 import ua.com.radiokot.photoprism.features.importt.model.ImportableFileRequestBody
-import ua.com.radiokot.photoprism.features.albums.data.storage.AlbumsRepository
 import java.util.concurrent.TimeUnit
 
 /**
@@ -130,10 +130,11 @@ class ImportFilesUseCase(
                 )
                     .map { bytesRead ->
                         val updatedProgress =
-                            if (file.size > 0)
-                                (bytesRead.toDouble() / file.size) * 100
+                            if (file.reportedSize != null)
+                                (bytesRead.toDouble() / file.reportedSize) * 100
                             else
-                                100.0
+                            //  50 percent: not great, not terrible.
+                                50.0
 
                         if (updatedProgress > progressPerFile[fileIndex]) {
                             progressPerFile[fileIndex] = updatedProgress

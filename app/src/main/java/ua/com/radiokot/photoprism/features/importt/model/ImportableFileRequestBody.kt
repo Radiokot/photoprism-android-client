@@ -13,8 +13,10 @@ class ImportableFileRequestBody(
     private val contentResolver: ContentResolver,
     private val onReadingProgress: (bytesRead: Long) -> Unit,
 ) : RequestBody() {
+
     override fun contentLength(): Long =
-        importableFile.size
+        // Reported size can't be trusted.
+        -1L
 
     override fun contentType(): MediaType? =
         importableFile.mimeType?.toMediaTypeOrNull()

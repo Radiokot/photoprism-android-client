@@ -216,7 +216,7 @@
     <string name="import_notification_success_title">Caricato con successo</string>
     <string name="import_start">Avvia importazione</string>
     <string name="import_title">@string/importt</string>
-    <string name="template_import_files_size">%1$s, %2$.2f MB</string>
+    <string name="template_import_files_size">%1$s, ~%2$.2f MB</string>
     <string name="import_to_be_uploaded">Da caricare</string>
     <string name="import_started_in_background">Avviato in background</string>
     <string name="import_notifications_permission_rationale">Il permesso di inviare notifiche consente all\'importazione di funzionare in modo affidabile in background</string>
