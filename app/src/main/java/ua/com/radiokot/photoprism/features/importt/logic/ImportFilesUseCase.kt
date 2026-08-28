@@ -128,7 +128,7 @@ class ImportFilesUseCase(
                     userId = userId,
                     uploadToken = uploadToken
                 )
-                    .map { bytesRead ->
+                    .doOnNext { bytesRead ->
                         val updatedProgress =
                             if (file.reportedSize != null)
                                 (bytesRead.toDouble() / file.reportedSize) * 100
@@ -137,9 +137,12 @@ class ImportFilesUseCase(
                                 50.0
 
                         if (updatedProgress > progressPerFile[fileIndex]) {
-                            progressPerFile[fileIndex] = updatedProgress
+                            progressPerFile[fileIndex] =
+                                updatedProgress.coerceAtMost(100.0)
                         }
-
+                    }
+                    .throttleLast(250, TimeUnit.MILLISECONDS)
+                    .map {
                         Status.Uploading(
                             percent = progressPerFile.average()
                         )
