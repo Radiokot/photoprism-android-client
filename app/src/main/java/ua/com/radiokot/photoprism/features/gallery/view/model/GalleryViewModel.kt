@@ -779,6 +779,14 @@ class GalleryViewModel(
         update(force = true)
     }
 
+    fun onImportClicked() {
+        log.debug {
+            "onImportClicked(): opening_import_media_selection"
+        }
+
+        eventsSubject.onNext(Event.OpenImportMediaSelectionAndImport)
+    }
+
     sealed interface State {
         /**
          * Viewing the gallery content.
@@ -865,6 +873,8 @@ class GalleryViewModel(
          * Call [onWebViewerHandledRedirect] on successful result.
          */
         class OpenWebViewerForRedirectHandling(val url: String) : Event
+
+        object OpenImportMediaSelectionAndImport: Event
     }
 
     sealed interface Error {

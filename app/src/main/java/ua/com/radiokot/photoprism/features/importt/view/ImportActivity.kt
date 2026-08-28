@@ -1,9 +1,11 @@
 package ua.com.radiokot.photoprism.features.importt.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
@@ -205,5 +207,18 @@ class ImportActivity : BaseActivity() {
                 selectedAlbums = DestinationAlbumSelectionActivity.getSelectedAlbums(bundle)
             )
         }
+    }
+
+    companion object {
+        fun getIntent(
+            context: Context,
+            uris: List<@JvmSuppressWildcards Uri>,
+        ): Intent =
+            Intent(context, ImportActivity::class.java)
+                .setAction(Intent.ACTION_SEND_MULTIPLE)
+                .putParcelableArrayListExtra(
+                    Intent.EXTRA_STREAM,
+                    ArrayList(uris),
+                )
     }
 }

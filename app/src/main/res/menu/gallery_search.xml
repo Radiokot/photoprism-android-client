@@ -26,4 +26,12 @@
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="always"
         tools:visible="true" />
+    <item
+        android:id="@+id/importt"
+        android:icon="@drawable/ic_upload"
+        android:title="@string/importt"
+        android:visible="false"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="always"
+        tools:visible="true" />
 </menu>

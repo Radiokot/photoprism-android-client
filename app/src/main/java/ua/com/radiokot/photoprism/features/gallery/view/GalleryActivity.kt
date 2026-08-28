@@ -2,11 +2,13 @@ package ua.com.radiokot.photoprism.features.gallery.view
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.core.content.ContextCompat
@@ -22,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
@@ -68,6 +71,7 @@ import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryLoadingFoot
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaDownloadActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaRemoteActionsViewModel
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryViewModel
+import ua.com.radiokot.photoprism.features.importt.view.ImportActivity
 import ua.com.radiokot.photoprism.features.labels.view.LabelsActivity
 import ua.com.radiokot.photoprism.features.map.view.MapActivity
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
@@ -114,6 +118,7 @@ class GalleryActivity : BaseActivity() {
         GallerySearchBarView(
             viewModel = viewModel.searchViewModel,
             menuRes = R.menu.gallery_search,
+            onImportClicked = viewModel::onImportClicked,
             lifecycleOwner = this,
         )
     }
@@ -161,6 +166,10 @@ class GalleryActivity : BaseActivity() {
     private val addDestinationAlbumSelectionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
         this::onAddingDestinationAlbumSelectionResult,
+    )
+    private val importMediaSelectionLauncher = registerForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(),
+        this::openImport,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -443,6 +452,10 @@ class GalleryActivity : BaseActivity() {
                     openWebViewerForRedirectHandling(
                         url = event.url,
                     )
+                }
+
+                is GalleryViewModel.Event.OpenImportMediaSelectionAndImport -> {
+                    openImportMediaSelection()
                 }
             }
 
@@ -1055,6 +1068,38 @@ class GalleryActivity : BaseActivity() {
         if (result.resultCode == RESULT_OK) {
             viewModel.onWebViewerHandledRedirect()
         }
+    }
+
+    private fun openImportMediaSelection() =
+        importMediaSelectionLauncher.launch(
+            PickVisualMediaRequest(
+                accentColor = MaterialColors.getColor(
+                    window.decorView,
+                    com.google.android.material.R.attr.colorPrimary,
+                ).toLong()
+            )
+        )
+
+    private fun openImport(uris: List<@JvmSuppressWildcards Uri>) {
+        if (uris.isEmpty()) {
+            log.debug {
+                "openImport(): no_uris_to_import"
+            }
+
+            return
+        }
+
+        log.debug {
+            "openImport(): opening:" +
+                    "\nuris=${uris.size}"
+        }
+
+        startActivity(
+            ImportActivity.getIntent(
+                context = this,
+                uris = uris,
+            )
+        )
     }
 
     private fun openAddingDestinationAlbumSelection() {

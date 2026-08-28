@@ -12,8 +12,9 @@ class TvDetectorImpl(
     private val packageManager = context.packageManager
 
     @Suppress("DEPRECATION")
-    override val isRunningOnTv: Boolean
-        get() = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    override val isRunningOnTv: Boolean by lazy {
+        uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
                 || packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
                 || packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+    }
 }

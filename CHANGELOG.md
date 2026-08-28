@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ability to select images and videos to import from the main screen
+  (it is still possible to share files to the gallery from any app to import them)
+
 ### Fixed
 
 - Too small icon spacing in the selection menu 

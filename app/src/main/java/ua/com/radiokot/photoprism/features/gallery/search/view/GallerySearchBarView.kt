@@ -3,12 +3,14 @@ package ua.com.radiokot.photoprism.features.gallery.search.view
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.forEach
 import androidx.core.view.updatePadding
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.appbar.AppBarLayout
@@ -33,7 +35,8 @@ import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySear
 class GallerySearchBarView(
     private val viewModel: GallerySearchViewModel,
     @MenuRes
-    private val menuRes: Int?,
+    private val menuRes: Int,
+    private val onImportClicked: () -> Unit,
     lifecycleOwner: LifecycleOwner,
 ) : LifecycleOwner by lifecycleOwner, KoinScopeComponent {
     override val scope: Scope
@@ -42,6 +45,7 @@ class GallerySearchBarView(
     private val log = kLogger("GallerySearchBarView")
 
     private lateinit var searchBar: SearchBar
+    private val menuItems = mutableMapOf<Int, MenuItem>()
     private val picasso: Picasso by inject()
     private val tvDetector: TvDetector by inject()
     private lateinit var searchSummaryFactory: AppliedGallerySearchSummaryFactory
@@ -87,26 +91,29 @@ class GallerySearchBarView(
             }
         }
 
-        // Menu.
+        // Important. The external inflater is used to avoid setting SearchBar.menuResId
+        // Otherwise, this ding-dong tries to animate the menu which makes
+        // all the items visible during the animation 🤦🏻‍
         @SuppressLint("RestrictedApi")
-        if (menuRes != null) {
-            // Important. The external inflater is used to avoid setting SearchBar.menuResId
-            // Otherwise, this ding-dong tries to animate the menu which makes
-            // all the items visible during the animation 🤦🏻‍
-            SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
-            searchBar.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.reset_search ->
-                        viewModel.onResetClicked()
+        SupportMenuInflater(context).inflate(menuRes, searchBar.menu)
+        searchBar.menu.forEach { item ->
+            menuItems[item.itemId] = item
+        }
+        searchBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.reset_search ->
+                    viewModel.onResetClicked()
 
-                    R.id.add_search_bookmark ->
-                        viewModel.onAddBookmarkClicked()
+                R.id.add_search_bookmark ->
+                    viewModel.onAddBookmarkClicked()
 
-                    R.id.edit_search_bookmark ->
-                        viewModel.onEditBookmarkClicked()
-                }
-                true
+                R.id.edit_search_bookmark ->
+                    viewModel.onEditBookmarkClicked()
+
+                R.id.importt ->
+                    onImportClicked()
             }
+            true
         }
 
         searchBar.setOnKeyListener { _, keyCode, event ->
@@ -160,21 +167,23 @@ class GallerySearchBarView(
                 }
         }
 
-        with(searchBar.menu) {
-            findItem(R.id.reset_search)?.apply {
-                isVisible = state is GallerySearchViewModel.State.Applied
-            }
+        menuItems[R.id.reset_search]!!.isVisible =
+            state is GallerySearchViewModel.State.Applied
 
-            findItem(R.id.add_search_bookmark)?.apply {
-                isVisible = state is GallerySearchViewModel.State.Applied
-                        && state.search !is AppliedGallerySearch.Bookmarked
-            }
+        menuItems[R.id.add_search_bookmark]!!.isVisible =
+            state is GallerySearchViewModel.State.Applied
+                    && state.search !is AppliedGallerySearch.Bookmarked
 
-            findItem(R.id.edit_search_bookmark)?.apply {
-                isVisible = state is GallerySearchViewModel.State.Applied
-                        && state.search is AppliedGallerySearch.Bookmarked
-            }
-        }
+        menuItems[R.id.edit_search_bookmark]!!.isVisible =
+            state is GallerySearchViewModel.State.Applied
+                    && state.search is AppliedGallerySearch.Bookmarked
+
+        // Import is not visible on TV:
+        // 1. It would require more search bar focus hassle
+        // 2. Bro, what are you going to import from a TV?!
+        menuItems[R.id.importt]!!.isVisible =
+            state is GallerySearchViewModel.State.NoSearch
+                    && !tvDetector.isRunningOnTv
 
         log.debug {
             "subscribeToState(): handled_new_state:" +
