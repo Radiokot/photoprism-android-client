@@ -32,24 +32,24 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Create the signing keystore
         run: |
           echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > app/ci-signing.jks
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
-          java-version: ${{env.java_version}}
+          java-version: ${{ env.java_version }}
           distribution: temurin
 
       - name: Build ${{ matrix.name }}
         run: ./gradlew ${{ matrix.gradle-command }} --stacktrace
 
       - name: Upload the packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.name }}
           path: ${{ matrix.result }}
           if-no-files-found: error
+          archive: false
