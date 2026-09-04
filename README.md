@@ -22,7 +22,7 @@ It does not support all the official web app functionality, but nevertheless has
 - Enhanced live photo viewer, which works best with Samsung and Apple shots
 - Full-screen slideshow with 5 speed options
 - Deleting items without archiving them first
-- Importing photos and videos trough sharing
+- Importing photos and videos trough sharing and from the app
 - [Connection to both private and public libraries](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide)
 - Endless session without the need to re-enter the password
 - Support for [mTLS (mutual TLS)](https://github.com/Radiokot/photoprism-android-client/wiki/How-to-connect-to-a-library-with-mTLS-(mutual-TLS)-auth%3F), [HTTP basic auth](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#examples-of-valid-urls) and [SSO](https://github.com/Radiokot/photoprism-android-client/wiki/Connection-guide#sso) like Authelia, Cloudflare Access, etc.
