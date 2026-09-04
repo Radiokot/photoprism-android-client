@@ -24,10 +24,8 @@
 -keep class kotlinx.coroutines.CoroutineExceptionHandler
 -keep class kotlinx.coroutines.internal.MainDispatcherFactory
 
-# Kotlin optimization
--assumenosideeffects class kotlin.jvm.internal.Intrinsics {
-  public static void checkNotNull(...);
-}
+# Remove runtime Kotlin null checks
+-processkotlinnullchecks remove
 
 # Offline License Key
 -keep class com.auth0.jwt.** { *; }
