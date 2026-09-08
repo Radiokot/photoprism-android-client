@@ -244,7 +244,9 @@ dependencies {
     // When updating MapLibre,
     // check if anything new is added to the merged manifest,
     // eliminate it and update the MAP feature flag accordingly.
-    implementation 'org.maplibre.gl:android-sdk:13.6.0'
+    //
+    // Do not update until https://github.com/maplibre/maplibre-native/issues/4600 fixed.
+    implementation 'org.maplibre.gl:android-sdk:13.5.1!!'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).
