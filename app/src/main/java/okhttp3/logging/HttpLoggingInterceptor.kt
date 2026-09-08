@@ -21,7 +21,6 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.internal.http.promisesBody
-import okhttp3.internal.platform.Platform
 import okio.Buffer
 import okio.GzipSource
 import java.io.IOException
@@ -37,8 +36,8 @@ import java.util.concurrent.TimeUnit
  * The format of the logs created by this class should not be considered stable and may
  * change slightly between releases. If you need a stable logging format, use your own interceptor.
  */
-class HttpLoggingInterceptor @JvmOverloads constructor(
-    private val logger: Logger = Logger.DEFAULT
+class HttpLoggingInterceptor(
+    private val logger: Logger,
 ) : Interceptor {
 
     @Volatile
@@ -112,25 +111,6 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
 
     fun interface Logger {
         fun log(message: String)
-
-        companion object {
-            /** A [Logger] defaults output appropriate for the current platform. */
-            @JvmField
-            val DEFAULT: Logger = DefaultLogger()
-
-            private class DefaultLogger : Logger {
-                override fun log(message: String) {
-                    Platform.get().log(message)
-                }
-            }
-        }
-    }
-
-    fun redactHeader(name: String) {
-        val newHeadersToRedact = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        newHeadersToRedact += headersToRedact
-        newHeadersToRedact += name
-        headersToRedact = newHeadersToRedact
     }
 
     /**
@@ -146,25 +126,6 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         newContentTypesToSkipBody += contentType.toBasicString()
         contentTypesToSkipBody = newContentTypesToSkipBody
     }
-
-    /**
-     * Sets the level and returns this.
-     *
-     * This was deprecated in OkHttp 4.0 in favor of the [level] val. In OkHttp 4.3 it is
-     * un-deprecated because Java callers can't chain when assigning Kotlin vals. (The getter remains
-     * deprecated).
-     */
-    fun setLevel(level: Level) = apply {
-        this.level = level
-    }
-
-    @JvmName("-deprecated_level")
-    @Deprecated(
-        message = "moved to var",
-        replaceWith = ReplaceWith(expression = "level"),
-        level = DeprecationLevel.ERROR
-    )
-    fun getLevel(): Level = level
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {

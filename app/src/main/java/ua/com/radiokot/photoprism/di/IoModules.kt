@@ -53,13 +53,13 @@ val ioModules: List<Module> = listOf(
                         override fun serialize(
                             value: LocalDate,
                             gen: JsonGenerator,
-                            serializers: SerializerProvider?
+                            serializers: SerializerProvider?,
                         ) = gen.writeNumber(value.time)
                     })
                     addDeserializer(LocalDate::class.java, object : JsonDeserializer<LocalDate>() {
                         override fun deserialize(
                             p: JsonParser,
-                            ctxt: DeserializationContext?
+                            ctxt: DeserializationContext?,
                         ) = LocalDate(p.longValue)
                     })
                 })
@@ -72,7 +72,6 @@ val ioModules: List<Module> = listOf(
         single {
             val logger = KotlinLogging.logger("HTTP")
             HttpLoggingInterceptor(logger::info).apply {
-                @Suppress("KotlinConstantConditions")
                 if (BuildConfig.DEBUG) {
                     level = HttpLoggingInterceptor.Level.BODY
 

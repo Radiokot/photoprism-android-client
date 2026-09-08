@@ -1,3 +1,5 @@
+@file:OptIn(OkHttpInternalApi::class)
+
 package ua.com.radiokot.photoprism.di
 
 import com.squareup.picasso.OkHttp3Downloader
@@ -5,6 +7,7 @@ import com.squareup.picasso.Picasso
 import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
+import okhttp3.internal.OkHttpInternalApi
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier._q

@@ -167,14 +167,17 @@ androidComponents {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+    // minSdk 21
+    //noinspection GradleDependency
+    implementation 'androidx.core:core-ktx:1.17.0!!'
+    //noinspection GradleDependency
+    implementation 'androidx.appcompat:appcompat:1.7.1!!'
 
     // If there is a need to update Material, check and fix colors, resource IDs,
     // searchbar, bottom nav, nav rail, chips behavior.
     implementation 'com.google.android.material:material:1.8.0!!'
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0'
 
@@ -211,9 +214,9 @@ dependencies {
     implementation('com.gitlab.mvysny.slf4j:slf4j-handroid:2.0.13') {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
-    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'org.slf4j:slf4j-api:2.0.19'
 
-    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.5.0'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation 'com.squareup.retrofit2:converter-jackson:3.0.0'
     implementation 'com.squareup.retrofit2:converter-scalars:3.0.0'
@@ -229,7 +232,9 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
-    implementation 'androidx.browser:browser:1.9.0'
+    // minSDK 21
+    //noinspection GradleDependency
+    implementation 'androidx.browser:browser:1.9.0!!'
     implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
     implementation 'com.github.Radiokot:offline-license-key:1.0.0'
     // Must be 4.3 for Java 8 compatibility.
@@ -239,7 +244,7 @@ dependencies {
     // When updating MapLibre,
     // check if anything new is added to the merged manifest,
     // eliminate it and update the MAP feature flag accordingly.
-    implementation 'org.maplibre.gl:android-sdk:13.4.1'
+    implementation 'org.maplibre.gl:android-sdk:13.6.0'
 
     // When updating the player,
     // check if ClippingSourceFixMediaSourceFactory keeps working (reflection).
@@ -254,7 +259,7 @@ dependencies {
     testImplementation "io.insert-koin:koin-test"
     testImplementation "io.insert-koin:koin-test-junit4"
 
-    testImplementation 'org.slf4j:slf4j-simple:2.0.17'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.18'
 
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
