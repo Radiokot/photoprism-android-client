@@ -1,0 +1,3 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed network-related errors being shown as "UndeclaredThrowableException"
