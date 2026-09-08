@@ -15,6 +15,9 @@
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
 
+# Exception metadata required by Retrofit and RxJava
+-keepattributes Exceptions
+
 # Logging stack
 -dontwarn javax.mail.**
 -keep class org.slf4j.** { *; }
