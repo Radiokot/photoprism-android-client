@@ -37,6 +37,8 @@ constructor(
     val lat: Double,
     @JsonProperty("Lng")
     val lng: Double,
+    @JsonProperty("Projection")
+    val projection: String?,
 ) {
     /**
      * [file.go](https://github.com/photoprism/photoprism/blob/47e9b20929e44bd63d32cb50a393371d24bcaff8/internal/entity/file.go#L40)

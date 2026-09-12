@@ -50,6 +50,10 @@ class GalleryMedia(
      * Whether the entry is hidden (marked as private) or not.
      */
     var isPrivate: Boolean,
+    /**
+     * Panorama projection if it is meaningful for the gallery, null otherwise.
+     */
+    val panoramaProjection: PanoramaProjection?,
     val latLng: LatLngPair?,
     val hash: String,
     files: List<File>,
@@ -77,7 +81,8 @@ class GalleryMedia(
 
                 TypeName.RAW,
                 TypeName.VIDEO,
-                TypeName.VECTOR ->
+                TypeName.VECTOR,
+                    ->
                     files.find { it.mediaType == this.media.typeName && it.root == "/" }
 
                 else ->
@@ -144,6 +149,10 @@ class GalleryMedia(
                         null,
                 files = files,
                 hash = source.hash,
+                panoramaProjection = when (source.projection) {
+                    "equirectangular" -> PanoramaProjection.Equirectengular
+                    else -> null
+                },
             )
         }
     }
@@ -376,6 +385,11 @@ class GalleryMedia(
         override fun toString(): String {
             return "File(uid='$uid', name='$name')"
         }
+    }
+
+    enum class PanoramaProjection {
+        Equirectengular,
+        ;
     }
 }
 

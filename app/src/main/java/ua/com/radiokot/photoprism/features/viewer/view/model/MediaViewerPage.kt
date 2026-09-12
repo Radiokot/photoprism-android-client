@@ -106,6 +106,22 @@ sealed class MediaViewerPage(
                     )
                 }
 
+                source.panoramaProjection != null ->
+                    PanoramaViewerPage(
+                        previewUrl = previewUrlFactory.getImagePreviewUrl(
+                            previewHash = source.hash,
+                            sizePx = max(
+                                imageViewSize.width,
+                                imageViewSize.height
+                            )
+                        ),
+                        thumbnailUrl = previewUrlFactory.getThumbnailUrl(
+                            thumbnailHash = source.hash,
+                            sizePx = THUMBNAIL_SIZE_PX,
+                        ),
+                        source = source,
+                    )
+
                 source.media is Viewable.AsVideo ->
                     VideoViewerPage(
                         previewUrl = previewUrlFactory.getVideoPreviewUrl(

@@ -68,7 +68,7 @@ class ImageViewerPage(
             picasso
                 .load(item.previewUrl)
                 .hardwareConfigIfAvailable()
-                // Picasso deferred fit is no good when we we want to resize the image
+                // Picasso deferred fit is no good when we want to resize the image
                 // considering the zoom factor, so the zoom actually makes sense.
                 .resize(item.imageViewSize.width, item.imageViewSize.height)
                 .centerInside()
