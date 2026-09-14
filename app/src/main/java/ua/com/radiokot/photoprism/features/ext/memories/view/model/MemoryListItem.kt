@@ -10,7 +10,7 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ListItemMemoryBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
-import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
+import ua.com.radiokot.photoprism.extension.hardwareOr565
 import ua.com.radiokot.photoprism.features.ext.memories.data.model.Memory
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 
@@ -61,7 +61,7 @@ class MemoryListItem(
 
             picasso
                 .load(item.thumbnailUrl)
-                .hardwareConfigIfAvailable()
+                .hardwareOr565()
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .centerCrop()

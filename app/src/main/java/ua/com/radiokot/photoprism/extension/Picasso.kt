@@ -15,9 +15,11 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * **It only suitable for immutable images!**
  */
-fun RequestCreator.hardwareConfigIfAvailable(): RequestCreator = apply {
+fun RequestCreator.hardwareOr565(): RequestCreator = apply {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         config(Bitmap.Config.HARDWARE)
+    } else {
+        config(Bitmap.Config.RGB_565)
     }
 }
 

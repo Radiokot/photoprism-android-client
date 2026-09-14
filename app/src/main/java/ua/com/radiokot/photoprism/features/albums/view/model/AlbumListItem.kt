@@ -15,7 +15,7 @@ import ua.com.radiokot.photoprism.databinding.ListItemCollectionBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
 import ua.com.radiokot.photoprism.di.UTC_MONTH_YEAR_DATE_FORMAT
 import ua.com.radiokot.photoprism.extension.capitalized
-import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
+import ua.com.radiokot.photoprism.extension.hardwareOr565
 import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.util.LocalDate
@@ -73,7 +73,7 @@ class AlbumListItem(
 
             picasso
                 .load(item.thumbnailUrl)
-                .hardwareConfigIfAvailable()
+                .hardwareOr565()
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .centerCrop()
