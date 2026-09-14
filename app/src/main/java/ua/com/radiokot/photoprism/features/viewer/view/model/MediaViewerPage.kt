@@ -106,8 +106,9 @@ sealed class MediaViewerPage(
                     )
                 }
 
-                source.panoramaProjection != null ->
-                    PanoramaViewerPage(
+                source.media is Viewable.AsImage
+                        && source.panoramaProjection != null ->
+                    PanoramaImageViewerPage(
                         previewUrl = previewUrlFactory.getImagePreviewUrl(
                             previewHash = source.hash,
                             sizePx = max(

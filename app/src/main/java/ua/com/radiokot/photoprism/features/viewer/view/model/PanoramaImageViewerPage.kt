@@ -1,12 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
-import android.graphics.Bitmap
-import android.opengl.GLSurfaceView
 import android.view.View
-import com.panoramagl.PLImage
-import com.panoramagl.PLManager
-import com.panoramagl.PLRenderer
-import com.panoramagl.PLSphericalPanorama
 import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -16,11 +10,12 @@ import org.koin.core.scope.Scope
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.PagerItemMediaViewerPanoramaBinding
 import ua.com.radiokot.photoprism.di.DI_SCOPE_SESSION
+import ua.com.radiokot.photoprism.extension.hardwareConfigIfAvailable
 import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 
-class PanoramaViewerPage(
+class PanoramaImageViewerPage(
     val previewUrl: String,
     thumbnailUrl: String,
     source: GalleryMedia?,
@@ -39,59 +34,58 @@ class PanoramaViewerPage(
 
     class ViewHolder(
         val view: PagerItemMediaViewerPanoramaBinding,
-    ) : MediaViewerPageViewHolder<PanoramaViewerPage>(view.root),
+    ) : MediaViewerPageViewHolder<PanoramaImageViewerPage>(view.root),
         KoinScopeComponent {
 
         override val scope: Scope
             get() = getKoin().getScope(DI_SCOPE_SESSION)
 
         private val picasso: Picasso by inject()
+        private var isLoadingFinished = false
         private var loadingDisposable: Disposable? = null
 
-        private val panorama = PLSphericalPanorama()
-        private val renderer = PLRenderer(
-            scene = panorama,
-            view = PLManager(view.root.context)
-                .also(PLManager::onCreate),
-        )
+        override fun bindView(item: PanoramaImageViewerPage, payloads: List<Any>) {
+            super.bindView(item, payloads)
 
-        init {
-            view.surfaceView.setRenderer(renderer)
-            view.surfaceView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-        }
-
-        override fun attachToWindow(item: PanoramaViewerPage) {
-            super.attachToWindow(item)
             view.progressIndicator.show()
+            view.errorTextView.visibility = View.GONE
+            isLoadingFinished = false
 
             loadingDisposable?.dispose()
             loadingDisposable =
                 picasso
                     .load(item.previewUrl)
-                    .config(Bitmap.Config.RGB_565)
+                    .hardwareConfigIfAvailable()
                     .intoSingle()
                     .subscribeBy(
                         onError = {
                             view.progressIndicator.hide()
+                            view.errorTextView.visibility = View.VISIBLE
+                            isLoadingFinished = true
                             onContentPresented()
-                            // TODO show the error
                         },
-                        onSuccess = { image ->
-                            panorama.setImage(
-                                PLImage(
-                                    bitmap = image,
-                                    copy = false,
-                                )
-                            )
-                            panorama.camera.zoomLevel = 2
-
+                        onSuccess = { bitmap ->
                             view.progressIndicator.hide()
+                            isLoadingFinished = true
                             onContentPresented()
+
+                            view.panoramaPreviewView.setPanoramaImage(
+                                bitmap = bitmap,
+                                projection = GalleryMedia.PanoramaProjection.Equirect,
+                            )
                         }
                     )
         }
 
-        override fun unbindView(item: PanoramaViewerPage) {
+        override fun attachToWindow(item: PanoramaImageViewerPage) {
+            // If attached without re-binding (swipe to a previous page)
+            // and the loading is finished, call the content presentation callback.
+            if (isLoadingFinished) {
+                onContentPresented()
+            }
+        }
+
+        override fun unbindView(item: PanoramaImageViewerPage) {
             loadingDisposable?.dispose()
         }
     }

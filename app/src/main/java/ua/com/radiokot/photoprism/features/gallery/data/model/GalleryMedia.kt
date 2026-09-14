@@ -150,7 +150,7 @@ class GalleryMedia(
                 files = files,
                 hash = source.hash,
                 panoramaProjection = when (source.projection) {
-                    "equirectangular" -> PanoramaProjection.Equirectengular
+                    "equirectangular" -> PanoramaProjection.Equirect
                     else -> null
                 },
             )
@@ -388,7 +388,7 @@ class GalleryMedia(
     }
 
     enum class PanoramaProjection {
-        Equirectengular,
+        Equirect,
         ;
     }
 }
