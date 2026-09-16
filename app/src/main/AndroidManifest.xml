@@ -49,6 +49,9 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="false" />
 
     <queries>
         <!-- Required for the Custom Tabs fallback -->
@@ -267,6 +270,12 @@
             android:exported="false"
             android:resizeableActivity="true"
             android:theme="@style/MapTheme" />
+
+        <activity
+            android:name=".features.viewer.view.PanoramaViewerActivity"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:theme="@style/MediaViewerTheme" />
 
         <provider
             android:name=".features.gallery.logic.UpdatableFileProvider"
