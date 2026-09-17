@@ -14,7 +14,7 @@
         android:layout_centerInParent="true"
         android:background="@drawable/video_play_pause_button_background"
         android:nextFocusDown="@id/exo_progress"
-        android:tint="?colorOnSecondaryContainer"
+        app:tint="?colorOnSecondaryContainer"
         tools:ignore="PrivateResource"
         tools:srcCompat="@drawable/exo_styled_controls_play">
         <!-- Content description and image are set by

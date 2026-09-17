@@ -13,6 +13,7 @@ import ua.com.radiokot.photoprism.extension.checkNotNull
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.extension.observeOnMain
 import ua.com.radiokot.photoprism.featureflags.extension.hasMap
+import ua.com.radiokot.photoprism.featureflags.extension.hasPanorama3DViewer
 import ua.com.radiokot.photoprism.featureflags.logic.FeatureFlags
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
@@ -194,6 +195,8 @@ class GalleryMediaViewerViewModel(
             return
         }
 
+        val canOpenPanoramas = featureFlags.hasPanorama3DViewer
+
         itemsList.value = galleryMediaRepository
             .itemsList
             .map { galleryMedia ->
@@ -205,6 +208,7 @@ class GalleryMediaViewerViewModel(
                         imageViewSize = imageViewSize,
                         livePhotosAsImages = galleryPreferences.livePhotosAsImages.value!!,
                         borderlessVideo = isVideoBorderless,
+                        canOpenPanoramas = canOpenPanoramas,
                         previewUrlFactory = previewUrlFactory,
                     )
             }
@@ -645,6 +649,34 @@ class GalleryMediaViewerViewModel(
         update(force = true)
     }
 
+    fun onOpenPanoramaClicked(position: Int) {
+        val item =
+            itemsList.value?.getOrNull(position) as? Panorama2DPreviewViewerPage
+
+        if (item == null) {
+            log.warn {
+                "onOpenPanoramaClicked(): position_out_of_range"
+            }
+            return
+        }
+
+        val imageUrl = item.previewUrl
+        val projection = item.projection
+
+        log.debug {
+            "onOpenPanoramaClicked(): opening_panorama:" +
+                    "\nimageUrl=$imageUrl," +
+                    "\nprojection=$projection"
+        }
+
+        eventsSubject.onNext(
+            Event.OpenPanorama3DViewer(
+                imageUrl = imageUrl,
+                projection = projection,
+            )
+        )
+    }
+
     sealed interface SubtitleValue {
         class Static(val value: String) : SubtitleValue
 
@@ -662,6 +694,11 @@ class GalleryMediaViewerViewModel(
         class OpenSlideshow(
             val mediaIndex: Int,
             val repositoryParams: SimpleGalleryMediaRepository.Params,
+        ) : Event
+
+        class OpenPanorama3DViewer(
+            val imageUrl: String,
+            val projection: GalleryMedia.PanoramaProjection,
         ) : Event
 
         object Finish : Event

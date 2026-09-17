@@ -13,3 +13,6 @@ val FeatureFlags.hasPhotoFrameWidget: Boolean
 
 val FeatureFlags.hasMap: Boolean
     get() = hasFeature(FeatureFlags.Feature.MAP)
+
+val FeatureFlags.hasPanorama3DViewer: Boolean
+    get() = hasFeature(FeatureFlags.Feature.PANORAMA_3D_VIEWER)

@@ -6,7 +6,7 @@ interface FeatureFlags {
     operator fun contains(feature: Feature): Boolean =
         hasFeature(feature)
 
-    operator fun plus(other: FeatureFlags) = object : FeatureFlags{
+    operator fun plus(other: FeatureFlags) = object : FeatureFlags {
         override fun hasFeature(feature: Feature): Boolean =
             feature in this@FeatureFlags || feature in other
     }
@@ -15,6 +15,7 @@ interface FeatureFlags {
         EXTENSION_STORE,
         PHOTO_FRAME_WIDGET,
         MAP,
+        PANORAMA_3D_VIEWER,
         MEMORIES_EXTENSION,
         TEST_EXTENSION,
         ;

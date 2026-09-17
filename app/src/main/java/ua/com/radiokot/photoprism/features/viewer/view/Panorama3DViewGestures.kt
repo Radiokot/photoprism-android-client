@@ -7,8 +7,8 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 
-class PanoramaViewGestures(
-    private val view: PanoramaView,
+class Panorama3DViewGestures(
+    private val view: Panorama3DView,
 ) : View.OnTouchListener {
 
     private val dragSensitivity = 0.18f

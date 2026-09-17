@@ -272,7 +272,7 @@
             android:theme="@style/MapTheme" />
 
         <activity
-            android:name=".features.viewer.view.PanoramaViewerActivity"
+            android:name=".features.viewer.view.Panorama3DViewerActivity"
             android:exported="false"
             android:resizeableActivity="true"
             android:theme="@style/MediaViewerTheme" />

@@ -4,6 +4,7 @@ import com.mikepenz.fastadapter.diff.DiffCallback
 import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.Panorama2DPreviewViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.UnsupportedNoticePage
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
 
@@ -33,6 +34,12 @@ class MediaViewerPageDiffCallback : DiffCallback<MediaViewerPage> {
                 && newItem is VideoViewerPage ->
             oldItem.needsVideoControls == newItem.needsVideoControls
                     && oldItem.isVideoBorderless == newItem.isVideoBorderless
+
+        oldItem is Panorama2DPreviewViewerPage
+                && newItem is Panorama2DPreviewViewerPage ->
+            oldItem.previewUrl == newItem.previewUrl
+                    && oldItem.needsOpenPanoramaButton == newItem.needsOpenPanoramaButton
+                    && oldItem.projection == newItem.projection
 
         oldItem is UnsupportedNoticePage
                 && newItem is UnsupportedNoticePage ->

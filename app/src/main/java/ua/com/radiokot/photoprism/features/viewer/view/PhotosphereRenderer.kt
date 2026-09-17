@@ -41,7 +41,7 @@ class PhotosphereRenderer(
             }
         }
 
-    var fovDegrees = 70f
+    var fovDegrees = 75f
         set(value) {
             if (field != value) {
                 field = value

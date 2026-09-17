@@ -15,7 +15,7 @@ class PhotosphereView(
     context: Context,
     attrs: AttributeSet? = null,
 ) : GLSurfaceView(context, attrs),
-    PanoramaView {
+    Panorama3DView {
 
     constructor(
         context: Context,

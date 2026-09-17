@@ -3,7 +3,6 @@ package ua.com.radiokot.photoprism.features.viewer.view
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.squareup.picasso.Picasso
@@ -16,9 +15,8 @@ import ua.com.radiokot.photoprism.extension.intoSingle
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 
-@RequiresApi(Build.VERSION_CODES.M)
-class PanoramaViewerActivity : BaseActivity() {
-    private val log = kLogger("PanoramaViewerActivity")
+class Panorama3DViewerActivity : BaseActivity() {
+    private val log = kLogger("Panorama3DViewerActivity")
 
     private val picasso: Picasso by inject()
     private val windowInsetsController: WindowInsetsControllerCompat by lazy {
@@ -29,7 +27,7 @@ class PanoramaViewerActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (goToEnvConnectionIfNoSession()) {
+        if (goToEnvConnectionIfNoSession() || Build.VERSION.SDK_INT < 23) {
             return
         }
 
@@ -66,7 +64,7 @@ class PanoramaViewerActivity : BaseActivity() {
                                 "\nprojection=$projection"
                     }
 
-                    val panoramaView: PanoramaView = when (projection) {
+                    val panorama3DView: Panorama3DView = when (projection) {
                         GalleryMedia.PanoramaProjection.Equirect ->
                             PhotosphereView(
                                 context = this,
@@ -74,34 +72,34 @@ class PanoramaViewerActivity : BaseActivity() {
                             )
                     }
 
-                    onPanoramaViewCreated(panoramaView)
+                    onPanoramaViewCreated(panorama3DView)
                 }
             )
             .autoDispose(this)
     }
 
     private fun onPanoramaViewCreated(
-        panoramaView: PanoramaView,
+        panorama3DView: Panorama3DView,
     ) {
-        panoramaView as View
+        panorama3DView as View
 
         log.debug {
             "onPanoramaViewCreated(): panorama_view_created:" +
-                    "\npanoramaView=$panoramaView"
+                    "\npanoramaView=$panorama3DView"
         }
 
-        setContentView(panoramaView)
-        initPanoramaViewTouch(panoramaView)
+        setContentView(panorama3DView)
+        initPanoramaViewTouch(panorama3DView)
     }
 
     @Suppress("DEPRECATION")
     private fun initPanoramaViewTouch(
-        panoramaView: PanoramaView,
+        panorama3DView: Panorama3DView,
     ) {
-        panoramaView as View
-        panoramaView.setOnTouchListener(
-            PanoramaViewGestures(
-                view = panoramaView,
+        panorama3DView as View
+        panorama3DView.setOnTouchListener(
+            Panorama3DViewGestures(
+                view = panorama3DView,
             )
         )
 
@@ -110,7 +108,7 @@ class PanoramaViewerActivity : BaseActivity() {
             isFullScreen =
                 flags and View.SYSTEM_UI_FLAG_FULLSCREEN == View.SYSTEM_UI_FLAG_FULLSCREEN
         }
-        panoramaView.setOnClickListener {
+        panorama3DView.setOnClickListener {
             if (isFullScreen) {
                 windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
             } else {

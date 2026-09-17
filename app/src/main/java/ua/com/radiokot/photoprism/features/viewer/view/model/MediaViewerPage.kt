@@ -32,6 +32,7 @@ sealed class MediaViewerPage(
             imageViewSize: Size,
             livePhotosAsImages: Boolean,
             borderlessVideo: Boolean,
+            canOpenPanoramas: Boolean,
             previewUrlFactory: MediaPreviewUrlFactory,
         ): MediaViewerPage {
             return when {
@@ -108,7 +109,9 @@ sealed class MediaViewerPage(
 
                 source.media is Viewable.AsImage
                         && source.panoramaProjection != null ->
-                    PanoramaImageViewerPage(
+                    Panorama2DPreviewViewerPage(
+                        needsOpenPanoramaButton = canOpenPanoramas,
+                        projection = source.panoramaProjection,
                         previewUrl = previewUrlFactory.getImagePreviewUrl(
                             previewHash = source.hash,
                             sizePx = max(

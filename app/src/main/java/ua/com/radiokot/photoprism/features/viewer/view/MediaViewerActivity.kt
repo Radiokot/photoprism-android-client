@@ -59,6 +59,7 @@ import ua.com.radiokot.photoprism.extension.setThrottleOnClickListener
 import ua.com.radiokot.photoprism.extension.showOverflowItemIcons
 import ua.com.radiokot.photoprism.extension.subscribe
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.LatLngPair
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -74,6 +75,7 @@ import ua.com.radiokot.photoprism.features.viewer.view.model.FadeEndLivePhotoVie
 import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.ImageViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.MediaViewerPage
+import ua.com.radiokot.photoprism.features.viewer.view.model.Panorama2DPreviewViewerPage
 import ua.com.radiokot.photoprism.features.viewer.view.model.SwipeDirection
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoViewerPage
@@ -257,6 +259,8 @@ class MediaViewerActivity : BaseActivity() {
                 override fun onBind(viewHolder: ViewHolder): View? {
                     if (viewHolder is VideoPlayerViewHolder) {
                         setUpVideoViewer(viewHolder)
+                    } else if (viewHolder is Panorama2DPreviewViewerPage.ViewHolder) {
+                        setUpPanoramaPreview(viewHolder)
                     }
 
                     return null
@@ -701,6 +705,19 @@ class MediaViewerActivity : BaseActivity() {
         }
     }
 
+    private fun setUpPanoramaPreview(viewHolder: Panorama2DPreviewViewerPage.ViewHolder) {
+        viewModel.areBottomControlsVisible.observe(this@MediaViewerActivity) { areBottomControlsVisible ->
+            viewHolder.view.openPanoramaButton.clearAnimation()
+            viewHolder.view.openPanoramaButton.fadeVisibility(areBottomControlsVisible)
+        }
+
+        viewHolder.view.openPanoramaButton.setOnClickListener {
+            viewModel.onOpenPanoramaClicked(
+                position = view.viewPager.currentItem,
+            )
+        }
+    }
+
     private fun subscribeToData() {
         viewModel.isLoading.observe(this) { isLoading ->
             log.debug {
@@ -933,6 +950,12 @@ class MediaViewerActivity : BaseActivity() {
                     openMap(
                         startPosition = event.startPosition,
                     )
+
+                is GalleryMediaViewerViewModel.Event.OpenPanorama3DViewer ->
+                    openPanorama3DViewer(
+                        imageUrl = event.imageUrl,
+                        projection = event.projection,
+                    )
             }
 
             log.debug {
@@ -1061,6 +1084,20 @@ class MediaViewerActivity : BaseActivity() {
             Intent(this, MapActivity::class.java).putExtras(
                 MapActivity.getBundle(
                     startPosition = startPosition,
+                )
+            )
+        )
+    }
+
+    private fun openPanorama3DViewer(
+        imageUrl: String,
+        projection: GalleryMedia.PanoramaProjection,
+    ) {
+        startActivity(
+            Intent(this, Panorama3DViewerActivity::class.java).putExtras(
+                Panorama3DViewerActivity.getBundle(
+                    imageUrl = imageUrl,
+                    projection = projection,
                 )
             )
         )

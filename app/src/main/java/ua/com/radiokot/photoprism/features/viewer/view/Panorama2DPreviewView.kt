@@ -10,7 +10,7 @@ import android.view.View
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import kotlin.math.roundToInt
 
-class PanoramaImagePreviewView
+class Panorama2DPreviewView
 @JvmOverloads
 constructor(
     context: Context,
