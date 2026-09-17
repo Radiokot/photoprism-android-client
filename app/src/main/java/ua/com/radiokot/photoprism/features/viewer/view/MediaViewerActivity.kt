@@ -827,9 +827,8 @@ class MediaViewerActivity : BaseActivity() {
         }
     }
 
-    private fun hideSystemUI() = with(windowInsetsController) {
-        hide(WindowInsetsCompat.Type.systemBars())
-    }
+    private fun hideSystemUI() =
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
 
     private fun showSystemUI() =
         windowInsetsController.show(WindowInsetsCompat.Type.systemBars())

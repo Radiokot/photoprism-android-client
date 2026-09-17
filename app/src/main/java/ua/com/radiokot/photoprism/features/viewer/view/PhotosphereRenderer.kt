@@ -27,20 +27,26 @@ class PhotosphereRenderer(
 
     var pitchDegrees = 0f
         set(value) {
-            field = value
-            updateViewMatrix()
+            if (field != value) {
+                field = value
+                viewMatrixNeedsUpdate = true
+            }
         }
 
     var yawDegrees = 0f
         set(value) {
-            field = value
-            updateViewMatrix()
+            if (field != value) {
+                field = value
+                viewMatrixNeedsUpdate = true
+            }
         }
 
     var fovDegrees = 70f
         set(value) {
-            field = value
-            updateProjectionMatrix()
+            if (field != value) {
+                field = value
+                projectionMatrixNeedsUpdate = true
+            }
         }
 
     private val vertexShaderCode = """
@@ -82,6 +88,8 @@ class PhotosphereRenderer(
     private var surfaceTextureNeedsUpdate = false
     private var surfaceTexture: SurfaceTexture? = null
     private var sphereIndexCount = 0
+    private var viewMatrixNeedsUpdate = true
+    private var projectionMatrixNeedsUpdate = true
 
     override fun onSurfaceCreated(
         gl: GL10,
@@ -91,7 +99,8 @@ class PhotosphereRenderer(
         loadSphereModel()
         loadTexture()
 
-        updateViewMatrix()
+        projectionMatrixNeedsUpdate = true
+        viewMatrixNeedsUpdate = true
     }
 
     override fun onSurfaceChanged(
@@ -103,8 +112,7 @@ class PhotosphereRenderer(
 
         surfaceWidth = width
         surfaceHeight = height
-
-        updateProjectionMatrix()
+        projectionMatrixNeedsUpdate = true
     }
 
     override fun onDrawFrame(gl: GL10) {
@@ -113,6 +121,16 @@ class PhotosphereRenderer(
         if (surfaceTextureNeedsUpdate) {
             surfaceTexture!!.updateTexImage()
             surfaceTextureNeedsUpdate = false
+        }
+
+        if (viewMatrixNeedsUpdate) {
+            updateViewMatrix()
+            viewMatrixNeedsUpdate = false
+        }
+
+        if (projectionMatrixNeedsUpdate) {
+            updateProjectionMatrix()
+            viewMatrixNeedsUpdate = false
         }
 
         GLES20.glDrawElements(

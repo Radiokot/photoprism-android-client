@@ -14,7 +14,8 @@ class PhotosphereView(
     equirectBitmap: Bitmap,
     context: Context,
     attrs: AttributeSet? = null,
-) : GLSurfaceView(context, attrs) {
+) : GLSurfaceView(context, attrs),
+    PanoramaView {
 
     constructor(
         context: Context,
@@ -25,6 +26,10 @@ class PhotosphereView(
         PhotosphereRenderer(
             equirectBitmap = equirectBitmap,
         )
+
+    override var pitchDegrees: Float by renderer::pitchDegrees
+    override var yawDegrees: Float by renderer::yawDegrees
+    override var fovDegrees: Float by renderer::fovDegrees
 
     init {
         setEGLContextClientVersion(2)

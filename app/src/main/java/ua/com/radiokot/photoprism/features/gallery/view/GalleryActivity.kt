@@ -56,6 +56,7 @@ import ua.com.radiokot.photoprism.features.albums.data.model.Album
 import ua.com.radiokot.photoprism.features.albums.view.AlbumsActivity
 import ua.com.radiokot.photoprism.features.albums.view.DestinationAlbumSelectionActivity
 import ua.com.radiokot.photoprism.features.ext.memories.view.GalleryMemoriesListView
+import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.SearchConfig
 import ua.com.radiokot.photoprism.features.gallery.data.model.SendableFile
 import ua.com.radiokot.photoprism.features.gallery.data.storage.SimpleGalleryMediaRepository
@@ -76,6 +77,7 @@ import ua.com.radiokot.photoprism.features.labels.view.LabelsActivity
 import ua.com.radiokot.photoprism.features.map.view.MapActivity
 import ua.com.radiokot.photoprism.features.prefs.view.PreferencesActivity
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerActivity
+import ua.com.radiokot.photoprism.features.viewer.view.PanoramaViewerActivity
 import ua.com.radiokot.photoprism.features.webview.view.WebViewActivity
 import ua.com.radiokot.photoprism.features.welcome.data.storage.WelcomeScreenPreferences
 import ua.com.radiokot.photoprism.features.welcome.view.WelcomeActivity
@@ -235,6 +237,17 @@ class GalleryActivity : BaseActivity() {
 
         onBackPressedDispatcher.addCallback(viewModel.backPressedCallback)
         onBackPressedDispatcher.addCallback(navigationView.backPressedCallback)
+
+        // TODO remove
+        startActivity(
+            Intent(this, PanoramaViewerActivity::class.java)
+                .putExtras(
+                    PanoramaViewerActivity.getBundle(
+                        imageUrl = "https://demo-cdn.photoprism.app/api/v1/t/960fc81b1d76f932e31407c7cae5af34384c3710/rk3sw3z5/fit_3840",
+                        projection = GalleryMedia.PanoramaProjection.Equirect,
+                    )
+                )
+        )
     }
 
     private fun subscribeToData() {
