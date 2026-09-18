@@ -1,7 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
@@ -10,6 +9,7 @@ import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.os.Build
 import android.view.Surface
+import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import okio.Closeable
 import java.nio.ByteBuffer
@@ -21,6 +21,8 @@ import kotlin.math.sin
 
 @RequiresApi(Build.VERSION_CODES.M)
 class PhotosphereRenderer(
+    @param:ColorInt
+    private val backgroundColor: Int,
     private val equirectBitmap: Bitmap,
 ) : GLSurfaceView.Renderer,
     Closeable {
@@ -353,7 +355,7 @@ class PhotosphereRenderer(
         val surface = Surface(surfaceTexture)
         with(surface.lockHardwareCanvas()) {
             try {
-                drawColor(Color.DKGRAY)
+                drawColor(backgroundColor)
                 drawBitmap(
                     equirectBitmap,
                     (textureWidth - equirectBitmap.width) / 2f,

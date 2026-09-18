@@ -6,8 +6,10 @@ import android.opengl.GLSurfaceView
 import android.os.Build
 import android.util.AttributeSet
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import ua.com.radiokot.photoprism.R
 
 @RequiresApi(Build.VERSION_CODES.M)
 class PhotosphereView(
@@ -24,6 +26,7 @@ class PhotosphereView(
 
     private val renderer =
         PhotosphereRenderer(
+            backgroundColor = ContextCompat.getColor(context, R.color.md_theme_dark_background),
             equirectBitmap = equirectBitmap,
         )
 
