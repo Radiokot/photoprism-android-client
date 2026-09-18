@@ -49,6 +49,14 @@ class PhotosphereRenderer(
             }
         }
 
+    var rollDegrees = 0f
+        set(value) {
+            if (field != value) {
+                field = value
+                viewMatrixNeedsUpdate = true
+            }
+        }
+
     /**
      * The smaller the field of view, the greater the zoom.
      */
@@ -406,6 +414,7 @@ class PhotosphereRenderer(
         Matrix.setIdentityM(viewMatrix, 0)
         Matrix.rotateM(viewMatrix, 0, pitchDegrees, 1f, 0f, 0f)
         Matrix.rotateM(viewMatrix, 0, yawDegrees, 0f, 1f, 0f)
+        Matrix.rotateM(viewMatrix, 0, rollDegrees, 0f, 0f, 1f)
         GLES20.glUniformMatrix4fv(
             uViewMatrixLocation,
             1,

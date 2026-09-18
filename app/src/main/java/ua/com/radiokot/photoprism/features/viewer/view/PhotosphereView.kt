@@ -30,19 +30,9 @@ class PhotosphereView(
             equirectBitmap = equirectBitmap,
         )
 
-    /**
-     * Positive to look up, negative to look down, up to 90 degrees.
-     */
     override var pitchDegrees: Float by renderer::pitchDegrees
-
-    /**
-     * 0 to look at the image center.
-     */
     override var yawDegrees: Float by renderer::yawDegrees
-
-    /**
-     * The smaller the field of view, the greater the zoom.
-     */
+    override var rollDegrees: Float by renderer::rollDegrees
     override var fovDegrees: Float by renderer::fovDegrees
 
     init {

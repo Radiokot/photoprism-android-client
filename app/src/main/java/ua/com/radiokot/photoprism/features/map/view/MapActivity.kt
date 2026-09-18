@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.color.MaterialColors
@@ -88,9 +87,6 @@ class MapActivity : BaseActivity() {
     private val log = kLogger("MapActivity")
     private val viewModel: MapViewModel by viewModel()
     private lateinit var view: ActivityMapBinding
-    private val windowInsetsController: WindowInsetsControllerCompat by lazy {
-        WindowInsetsControllerCompat(window, window.decorView)
-    }
     private val picasso by inject<Picasso>()
     private val previewUrlFactory by inject<PhotoPrismMediaPreviewUrlFactory>()
     private val thumbnailSizePx: Int by lazy {
@@ -120,7 +116,6 @@ class MapActivity : BaseActivity() {
         setContentView(view.root)
 
         initToolbar()
-        initFullScreen()
 
         view.map.onCreate(savedInstanceState)
         initMap(savedInstanceState)
@@ -145,11 +140,6 @@ class MapActivity : BaseActivity() {
                 )
             }
         }
-    }
-
-    private fun initFullScreen() {
-        windowInsetsController.systemBarsBehavior =
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
     private fun initMap(savedInstanceState: Bundle?) = view.map.getMapAsync { map ->

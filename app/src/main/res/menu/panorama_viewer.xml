@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/panorama_view_toggle"
+        android:icon="@drawable/ic_compass"
+        android:title="@string/panorama_view_by_phone_movement"
+        app:iconTint="?colorOnSurfaceVariant"
+        app:showAsAction="always"
+        tools:ignore="PrivateResource" />
+</menu>
