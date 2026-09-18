@@ -48,7 +48,7 @@ class Panorama3DViewGestures(
                 val factor = dragSensitivity * view.fovDegrees / maxFov
 
                 view.yawDegrees =
-                    (view.yawDegrees - (distanceX * factor)) % 360f
+                    (view.yawDegrees + (distanceX * factor)) % 360f
                 view.pitchDegrees =
                     (view.pitchDegrees + (distanceY * factor)).coerceIn(-89f, 89f)
 

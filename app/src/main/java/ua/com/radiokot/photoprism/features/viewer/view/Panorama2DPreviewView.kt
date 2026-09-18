@@ -25,6 +25,27 @@ constructor(
     private var lastDrawTimeNs = System.currentTimeMillis()
     private var bitmapWindowOffsetX = 0f
 
+    /**
+     * 0 when looking at the image center.
+     * [Float.NaN] when there's no image.
+     */
+    val yawDegrees: Float
+        get() {
+            val bitmap = bitmap
+                ?: return Float.NaN
+            val projection = projection
+                ?: return Float.NaN
+
+            return when (projection) {
+                GalleryMedia.PanoramaProjection.Equirect -> {
+                    val bitmapCenterX = bitmap.width / 2f
+                    val bitmapWindowCenterX = bitmapWindowOffsetX + bitmapRect.width() / 2f
+                    val deltaX = bitmapWindowCenterX - bitmapCenterX
+                    (deltaX / bitmap.width) * 360f
+                }
+            }
+        }
+
     fun setPanoramaImage(
         bitmap: Bitmap,
         projection: GalleryMedia.PanoramaProjection,

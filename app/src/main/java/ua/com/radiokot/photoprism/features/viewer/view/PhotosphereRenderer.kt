@@ -25,6 +25,9 @@ class PhotosphereRenderer(
 ) : GLSurfaceView.Renderer,
     Closeable {
 
+    /**
+     * Positive to look up, negative to look down, up to 90 degrees.
+     */
     var pitchDegrees = 0f
         set(value) {
             if (field != value) {
@@ -33,6 +36,9 @@ class PhotosphereRenderer(
             }
         }
 
+    /**
+     * 0 to look at the image center.
+     */
     var yawDegrees = 0f
         set(value) {
             if (field != value) {
@@ -41,6 +47,9 @@ class PhotosphereRenderer(
             }
         }
 
+    /**
+     * The smaller the field of view, the greater the zoom.
+     */
     var fovDegrees = 75f
         set(value) {
             if (field != value) {
@@ -394,7 +403,7 @@ class PhotosphereRenderer(
         val viewMatrix = FloatArray(16)
         Matrix.setIdentityM(viewMatrix, 0)
         Matrix.rotateM(viewMatrix, 0, pitchDegrees, 1f, 0f, 0f)
-        Matrix.rotateM(viewMatrix, 0, yawDegrees, 0f, -1f, 0f)
+        Matrix.rotateM(viewMatrix, 0, yawDegrees, 0f, 1f, 0f)
         GLES20.glUniformMatrix4fv(
             uViewMatrixLocation,
             1,

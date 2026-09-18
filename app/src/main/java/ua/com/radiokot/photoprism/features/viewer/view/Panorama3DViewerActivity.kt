@@ -22,6 +22,7 @@ class Panorama3DViewerActivity : BaseActivity() {
     private val windowInsetsController: WindowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
+    private var panorama3DView: Panorama3DView? = null
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +73,10 @@ class Panorama3DViewerActivity : BaseActivity() {
                             )
                     }
 
-                    onPanoramaViewCreated(panorama3DView)
+                    onPanoramaViewCreated(
+                        panorama3DView = panorama3DView,
+                        savedInstanceState = savedInstanceState,
+                    )
                 }
             )
             .autoDispose(this)
@@ -80,6 +84,7 @@ class Panorama3DViewerActivity : BaseActivity() {
 
     private fun onPanoramaViewCreated(
         panorama3DView: Panorama3DView,
+        savedInstanceState: Bundle?,
     ) {
         panorama3DView as View
 
@@ -88,12 +93,28 @@ class Panorama3DViewerActivity : BaseActivity() {
                     "\npanoramaView=$panorama3DView"
         }
 
+        this.panorama3DView = panorama3DView
         setContentView(panorama3DView)
-        initPanoramaViewTouch(panorama3DView)
+
+        panorama3DView.yawDegrees =
+            savedInstanceState?.getFloat(YAW_DEGREES_EXTRA)
+                ?: intent.getFloatExtra(YAW_DEGREES_EXTRA, 0f)
+
+        if (savedInstanceState?.containsKey(PITCH_DEGREES_EXTRA) == true) {
+            panorama3DView.pitchDegrees =
+                savedInstanceState.getFloat(PITCH_DEGREES_EXTRA)
+        }
+
+        if (savedInstanceState?.containsKey(FOV_DEGREES_EXTRA) == true) {
+            panorama3DView.fovDegrees =
+                savedInstanceState.getFloat(FOV_DEGREES_EXTRA)
+        }
+
+        initPanoramaViewGestures(panorama3DView)
     }
 
     @Suppress("DEPRECATION")
-    private fun initPanoramaViewTouch(
+    private fun initPanoramaViewGestures(
         panorama3DView: Panorama3DView,
     ) {
         panorama3DView as View
@@ -117,16 +138,31 @@ class Panorama3DViewerActivity : BaseActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putFloat(YAW_DEGREES_EXTRA, panorama3DView?.yawDegrees ?: 0f)
+        outState.putFloat(PITCH_DEGREES_EXTRA, panorama3DView?.pitchDegrees ?: 0f)
+        outState.putFloat(FOV_DEGREES_EXTRA, panorama3DView?.fovDegrees ?: 0f)
+    }
+
     companion object {
         private const val IMAGE_URL_EXTRA = "preview_image_url"
         private const val PROJECTION_EXTRA = "projection"
+        private const val YAW_DEGREES_EXTRA = "yaw_degrees"
+        private const val PITCH_DEGREES_EXTRA = "pitch_degrees"
+        private const val FOV_DEGREES_EXTRA = "fov_degrees"
 
+        /**
+         * @param yawDegrees 0 to look at the image center
+         */
         fun getBundle(
             imageUrl: String,
             projection: GalleryMedia.PanoramaProjection,
+            yawDegrees: Float,
         ): Bundle = Bundle().apply {
             putString(IMAGE_URL_EXTRA, imageUrl)
             putSerializable(PROJECTION_EXTRA, projection)
+            putFloat(YAW_DEGREES_EXTRA, yawDegrees)
         }
     }
 }

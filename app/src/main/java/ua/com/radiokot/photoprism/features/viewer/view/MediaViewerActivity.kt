@@ -714,6 +714,7 @@ class MediaViewerActivity : BaseActivity() {
         viewHolder.view.openPanoramaButton.setOnClickListener {
             viewModel.onOpenPanoramaClicked(
                 position = view.viewPager.currentItem,
+                yawDegrees = viewHolder.view.panoramaPreviewView.yawDegrees,
             )
         }
     }
@@ -955,6 +956,7 @@ class MediaViewerActivity : BaseActivity() {
                     openPanorama3DViewer(
                         imageUrl = event.imageUrl,
                         projection = event.projection,
+                        yawDegrees = event.yawDegrees,
                     )
             }
 
@@ -1092,12 +1094,14 @@ class MediaViewerActivity : BaseActivity() {
     private fun openPanorama3DViewer(
         imageUrl: String,
         projection: GalleryMedia.PanoramaProjection,
+        yawDegrees: Float,
     ) {
         startActivity(
             Intent(this, Panorama3DViewerActivity::class.java).putExtras(
                 Panorama3DViewerActivity.getBundle(
                     imageUrl = imageUrl,
                     projection = projection,
+                    yawDegrees = yawDegrees,
                 )
             )
         )

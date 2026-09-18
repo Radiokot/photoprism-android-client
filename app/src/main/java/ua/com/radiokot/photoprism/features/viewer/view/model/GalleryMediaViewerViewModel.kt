@@ -649,7 +649,10 @@ class GalleryMediaViewerViewModel(
         update(force = true)
     }
 
-    fun onOpenPanoramaClicked(position: Int) {
+    fun onOpenPanoramaClicked(
+        position: Int,
+        yawDegrees: Float,
+    ) {
         val item =
             itemsList.value?.getOrNull(position) as? Panorama2DPreviewViewerPage
 
@@ -662,17 +665,23 @@ class GalleryMediaViewerViewModel(
 
         val imageUrl = item.previewUrl
         val projection = item.projection
+        var yawDegrees = yawDegrees
+        if (yawDegrees.isNaN()) {
+            yawDegrees = 0f
+        }
 
         log.debug {
             "onOpenPanoramaClicked(): opening_panorama:" +
                     "\nimageUrl=$imageUrl," +
-                    "\nprojection=$projection"
+                    "\nprojection=$projection," +
+                    "\nyawDegrees=$yawDegrees"
         }
 
         eventsSubject.onNext(
             Event.OpenPanorama3DViewer(
                 imageUrl = imageUrl,
                 projection = projection,
+                yawDegrees = yawDegrees,
             )
         )
     }
@@ -699,6 +708,7 @@ class GalleryMediaViewerViewModel(
         class OpenPanorama3DViewer(
             val imageUrl: String,
             val projection: GalleryMedia.PanoramaProjection,
+            val yawDegrees: Float,
         ) : Event
 
         object Finish : Event
