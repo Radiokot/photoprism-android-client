@@ -12,6 +12,7 @@ import android.view.Surface
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import okio.Closeable
+import ua.com.radiokot.photoprism.features.viewer.view.model.Quaternion
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig
@@ -26,36 +27,6 @@ class PhotosphereRenderer(
     private val equirectBitmap: Bitmap,
 ) : GLSurfaceView.Renderer,
     Closeable {
-
-    /**
-     * Positive to look up, negative to look down, up to 90 degrees.
-     */
-    var pitchDegrees = 0f
-        set(value) {
-            if (field != value) {
-                field = value
-                viewMatrixNeedsUpdate = true
-            }
-        }
-
-    /**
-     * 0 to look at the image center.
-     */
-    var yawDegrees = 0f
-        set(value) {
-            if (field != value) {
-                field = value
-                viewMatrixNeedsUpdate = true
-            }
-        }
-
-    var rollDegrees = 0f
-        set(value) {
-            if (field != value) {
-                field = value
-                viewMatrixNeedsUpdate = true
-            }
-        }
 
     /**
      * The smaller the field of view, the greater the zoom.
@@ -107,8 +78,40 @@ class PhotosphereRenderer(
     private var surfaceTextureNeedsUpdate = false
     private var surfaceTexture: SurfaceTexture? = null
     private var sphereIndexCount = 0
+    private val orientation = Quaternion()
     private var viewMatrixNeedsUpdate = true
     private var projectionMatrixNeedsUpdate = true
+
+    fun rotateByPointer(
+        deltaX: Float,
+        deltaY: Float,
+    ) = synchronized(orientation) {
+        orientation.rotateAroundAxis(
+            angle = -deltaX,
+            axisX = 0f,
+            axisY = 1f,
+            axisZ = 0f,
+        )
+        orientation.rotateAroundItself(
+            deltaPitch = -deltaY,
+            deltaYaw = 0f,
+            deltaRoll = 0f,
+        )
+        viewMatrixNeedsUpdate = true
+    }
+
+    fun rotateByGyro(
+        deltaPitch: Float,
+        deltaYaw: Float,
+        deltaRoll: Float,
+    ) = synchronized(orientation) {
+        orientation.rotateAroundItself(
+            deltaPitch = deltaPitch,
+            deltaYaw = deltaYaw,
+            deltaRoll = deltaRoll,
+        )
+        viewMatrixNeedsUpdate = true
+    }
 
     override fun onSurfaceCreated(
         gl: GL10,
@@ -149,7 +152,7 @@ class PhotosphereRenderer(
 
         if (projectionMatrixNeedsUpdate) {
             updateProjectionMatrix()
-            viewMatrixNeedsUpdate = false
+            projectionMatrixNeedsUpdate = false
         }
 
         GLES20.glDrawElements(
@@ -378,11 +381,11 @@ class PhotosphereRenderer(
     }
 
     private fun updateProjectionMatrix() {
-        if (uProjectionMatrixLocation == 0 || surfaceWidth == 0 || surfaceHeight == 0) {
+        if (surfaceWidth == 0 || surfaceHeight == 0) {
             return
         }
 
-        // Projection matrix – camera properties.
+        // Projection matrix – camera FOV and dimensions.
 
         val projectionMatrix = FloatArray(16)
         val aspectRatio = surfaceWidth.toFloat() / surfaceHeight
@@ -403,18 +406,12 @@ class PhotosphereRenderer(
         )
     }
 
-    private fun updateViewMatrix() {
-        if (uViewMatrixLocation == 0) {
-            return
-        }
+    private val viewMatrix = FloatArray(16)
+    private fun updateViewMatrix() = synchronized(orientation) {
 
-        // View matrix – camera position.
+        // View matrix – camera position and rotation.
 
-        val viewMatrix = FloatArray(16)
-        Matrix.setIdentityM(viewMatrix, 0)
-        Matrix.rotateM(viewMatrix, 0, pitchDegrees, 1f, 0f, 0f)
-        Matrix.rotateM(viewMatrix, 0, yawDegrees, 0f, 1f, 0f)
-        Matrix.rotateM(viewMatrix, 0, rollDegrees, 0f, 0f, 1f)
+        orientation.getViewMatrix(viewMatrix)
         GLES20.glUniformMatrix4fv(
             uViewMatrixLocation,
             1,

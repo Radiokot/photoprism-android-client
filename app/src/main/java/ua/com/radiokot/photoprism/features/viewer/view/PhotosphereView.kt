@@ -30,9 +30,6 @@ class PhotosphereView(
             equirectBitmap = equirectBitmap,
         )
 
-    override var pitchDegrees: Float by renderer::pitchDegrees
-    override var yawDegrees: Float by renderer::yawDegrees
-    override var rollDegrees: Float by renderer::rollDegrees
     override var fovDegrees: Float by renderer::fovDegrees
 
     init {
@@ -58,5 +55,18 @@ class PhotosphereView(
             }
         })
     }
+
+    override fun rotateByPointer(
+        deltaX: Float,
+        deltaY: Float,
+    ) =
+        renderer.rotateByPointer(deltaX, deltaY)
+
+    override fun rotateByGyro(
+        deltaPitch: Float,
+        deltaYaw: Float,
+        deltaRoll: Float,
+    ) =
+        renderer.rotateByGyro(deltaPitch, deltaYaw, deltaRoll)
 }
 

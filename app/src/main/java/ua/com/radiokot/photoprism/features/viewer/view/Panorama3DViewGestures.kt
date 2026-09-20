@@ -11,7 +11,7 @@ class Panorama3DViewGestures(
     private val view: Panorama3DView,
 ) : View.OnTouchListener {
 
-    private val dragSensitivity = 0.18f
+    private val dragSensitivity = 0.004f
     private val minFov = 30f
     private val maxFov = 90f
 
@@ -47,10 +47,10 @@ class Panorama3DViewGestures(
             ): Boolean {
                 val factor = dragSensitivity * view.fovDegrees / maxFov
 
-                view.yawDegrees =
-                    (view.yawDegrees + (distanceX * factor)) % 360f
-                view.pitchDegrees =
-                    (view.pitchDegrees + (distanceY * factor)).coerceIn(-89f, 89f)
+                view.rotateByPointer(
+                    deltaY = distanceY * factor,
+                    deltaX = distanceX * factor,
+                )
 
                 return true
             }
