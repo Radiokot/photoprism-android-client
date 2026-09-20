@@ -28,12 +28,16 @@ class GyroscopeRotationTrackerTracker(
     private var lastEventNs: Long = 0L
     private val noiseThreshold = 0.005f
 
+    var isRunning: Boolean = false
+        private set
+
     fun start() {
         if (gyroscope == null) {
             return
         }
 
         lastEventNs = 0L
+        isRunning = true
 
         sensorManager.registerListener(
             this,
@@ -43,6 +47,7 @@ class GyroscopeRotationTrackerTracker(
     }
 
     fun stop() {
+        isRunning = false
         sensorManager.unregisterListener(this)
     }
 

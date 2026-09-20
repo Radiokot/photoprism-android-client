@@ -6,7 +6,7 @@
     <item
         android:id="@+id/panorama_view_toggle"
         android:icon="@drawable/ic_compass"
-        android:title="@string/panorama_view_by_phone_movement"
+        android:title="@string/panorama_view_use_phone_movement"
         app:iconTint="?colorOnSurfaceVariant"
         app:showAsAction="always"
         tools:ignore="PrivateResource" />

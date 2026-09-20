@@ -1,5 +1,6 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
+import java.io.Serializable
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -10,7 +11,8 @@ class Quaternion(
     var x: Float = 0f,
     var y: Float = 0f,
     var z: Float = 0f,
-) {
+) : Serializable {
+
     fun set(
         w: Float,
         x: Float,

@@ -119,15 +119,6 @@ class Panorama3DViewerActivity : BaseActivity() {
         this.panorama3DView = panorama3DView
         view.contentLayout.addView(panorama3DView)
 
-//        panorama3DView.yawDegrees =
-//            savedInstanceState?.getFloat(YAW_DEGREES_EXTRA)
-//                ?: intent.getFloatExtra(YAW_DEGREES_EXTRA, 0f)
-//
-//        if (savedInstanceState?.containsKey(PITCH_DEGREES_EXTRA) == true) {
-//            panorama3DView.pitchDegrees =
-//                savedInstanceState.getFloat(PITCH_DEGREES_EXTRA)
-//        }
-
         if (savedInstanceState?.containsKey(FOV_DEGREES_EXTRA) == true) {
             panorama3DView.fovDegrees =
                 savedInstanceState.getFloat(FOV_DEGREES_EXTRA)
@@ -171,16 +162,6 @@ class Panorama3DViewerActivity : BaseActivity() {
         }
     }
 
-//    private val sensorCameraOrientationTracker by lazy {
-//        SensorCameraOrientationTracker(
-//            context = this,
-//            onOrientationUpdated = { pitchDegrees, yawDegrees ->
-//                panorama3DView?.pitchDegrees = pitchDegrees
-//                panorama3DView?.yawDegrees = yawDegrees
-//            },
-//        )
-//    }
-
     private val sensorCameraRotationTracker by lazy {
         GyroscopeRotationTrackerTracker(
             context = this,
@@ -190,7 +171,7 @@ class Panorama3DViewerActivity : BaseActivity() {
                     deltaRoll = deltaRoll,
                     deltaYaw = deltaYaw,
                 )
-            }
+            },
         )
     }
 
@@ -199,20 +180,20 @@ class Panorama3DViewerActivity : BaseActivity() {
         savedInstanceState: Bundle?,
     ) {
         isSensorView.value =
-            savedInstanceState?.getBoolean(IS_SENSOR_VIEW_EXTRA) ?: false
+            savedInstanceState?.getBoolean(IS_SENSOR_VIEW_EXTRA) ?: true
 
         panorama3DView as View
 
-        val viewGestures = Panorama3DViewGestures(
-            view = panorama3DView,
+        panorama3DView.setOnTouchListener(
+            Panorama3DViewGestures(
+                view = panorama3DView,
+            )
         )
 
         isSensorView.observe(this) { isSensorView ->
             if (isSensorView) {
-                panorama3DView.setOnTouchListener(null)
                 sensorCameraRotationTracker.start()
             } else {
-                panorama3DView.setOnTouchListener(viewGestures)
                 sensorCameraRotationTracker.stop()
             }
         }
@@ -220,14 +201,16 @@ class Panorama3DViewerActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (isSensorView.value!!) {
+        if (isSensorView.value!! && !sensorCameraRotationTracker.isRunning) {
             sensorCameraRotationTracker.start()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        sensorCameraRotationTracker.stop()
+        if (sensorCameraRotationTracker.isRunning) {
+            sensorCameraRotationTracker.stop()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -235,13 +218,13 @@ class Panorama3DViewerActivity : BaseActivity() {
         menu.findItem(R.id.panorama_view_toggle).apply {
             isSensorView.observe(this@Panorama3DViewerActivity) { isSensorView ->
                 if (isSensorView) {
-                    title = getString(R.string.panorama_view_by_gestures)
+                    title = getString(R.string.panorama_view_only_use_gestures)
                     icon = ContextCompat.getDrawable(
                         this@Panorama3DViewerActivity,
                         R.drawable.ic_compass_filled
                     )
                 } else {
-                    title = getString(R.string.panorama_view_by_phone_movement)
+                    title = getString(R.string.panorama_view_use_phone_movement)
                     icon = ContextCompat.getDrawable(
                         this@Panorama3DViewerActivity,
                         R.drawable.ic_compass
@@ -260,8 +243,6 @@ class Panorama3DViewerActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         with(outState) {
-//            putFloat(YAW_DEGREES_EXTRA, panorama3DView?.yawDegrees ?: 0f)
-//            putFloat(PITCH_DEGREES_EXTRA, panorama3DView?.pitchDegrees ?: 0f)
             putFloat(FOV_DEGREES_EXTRA, panorama3DView?.fovDegrees ?: 0f)
             putBoolean(IS_FULL_SCREEN_EXTRA, isFullScreen.value!!)
             putBoolean(IS_SENSOR_VIEW_EXTRA, isSensorView.value!!)
@@ -272,7 +253,6 @@ class Panorama3DViewerActivity : BaseActivity() {
         private const val IMAGE_URL_EXTRA = "preview_image_url"
         private const val PROJECTION_EXTRA = "projection"
         private const val YAW_DEGREES_EXTRA = "yaw_degrees"
-        private const val PITCH_DEGREES_EXTRA = "pitch_degrees"
         private const val FOV_DEGREES_EXTRA = "fov_degrees"
         private const val IS_SENSOR_VIEW_EXTRA = "is_sensor_view"
         private const val IS_FULL_SCREEN_EXTRA = "is_full_screen"
