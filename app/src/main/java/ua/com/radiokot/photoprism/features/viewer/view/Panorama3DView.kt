@@ -1,5 +1,7 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
+import android.os.Bundle
+
 interface Panorama3DView {
 
     /**
@@ -26,4 +28,11 @@ interface Panorama3DView {
         deltaYaw: Float,
         deltaRoll: Float,
     )
+
+    // Since the view is created programmatically,
+    // its state is saved and restored manually.
+
+    fun saveState(outState: Bundle)
+
+    fun restoreState(savedInstanceState: Bundle)
 }

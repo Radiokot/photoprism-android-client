@@ -116,13 +116,11 @@ class Panorama3DViewerActivity : BaseActivity() {
     ) {
         panorama3DView as View
 
-        this.panorama3DView = panorama3DView
-        view.contentLayout.addView(panorama3DView)
-
-        if (savedInstanceState?.containsKey(FOV_DEGREES_EXTRA) == true) {
-            panorama3DView.fovDegrees =
-                savedInstanceState.getFloat(FOV_DEGREES_EXTRA)
+        if (savedInstanceState != null) {
+            panorama3DView.restoreState(savedInstanceState)
         }
+        view.contentLayout.addView(panorama3DView)
+        this.panorama3DView = panorama3DView
 
         initFullScreenToggle(
             panorama3DView = panorama3DView,
@@ -163,7 +161,7 @@ class Panorama3DViewerActivity : BaseActivity() {
     }
 
     private val sensorCameraRotationTracker by lazy {
-        GyroscopeRotationTrackerTracker(
+        GyroscopeRotationTracker(
             context = this,
             onRotation = { deltaPitch, deltaRoll, deltaYaw ->
                 panorama3DView?.rotateByGyro(
@@ -243,9 +241,9 @@ class Panorama3DViewerActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         with(outState) {
-            putFloat(FOV_DEGREES_EXTRA, panorama3DView?.fovDegrees ?: 0f)
             putBoolean(IS_FULL_SCREEN_EXTRA, isFullScreen.value!!)
             putBoolean(IS_SENSOR_VIEW_EXTRA, isSensorView.value!!)
+            panorama3DView?.saveState(this)
         }
     }
 
@@ -253,7 +251,6 @@ class Panorama3DViewerActivity : BaseActivity() {
         private const val IMAGE_URL_EXTRA = "preview_image_url"
         private const val PROJECTION_EXTRA = "projection"
         private const val YAW_DEGREES_EXTRA = "yaw_degrees"
-        private const val FOV_DEGREES_EXTRA = "fov_degrees"
         private const val IS_SENSOR_VIEW_EXTRA = "is_sensor_view"
         private const val IS_FULL_SCREEN_EXTRA = "is_full_screen"
 

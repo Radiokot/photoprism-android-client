@@ -9,12 +9,12 @@ import android.view.Surface
 import android.view.WindowManager
 import kotlin.math.abs
 
-class GyroscopeRotationTrackerTracker(
+class GyroscopeRotationTracker(
     context: Context,
     private val onRotation: (
-        deltaPitch: Float,
-        deltaRoll: Float,
-        deltaYaw: Float,
+        deltaPitchRad: Float,
+        deltaRollRad: Float,
+        deltaYawRad: Float,
     ) -> Unit,
 ) : SensorEventListener {
 
@@ -52,8 +52,9 @@ class GyroscopeRotationTrackerTracker(
     }
 
     @Suppress("UnnecessaryVariable", "DEPRECATION")
-    override fun onSensorChanged(event: SensorEvent) {
-
+    override fun onSensorChanged(
+        event: SensorEvent,
+    ) {
         if (lastEventNs == 0L) {
             lastEventNs = event.timestamp
             return

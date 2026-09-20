@@ -8,6 +8,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.os.Build
+import android.os.Bundle
 import android.view.Surface
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
@@ -111,6 +112,28 @@ class PhotosphereRenderer(
             deltaRoll = deltaRoll,
         )
         viewMatrixNeedsUpdate = true
+    }
+
+    fun saveState(
+        outState: Bundle,
+    ) = synchronized(orientation) {
+        outState.putFloat(FOV_EXTRA, fovDegrees)
+        outState.putParcelable(ORIENTATION_EXTRA, orientation)
+    }
+
+    @Suppress("DEPRECATION")
+    fun restoreState(
+        savedInstanceState: Bundle,
+    ) = synchronized(orientation) {
+        fovDegrees =
+            savedInstanceState.getFloat(FOV_EXTRA, fovDegrees)
+
+        val restoredOrientation =
+            savedInstanceState.getParcelable<Quaternion>(ORIENTATION_EXTRA)
+        if (restoredOrientation != null) {
+            orientation.set(restoredOrientation)
+            viewMatrixNeedsUpdate = true
+        }
     }
 
     override fun onSurfaceCreated(
@@ -427,5 +450,7 @@ class PhotosphereRenderer(
 
     private companion object {
         private const val RADIUS = 50f
+        private const val ORIENTATION_EXTRA = "photosphere_renderer_orientation"
+        private const val FOV_EXTRA = "photosphere_renderer_fov"
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLSurfaceView
 import android.os.Build
+import android.os.Bundle
 import android.util.AttributeSet
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -68,5 +69,15 @@ class PhotosphereView(
         deltaRoll: Float,
     ) =
         renderer.rotateByGyro(deltaPitch, deltaYaw, deltaRoll)
+
+    override fun saveState(
+        outState: Bundle,
+    ) =
+        renderer.saveState(outState)
+
+    override fun restoreState(
+        savedInstanceState: Bundle,
+    ) =
+        renderer.restoreState(savedInstanceState)
 }
 
