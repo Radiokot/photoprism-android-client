@@ -202,6 +202,16 @@ class Panorama3DViewerActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onScreenResumed()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onScreenPaused()
+    }
+
     companion object {
         private const val IMAGE_URL_EXTRA = "preview_image_url"
         private const val PROJECTION_EXTRA = "projection"

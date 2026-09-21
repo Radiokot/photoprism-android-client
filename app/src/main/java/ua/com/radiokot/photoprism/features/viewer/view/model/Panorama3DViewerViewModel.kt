@@ -3,10 +3,12 @@ package ua.com.radiokot.photoprism.features.viewer.view.model
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ua.com.radiokot.photoprism.extension.autoDispose
 import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.viewer.view.GyroscopeRotationTracker
+import java.util.concurrent.TimeUnit
 
 class Panorama3DViewerViewModel(
     parameters: Parameters,
@@ -41,15 +43,52 @@ class Panorama3DViewerViewModel(
     val isSensorEnabled: Observable<Boolean>
         field = BehaviorSubject.createDefault(true)
 
+    private var screenDeactivationDisposable: Disposable? = null
+    private val isScreenActive = BehaviorSubject.createDefault(false)
+
     init {
-        isSensorEnabled.subscribe { isSensorEnabled ->
-            if (isSensorEnabled) {
-                gyroscopeCounteredDisplayRotation = -1
-                gyroscopeRotationTracker.start()
-            } else {
-                gyroscopeRotationTracker.stop()
+        Observable
+            .combineLatest(
+                isSensorEnabled,
+                isScreenActive,
+            ) { isSensorEnabled, isScreenActive ->
+                isSensorEnabled && isScreenActive
             }
-        }.autoDispose(this)
+            .doOnNext { toStartGyro ->
+                if (toStartGyro) {
+                    startGyro()
+                } else {
+                    stopGyro()
+                }
+            }
+            .doOnDispose(::stopGyro)
+            .subscribe()
+            .autoDispose(this)
+    }
+
+    private fun startGyro() {
+        if (gyroscopeRotationTracker.isRunning) {
+            return
+        }
+
+        log.debug {
+            "startGyro(): starting_gyroscope_rotation_tracker"
+        }
+
+        gyroscopeCounteredDisplayRotation = -1
+        gyroscopeRotationTracker.start()
+    }
+
+    private fun stopGyro() {
+        if (!gyroscopeRotationTracker.isRunning) {
+            return
+        }
+
+        log.debug {
+            "stopGyro(): stopping_gyroscope_rotation_tracker"
+        }
+
+        gyroscopeRotationTracker.stop()
     }
 
     fun onSensorToggleClicked() {
@@ -122,6 +161,29 @@ class Panorama3DViewerViewModel(
             deltaYaw = 0f,
             deltaRoll = 0f,
         )
+    }
+
+    fun onScreenResumed() {
+        screenDeactivationDisposable?.dispose()
+        isScreenActive.onNext(true)
+    }
+
+    fun onScreenPaused() {
+        log.debug {
+            "onScreenPaused(): scheduling_scren_deactivation"
+        }
+
+        screenDeactivationDisposable?.dispose()
+        screenDeactivationDisposable =
+            Observable
+                .timer(2, TimeUnit.SECONDS)
+                .doOnDispose {
+                    log.debug {
+                        "onScreenPaused(): scren_deactivation_cancelled"
+                    }
+                }
+                .subscribe { isScreenActive.onNext(false) }
+                .autoDispose(this)
     }
 
     private fun onGyroRotation(
