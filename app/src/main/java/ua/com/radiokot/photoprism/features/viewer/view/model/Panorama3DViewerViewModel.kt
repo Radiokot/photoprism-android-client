@@ -23,7 +23,7 @@ class Panorama3DViewerViewModel(
     private var gyroscopeCounteredDisplayRotation = -1
 
     val cameraOrientation = Quaternion().apply {
-        rotateAroundAxis(
+        rotateAroundWorld(
             //                                      π/180
             angle = -parameters.initialYawDegrees * 0.017453292f,
             axisX = 0f,
@@ -75,6 +75,8 @@ class Panorama3DViewerViewModel(
             "startGyro(): starting_gyroscope_rotation_tracker"
         }
 
+        resetRoll()
+
         gyroscopeCounteredDisplayRotation = -1
         gyroscopeRotationTracker.start()
     }
@@ -89,6 +91,8 @@ class Panorama3DViewerViewModel(
         }
 
         gyroscopeRotationTracker.stop()
+
+        resetRoll()
     }
 
     fun onSensorToggleClicked() {
@@ -150,7 +154,7 @@ class Panorama3DViewerViewModel(
         val scaledDeltaX = deltaX * factor
         val scaledDeltaY = deltaY * factor
 
-        cameraOrientation.rotateAroundAxis(
+        cameraOrientation.rotateAroundWorld(
             angle = -scaledDeltaX,
             axisX = 0f,
             axisY = 1f,
@@ -209,6 +213,14 @@ class Panorama3DViewerViewModel(
         )
 
         gyroscopeCounteredDisplayRotation = displayRotation
+    }
+
+    private fun resetRoll() {
+        log.debug {
+            "resetRoll(): resetting_roll"
+        }
+
+        cameraOrientation.resetRoll()
     }
 
     class Parameters(

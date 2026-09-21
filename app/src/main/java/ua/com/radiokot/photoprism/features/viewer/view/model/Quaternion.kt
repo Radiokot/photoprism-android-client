@@ -1,6 +1,8 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
 import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -9,32 +11,28 @@ import kotlin.math.sqrt
  * The GOAT structure for storing orientation.
  * Thread safe.
  */
-class Quaternion(
-    private var w: Float = 1f,
-    private var x: Float = 0f,
-    private var y: Float = 0f,
-    private var z: Float = 0f,
-) {
+class Quaternion {
+
+    var w: Float = 1f
+        private set
+    var x: Float = 0f
+        private set
+    var y: Float = 0f
+        private set
+    var z: Float = 0f
+        private set
+
     fun set(
-        w: Float,
-        x: Float,
-        y: Float,
-        z: Float,
+        w: Float = this.w,
+        x: Float = this.x,
+        y: Float = this.y,
+        z: Float = this.z,
     ) = synchronized(this) {
         this.w = w
         this.x = x
         this.y = y
         this.z = z
     }
-
-    fun set(
-        other: Quaternion,
-    ) = set(
-        w = other.w,
-        x = other.x,
-        y = other.y,
-        z = other.z,
-    )
 
     fun setIdentity() =
         set(
@@ -70,7 +68,7 @@ class Quaternion(
     /**
      * @param angle in radians
      */
-    fun rotateAroundAxis(
+    fun rotateAroundWorld(
         angle: Float,
         axisX: Float,
         axisY: Float,
@@ -87,6 +85,29 @@ class Quaternion(
         multiplyLeft(cos(half), axisX * k, axisY * k, axisZ * k)
 
         normalize()
+    }
+
+    fun resetRoll() = synchronized(this) {
+        val forwardX = -2f * (x * z + w * y)
+        val forwardY = -2f * (y * z - w * x)
+        val forwardZ = -1f + 2f * (x * x + y * y)
+
+        if (forwardY > 0.9999f || forwardY < -0.9999f) {
+            return@synchronized
+        }
+
+        val pitchRelativeToSelf = asin(forwardY.coerceIn(-1f, 1f))
+        val yawRelativeToWorld = atan2(-forwardX, -forwardZ)
+
+        val cy = cos(yawRelativeToWorld * 0.5f)
+        val sy = sin(yawRelativeToWorld * 0.5f)
+        val cp = cos(pitchRelativeToSelf * 0.5f)
+        val sp = sin(pitchRelativeToSelf * 0.5f)
+
+        this.w = cy * cp
+        this.x = cy * sp
+        this.y = sy * cp
+        this.z = -sy * sp
     }
 
     /**
