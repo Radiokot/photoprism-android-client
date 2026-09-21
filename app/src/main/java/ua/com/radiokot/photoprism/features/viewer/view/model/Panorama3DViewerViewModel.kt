@@ -17,6 +17,7 @@ class Panorama3DViewerViewModel(
         context = application,
         onRotation = ::onGyroRotation,
     )
+    private var gyroscopeCounteredDisplayRotation = -1
 
     val cameraOrientation = Quaternion()
 
@@ -34,6 +35,7 @@ class Panorama3DViewerViewModel(
     init {
         isSensorEnabled.subscribe { isSensorEnabled ->
             if (isSensorEnabled) {
+                gyroscopeCounteredDisplayRotation = -1
                 gyroscopeRotationTracker.start()
             } else {
                 gyroscopeRotationTracker.stop()
@@ -117,11 +119,24 @@ class Panorama3DViewerViewModel(
         deltaPitchRad: Float,
         deltaRollRad: Float,
         deltaYawRad: Float,
+        displayRotation: Int,
     ) {
+        // When the display is rotated with gyro tracking enabled,
+        // activity rotation must be countered
+        // because all the needed roll is already applied.
+
+        val counterDisplayRotation =
+            if (gyroscopeCounteredDisplayRotation != -1)
+                (gyroscopeCounteredDisplayRotation - displayRotation) * 1.5707964f // π/2
+            else
+                0f
+
         cameraOrientation.rotateAroundItself(
             deltaPitch = deltaPitchRad,
             deltaYaw = deltaYawRad,
-            deltaRoll = deltaRollRad,
+            deltaRoll = deltaRollRad + counterDisplayRotation,
         )
+
+        gyroscopeCounteredDisplayRotation = displayRotation
     }
 }

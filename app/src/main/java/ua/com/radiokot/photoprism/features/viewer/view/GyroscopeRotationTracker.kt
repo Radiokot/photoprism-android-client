@@ -81,8 +81,9 @@ class GyroscopeRotationTracker(
         val deltaRoll = dz
         val deltaPitch: Float
         val deltaYaw: Float
+        val displayRotation = windowManager.defaultDisplay.rotation
 
-        when (windowManager.defaultDisplay.rotation) {
+        when (displayRotation) {
             Surface.ROTATION_90 -> {
                 deltaPitch = -dy
                 deltaYaw = dx
@@ -104,6 +105,7 @@ class GyroscopeRotationTracker(
             deltaPitchRad = deltaPitch,
             deltaRollRad = deltaRoll,
             deltaYawRad = deltaYaw,
+            displayRotation = displayRotation,
         )
     }
 
@@ -117,5 +119,6 @@ fun interface OnGyroRotation {
         deltaPitchRad: Float,
         deltaRollRad: Float,
         deltaYawRad: Float,
+        displayRotation: Int,
     )
 }
