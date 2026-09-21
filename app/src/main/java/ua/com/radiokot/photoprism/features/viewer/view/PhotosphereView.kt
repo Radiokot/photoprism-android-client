@@ -3,14 +3,13 @@ package ua.com.radiokot.photoprism.features.viewer.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.util.AttributeSet
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.features.viewer.view.model.Quaternion
 
 /**
@@ -31,7 +30,7 @@ class PhotosphereView(
 
     private val renderer =
         PhotosphereRenderer(
-            backgroundColor = ContextCompat.getColor(context, R.color.md_theme_dark_background),
+            backgroundColor = Color.BLACK,
             equirectBitmap = equirectBitmap,
             orientation = orientation,
         )
