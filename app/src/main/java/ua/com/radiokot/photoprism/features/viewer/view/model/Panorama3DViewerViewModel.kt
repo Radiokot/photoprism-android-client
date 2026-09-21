@@ -9,6 +9,7 @@ import ua.com.radiokot.photoprism.extension.kLogger
 import ua.com.radiokot.photoprism.features.viewer.view.GyroscopeRotationTracker
 
 class Panorama3DViewerViewModel(
+    parameters: Parameters,
     application: Application,
 ) : AndroidViewModel(application) {
 
@@ -19,7 +20,15 @@ class Panorama3DViewerViewModel(
     )
     private var gyroscopeCounteredDisplayRotation = -1
 
-    val cameraOrientation = Quaternion()
+    val cameraOrientation = Quaternion().apply {
+        rotateAroundAxis(
+            //                                      π/180
+            angle = -parameters.initialYawDegrees * 0.017453292f,
+            axisX = 0f,
+            axisY = 1f,
+            axisZ = 0f,
+        )
+    }
 
     val cameraFovDegrees: Observable<Float>
         field = BehaviorSubject.createDefault(75f)
@@ -139,4 +148,8 @@ class Panorama3DViewerViewModel(
 
         gyroscopeCounteredDisplayRotation = displayRotation
     }
+
+    class Parameters(
+        val initialYawDegrees: Float,
+    )
 }

@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.base.view.BaseActivity
 import ua.com.radiokot.photoprism.databinding.ActivityPanoramaViewerBinding
@@ -31,7 +32,14 @@ class Panorama3DViewerActivity : BaseActivity() {
     private val windowInsetsController: WindowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
-    private val viewModel: Panorama3DViewerViewModel by viewModel()
+    private val viewModel: Panorama3DViewerViewModel by viewModel {
+        parametersOf(
+            Panorama3DViewerViewModel.Parameters(
+                initialYawDegrees =
+                    intent.getFloatExtra(YAW_DEGREES_EXTRA, 0f),
+            )
+        )
+    }
     private lateinit var view: ActivityPanoramaViewerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

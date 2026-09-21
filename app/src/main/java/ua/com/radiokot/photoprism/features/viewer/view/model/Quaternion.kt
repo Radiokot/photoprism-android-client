@@ -10,10 +10,10 @@ import kotlin.math.sqrt
  * Thread safe.
  */
 class Quaternion(
-    var w: Float = 1f,
-    var x: Float = 0f,
-    var y: Float = 0f,
-    var z: Float = 0f,
+    private var w: Float = 1f,
+    private var x: Float = 0f,
+    private var y: Float = 0f,
+    private var z: Float = 0f,
 ) {
     fun set(
         w: Float,
