@@ -8,7 +8,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.os.Build
-import android.os.Bundle
 import android.view.Surface
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
@@ -21,8 +20,15 @@ import javax.microedition.khronos.opengles.GL10
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * Renders equirect bitmap as a photosphere.
+ *
+ * @param orientation mutable camera orientation to get the view matrix from
+ * @param backgroundColor color that is shown in around the crop area if the image is not 2:1
+ */
 @RequiresApi(Build.VERSION_CODES.M)
 class PhotosphereRenderer(
+    private val orientation: Quaternion,
     @param:ColorInt
     private val backgroundColor: Int,
     private val equirectBitmap: Bitmap,
@@ -30,6 +36,7 @@ class PhotosphereRenderer(
     Closeable {
 
     /**
+     * Camera field of view in degrees.
      * The smaller the field of view, the greater the zoom.
      */
     var fovDegrees = 75f
@@ -79,62 +86,7 @@ class PhotosphereRenderer(
     private var surfaceTextureNeedsUpdate = false
     private var surfaceTexture: SurfaceTexture? = null
     private var sphereIndexCount = 0
-    private val orientation = Quaternion()
-    private var viewMatrixNeedsUpdate = true
     private var projectionMatrixNeedsUpdate = true
-
-    fun rotateByPointer(
-        deltaX: Float,
-        deltaY: Float,
-    ) = synchronized(orientation) {
-        orientation.rotateAroundAxis(
-            angle = -deltaX,
-            axisX = 0f,
-            axisY = 1f,
-            axisZ = 0f,
-        )
-        orientation.rotateAroundItself(
-            deltaPitch = -deltaY,
-            deltaYaw = 0f,
-            deltaRoll = 0f,
-        )
-        viewMatrixNeedsUpdate = true
-    }
-
-    fun rotateByGyro(
-        deltaPitch: Float,
-        deltaYaw: Float,
-        deltaRoll: Float,
-    ) = synchronized(orientation) {
-        orientation.rotateAroundItself(
-            deltaPitch = deltaPitch,
-            deltaYaw = deltaYaw,
-            deltaRoll = deltaRoll,
-        )
-        viewMatrixNeedsUpdate = true
-    }
-
-    fun saveState(
-        outState: Bundle,
-    ) = synchronized(orientation) {
-        outState.putFloat(FOV_EXTRA, fovDegrees)
-        outState.putParcelable(ORIENTATION_EXTRA, orientation)
-    }
-
-    @Suppress("DEPRECATION")
-    fun restoreState(
-        savedInstanceState: Bundle,
-    ) = synchronized(orientation) {
-        fovDegrees =
-            savedInstanceState.getFloat(FOV_EXTRA, fovDegrees)
-
-        val restoredOrientation =
-            savedInstanceState.getParcelable<Quaternion>(ORIENTATION_EXTRA)
-        if (restoredOrientation != null) {
-            orientation.set(restoredOrientation)
-            viewMatrixNeedsUpdate = true
-        }
-    }
 
     override fun onSurfaceCreated(
         gl: GL10,
@@ -145,7 +97,6 @@ class PhotosphereRenderer(
         loadTexture()
 
         projectionMatrixNeedsUpdate = true
-        viewMatrixNeedsUpdate = true
     }
 
     override fun onSurfaceChanged(
@@ -168,10 +119,7 @@ class PhotosphereRenderer(
             surfaceTextureNeedsUpdate = false
         }
 
-        if (viewMatrixNeedsUpdate) {
-            updateViewMatrix()
-            viewMatrixNeedsUpdate = false
-        }
+        updateViewMatrix()
 
         if (projectionMatrixNeedsUpdate) {
             updateProjectionMatrix()
@@ -430,7 +378,7 @@ class PhotosphereRenderer(
     }
 
     private val viewMatrix = FloatArray(16)
-    private fun updateViewMatrix() = synchronized(orientation) {
+    private fun updateViewMatrix() {
 
         // View matrix – camera position and rotation.
 
@@ -450,7 +398,5 @@ class PhotosphereRenderer(
 
     private companion object {
         private const val RADIUS = 50f
-        private const val ORIENTATION_EXTRA = "photosphere_renderer_orientation"
-        private const val FOV_EXTRA = "photosphere_renderer_fov"
     }
 }

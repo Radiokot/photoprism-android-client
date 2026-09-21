@@ -1,3 +1,5 @@
+@file:OptIn(UnstableApi::class)
+
 package ua.com.radiokot.photoprism.features.viewer
 
 import androidx.annotation.OptIn
@@ -21,11 +23,11 @@ import ua.com.radiokot.photoprism.features.viewer.logic.DefaultVideoPlayerFactor
 import ua.com.radiokot.photoprism.features.viewer.logic.UpdateGalleryMediaAttributesUseCase
 import ua.com.radiokot.photoprism.features.viewer.logic.VideoPlayerFactory
 import ua.com.radiokot.photoprism.features.viewer.view.model.GalleryMediaViewerViewModel
+import ua.com.radiokot.photoprism.features.viewer.view.model.Panorama3DViewerViewModel
 import ua.com.radiokot.photoprism.features.viewer.view.model.VideoPlayerCacheViewModel
 import ua.com.radiokot.photoprism.util.CacheConstraints
 import java.io.File
 
-@OptIn(UnstableApi::class)
 val mediaViewerFeatureModule = module {
     includes(galleryFeatureModule)
 
@@ -69,5 +71,7 @@ val mediaViewerFeatureModule = module {
         viewModelOf(::VideoPlayerCacheViewModel)
 
         scopedOf(::UpdateGalleryMediaAttributesUseCase)
+
+        viewModelOf(::Panorama3DViewerViewModel)
     }
 }

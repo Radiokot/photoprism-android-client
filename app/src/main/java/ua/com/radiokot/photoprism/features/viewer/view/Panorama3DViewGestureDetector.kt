@@ -1,25 +1,19 @@
 package ua.com.radiokot.photoprism.features.viewer.view
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 
-class Panorama3DViewGestures(
-    private val view: Panorama3DView,
+class Panorama3DViewGestureDetector(
+    private val view: View,
+    private val onScaleGesture: OnPanorama3DViewScaleGesture,
+    private val onDragGesture: OnPanorama3DViewDragGesture,
 ) : View.OnTouchListener {
 
-    private val dragSensitivity = 0.004f
-    private val minFov = 30f
-    private val maxFov = 90f
-
-    private val context: Context =
-        (view as View).context
-
     private val scaleDetector = ScaleGestureDetector(
-        context,
+        view.context,
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val scaleFactor = detector.scaleFactor
@@ -28,8 +22,9 @@ class Panorama3DViewGestures(
                     return false
                 }
 
-                view.fovDegrees =
-                    (view.fovDegrees / scaleFactor).coerceIn(minFov, maxFov)
+                onScaleGesture(
+                    factor = scaleFactor,
+                )
 
                 return true
             }
@@ -37,7 +32,7 @@ class Panorama3DViewGestures(
     )
 
     private val otherDetector = GestureDetector(
-        context,
+        view.context,
         object : GestureDetector.SimpleOnGestureListener() {
             override fun onScroll(
                 e1: MotionEvent?,
@@ -45,18 +40,17 @@ class Panorama3DViewGestures(
                 distanceX: Float,
                 distanceY: Float,
             ): Boolean {
-                val factor = dragSensitivity * view.fovDegrees / maxFov
 
-                view.rotateByPointer(
-                    deltaY = distanceY * factor,
-                    deltaX = distanceX * factor,
+                onDragGesture(
+                    deltaX = distanceX,
+                    deltaY = distanceY,
                 )
 
                 return true
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                (view as View).callOnClick()
+                view.callOnClick()
                 return super.onSingleTapConfirmed(e)
             }
         }
@@ -72,4 +66,15 @@ class Panorama3DViewGestures(
 
         return isHandled
     }
+}
+
+fun interface OnPanorama3DViewScaleGesture {
+    operator fun invoke(factor: Float)
+}
+
+fun interface OnPanorama3DViewDragGesture {
+    operator fun invoke(
+        deltaX: Float,
+        deltaY: Float,
+    )
 }

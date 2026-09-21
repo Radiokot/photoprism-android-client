@@ -11,11 +11,7 @@ import kotlin.math.abs
 
 class GyroscopeRotationTracker(
     context: Context,
-    private val onRotation: (
-        deltaPitchRad: Float,
-        deltaRollRad: Float,
-        deltaYawRad: Float,
-    ) -> Unit,
+    private val onRotation: OnGyroRotation,
 ) : SensorEventListener {
 
     private val windowManager =
@@ -105,13 +101,21 @@ class GyroscopeRotationTracker(
         }
 
         onRotation(
-            deltaPitch,
-            deltaRoll,
-            deltaYaw,
+            deltaPitchRad = deltaPitch,
+            deltaRollRad = deltaRoll,
+            deltaYawRad = deltaYaw,
         )
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // Doesn't matter.
     }
+}
+
+fun interface OnGyroRotation {
+    operator fun invoke(
+        deltaPitchRad: Float,
+        deltaRollRad: Float,
+        deltaYawRad: Float,
+    )
 }

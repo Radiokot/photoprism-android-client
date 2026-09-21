@@ -1,26 +1,26 @@
 package ua.com.radiokot.photoprism.features.viewer.view.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@Parcelize
+/**
+ * The GOAT structure for storing orientation.
+ * Thread safe.
+ */
 class Quaternion(
     var w: Float = 1f,
     var x: Float = 0f,
     var y: Float = 0f,
     var z: Float = 0f,
-) : Parcelable {
-
+) {
     fun set(
         w: Float,
         x: Float,
         y: Float,
         z: Float,
-    ) {
+    ) = synchronized(this) {
         this.w = w
         this.x = x
         this.y = y
@@ -53,11 +53,11 @@ class Quaternion(
         deltaPitch: Float,
         deltaYaw: Float,
         deltaRoll: Float,
-    ) {
+    ) = synchronized(this) {
         val angle = sqrt(deltaPitch * deltaPitch + deltaYaw * deltaYaw + deltaRoll * deltaRoll)
 
         if (angle < 0.0000001f) {
-            return
+            return@synchronized
         }
 
         val half = angle * 0.5f
@@ -75,11 +75,11 @@ class Quaternion(
         axisX: Float,
         axisY: Float,
         axisZ: Float,
-    ) {
+    ) = synchronized(this) {
         val len = sqrt(axisX * axisX + axisY * axisY + axisZ * axisZ)
 
         if (len < 0.000001 || abs(angle) < 0.0000001) {
-            return
+            return@synchronized
         }
 
         val half = angle * 0.5f
@@ -92,7 +92,7 @@ class Quaternion(
     /**
      * @param out 4x4 result matrix, float array of 16 elements.
      */
-    fun getViewMatrix(out: FloatArray) {
+    fun getViewMatrix(out: FloatArray) = synchronized(this) {
         val xx = x * x
         val yy = y * y
         val zz = z * z
