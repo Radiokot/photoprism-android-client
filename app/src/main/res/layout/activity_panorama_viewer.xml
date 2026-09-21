@@ -33,5 +33,9 @@
         android:fitsSystemWindows="true"
         android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:subtitleTextAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:titleTextAppearance="@style/TextAppearance.Material3.BodyLarge"
+        tools:subtitle="Saturday, June 7, 2014"
+        tools:title="Райгородок / 2014" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -68,7 +68,8 @@ class Panorama3DViewerActivity : BaseActivity() {
     private fun initToolbar() {
         setSupportActionBar(view.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = ""
+        title = intent.getStringExtra(TITLE_EXTRA) ?: ""
+        view.toolbar.subtitle = intent.getStringExtra(SUBTITLE_EXTRA)
     }
 
     @SuppressLint("NewApi")
@@ -228,6 +229,8 @@ class Panorama3DViewerActivity : BaseActivity() {
         private const val IMAGE_URL_EXTRA = "preview_image_url"
         private const val PROJECTION_EXTRA = "projection"
         private const val YAW_DEGREES_EXTRA = "yaw_degrees"
+        private const val TITLE_EXTRA = "title"
+        private const val SUBTITLE_EXTRA = "subtitle"
 
         /**
          * @param yawDegrees 0 to look at the image center
@@ -236,10 +239,14 @@ class Panorama3DViewerActivity : BaseActivity() {
             imageUrl: String,
             projection: GalleryMedia.PanoramaProjection,
             yawDegrees: Float,
+            title: String?,
+            subtitle: String?,
         ): Bundle = Bundle().apply {
             putString(IMAGE_URL_EXTRA, imageUrl)
             putSerializable(PROJECTION_EXTRA, projection)
             putFloat(YAW_DEGREES_EXTRA, yawDegrees)
+            putString(TITLE_EXTRA, title)
+            putString(SUBTITLE_EXTRA, subtitle)
         }
     }
 }

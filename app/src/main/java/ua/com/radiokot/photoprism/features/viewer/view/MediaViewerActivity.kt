@@ -1102,6 +1102,8 @@ class MediaViewerActivity : BaseActivity() {
                     imageUrl = imageUrl,
                     projection = projection,
                     yawDegrees = yawDegrees,
+                    title = view.toolbar.title?.toString(),
+                    subtitle = view.toolbar.subtitle?.toString(),
                 )
             )
         )
