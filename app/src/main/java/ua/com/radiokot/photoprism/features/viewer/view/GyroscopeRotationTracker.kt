@@ -33,9 +33,9 @@ class GyroscopeRotationTracker(
     var isRunning: Boolean = false
         private set
 
-    private var speedXRadS = Float.NaN
-    private var speedYRadS = Float.NaN
-    private var speedZRadS = Float.NaN
+    private var speedXRadS = 0f
+    private var speedYRadS = 0f
+    private var speedZRadS = 0f
 
     fun start() {
         if (isRunning || gyroscope == null) {
@@ -43,9 +43,9 @@ class GyroscopeRotationTracker(
         }
 
         isRunning = true
-        speedXRadS = Float.NaN
-        speedYRadS = Float.NaN
-        speedZRadS = Float.NaN
+        speedXRadS = 0f
+        speedYRadS = 0f
+        speedZRadS = 0f
 
         sensorManager.registerListener(
             this,
@@ -65,9 +65,7 @@ class GyroscopeRotationTracker(
         .doOnNext { nowMs ->
 
             if (lastCallbackMs == -1L
-                || speedXRadS.isNaN()
-                || speedYRadS.isNaN()
-                || speedZRadS.isNaN()
+                || (speedXRadS == 0f && speedYRadS == 0f && speedZRadS == 0f)
             ) {
                 lastCallbackMs = nowMs
                 return@doOnNext
