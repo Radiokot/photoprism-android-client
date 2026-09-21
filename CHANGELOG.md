@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Ability to view a 360° photo as an immersive photosphere
+
+### Changed
+
+- Made some icons rounded
+
 ## [1.46.1] - 2026-09-08
 
 ### Fixed
@@ -20,8 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Too small icon spacing in the selection menu 
-- Not importing files with actual size different from the reported one (rare case) 
+- Too small icon spacing in the selection menu
+- Not importing files with actual size different from the reported one (rare case)
 
 ### Changed
 
