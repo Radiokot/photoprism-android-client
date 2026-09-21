@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -91,16 +92,27 @@ class Panorama3DViewerActivity : BaseActivity() {
                     "onCreate(): loading_image:" +
                             "\nurl=$imageUrl"
                 }
+
+                view.progressIndicator.show()
             }
             .subscribeBy(
                 onError = { error ->
-                    // TODO
                     log.error(error) {
                         "onCreate(): failed_loading_image:" +
                                 "\nurl=$imageUrl"
                     }
+
+                    Toast.makeText(
+                        this,
+                        R.string.failed_to_load_the_preview,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+
+                    finish()
                 },
                 onSuccess = { bitmap ->
+                    view.progressIndicator.hide()
+
                     log.debug {
                         "onCreate(): creating_panorama_view:" +
                                 "\nprojection=$projection"
