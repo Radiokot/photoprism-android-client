@@ -308,5 +308,7 @@
     <string name="custom_map_style_preference_summary">Utiliser votre propre style MapLibre/MapTiler</string>
     <string name="see_photos_nearby_action">Photos à proximité</string>
     <string name="is_private">Privé</string>
+    <string name="panorama_view_use_phone_movement">Utiliser le mouvement du téléphone</string>
+    <string name="panorama_view_only_use_gestures">Utiliser uniquement les gestes</string>
 
 </resources>
