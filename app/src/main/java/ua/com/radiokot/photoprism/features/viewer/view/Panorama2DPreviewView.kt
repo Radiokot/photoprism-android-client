@@ -95,8 +95,13 @@ constructor(
         // Rotate the "camera" clockwise.
         // (drag the view-size window across the bitmap from left to right)
 
-        val bitmapWindowHeight = (bitmap.height * 0.55f).toInt()
-        val bitmapWindowWidth = (bitmapWindowHeight * (width.toFloat() / height)).toInt()
+        val bitmapWindowHeight =
+            // 0.55 of height for 2:1, less for cropped.
+            (bitmap.height * 0.275f * bitmap.width / bitmap.height)
+                .toInt()
+                .coerceAtMost(bitmap.height)
+        val bitmapWindowWidth =
+            (bitmapWindowHeight * (width.toFloat() / height)).toInt()
 
         bitmapRect.top = (bitmap.height - bitmapWindowHeight) / 2
         bitmapRect.bottom = bitmapRect.top + bitmapWindowHeight
