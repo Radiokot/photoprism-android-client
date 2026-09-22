@@ -5,12 +5,12 @@
     android:viewportHeight="478">
 
     <path
-        android:pathData="M116,58L363,58A58,58 0,0 1,421 116L421,363A58,58 0,0 1,363 421L116,421A58,58 0,0 1,58 363L58,116A58,58 0,0 1,116 58z"
+        android:pathData="M127,69L351,69A58,58 0,0 1,409 127L409,351A58,58 0,0 1,351 409L127,409A58,58 0,0 1,69 351L69,127A58,58 0,0 1,127 69z"
         android:strokeWidth="38"
         android:strokeColor="#000" />
 
     <path
-        android:pathData="M320,235.5a4,4 0,0 1,0 7l-132,76.2a4,4 0,0 1,-6 -3.5V162.8c0,-3 3.3,-5 6,-3.5z"
+        android:pathData="M314,235.54a4,4 0,0 1,0 6.92l-127.5,73.62a4,4 0,0 1,-6 -3.47V165.4a4,4 0,0 1,6 -3.47z"
         android:strokeWidth="38"
         android:strokeColor="#000" />
 

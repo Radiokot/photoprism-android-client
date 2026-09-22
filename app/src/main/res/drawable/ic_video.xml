@@ -1,10 +1,18 @@
-<!-- drawable/video_outline.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="478"
+    android:viewportHeight="478">
+
     <path
-        android:fillColor="#000000"
-        android:pathData="M15,8V16H5V8H15M16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5V7A1,1 0 0,0 16,6Z" />
+        android:pathData="M100,84L284,84A58,58 0,0 1,342 142L342,336A58,58 0,0 1,284 394L100,394A58,58 0,0 1,42 336L42,142A58,58 0,0 1,100 84z"
+        android:strokeWidth="38"
+        android:strokeColor="#000" />
+
+    <path
+        android:pathData="m428.43,154.53 l-84,70.67a4,4 0,0 0,-1.43 3.06v21.48a4,4 0,0 0,1.43 3.06l84,70.67a4,4 0,0 0,6.57 -3.06V157.59a4,4 0,0 0,-6.57 -3.06ZM110,320h165"
+        android:strokeWidth="38"
+        android:strokeColor="#000"
+        android:strokeLineCap="round" />
+
 </vector>

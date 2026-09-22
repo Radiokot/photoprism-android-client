@@ -8,6 +8,7 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
 
 object GalleryMediaResources {
 
+    @DrawableRes
     val regularImageIcon = R.drawable.ic_image
 
     @DrawableRes
@@ -27,32 +28,23 @@ object GalleryMediaResources {
         GalleryMedia.TypeName.IMAGE ->
             regularImageIcon
 
-        GalleryMedia.TypeName.ANIMATED ->
-            R.drawable.ic_animation
-
         GalleryMedia.TypeName.LIVE ->
             R.drawable.ic_live_photo
-
-        GalleryMedia.TypeName.OTHER ->
-            R.drawable.ic_sledding
-
-        GalleryMedia.TypeName.RAW ->
-            R.drawable.ic_camera_viewfinder
-
-        GalleryMedia.TypeName.SIDECAR ->
-            R.drawable.ic_attachment
-
-        GalleryMedia.TypeName.TEXT ->
-            R.drawable.ic_text
-
-        GalleryMedia.TypeName.UNKNOWN ->
-            R.drawable.ic_unknown
 
         GalleryMedia.TypeName.VECTOR ->
             R.drawable.ic_vector
 
         GalleryMedia.TypeName.VIDEO ->
             R.drawable.ic_video
+
+        GalleryMedia.TypeName.RAW ->
+            R.drawable.ic_shutter
+
+        GalleryMedia.TypeName.ANIMATED ->
+            R.drawable.ic_animation
+
+        else ->
+            R.drawable.ic_file
     }
 
     @StringRes
