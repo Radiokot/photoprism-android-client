@@ -5,7 +5,7 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
 import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaResources
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
 import kotlin.math.max
 
@@ -168,8 +168,8 @@ sealed class MediaViewerPage(
             source: GalleryMedia,
             previewUrlFactory: MediaPreviewUrlFactory,
         ) = UnsupportedNoticePage(
-            mediaTypeIcon = GalleryMediaTypeResources.getIcon(source.media.typeName),
-            mediaTypeName = GalleryMediaTypeResources.getName(source.media.typeName),
+            mediaTypeIcon = GalleryMediaResources.getIcon(source),
+            mediaTypeName = GalleryMediaResources.getTypeName(source.media.typeName),
             thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                 thumbnailHash = source.hash,
                 sizePx = THUMBNAIL_SIZE_PX,

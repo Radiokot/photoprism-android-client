@@ -11,6 +11,7 @@ import com.google.android.material.color.MaterialColors
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.databinding.ViewGallerySearchConfigMediaTypesBinding
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaResources
 
 class GallerySearchConfigMediaTypesView(
     private val view: ViewGallerySearchConfigMediaTypesBinding,
@@ -58,12 +59,12 @@ class GallerySearchConfigMediaTypesView(
                         Chip(chipContext).apply {
                             tag = mediaTypeName
                             setText(
-                                ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources.getName(
+                                GalleryMediaResources.getTypeName(
                                     mediaTypeName
                                 )
                             )
                             setChipIconResource(
-                                ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources.getIcon(
+                                GalleryMediaResources.getTypeIcon(
                                     mediaTypeName
                                 )
                             )

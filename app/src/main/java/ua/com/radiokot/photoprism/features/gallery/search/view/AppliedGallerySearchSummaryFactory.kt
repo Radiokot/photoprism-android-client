@@ -13,10 +13,10 @@ import androidx.core.text.toSpannable
 import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
 import ua.com.radiokot.photoprism.R
-import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.AppliedGallerySearch
 import ua.com.radiokot.photoprism.features.gallery.search.view.model.GallerySearchViewModel
-import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaTypeResources
+import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaResources
+import ua.com.radiokot.photoprism.features.people.view.model.SelectablePersonListItem
 import ua.com.radiokot.photoprism.util.images.CenterVerticalImageSpan
 import ua.com.radiokot.photoprism.util.images.ImageTransformations
 import ua.com.radiokot.photoprism.util.images.SimpleWrappedDrawable
@@ -83,7 +83,7 @@ class AppliedGallerySearchSummaryFactory(
                 }
 
                 search.config.mediaTypes?.forEach { mediaType ->
-                    appendIcon(GalleryMediaTypeResources.getIcon(mediaType))
+                    appendIcon(GalleryMediaResources.getTypeIcon(mediaType))
                 }
 
                 if (search.config.includePrivate) {
@@ -134,7 +134,7 @@ class AppliedGallerySearchSummaryFactory(
         context: Context,
         sizePx: Int,
         colors: ColorStateList,
-        end: String = " "
+        end: String = " ",
     ) {
         val drawable = ContextCompat.getDrawable(
             context,
@@ -157,7 +157,7 @@ class AppliedGallerySearchSummaryFactory(
         url: String,
         sizePx: Int,
         textView: TextView,
-        end: String = " "
+        end: String = " ",
     ) {
         val wrappedDrawable = SimpleWrappedDrawable(
             defaultWidthPx = sizePx,

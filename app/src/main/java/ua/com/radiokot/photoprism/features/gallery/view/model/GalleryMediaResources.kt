@@ -4,12 +4,28 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import ua.com.radiokot.photoprism.R
 import ua.com.radiokot.photoprism.features.gallery.data.model.GalleryMedia
+import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
 
-object GalleryMediaTypeResources {
+object GalleryMediaResources {
+
+    val regularImageIcon = R.drawable.ic_image
+
     @DrawableRes
-    fun getIcon(typeName: GalleryMedia.TypeName): Int = when (typeName) {
+    fun getIcon(source: GalleryMedia): Int = when {
+
+        // Special icon for 360 panorama.
+        source.media is Viewable.AsImage
+                && source.panoramaProjection != null ->
+            R.drawable.ic_panorama
+
+        else ->
+            getTypeIcon(source.media.typeName)
+    }
+
+    @DrawableRes
+    fun getTypeIcon(typeName: GalleryMedia.TypeName): Int = when (typeName) {
         GalleryMedia.TypeName.IMAGE ->
-            R.drawable.ic_image
+            regularImageIcon
 
         GalleryMedia.TypeName.ANIMATED ->
             R.drawable.ic_animation
@@ -40,7 +56,7 @@ object GalleryMediaTypeResources {
     }
 
     @StringRes
-    fun getName(typeName: GalleryMedia.TypeName): Int = when (typeName) {
+    fun getTypeName(typeName: GalleryMedia.TypeName): Int = when (typeName) {
         GalleryMedia.TypeName.IMAGE ->
             R.string.media_type_image
 

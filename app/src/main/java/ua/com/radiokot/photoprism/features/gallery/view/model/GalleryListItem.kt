@@ -45,9 +45,9 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
         val thumbnailUrl: String,
         val title: String,
         @DrawableRes
-        val mediaTypeIcon: Int?,
+        val typeIcon: Int?,
         @StringRes
-        val mediaTypeName: Int?,
+        val typeName: Int?,
         val isViewButtonVisible: Boolean,
         val isSelectionViewVisible: Boolean,
         val isMediaSelected: Boolean,
@@ -74,31 +74,31 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                     )
 
                 GalleryItemScale.SMALL,
-                GalleryItemScale.NORMAL ->
+                GalleryItemScale.NORMAL,
+                    ->
                     previewUrlFactory.getThumbnailUrl(
                         thumbnailHash = source.hash,
                         sizePx = 250,
                     )
 
                 GalleryItemScale.LARGE,
-                GalleryItemScale.HUGE ->
+                GalleryItemScale.HUGE,
+                    ->
                     previewUrlFactory.getThumbnailUrl(
                         thumbnailHash = source.hash,
                         sizePx = 500,
                     )
             },
             title = source.title,
-            mediaTypeIcon =
-            // Type icon is visible if it is not an image, unless the scale is tiny.
-            if (source.media !is GalleryMedia.TypeData.Image && itemScale != GalleryItemScale.TINY)
-                GalleryMediaTypeResources.getIcon(source.media.typeName)
-            else
-                null,
-            mediaTypeName =
-            if (source.media !is GalleryMedia.TypeData.Image)
-                GalleryMediaTypeResources.getName(source.media.typeName)
-            else
-                null,
+            typeIcon =
+                // Type icon is visible if it is not a regular image, unless the scale is tiny.
+                if (itemScale != GalleryItemScale.TINY)
+                    GalleryMediaResources
+                        .getIcon(source)
+                        .takeUnless(GalleryMediaResources.regularImageIcon::equals)
+                else
+                    null,
+            typeName = GalleryMediaResources.getTypeName(source.media.typeName),
             // View button is visible when needed, unless the scale is tiny.
             isViewButtonVisible = isViewButtonVisible && itemScale != GalleryItemScale.TINY,
             isSelectionViewVisible = isSelectionViewVisible,
@@ -188,18 +188,19 @@ sealed class GalleryListItem : AbstractItem<ViewHolder>() {
                 }
 
                 with(view.mediaTypeImageView) {
-                    if (item.mediaTypeIcon != null) {
+                    if (item.typeIcon != null) {
                         visibility = View.VISIBLE
-                        setImageResource(item.mediaTypeIcon)
+                        setImageResource(item.typeIcon)
+
+                        contentDescription =
+                            if (item.typeName != null)
+                                context.getString(item.typeName)
+                            else
+                                null
+
                     } else {
                         visibility = View.GONE
                     }
-
-                    contentDescription =
-                        if (item.mediaTypeName != null)
-                            context.getString(item.mediaTypeName)
-                        else
-                            null
                 }
 
                 view.favoriteImageView.isVisible = item.isFavorite
