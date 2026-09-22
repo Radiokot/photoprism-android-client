@@ -1,0 +1,7 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Added:
+- Ability to view a 360° photo as an immersive photosphere
+
+Changed:
+- Made some icons rounded
