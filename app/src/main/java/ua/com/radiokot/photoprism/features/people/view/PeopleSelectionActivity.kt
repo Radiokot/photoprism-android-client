@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.Menu
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -160,6 +163,24 @@ class PeopleSelectionActivity : BaseActivity() {
     private fun initButtons() {
         view.doneSelectingFab.setOnClickListener {
             viewModel.onDoneClicked()
+        }
+
+        val fabInitialMargin =
+            (view.doneSelectingFab.layoutParams as ViewGroup.MarginLayoutParams)
+                .bottomMargin
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.doneSelectingFab) { _, insets ->
+            val safe = insets.barsAndCutout()
+            view.doneSelectingFab.updateLayoutParams {
+                this as ViewGroup.MarginLayoutParams
+                setMargins(
+                    fabInitialMargin + safe.top,
+                    0,
+                    fabInitialMargin + safe.right,
+                    fabInitialMargin + safe.bottom,
+                )
+            }
+            WindowInsetsCompat.CONSUMED
         }
     }
 
