@@ -29,7 +29,8 @@ constructor(
     ) : this(
         previewUrl = previewUrlFactory.getImagePreviewUrl(
             previewHash = photo.hash,
-            sizePx = PREVIEW_SIZE_PX,
+            viewWidthPx = PREVIEW_SIZE_PX,
+            viewHeightPx = PREVIEW_SIZE_PX,
         ),
         uid = photo.uid,
         takenAtLocal = photo.takenAtLocal,

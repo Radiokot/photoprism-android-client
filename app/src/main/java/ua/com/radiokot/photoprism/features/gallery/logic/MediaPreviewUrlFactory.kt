@@ -10,7 +10,8 @@ interface MediaPreviewUrlFactory {
 
     fun getImagePreviewUrl(
         previewHash: String,
-        sizePx: Int,
+        viewWidthPx: Int,
+        viewHeightPx: Int,
     ): String
 
     fun getVideoPreviewUrl(

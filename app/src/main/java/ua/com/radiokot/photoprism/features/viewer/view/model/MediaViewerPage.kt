@@ -7,7 +7,6 @@ import ua.com.radiokot.photoprism.features.gallery.data.model.Viewable
 import ua.com.radiokot.photoprism.features.gallery.logic.MediaPreviewUrlFactory
 import ua.com.radiokot.photoprism.features.gallery.view.model.GalleryMediaResources
 import ua.com.radiokot.photoprism.features.viewer.view.MediaViewerPageViewHolder
-import kotlin.math.max
 
 // MediaViewerPageDiffCallback must be updated when adding new page types.
 sealed class MediaViewerPage(
@@ -43,10 +42,8 @@ sealed class MediaViewerPage(
                         return ImageViewerPage(
                             previewUrl = previewUrlFactory.getImagePreviewUrl(
                                 previewHash = source.hash,
-                                sizePx = max(
-                                    imageViewSize.width,
-                                    imageViewSize.height
-                                )
+                                viewWidthPx = imageViewSize.width,
+                                viewHeightPx = imageViewSize.height,
                             ),
                             imageViewSize = imageViewSize,
                             thumbnailUrl = previewUrlFactory.getThumbnailUrl(
@@ -88,10 +85,8 @@ sealed class MediaViewerPage(
                     FadeEndLivePhotoViewerPage(
                         photoPreviewUrl = previewUrlFactory.getImagePreviewUrl(
                             previewHash = source.hash,
-                            sizePx = max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
+                            viewWidthPx = imageViewSize.width,
+                            viewHeightPx = imageViewSize.height,
                         ),
                         videoPreviewUrl = previewUrlFactory.getVideoPreviewUrl(
                             galleryMedia = source,
@@ -114,10 +109,8 @@ sealed class MediaViewerPage(
                         projection = source.panoramaProjection,
                         previewUrl = previewUrlFactory.getImagePreviewUrl(
                             previewHash = source.hash,
-                            sizePx = max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
+                            viewWidthPx = imageViewSize.width,
+                            viewHeightPx = imageViewSize.height,
                         ),
                         thumbnailUrl = previewUrlFactory.getThumbnailUrl(
                             thumbnailHash = source.hash,
@@ -146,10 +139,8 @@ sealed class MediaViewerPage(
                     ImageViewerPage(
                         previewUrl = previewUrlFactory.getImagePreviewUrl(
                             previewHash = source.hash,
-                            sizePx = max(
-                                imageViewSize.width,
-                                imageViewSize.height
-                            )
+                            viewWidthPx = imageViewSize.width,
+                            viewHeightPx = imageViewSize.height,
                         ),
                         imageViewSize = imageViewSize,
                         thumbnailUrl = previewUrlFactory.getThumbnailUrl(

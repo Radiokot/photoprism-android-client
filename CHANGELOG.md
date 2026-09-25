@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- On the people selection screen, showing the Done button behind the navigation 
+- On the people selection screen, showing the Done button behind the navigation
+- Use of `fit_2048` and `fit_3840` previews which are only available with Dynamic Previews enabled
 
 ## [1.47.0] - 2026-09-22
 

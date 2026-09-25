@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package ua.com.radiokot.photoprism.features.gallery.logic
 
 import ua.com.radiokot.photoprism.env.data.model.EnvSession
@@ -26,34 +28,52 @@ class PhotoPrismMediaPreviewUrlFactory(
 
     override fun getImagePreviewUrl(
         previewHash: String,
-        sizePx: Int,
+        viewWidthPx: Int,
+        viewHeightPx: Int,
     ): String = when {
-        sizePx < 1000 ->
+        /*
+            Name        Width   Height
+            ==========================
+            fit_720     720     720
+            fit_1280    1280	1024
+            fit_1920	1920	1200
+            fit_2560	2560	1600
+            fit_4096	4096	4096
+            fit_5120	5120	5120
+            fit_7680	7680	4320
+         */
+        viewWidthPx <= 720 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 720 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
             getFitPreviewUrl(previewHash, 720)
 
-        sizePx < 1500 ->
+        viewWidthPx <= 1280 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 1024 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
             getFitPreviewUrl(previewHash, 1280)
 
-        sizePx < 2000 ->
+        viewWidthPx <= 1920 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 1200 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
             getFitPreviewUrl(previewHash, 1920)
 
-        sizePx < 2500 ->
-            getFitPreviewUrl(previewHash, 2048)
+        viewWidthPx <= 2560 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 1600 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
+            getFitPreviewUrl(previewHash, 2560)
 
-        sizePx < 4000 ->
-            getFitPreviewUrl(previewHash, 3840)
-
-        sizePx < 4500 ->
+        viewWidthPx <= 4096 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 4096 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
             getFitPreviewUrl(previewHash, 4096)
+
+        viewWidthPx <= 5120 * PREVIEW_SIZE_THRESHOLD_FACTOR
+                && viewHeightPx <= 5120 * PREVIEW_SIZE_THRESHOLD_FACTOR ->
+            getFitPreviewUrl(previewHash, 5120)
 
         else ->
             getFitPreviewUrl(previewHash, 7680)
     }
 
-    private fun getTilePreviewUrl(hash: String, size: Int) =
+    private inline fun getTilePreviewUrl(hash: String, size: Int) =
         "$previewUrlBase/t/$hash/$previewToken/tile_$size"
 
-    private fun getFitPreviewUrl(hash: String, size: Int) =
+    private inline fun getFitPreviewUrl(hash: String, size: Int) =
         "$previewUrlBase/t/$hash/$previewToken/fit_$size"
 
     override fun getVideoPreviewUrl(
@@ -96,5 +116,6 @@ class PhotoPrismMediaPreviewUrlFactory(
 
     private companion object {
         private const val DEFAULT_VIDEO_PREVIEW_FORMAT = "avc"
+        private const val PREVIEW_SIZE_THRESHOLD_FACTOR = 1.3f
     }
 }
