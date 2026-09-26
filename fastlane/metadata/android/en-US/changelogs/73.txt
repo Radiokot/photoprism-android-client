@@ -1,0 +1,6 @@
+Full: https://radiokot.com.ua/pp-changes
+
+Fixed:
+
+- On the people selection screen, showing the Done button behind the navigation
+- Use of 'fit_2048' and 'fit_3840' previews which are only available with Dynamic Previews enabled
